@@ -4,7 +4,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_retek2.h"
 #include <QSqlQuery>
-#include "beallitasok.h"
+#include "Beallitasok.h"
 
 class retek2 : public QMainWindow
 {

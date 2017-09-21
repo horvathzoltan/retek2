@@ -834,7 +834,7 @@ QString retek2::getAttrList(QString tmp, QMap<QString, QVariant> *map, int whsp)
 
 	if(!isNullable && ca.toLower() != "id"){
         if(!e.isEmpty()) e+= spacer;
-        e += QStringLiteral("[Required(ErrorMessage = \"%1 kitöltése kötelezõ\")]\n").arg(ca);
+        e += QStringLiteral("[Required(ErrorMessage = \"%1 ktk\")]\n").arg(ca);
 	}	
 
 	QString tyo = map->value("proptypeoriginal").toString();
