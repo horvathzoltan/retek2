@@ -24,7 +24,6 @@ retek2::~retek2()
 {
 
 }
-
 /*
 void retek2::getCredsToBeall(Beallitasok *b1){
     if(b1){
@@ -354,7 +353,7 @@ void retek2::feltoltMezoLista(QString tablanev) {
 	id	int	NULL	10	0	NO	1
 	idopont	datetime	NULL	NULL	NULL	YES	0
 	*/
-	uint r_ix = 0;
+    int r_ix = 0;
 	/*uint c_ix_colName = 0;
 	uint c_ix_dtype = 1;
 	uint c_ix_dlen = 2;*/
@@ -367,7 +366,7 @@ void retek2::feltoltMezoLista(QString tablanev) {
 		QString dlen = query.value("CHARACTER_MAXIMUM_LENGTH").toString();
 		QString nullable = query.value("IS_NULLABLE").toString();
 
-		ui.tableWidget_MezoLista->insertRow(r_ix);
+        ui.tableWidget_MezoLista->insertRow(r_ix);
 
 		ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colName, new QTableWidgetItem(colName));
 		ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colType, new QTableWidgetItem(dtype));
@@ -474,7 +473,7 @@ void retek2::GenerateAll() {
 	}
     }
     else{
-        qDebug("Nincs tábla kiválasztva!");
+        qDebug("Nincs tabla kivalasztva!");
     }
 
 }
@@ -484,9 +483,13 @@ QString retek2::getTemplateFilename(QString tfname) {
     if(QFileInfo(fn).exists())
         return fn;
     else{
+        qDebug() << "nincs project templatefile:"+ fn;
         fn = QString(b.tmpDir+R"(\%1)").arg(tfname);
         if(QFileInfo(fn).exists())
             return fn;
+        else{
+            qDebug() << "nincs default templatefile:"+ fn;
+            }
         }
     return NULL;
 }

@@ -8,8 +8,8 @@ public:
 	Beallitasok();
 	~Beallitasok();
 
-    QString adatbazisNev = "Gloster";
-    QString server = "DEATHSTAR";
+    QString adatbazisNev = "enyv";
+    QString server = "DIMOTION";
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
 
