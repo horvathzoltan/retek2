@@ -114,6 +114,7 @@ void retek2::init(void)
 	dxMap.insert("decimal", "dxNumberBox");
 	dxMap.insert("xml", "dxTextBox");
 
+
     setBealls();
     dbConnect();
 
@@ -236,7 +237,7 @@ void retek2::feltoltTabla(void) {
 
 void retek2::feltoltTmpMap(void){
 	QString viewTemplateDirName = getTemplateFilename("View");
-    if(viewTemplateDirName == NULL) {zError("nincs view sablon");return;}
+    if(viewTemplateDirName == NULL) {zError("nincs sablon:");return;}
 
 	auto viewTemplateDir = QDir(viewTemplateDirName);
 
@@ -354,7 +355,7 @@ void retek2::feltoltMezoLista(QString tablanev) {
 	id	int	NULL	10	0	NO	1
 	idopont	datetime	NULL	NULL	NULL	YES	0
 	*/
-	uint r_ix = 0;
+    int r_ix = 0;
 	/*uint c_ix_colName = 0;
 	uint c_ix_dtype = 1;
 	uint c_ix_dlen = 2;*/
@@ -484,7 +485,9 @@ QString retek2::getTemplateFilename(QString tfname) {
     if(QFileInfo(fn).exists())
         return fn;
     else{
+        qDebug()<<"nincs project template:" +fn;
         fn = QString(b.tmpDir+R"(\%1)").arg(tfname);
+        qDebug()<<"nincs defaule template:" +fn;
         if(QFileInfo(fn).exists())
             return fn;
         }
@@ -799,7 +802,7 @@ QString retek2::getPropList() {
 		QTableWidgetItem *item_colType = ui.tableWidget_MezoLista->item(i, C_ix_colType);
 		QTableWidgetItem *item_len = ui.tableWidget_MezoLista->item(i, C_ix_dlen);
 		QTableWidgetItem *item_isnullable = ui.tableWidget_MezoLista->item(i, C_ix_nullable);
-		QTableWidgetItem *item_Caption = ui.tableWidget_MezoLista->item(i, C_ix_Caption);
+        //QTableWidgetItem *item_Caption = ui.tableWidget_MezoLista->item(i, C_ix_Caption);
 		QString e1;
 
 		int len = item_len->text().toInt();
