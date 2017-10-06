@@ -380,7 +380,8 @@ void retek2::feltoltMezoLista(QString tablanev) {
 		else if (globalCaptionMap.contains(cn))
 			caption = globalCaptionMap[cn];
 		/*else
-			caption = "?";*/
+            caption = "?";*/
+        //colName, dtype, dlen, caption, nullable
 
 		ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, new QTableWidgetItem(caption));
 
@@ -392,6 +393,24 @@ void retek2::feltoltMezoLista(QString tablanev) {
 	// ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, new QTableWidgetItem("a"));
 }
 
+/*!
+    \fn retek2::GenerateByText()
+
+    1.step: generates table and record metadata
+    2.step: validates specified database by generated metadata
+*/
+void retek2::GenerateByText(){
+    qDebug("GenerateByText");
+
+
+    return;
+}
+
+/*!
+ \fn retek2::GenerateAll()
+
+ generate files by selected templates
+*/
 void retek2::GenerateAll() {
 	qDebug("GenerateAll");
     if (!tablanev.isEmpty()){
