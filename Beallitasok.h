@@ -9,6 +9,9 @@ public:
 	~Beallitasok();
 
     void Load();
+    
+    QString adatbazisNev = "enyv";
+    QString server = "DIMOTION";
 
     QString adatbazisNev = "Gloster";
     QString server = "DEATHSTAR";

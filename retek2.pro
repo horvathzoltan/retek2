@@ -7,10 +7,14 @@ TARGET = retek2
 TEMPLATE = app
 
 HEADERS += Beallitasok.h \
-    retek2.h
+    retek2.h \
+    ztablerow.h \
+    ztable.h \
+    ztable.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
-    retek2.cpp
+    retek2.cpp \
+    ztable.cpp
 FORMS += retek2.ui
 RESOURCES += retek2.qrc
 

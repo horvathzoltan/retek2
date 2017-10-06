@@ -164,7 +164,7 @@ void retek2::StringMapSave(QString fn, QMap<QString, QString> *map) {
 
 	QFile file(fn);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) { 
-        zError("nem menthetõ: " + fn);
+        zError("nem menthet: " + fn);
 		return; 
 	}
 
@@ -360,7 +360,7 @@ void retek2::feltoltMezoLista(QString tablanev) {
 	uint c_ix_dtype = 1;
 	uint c_ix_dlen = 2;*/
 	/*
-	entitásfile
+	entitsfile
 	*/
 	while (query.next()) {
 		QString colName = query.value("COLUMN_NAME").toString();
@@ -368,7 +368,7 @@ void retek2::feltoltMezoLista(QString tablanev) {
 		QString dlen = query.value("CHARACTER_MAXIMUM_LENGTH").toString();
 		QString nullable = query.value("IS_NULLABLE").toString();
 
-		ui.tableWidget_MezoLista->insertRow(r_ix);
+        ui.tableWidget_MezoLista->insertRow(r_ix);
 
 		ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colName, new QTableWidgetItem(colName));
 		ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colType, new QTableWidgetItem(dtype));
@@ -382,7 +382,8 @@ void retek2::feltoltMezoLista(QString tablanev) {
 		else if (globalCaptionMap.contains(cn))
 			caption = globalCaptionMap[cn];
 		/*else
-			caption = "?";*/
+            caption = "?";*/
+        //colName, dtype, dlen, caption, nullable
 
 		ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, new QTableWidgetItem(caption));
 
@@ -394,6 +395,24 @@ void retek2::feltoltMezoLista(QString tablanev) {
 	// ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, new QTableWidgetItem("a"));
 }
 
+/*!
+    \fn retek2::GenerateByText()
+
+    1.step: generates table and record metadata
+    2.step: validates specified database by generated metadata
+*/
+void retek2::GenerateByText(){
+    qDebug("GenerateByText");
+
+
+    return;
+}
+
+/*!
+ \fn retek2::GenerateAll()
+
+ generate files by selected templates
+*/
 void retek2::GenerateAll() {
 	qDebug("GenerateAll");
     if (!tablanev.isEmpty()){
@@ -475,7 +494,7 @@ void retek2::GenerateAll() {
 	}
     }
     else{
-        qDebug("Nincs tábla kiválasztva!");
+        qDebug("Nincs tabla kivalasztva!");
     }
 
 }
@@ -485,11 +504,14 @@ QString retek2::getTemplateFilename(QString tfname) {
     if(QFileInfo(fn).exists())
         return fn;
     else{
-        qDebug()<<"nincs project template:" +fn;
+        qDebug() << "nincs project templatefile:"+ fn;
         fn = QString(b.tmpDir+R"(\%1)").arg(tfname);
         qDebug()<<"nincs defaule template:" +fn;
         if(QFileInfo(fn).exists())
             return fn;
+        else{
+            qDebug() << "nincs default templatefile:"+ fn;
+            }
         }
     return NULL;
 }
@@ -609,9 +631,9 @@ QString retek2::get_fkList(QString osztalynev) {
 		auto mezonev = itx[0];
 		auto to_tablaNev = itx2[0];
 		auto to_tablaMezo = itx2[1];
-		// listanév: Hely -> class Szallitolevel -> public virtual TorzsHely Hely { get; set; }
-		// osztálynév : Szallitolevel
-		// PropNév a mezõnévbõl: HelyId
+		// listanv: Hely -> class Szallitolevel -> public virtual TorzsHely Hely { get; set; }
+		// osztlynv : Szallitolevel
+		// PropNv a meznvbl: HelyId
 		auto propNev = getOsztalynev(mezonev);
 		auto liNev = get_liNev(propNev);
 
@@ -655,7 +677,7 @@ void retek2::SaveAllTextToFile(QString *txt, QString fn) {
 	QFile f(fn);
 
     if (!f.open(QIODevice::WriteOnly | QIODevice::Text)){
-        zError("nem menthetõ: "+fn);
+        zError("nem menthet: "+fn);
         return;
         }
 
@@ -675,13 +697,13 @@ bool retek2::toBool(QString ez) {
 
 
 /*
-Számolni kell, hány tokent sikerül feloldani. az utolsó lépés az, amelyikben már nem sikerül tokent feloldani, tehát marad még token, de egyet sem sikerül közülük feloldani.
-Ezzel el lehet kerülni, hogy:
-1. a templateban logikátlan szerkezetek jelenjenek meg
-2. a kód byonyolultságán lehet csökkenteni.
+Szmolni kell, hny tokent sikerl feloldani. az utols lps az, amelyikben mr nem sikerl tokent feloldani, teht marad mg token, de egyet sem sikerl kzlk feloldani.
+Ezzel el lehet kerlni, hogy:
+1. a templateban logiktlan szerkezetek jelenjenek meg
+2. a kd byonyolultsgn lehet cskkenteni.
 
-ha for ciklust használunk, akkor elkerülhetõ a végtelen ciklus, és maximalizálható a template beágyazottsága,
-for(int i = 10 ... ha elértük a 10-et, akkor a template too complex
+ha for ciklust hasznlunk, akkor elkerlhet a vgtelen ciklus, s maximalizlhat a template begyazottsga,
+for(int i = 10 ... ha elrtk a 10-et, akkor a template too complex
 */
 
 void retek2::tokenize(QString *tmp, QMap<QString, QVariant>*map, int whsp) {
@@ -790,7 +812,7 @@ QString retek2::getToken(QString token1, QString t2, QMap<QString, QVariant> *ma
 }
 
 /*
-tokenelemek feloldása
+tokenelemek feloldsa
 */
 
 QString retek2::getPropList() {
@@ -905,13 +927,13 @@ QString retek2::getPropList2(QString tmp, QString param, int whsp) {
 			map.insert("proptypeoriginal", coltypeName);
 
 			/*
-			ha a tmp !-al kezdõdik, akkor fájlból jön a template
+			ha a tmp !-al kezddik, akkor fjlbl jn a template
 
-			!bytype,edit.cshtml : a edit_cshtml szótárból jön fieldtypeName alapján
-			!bytype,create.cshtml : a create_cshtml szótárból jön fieldtypeName alapján
-			!bytype,details.cshtml : a details_cshtml szótárból jön fieldtypeName alapján
+			!bytype,edit.cshtml : a edit_cshtml sztrbl jn fieldtypeName alapjn
+			!bytype,create.cshtml : a create_cshtml sztrbl jn fieldtypeName alapjn
+			!bytype,details.cshtml : a details_cshtml sztrbl jn fieldtypeName alapjn
 
-			-- egymásba ágyazott mapok kellenek
+			-- egymsba gyazott mapok kellenek
 			*/
 			map.insert("controlid", colName+'_'+QString::number(i));
 
