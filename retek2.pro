@@ -14,7 +14,8 @@ HEADERS += Beallitasok.h \
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \
-    ztable.cpp
+    ztable.cpp \
+    ztablerow.cpp
 FORMS += retek2.ui
 RESOURCES += retek2.qrc
 

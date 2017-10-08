@@ -12,11 +12,15 @@ public:
     
     QString adatbazisNev = "enyv";
     QString server = "DIMOTION";
+    QString user = "sa";
+    QString password= "Gtr7jv8fh2";
 
+    /*
     QString adatbazisNev = "Gloster";
     QString server = "DEATHSTAR";
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
+    */
 
 /*
     QString adatbazisNev = "ServiceFlex";

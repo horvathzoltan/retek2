@@ -1,7 +1,17 @@
 #include <QSqlQuery>
+//#include <QVector>
+//#include <QMap>
+#include <QVariant>
+
+#include "ztablerow.h"
 #include "ztable.h"
 
-zTable zTable::LoadFromSQL(QString tablanev)
+zTable::zTable(QString n){
+    this->tablename = n;
+    this->rows = QVector<zTablerow>();
+}
+
+zTable zTable::LoadFromSQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QMap<QString, QString> tablaCaptionMap)
 {
     QString commandTextTemplate = "Select "
         "C.COLUMN_NAME, "
@@ -20,46 +30,23 @@ zTable zTable::LoadFromSQL(QString tablanev)
 
     QString commandText = commandTextTemplate.arg(tablanev);
 
-    QSqlQuery query(commandText);
+    QSqlQuery query(commandText);   
 
-    /*
-    COLUMN_NAME	DATA_TYPE	CHARACTER_MAXIMUM_LENGTH	NUMERIC_PRECISION	NUMERIC_SCALE	IS_NULLABLE	IsPartOfPrimaryKey
-    id	int	NULL	10	0	NO	1
-    idopont	datetime	NULL	NULL	NULL	YES	0
-    */
-    int r_ix = 0;
-    /*uint c_ix_colName = 0;
-    uint c_ix_dtype = 1;
-    uint c_ix_dlen = 2;*/
-    /*
-    entitásfile
-    */
+    auto e = zTable(tablanev);
+
     while (query.next()) {
         QString colName = query.value("COLUMN_NAME").toString();
         QString dtype = query.value("DATA_TYPE").toString();
-        QString dlen = query.value("CHARACTER_MAXIMUM_LENGTH").toString();
-        QString nullable = query.value("IS_NULLABLE").toString();
-
-        ui.tableWidget_MezoLista->insertRow(r_ix);
-
-        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colName, new QTableWidgetItem(colName));
-        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colType, new QTableWidgetItem(dtype));
-        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_dlen, new QTableWidgetItem(dlen));
-
-        QString caption;
+        int dlen = query.value("CHARACTER_MAXIMUM_LENGTH").toInt();
+        bool nullable = query.value("IS_NULLABLE").toBool();
         QString cn = colName.toLower();
 
-        if (tablaCaptionMap.contains(cn))
-            caption = tablaCaptionMap[cn];
-        else if (globalCaptionMap.contains(cn))
-            caption = globalCaptionMap[cn];
-        /*else
-            caption = "?";*/
-        //colName, dtype, dlen, caption, nullable
+        QString caption = tablaCaptionMap.contains(cn)?tablaCaptionMap[cn]:globalCaptionMap.contains(cn)?globalCaptionMap[cn]:cn;
 
-        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, new QTableWidgetItem(caption));
+        auto r = zTablerow(colName, dtype, dlen, nullable, caption);
 
-        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, new QTableWidgetItem(nullable));
-        r_ix++;
+        e.rows.append(r);
     }
+
+    return e;
 }

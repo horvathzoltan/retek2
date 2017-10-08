@@ -7,11 +7,13 @@
 class zTablerow
 {
 public:
+    zTablerow(QString colName, QString dtype, int dlen, bool nullable, QString caption);
+
     QString Caption;
     QString colName;
     QString colType;
-    QString dlen;
-    QString nullable;
+    int dlen;
+    bool nullable;
 };
 
 #endif // ZTABLEROW_H
