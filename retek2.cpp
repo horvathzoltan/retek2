@@ -14,6 +14,9 @@
 #include <QMap>
 #include <QMessageBox>
 
+#include "ztable.h"
+#include "zdatabase.h"
+
 retek2::retek2(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -45,46 +48,7 @@ void retek2::setCredsToBeall(Beallitasok *b, Ui *ui){
 }
 */
 
-void retek2::getBealls()
-{
-    b.user = ui.lineEdit_User->text();
-    b.password = ui.lineEdit_Password->text();
-    b.server = ui.lineEdit_Server->text();
-    b.adatbazisNev = ui.lineEdit_Catalog->text();
-}
 
-void retek2::dbConnect()
-{
-    getBealls();
-    QString connectionString =  b.connectionTemplate.arg(b.server).arg(b.adatbazisNev);
-
-    db = QSqlDatabase::addDatabase("QODBC");
-
-    db.setDatabaseName(connectionString);
-    db.setUserName(b.user);
-    db.setPassword(b.password);
-
-    is_dbOK = db.open();
-
-    if (!is_dbOK) {
-        QSqlError err = db.lastError();
-        qDebug() << "QSqlError: " << err;
-    }
-
-    feltoltTabla();
-
-    feltoltTmpMap();
-
-    feltoltCaptionGlobal();
-}
-
-void retek2::setBealls()
-{
-    ui.lineEdit_User->setText(b.user);
-    ui.lineEdit_Password->setText(b.password);
-    ui.lineEdit_Server->setText(b.server);
-    ui.lineEdit_Catalog->setText(b.adatbazisNev);
-}
 
 void retek2::init(void)
 {	
@@ -115,12 +79,29 @@ void retek2::init(void)
 	dxMap.insert("xml", "dxTextBox");
 
 
-    setBealls();
-    dbConnect();
+    BeallitasokSetUI();
+    zDataBase::Connect(b.getConnStr(),b.user,b.password);
 
+    feltoltTabla();
+    feltoltTmpMap();
+    feltoltCaptionGlobal();
     //ui.lineEdit_ContextName->setText(getAdatbazisnev()+"Context2");
+}
 
+void retek2::BeallitasokGetUI()
+{
+    b.user = ui.lineEdit_User->text();
+    b.password = ui.lineEdit_Password->text();
+    b.server = ui.lineEdit_Server->text();
+    b.adatbazisNev = ui.lineEdit_Catalog->text();
+}
 
+void retek2::BeallitasokSetUI()
+{
+    ui.lineEdit_User->setText(b.user);
+    ui.lineEdit_Password->setText(b.password);
+    ui.lineEdit_Server->setText(b.server);
+    ui.lineEdit_Catalog->setText(b.adatbazisNev);
 }
 
 void retek2::feltoltCaptionGlobal(void) {
@@ -325,74 +306,28 @@ void retek2::feltoltIdegenkulcs(QString tablanev) {
 	}
 }
 
-void retek2::feltoltMezoLista(QString tablanev) {
-	if (!is_dbOK) return;
-	qDebug() << "feltoltMezoLista " << tablanev;
+void retek2::feltoltMezoLista(QString tablanev){
+    if (!is_dbOK) return;
+    qDebug() << "feltoltMezoLista " << tablanev;
+    ui.tableWidget_MezoLista->setRowCount(0);
 
-	ui.tableWidget_MezoLista->setRowCount(0);
+    auto t = zTable::LoadFromSQL(tablanev, globalCaptionMap, tablaCaptionMap);
 
-	QString commandTextTemplate = "Select "
-		"C.COLUMN_NAME, "
-		"C.DATA_TYPE, "
-		"C.CHARACTER_MAXIMUM_LENGTH, "
-		"C.NUMERIC_PRECISION, "
-		"C.NUMERIC_SCALE, "
-		"C.IS_NULLABLE, "
-		"Case When Z.CONSTRAINT_NAME Is Null Then 0 Else 1 End As IsPartOfPrimaryKey From INFORMATION_SCHEMA.COLUMNS "
-		"As C Outer Apply("
-		"Select CCU.CONSTRAINT_NAME From INFORMATION_SCHEMA.TABLE_CONSTRAINTS As TC "
-		"Join INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE As CCU "
-		"On CCU.CONSTRAINT_NAME = TC.CONSTRAINT_NAME "
-		"Where TC.TABLE_SCHEMA = C.TABLE_SCHEMA And TC.TABLE_NAME = C.TABLE_NAME And TC.CONSTRAINT_TYPE = 'PRIMARY KEY' And CCU.COLUMN_NAME = C.COLUMN_NAME) As Z "
-		"Where C.TABLE_NAME = '%1'";
-
-	QString commandText = commandTextTemplate.arg(tablanev);
-
-	QSqlQuery query(commandText);
-
-	/*
-	COLUMN_NAME	DATA_TYPE	CHARACTER_MAXIMUM_LENGTH	NUMERIC_PRECISION	NUMERIC_SCALE	IS_NULLABLE	IsPartOfPrimaryKey
-	id	int	NULL	10	0	NO	1
-	idopont	datetime	NULL	NULL	NULL	YES	0
-	*/
-    int r_ix = 0;
-	/*uint c_ix_colName = 0;
-	uint c_ix_dtype = 1;
-	uint c_ix_dlen = 2;*/
-	/*
-	entitsfile
-	*/
-	while (query.next()) {
-		QString colName = query.value("COLUMN_NAME").toString();
-		QString dtype = query.value("DATA_TYPE").toString();
-		QString dlen = query.value("CHARACTER_MAXIMUM_LENGTH").toString();
-		QString nullable = query.value("IS_NULLABLE").toString();
-
+    for(int r_ix=0;r_ix<t.rows.length();r_ix++){
+        auto r = t.rows[r_ix];
         ui.tableWidget_MezoLista->insertRow(r_ix);
+        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colName,  CreateTableItem(QVariant(r.colName)));
+        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colType,  CreateTableItem(QVariant(r.colType)));
+        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_dlen, CreateTableItem(QVariant(r.dlen)));
+        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, CreateTableItem(QVariant(r.Caption)));
+        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, CreateTableItem(QVariant(r.nullable)));
+    }
+}
 
-		ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colName, new QTableWidgetItem(colName));
-		ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colType, new QTableWidgetItem(dtype));
-		ui.tableWidget_MezoLista->setItem(r_ix, C_ix_dlen, new QTableWidgetItem(dlen));			
-
-		QString caption;
-		QString cn = colName.toLower();
-
-		if (tablaCaptionMap.contains(cn))
-			caption = tablaCaptionMap[cn];
-		else if (globalCaptionMap.contains(cn))
-			caption = globalCaptionMap[cn];
-		/*else
-            caption = "?";*/
-        //colName, dtype, dlen, caption, nullable
-
-		ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, new QTableWidgetItem(caption));
-
-		ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, new QTableWidgetItem(nullable));
-		r_ix++;
-	}
-
-	//foreach()
-	// ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, new QTableWidgetItem("a"));
+QTableWidgetItem* retek2::CreateTableItem(QVariant v){
+    auto a = new QTableWidgetItem();
+    a->setData(Qt::DisplayRole, v);
+    return a;
 }
 
 /*!
@@ -401,6 +336,7 @@ void retek2::feltoltMezoLista(QString tablanev) {
     1.step: generates table and record metadata
     2.step: validates specified database by generated metadata
 */
+
 void retek2::GenerateByText(){
     qDebug("GenerateByText");
 
@@ -696,7 +632,7 @@ bool retek2::toBool(QString ez) {
 
 
 
-/*
+/*!
 Szmolni kell, hny tokent sikerl feloldani. az utols lps az, amelyikben mr nem sikerl tokent feloldani, teht marad mg token, de egyet sem sikerl kzlk feloldani.
 Ezzel el lehet kerlni, hogy:
 1. a templateban logiktlan szerkezetek jelenjenek meg
@@ -995,5 +931,5 @@ QString retek2::getePropType(QString tipusnev, int length, bool isnullable) {
 
 void retek2::on_pushButton_clicked()
 {
-    dbConnect();
+    zDataBase::Connect(b.getConnStr(),b.user,b.password);
 }

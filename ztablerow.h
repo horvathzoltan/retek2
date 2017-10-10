@@ -7,6 +7,7 @@
 class zTablerow
 {
 public:
+    zTablerow();
     zTablerow(QString colName, QString dtype, int dlen, bool nullable, QString caption);
 
     QString Caption;

@@ -14,9 +14,8 @@ public:
 	retek2(QWidget *parent = 0);
 	~retek2();
 	void init(void);	
-        void dbConnect();
-        void getBealls();
-        void setBealls();
+        void BeallitasokGetUI();
+        void BeallitasokSetUI();
 
 private slots:
 	void GenerateAll();
@@ -92,6 +91,7 @@ private:
 	static void zError(QString str);
 
 
+    static QTableWidgetItem* CreateTableItem(QVariant v);
 
 };
 

@@ -9,7 +9,9 @@ public:
 	~Beallitasok();
 
     void Load();
-    
+
+    QString getConnStr();
+
     QString adatbazisNev = "enyv";
     QString server = "DIMOTION";
     QString user = "sa";

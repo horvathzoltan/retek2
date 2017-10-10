@@ -11,6 +11,8 @@ zTable::zTable(QString n){
     this->rows = QVector<zTablerow>();
 }
 
+
+
 zTable zTable::LoadFromSQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QMap<QString, QString> tablaCaptionMap)
 {
     QString commandTextTemplate = "Select "

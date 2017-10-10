@@ -10,12 +10,14 @@ HEADERS += Beallitasok.h \
     retek2.h \
     ztablerow.h \
     ztable.h \
-    ztable.h
+    ztable.h \
+    zdatabase.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \
     ztable.cpp \
-    ztablerow.cpp
+    ztablerow.cpp \
+    zdatabase.cpp
 FORMS += retek2.ui
 RESOURCES += retek2.qrc
 

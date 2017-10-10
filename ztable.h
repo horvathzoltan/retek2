@@ -10,6 +10,7 @@ class zTable
 {
 public:
     zTable(QString tablanev);
+    //~zTable();
 
     QString tablename;
     QVector<zTablerow> rows;
