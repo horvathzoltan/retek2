@@ -5,6 +5,7 @@
 #include "ui_retek2.h"
 #include <QSqlQuery>
 #include "Beallitasok.h"
+#include "zlog.h"
 
 class retek2 : public QMainWindow
 {
@@ -25,7 +26,8 @@ private slots:
 
 private:
     Ui::retek2Class ui;
-    Beallitasok b;  
+    Beallitasok beallitasok = Beallitasok();
+    zLog zlog = zLog();
 
 	QMap<QString, QString> tmpMap;
 	QMap<QString, QString> globalCaptionMap;
@@ -46,7 +48,7 @@ private:
 
 		
 
-    void feltoltCaptionGlobal(void);
+    //void feltoltCaptionGlobal(void);
     //void feltoltCaptionTabla(QString);
 	void saveCaptionTabla(QString);
 

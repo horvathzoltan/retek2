@@ -17,7 +17,7 @@ zTable::zTable(QString n){
 zTable zTable::LoadFromSQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn)
 {
     QMap<QString, QString> tablaCaptionMap;
-    zstringmaphelper::StringMapFeltolt(fn, &tablaCaptionMap);
+    zStringMapHelper::StringMapFeltolt(fn, &tablaCaptionMap);
 
     QString commandTextTemplate = "Select "
         "C.COLUMN_NAME, "

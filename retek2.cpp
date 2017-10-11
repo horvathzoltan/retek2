@@ -17,12 +17,10 @@
 #include "ztable.h"
 #include "zdatabase.h"
 #include "zstringmaphelper.h"
-#include "zerror.h"
+#include "zlog.h"
 #include "zfilenamehelper.h"
 
-retek2::retek2(QWidget *parent)
-	: QMainWindow(parent)
-{
+retek2::retek2(QWidget *parent):QMainWindow(parent){
 	ui.setupUi(this);
 }
 
@@ -55,6 +53,9 @@ void retek2::setCredsToBeall(Beallitasok *b, Ui *ui){
 
 void retek2::init(void)
 {	
+    zlog.init(ui.textBrowser);
+    beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog);
+
 	typeMap.insert("uniqueidentifier", "Guid");
 	typeMap.insert("int", "int");
 	typeMap.insert("datetime", "DateTime");
@@ -82,38 +83,20 @@ void retek2::init(void)
 	dxMap.insert("xml", "dxTextBox");
 
 
-    BeallitasokSetUI();
-    zDataBase::Connect(b.getConnStr(),b.user,b.password);
+    beallitasok.setUI();
+    zDataBase::Connect(beallitasok.getConnStr(),beallitasok.user,beallitasok.password);
     feltoltTabla(); // bal tábla panel feltöltése
 
     feltoltTmpMap(); // a view template könyvtárában az összes templatek feltöltése
-    feltoltCaptionGlobal(); // globális elnevezéstábla
+
+    zStringMapHelper::StringMapFeltolt(zFileNameHelper::getCClassFilename(beallitasok.munkadir, beallitasok.adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
+
+    zlog.trace("CaptionGlobal beolvasása");
 
     //ui.lineEdit_ContextName->setText(getAdatbazisnev()+"Context2");
 }
 
-void retek2::BeallitasokGetUI()
-{
-    b.user = ui.lineEdit_User->text();
-    b.password = ui.lineEdit_Password->text();
-    b.server = ui.lineEdit_Server->text();
-    b.adatbazisNev = ui.lineEdit_Catalog->text();
-}
 
-void retek2::BeallitasokSetUI()
-{
-    ui.lineEdit_User->setText(b.user);
-    ui.lineEdit_Password->setText(b.password);
-    ui.lineEdit_Server->setText(b.server);
-    ui.lineEdit_Catalog->setText(b.adatbazisNev);
-}
-
-void retek2::feltoltCaptionGlobal(void) {
-    QString fn = zFileNameHelper::getCClassFilename(b.munkadir, b.adatbazisNev, "caption_global.txt");
-    zstringmaphelper::StringMapFeltolt(fn, &globalCaptionMap);
-
-    ui.textBrowser->append("CaptionGlobal beolvasása");
-}
 
 //void retek2::feltoltCaptionTabla(QString tablanev) {
 //	QString fn = getCClassFilename("caption_"+tablanev+".txt");
@@ -122,7 +105,7 @@ void retek2::feltoltCaptionGlobal(void) {
 //}
 
 void retek2::saveCaptionTabla(QString tablanev) {
-    QString fn = zFileNameHelper::getCClassFilename(b.munkadir,b.adatbazisNev, "caption_" + tablanev + ".txt");
+    QString fn = zFileNameHelper::getCClassFilename(beallitasok.munkadir,beallitasok.adatbazisNev, "caption_" + tablanev + ".txt");
 
     QMap<QString, QString> tablaCaptionMap;
     //tablaCaptionMap.clear();
@@ -136,7 +119,7 @@ void retek2::saveCaptionTabla(QString tablanev) {
 		tablaCaptionMap.insert(item_colName->text(), item_Caption->text());
 	}
 	if(tablaCaptionMap.count()>0)
-        zstringmaphelper::StringMapSave(fn, &tablaCaptionMap);
+        zStringMapHelper::StringMapSave(fn, &tablaCaptionMap);
 }
 
 
@@ -170,7 +153,7 @@ void retek2::feltoltTabla(void) {
 
 void retek2::feltoltTmpMap(void){
 	QString viewTemplateDirName = getTemplateFilename("View");
-    if(viewTemplateDirName == NULL) {zError::ShowDialog("nincs sablon:");return;}
+    if(viewTemplateDirName == NULL) {zLog::ShowDialog("nincs sablon:");return;}
 
 	auto viewTemplateDir = QDir(viewTemplateDirName);
 
@@ -264,7 +247,7 @@ void retek2::feltoltMezoLista(QString tablanev){
     ui.tableWidget_MezoLista->setRowCount(0);
 
 
-    QString fn = zFileNameHelper::getCClassFilename(b.munkadir, b.adatbazisNev, "caption_"+tablanev+".txt");
+    QString fn = zFileNameHelper::getCClassFilename(beallitasok.munkadir, beallitasok.adatbazisNev, "caption_"+tablanev+".txt");
     auto t = zTable::LoadFromSQL(tablanev, globalCaptionMap, fn);
 
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
@@ -312,7 +295,7 @@ void retek2::GenerateAll() {
 		qDebug("C# Class");
 
         auto txt = generateTmp("MVC_CClass.cs");
-        SaveAllTextToFile(&txt, zFileNameHelper::getCClassFilename(b.munkadir,b.adatbazisNev,tablanev + ".cs"));
+        SaveAllTextToFile(&txt, zFileNameHelper::getCClassFilename(beallitasok.munkadir,beallitasok.adatbazisNev,tablanev + ".cs"));
 	}
 	//checkBox_Context
 /*	if (ui.checkBox_Context->isChecked()) {
@@ -390,12 +373,12 @@ void retek2::GenerateAll() {
 }
 
 QString retek2::getTemplateFilename(QString tfname) {
-    auto fn = QString(b.tmpDir+R"(\%1\%2)").arg(b.adatbazisNev).arg(tfname);
+    auto fn = QString(beallitasok.tmpDir+R"(\%1\%2)").arg(beallitasok.adatbazisNev).arg(tfname);
     if(QFileInfo(fn).exists())
         return fn;
     else{
         qDebug() << "nincs project templatefile:"+ fn;
-        fn = QString(b.tmpDir+R"(\%1)").arg(tfname);
+        fn = QString(beallitasok.tmpDir+R"(\%1)").arg(tfname);
         qDebug()<<"nincs defaule template:" +fn;
         if(QFileInfo(fn).exists())
             return fn;
@@ -407,7 +390,7 @@ QString retek2::getTemplateFilename(QString tfname) {
 }
 
 QString retek2::getModelFilename(QString tfname, QString dirname) {
-    auto e = QString(b.munkadir+R"(\%2\%1)").arg(dirname).arg(b.adatbazisNev);
+    auto e = QString(beallitasok.munkadir+R"(\%2\%1)").arg(dirname).arg(beallitasok.adatbazisNev);
     QDir d(e);if(!d.exists()){d.mkpath(d.absolutePath());}
 
     e += "\\"+tfname;
@@ -423,7 +406,7 @@ QString retek2::generateTmp(QString tmp_file) {
 	qDebug() << tmp_file;
     auto tmp_fn = getTemplateFilename(tmp_file);
 
-    if(tmp_fn == NULL) {zError::ShowDialog("nincs sablon: "+ tmp_file);return "";}
+    if(tmp_fn == NULL) {zLog::ShowDialog("nincs sablon: "+ tmp_file);return "";}
 
     QString tmp = ReadAllTextFromFile(tmp_fn);
 
@@ -437,7 +420,7 @@ QString retek2::getContextNev(void) {
 }
 
 QString retek2::getAdatbazisnev(void) {
-	return b.adatbazisNev;
+    return beallitasok.adatbazisNev;
 }
 
 QString retek2::getOsztalynevUpper(QString tnev) {
@@ -561,7 +544,7 @@ void retek2::SaveAllTextToFile(QString *txt, QString fn) {
 	QFile f(fn);
 
     if (!f.open(QIODevice::WriteOnly | QIODevice::Text)){
-        zError::ShowDialog("nem menthet: "+fn);
+        zLog::ShowDialog("nem menthet: "+fn);
         return;
         }
 
@@ -879,7 +862,7 @@ QString retek2::getePropType(QString tipusnev, int length, bool isnullable) {
 
 void retek2::on_pushButton_clicked()
 {
-    BeallitasokGetUI();
-    zDataBase::Connect(b.getConnStr(),b.user,b.password);
+    beallitasok.getUI();
+    zDataBase::Connect(beallitasok.getConnStr(),beallitasok.user,beallitasok.password);
     feltoltTabla();
 }

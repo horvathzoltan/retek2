@@ -1,15 +1,26 @@
 #pragma once
 
 #include <QString>
+#include <QLineEdit>
 
 class Beallitasok
 {
+private:
+    QLineEdit *widget_user;
+    QLineEdit *widget_password;
+    QLineEdit *widget_server;
+    QLineEdit *widget_adatbazisNev;
+
 public:
-	Beallitasok();
-	~Beallitasok();
+    Beallitasok();
+    ~Beallitasok();
+
+    void init(QLineEdit*, QLineEdit*, QLineEdit*, QLineEdit*);
 
     void Load();
 
+    void getUI();
+    void setUI();
     QString getConnStr();
 
     QString adatbazisNev = "enyv";

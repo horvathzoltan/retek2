@@ -4,10 +4,10 @@
 #include <QString>
 #include <QMap>
 
-class zstringmaphelper
+class zStringMapHelper
 {
 public:
-    zstringmaphelper();
+    zStringMapHelper();
     static void StringMapFeltolt(QString fn, QMap<QString, QString> *map);
     static void StringMapSave(QString, QMap<QString, QString> *map);
 };

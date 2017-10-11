@@ -3,14 +3,14 @@
 #include <QTextStream>
 #include <QTextCodec>
 #include <QDir>
-#include "zerror.h"
+#include "zlog.h"
 
-zstringmaphelper::zstringmaphelper()
+zStringMapHelper::zStringMapHelper()
 {
 
 }
 
-void zstringmaphelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map) {
+void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map) {
     QFile file(fn);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
@@ -36,13 +36,13 @@ void zstringmaphelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map)
     file.close();
 }
 
-void zstringmaphelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
+void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
     QDir d = QFileInfo(fn).absoluteDir();
     if(!d.exists()) d.mkpath(d.absolutePath());
 
     QFile file(fn);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
-        zError::ShowDialog("nem menthet: " + fn);
+        zLog::ShowDialog("nem menthet: " + fn);
         return;
     }
 
