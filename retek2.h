@@ -29,7 +29,7 @@ private:
 
 	QMap<QString, QString> tmpMap;
 	QMap<QString, QString> globalCaptionMap;
-	QMap<QString, QString> tablaCaptionMap;
+    //QMap<QString, QString> tablaCaptionMap;
 
     const int C_ix_Caption = 0;
     const int C_ix_colName = 1;
@@ -45,10 +45,9 @@ private:
 	QMap<QString, QString> dxMap;
 
 		
-	void StringMapFeltolt(QString, QMap<QString, QString> *map);
-	void StringMapSave(QString, QMap<QString, QString> *map);
-	void feltoltCaptionGlobal(void);
-	void feltoltCaptionTabla(QString);
+
+    void feltoltCaptionGlobal(void);
+    //void feltoltCaptionTabla(QString);
 	void saveCaptionTabla(QString);
 
 	void feltoltTabla(void);		
@@ -80,15 +79,13 @@ private:
 	//QString getReq(QString tmp, QMap<QString, QVariant> *map);
 
 	QString getTemplateFilename(QString tfname);
-    QString getModelFilename(QString tfname, QString dirname="Models");
-	QString getCClassFilename(QString tfname);
-	QString getContextFilename(QString tfname);
+    QString getModelFilename(QString tfname, QString dirname="Models");	
 
 	QString ReadAllTextFromFile(QString filename);
 	void SaveAllTextToFile(QString *classTxt, QString fn);
 
 	static bool toBool(QString);
-	static void zError(QString str);
+    //static void zError(QString str);
 
 
     static QTableWidgetItem* CreateTableItem(QVariant v);

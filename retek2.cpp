@@ -16,6 +16,9 @@
 
 #include "ztable.h"
 #include "zdatabase.h"
+#include "zstringmaphelper.h"
+#include "zerror.h"
+#include "zfilenamehelper.h"
 
 retek2::retek2(QWidget *parent)
 	: QMainWindow(parent)
@@ -81,10 +84,11 @@ void retek2::init(void)
 
     BeallitasokSetUI();
     zDataBase::Connect(b.getConnStr(),b.user,b.password);
+    feltoltTabla(); // bal tábla panel feltöltése
 
-    feltoltTabla();
-    feltoltTmpMap();
-    feltoltCaptionGlobal();
+    feltoltTmpMap(); // a view template könyvtárában az összes templatek feltöltése
+    feltoltCaptionGlobal(); // globális elnevezéstábla
+
     //ui.lineEdit_ContextName->setText(getAdatbazisnev()+"Context2");
 }
 
@@ -105,21 +109,23 @@ void retek2::BeallitasokSetUI()
 }
 
 void retek2::feltoltCaptionGlobal(void) {
-	QString fn = getCClassFilename("caption_global.txt");
+    QString fn = zFileNameHelper::getCClassFilename(b.munkadir, b.adatbazisNev, "caption_global.txt");
+    zstringmaphelper::StringMapFeltolt(fn, &globalCaptionMap);
 
-	StringMapFeltolt(fn, &globalCaptionMap);
+    ui.textBrowser->append("CaptionGlobal beolvasása");
 }
 
-void retek2::feltoltCaptionTabla(QString tablanev) {
-	QString fn = getCClassFilename("caption_"+tablanev+".txt");
+//void retek2::feltoltCaptionTabla(QString tablanev) {
+//	QString fn = getCClassFilename("caption_"+tablanev+".txt");
 
-	StringMapFeltolt(fn, &tablaCaptionMap);
-}
+//    zstringmaphelper::StringMapFeltolt(fn, &tablaCaptionMap);
+//}
 
 void retek2::saveCaptionTabla(QString tablanev) {
-	QString fn = getCClassFilename("caption_" + tablanev + ".txt");
+    QString fn = zFileNameHelper::getCClassFilename(b.munkadir,b.adatbazisNev, "caption_" + tablanev + ".txt");
 
-	tablaCaptionMap.clear();
+    QMap<QString, QString> tablaCaptionMap;
+    //tablaCaptionMap.clear();
 
 	int rows = ui.tableWidget_MezoLista->rowCount();
 	for (int i = 0; i < rows; i++) {
@@ -130,65 +136,13 @@ void retek2::saveCaptionTabla(QString tablanev) {
 		tablaCaptionMap.insert(item_colName->text(), item_Caption->text());
 	}
 	if(tablaCaptionMap.count()>0)
-		StringMapSave(fn, &tablaCaptionMap);	
+        zstringmaphelper::StringMapSave(fn, &tablaCaptionMap);
 }
 
-void retek2::zError(QString str) {
-	QMessageBox messageBox;
-	messageBox.critical(0, "Error", str);
-	messageBox.setFixedSize(500, 200);
-}
 
-void retek2::StringMapSave(QString fn, QMap<QString, QString> *map) {
-    QDir d = QFileInfo(fn).absoluteDir();
-    if(!d.exists()) d.mkpath(d.absolutePath());
 
-	QFile file(fn);
-	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) { 
-        zError("nem menthet: " + fn);
-		return; 
-	}
 
-	QTextStream out(&file);
-	QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
-	out.setCodec(QTextCodec::codecForName("UTF-8"));
-	
-	out.setGenerateByteOrderMark(true);
 
-	QMapIterator<QString, QString> i(*map);
-	while (i.hasNext()) {
-		i.next();
-		out << i.key() << "," << i.value() << endl;
-	}	
-	
-	file.close();
-}
-
-void retek2::StringMapFeltolt(QString fn, QMap<QString, QString> *map) {
-	QFile file(fn);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
-
-	map->clear();
-	QTextStream in(&file);
-	
-	QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
-	in.setCodec(QTextCodec::codecForName("UTF-8"));
-
-	while (!in.atEnd()) {
-		QString line = in.readLine();
-		//QString line(bline);
-
-		int ix = line.indexOf(",");
-		if (ix > 0) {
-			QString k1 = line.left(ix).toLower();
-			QString k2 = line.right(line.length() - (ix + 1));
-
-			map->insert(k1, k2);
-			//map->insert("id","b");
-		}		
-	}
-	file.close();
-}
 
 void retek2::feltoltTabla(void) {
 	if (!is_dbOK) return;
@@ -211,14 +165,12 @@ void retek2::feltoltTabla(void) {
 		QString tablename = query.value("TableName").toString();
 
 		new QListWidgetItem(tablename, ui.listWidget_tabla);
-
-		//		ui.listWidget_tabla->addItem(tablename);
 	}
 }
 
 void retek2::feltoltTmpMap(void){
 	QString viewTemplateDirName = getTemplateFilename("View");
-    if(viewTemplateDirName == NULL) {zError("nincs sablon:");return;}
+    if(viewTemplateDirName == NULL) {zError::ShowDialog("nincs sablon:");return;}
 
 	auto viewTemplateDir = QDir(viewTemplateDirName);
 
@@ -242,7 +194,7 @@ void retek2::TableSelect(QListWidgetItem* i) {
 
 	qDebug() << "TableSelect " << tablanev;
 
-	feltoltCaptionTabla(tablanev);
+    //feltoltCaptionTabla(tablanev);
 
 	feltoltIdegenkulcs(tablanev);
 	feltoltEljaras(tablanev);
@@ -311,7 +263,9 @@ void retek2::feltoltMezoLista(QString tablanev){
     qDebug() << "feltoltMezoLista " << tablanev;
     ui.tableWidget_MezoLista->setRowCount(0);
 
-    auto t = zTable::LoadFromSQL(tablanev, globalCaptionMap, tablaCaptionMap);
+
+    QString fn = zFileNameHelper::getCClassFilename(b.munkadir, b.adatbazisNev, "caption_"+tablanev+".txt");
+    auto t = zTable::LoadFromSQL(tablanev, globalCaptionMap, fn);
 
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
         auto r = t.rows[r_ix];
@@ -358,7 +312,7 @@ void retek2::GenerateAll() {
 		qDebug("C# Class");
 
         auto txt = generateTmp("MVC_CClass.cs");
-		SaveAllTextToFile(&txt, getCClassFilename(tablanev + ".cs"));
+        SaveAllTextToFile(&txt, zFileNameHelper::getCClassFilename(b.munkadir,b.adatbazisNev,tablanev + ".cs"));
 	}
 	//checkBox_Context
 /*	if (ui.checkBox_Context->isChecked()) {
@@ -462,20 +416,14 @@ QString retek2::getModelFilename(QString tfname, QString dirname) {
 }
 
 
-QString retek2::getContextFilename(QString tfname) {
-	return QString(b.munkadir+R"(\Model\%1)").arg(tfname);
-}
 
-QString retek2::getCClassFilename(QString tfname) {
-    return QString(b.munkadir+R"(\%1\%2)").arg(b.adatbazisNev).arg(tfname);
-}
 
 
 QString retek2::generateTmp(QString tmp_file) {
 	qDebug() << tmp_file;
     auto tmp_fn = getTemplateFilename(tmp_file);
 
-    if(tmp_fn == NULL) {zError("nincs sablon: "+ tmp_file);return "";}
+    if(tmp_fn == NULL) {zError::ShowDialog("nincs sablon: "+ tmp_file);return "";}
 
     QString tmp = ReadAllTextFromFile(tmp_fn);
 
@@ -613,7 +561,7 @@ void retek2::SaveAllTextToFile(QString *txt, QString fn) {
 	QFile f(fn);
 
     if (!f.open(QIODevice::WriteOnly | QIODevice::Text)){
-        zError("nem menthet: "+fn);
+        zError::ShowDialog("nem menthet: "+fn);
         return;
         }
 
@@ -931,5 +879,7 @@ QString retek2::getePropType(QString tipusnev, int length, bool isnullable) {
 
 void retek2::on_pushButton_clicked()
 {
+    BeallitasokGetUI();
     zDataBase::Connect(b.getConnStr(),b.user,b.password);
+    feltoltTabla();
 }

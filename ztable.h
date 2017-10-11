@@ -15,7 +15,7 @@ public:
     QString tablename;
     QVector<zTablerow> rows;
 
-    static zTable LoadFromSQL(QString tablename, QMap<QString, QString> globalCaptionMap, QMap<QString, QString> tablaCaptionMap);
+    static zTable LoadFromSQL(QString tablename, QMap<QString, QString> globalCaptionMap, QString fn);
 };
 
 #endif // ZTABLE_H

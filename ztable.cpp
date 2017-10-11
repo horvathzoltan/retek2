@@ -5,6 +5,7 @@
 
 #include "ztablerow.h"
 #include "ztable.h"
+#include "zstringmaphelper.h"
 
 zTable::zTable(QString n){
     this->tablename = n;
@@ -13,8 +14,11 @@ zTable::zTable(QString n){
 
 
 
-zTable zTable::LoadFromSQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QMap<QString, QString> tablaCaptionMap)
+zTable zTable::LoadFromSQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn)
 {
+    QMap<QString, QString> tablaCaptionMap;
+    zstringmaphelper::StringMapFeltolt(fn, &tablaCaptionMap);
+
     QString commandTextTemplate = "Select "
         "C.COLUMN_NAME, "
         "C.DATA_TYPE, "

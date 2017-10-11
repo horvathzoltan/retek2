@@ -11,13 +11,19 @@ HEADERS += Beallitasok.h \
     ztablerow.h \
     ztable.h \
     ztable.h \
-    zdatabase.h
+    zdatabase.h \
+    zstringmaphelper.h \
+    zerror.h \
+    zfilenamehelper.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \
     ztable.cpp \
     ztablerow.cpp \
-    zdatabase.cpp
+    zdatabase.cpp \
+    zstringmaphelper.cpp \
+    zerror.cpp \
+    zfilenamehelper.cpp
 FORMS += retek2.ui
 RESOURCES += retek2.qrc
 
