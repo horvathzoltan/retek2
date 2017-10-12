@@ -17,6 +17,7 @@ public:
 
     static void ShowDialog(QString str);
     void trace(QString);
+    void log(QString);
 };
 
 #endif // ZERROR_H

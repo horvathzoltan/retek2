@@ -4,8 +4,6 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_retek2.h"
 #include <QSqlQuery>
-#include "Beallitasok.h"
-#include "zlog.h"
 
 class retek2 : public QMainWindow
 {
@@ -14,9 +12,7 @@ class retek2 : public QMainWindow
 public:
 	retek2(QWidget *parent = 0);
 	~retek2();
-	void init(void);	
-        void BeallitasokGetUI();
-        void BeallitasokSetUI();
+	void init(void);	       
 
 private slots:
 	void GenerateAll();
@@ -26,8 +22,7 @@ private slots:
 
 private:
     Ui::retek2Class ui;
-    Beallitasok beallitasok = Beallitasok();
-    zLog zlog = zLog();
+
 
 	QMap<QString, QString> tmpMap;
 	QMap<QString, QString> globalCaptionMap;
@@ -64,7 +59,7 @@ private:
     int tokenizeR(QString *txt, int ix, int*, QMap<QString, QVariant>*, int);
     QString getToken(QString t1, QString t2, QMap<QString, QVariant> *map, int);
 
-	QString getAdatbazisnev(void);
+    //QString getAdatbazisnev(void);
 	QString getOsztalynevLower(QString tablanev);
 	QString getOsztalynevUpper(QString tablanev);
 	QString getContextNev(void);

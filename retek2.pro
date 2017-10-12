@@ -14,7 +14,8 @@ HEADERS += Beallitasok.h \
     zdatabase.h \
     zstringmaphelper.h \
     zfilenamehelper.h \
-    zlog.h
+    zlog.h \
+    globals.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \
@@ -23,7 +24,8 @@ SOURCES += Beallitasok.cpp \
     zdatabase.cpp \
     zstringmaphelper.cpp \
     zfilenamehelper.cpp \
-    zlog.cpp
+    zlog.cpp \
+    globals.cpp
 FORMS += retek2.ui
 RESOURCES += retek2.qrc
 

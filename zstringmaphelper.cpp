@@ -3,7 +3,8 @@
 #include <QTextStream>
 #include <QTextCodec>
 #include <QDir>
-#include "zlog.h"
+
+#include "globals.h"
 
 zStringMapHelper::zStringMapHelper()
 {
@@ -34,6 +35,8 @@ void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map)
         }
     }
     file.close();
+
+    zlog.trace(QString("Beolvasva: %1").arg(fn));
 }
 
 void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
@@ -59,4 +62,6 @@ void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
     }
 
     file.close();
+
+    zlog.log(QString("Kiírva: %1").arg(fn));
 }

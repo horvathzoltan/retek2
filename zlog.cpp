@@ -18,3 +18,7 @@ void zLog::ShowDialog(QString str) {
 void zLog::trace(QString msg){
     this->widget->append(msg);
 }
+
+void zLog::log(QString msg){
+    this->widget->append(msg);
+}

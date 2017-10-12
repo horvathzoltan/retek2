@@ -17,8 +17,8 @@
 #include "ztable.h"
 #include "zdatabase.h"
 #include "zstringmaphelper.h"
-#include "zlog.h"
 #include "zfilenamehelper.h"
+#include "globals.h"
 
 retek2::retek2(QWidget *parent):QMainWindow(parent){
 	ui.setupUi(this);
@@ -91,7 +91,7 @@ void retek2::init(void)
 
     zStringMapHelper::StringMapFeltolt(zFileNameHelper::getCClassFilename(beallitasok.munkadir, beallitasok.adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
 
-    zlog.trace("CaptionGlobal beolvasása");
+    zlog.trace("init OK");
 
     //ui.lineEdit_ContextName->setText(getAdatbazisnev()+"Context2");
 }
@@ -175,7 +175,7 @@ void retek2::TableSelect(QListWidgetItem* i) {
 
 	tablanev = i->text();
 
-	qDebug() << "TableSelect " << tablanev;
+    zlog.log(QString("TableSelect: %1").arg(tablanev));
 
     //feltoltCaptionTabla(tablanev);
 
@@ -274,12 +274,7 @@ QTableWidgetItem* retek2::CreateTableItem(QVariant v){
     2.step: validates specified database by generated metadata
 */
 
-void retek2::GenerateByText(){
-    qDebug("GenerateByText");
 
-
-    return;
-}
 
 /*!
  \fn retek2::GenerateAll()
@@ -419,9 +414,9 @@ QString retek2::getContextNev(void) {
     return "context1";
 }
 
-QString retek2::getAdatbazisnev(void) {
-    return beallitasok.adatbazisNev;
-}
+//QString retek2::getAdatbazisnev(void) {
+//    return beallitasok.adatbazisNev;
+//}
 
 QString retek2::getOsztalynevUpper(QString tnev) {
 	auto o = tnev.split('_');
@@ -656,7 +651,7 @@ QString retek2::getToken(QString token1, QString t2, QMap<QString, QVariant> *ma
 	QString t1 = t1List[0];
 	QString t3 = (t1List.length()>1) ? t1List[1] : nullptr;
 
-	if (t1 == "dbname") return getAdatbazisnev();
+    if (t1 == "dbname") return beallitasok.adatbazisNev;
 	else if (t1 == "tablename") return tablanev;
 	else if (t1 == "classname") return getOsztalynevUpper(tablanev);
     else if (t1 == "proplist") return getPropList2(t2, t3, whsp);
@@ -865,4 +860,34 @@ void retek2::on_pushButton_clicked()
     beallitasok.getUI();
     zDataBase::Connect(beallitasok.getConnStr(),beallitasok.user,beallitasok.password);
     feltoltTabla();
+}
+
+/*!
+ * \brief retek2::GenerateByText
+ *
+ * A 2-es tabon megadott szöveg alapján generál táblaszerkezetet
+ * amialapján validálja az adatbázisban szereplő táblát.
+ */
+void retek2::GenerateByText(){
+    qDebug("GenerateByText");
+
+    //tablanev
+    auto txt = ui.textEdit->toPlainText();
+
+    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ ]*\s+)+)$|^\s+)", QRegularExpression::MultilineOption);
+    auto i = re.globalMatch(txt);
+    if(i.hasNext()){
+        while(i.hasNext()){
+            QRegularExpressionMatch m = i.next();
+
+            zlog.log(m.captured(0));
+            zlog.log(m.captured(1));
+            zlog.log(m.captured(2));
+        }
+    }
+    else{
+        zlog.log("nincs egyezés");
+    }
+
+    return;
 }

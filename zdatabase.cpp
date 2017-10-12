@@ -1,9 +1,9 @@
 #include <QSqlDatabase>
 #include <QSqlError>
-#include <QDebug>
+#include <QString>
 
 #include "zdatabase.h"
-#include "Beallitasok.h"
+#include "globals.h"
 
 zDataBase::zDataBase()
 {
@@ -12,9 +12,6 @@ zDataBase::zDataBase()
 
 bool zDataBase::Connect(QString connectionString, QString u, QString p)
 {
-    //Beallitasok::get();
-    //QString connectionString =  Beallitasok::getConnStr();
-
     auto db = QSqlDatabase::addDatabase("QODBC");
 
     db.setDatabaseName(connectionString);
@@ -25,7 +22,10 @@ bool zDataBase::Connect(QString connectionString, QString u, QString p)
 
     if (!is_dbOK) {
         QSqlError err = db.lastError();
-        qDebug() << "QSqlError: " << err;
+        zlog.log(QString("QSqlError: %1").arg(err.text()));
+    }
+    else{
+        zlog.log(QString("QSql: %1").arg(connectionString));
     }
 
    return is_dbOK;
