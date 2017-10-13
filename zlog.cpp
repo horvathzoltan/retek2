@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "zlog.h"
 #include <QMessageBox>
 
@@ -21,4 +22,8 @@ void zLog::trace(QString msg){
 
 void zLog::log(QString msg){
     this->widget->append(msg);
+}
+
+void zLog::log(QList<QString>ml){
+    zforeach(m, ml){this->log(*m);}
 }

@@ -60,6 +60,7 @@ private:
     QString getToken(QString t1, QString t2, QMap<QString, QVariant> *map, int);
 
     //QString getAdatbazisnev(void);
+    static QString getCaptionFileName(QString);
 	QString getOsztalynevLower(QString tablanev);
 	QString getOsztalynevUpper(QString tablanev);
 	QString getContextNev(void);

@@ -9,3 +9,7 @@ zTablerow::zTablerow(QString colName, QString dtype, int dlen, bool nullable, QS
     this->nullable = nullable;
     this->Caption=caption;
 }
+
+QString zTablerow::toString(){
+    return this->colName;
+}

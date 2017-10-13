@@ -3,21 +3,20 @@
 //#include <QMap>
 #include <QVariant>
 
+#include "globals.h"
 #include "ztablerow.h"
 #include "ztable.h"
 #include "zstringmaphelper.h"
 
-zTable::zTable(QString n){
+zTable::zTable(QString n, QList<zTablerow> tr){
     this->tablename = n;
-    this->rows = QVector<zTablerow>();
+    this->rows = tr;
 }
 
 
 
 zTable zTable::LoadFromSQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn)
 {
-    QMap<QString, QString> tablaCaptionMap;
-    zStringMapHelper::StringMapFeltolt(fn, &tablaCaptionMap);
 
     QString commandTextTemplate = "Select "
         "C.COLUMN_NAME, "
@@ -38,21 +37,51 @@ zTable zTable::LoadFromSQL(QString tablanev, QMap<QString, QString> globalCaptio
 
     QSqlQuery query(commandText);   
 
-    auto e = zTable(tablanev);
+    QList<zTablerow> tr;
 
-    while (query.next()) {
-        QString colName = query.value("COLUMN_NAME").toString();
-        QString dtype = query.value("DATA_TYPE").toString();
-        int dlen = query.value("CHARACTER_MAXIMUM_LENGTH").toInt();
-        bool nullable = query.value("IS_NULLABLE").toBool();
-        QString cn = colName.toLower();
+    if(query.next()){
+        QMap<QString, QString> tablaCaptionMap;
+        zStringMapHelper::StringMapFeltolt(fn, &tablaCaptionMap);
 
-        QString caption = tablaCaptionMap.contains(cn)?tablaCaptionMap[cn]:globalCaptionMap.contains(cn)?globalCaptionMap[cn]:cn;
+        while (query.next()) {
+            QString colName = query.value("COLUMN_NAME").toString();
+            QString dtype = query.value("DATA_TYPE").toString();
+            int dlen = query.value("CHARACTER_MAXIMUM_LENGTH").toInt();
+            bool nullable = query.value("IS_NULLABLE").toBool();
+            QString cn = colName.toLower();
 
-        auto r = zTablerow(colName, dtype, dlen, nullable, caption);
+            QString caption = tablaCaptionMap.contains(cn)?tablaCaptionMap[cn]:globalCaptionMap.contains(cn)?globalCaptionMap[cn]:cn;
 
-        e.rows.append(r);
+            auto r = zTablerow(colName, dtype, dlen, nullable, caption);
+
+            tr.append(r);
+        }
+
+        auto e = zTable(tablanev, tr);
+        return e;
     }
+    else{
+        //QList<zTablerow> trl;
+        return zTable("", QList<zTablerow>());
+    }
+}
 
+QString zTable::toString(){
+    QString rs;
+    zforeach(r, this->rows){
+        if(!rs.isEmpty()) rs+=",";
+        rs+=r->toString();
+    }
+    return  this->tablename+"("+rs+")";
+}
+
+
+QList<QString> zTable::Validate(zTable t){
+    QList<QString> e;
+
+    if(this->tablename!=t.tablename)
+        e.append("Tablename not equals");
+    else
+        e.append("Tablename OK");
     return e;
 }

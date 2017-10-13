@@ -15,6 +15,7 @@
 #include <QMessageBox>
 
 #include "ztable.h"
+#include "ztablerow.h"
 #include "zdatabase.h"
 #include "zstringmaphelper.h"
 #include "zfilenamehelper.h"
@@ -241,14 +242,18 @@ void retek2::feltoltIdegenkulcs(QString tablanev) {
 	}
 }
 
+QString retek2::getCaptionFileName(QString tablanev){
+    QString fn = zFileNameHelper::getCClassFilename(beallitasok.munkadir, beallitasok.adatbazisNev, "caption_"+tablanev+".txt");
+    return fn;
+}
+
 void retek2::feltoltMezoLista(QString tablanev){
     if (!is_dbOK) return;
-    qDebug() << "feltoltMezoLista " << tablanev;
+    //qDebug() << "feltoltMezoLista " << tablanev;
     ui.tableWidget_MezoLista->setRowCount(0);
 
 
-    QString fn = zFileNameHelper::getCClassFilename(beallitasok.munkadir, beallitasok.adatbazisNev, "caption_"+tablanev+".txt");
-    auto t = zTable::LoadFromSQL(tablanev, globalCaptionMap, fn);
+    auto t = zTable::LoadFromSQL(tablanev, globalCaptionMap, getCaptionFileName(tablanev));
 
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
         auto r = t.rows[r_ix];
@@ -259,6 +264,8 @@ void retek2::feltoltMezoLista(QString tablanev){
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, CreateTableItem(QVariant(r.Caption)));
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, CreateTableItem(QVariant(r.nullable)));
     }
+
+    zlog.log("feltoltMezoLista: "+t.toString());
 }
 
 QTableWidgetItem* retek2::CreateTableItem(QVariant v){
@@ -874,19 +881,39 @@ void retek2::GenerateByText(){
     //tablanev
     auto txt = ui.textEdit->toPlainText();
 
-    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ ]*\s+)+)$|^\s+)", QRegularExpression::MultilineOption);
+    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ ]*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption);
     auto i = re.globalMatch(txt);
+
     if(i.hasNext()){
+        QList<zTable> tl;
         while(i.hasNext()){
             QRegularExpressionMatch m = i.next();
+            QString tn=m.captured(1).trimmed();
+            auto fns=m.captured(2).split(QRegularExpression(R"([\n|\r\n|\r])"), QString::SkipEmptyParts);
+            QList<zTablerow> rl;
 
-            zlog.log(m.captured(0));
-            zlog.log(m.captured(1));
-            zlog.log(m.captured(2));
+            zforeach(fn, fns){
+               QString dtype="";
+               int dlen = 0;
+               bool isNullable = false;
+               QString caption = "";
+               auto r = zTablerow(*fn, dtype, dlen, isNullable, caption);
+               rl.append(r);
+            }
+            auto t = zTable(tn, rl);
+            tl.append(t);
+            zlog.log("GenerateByText: "+t.toString());
         }
+        zforeach(t,tl){
+            auto t_sql = zTable::LoadFromSQL(t->tablename, globalCaptionMap, getCaptionFileName(t->tablename));
+            auto vl = t_sql.Validate(*t);
+            zlog.log("--- "+t->tablename+" ---");
+            zlog.log(vl);
+        }
+        zlog.log("--- --- ---");
     }
     else{
-        zlog.log("nincs egyezés");
+        zlog.log("nincs egyezés, nincs vizsgálat");
     }
 
     return;

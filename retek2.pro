@@ -34,6 +34,12 @@ DESTDIR = ../Win32/Debug
 CONFIG += debug
 DEFINES += QT_DLL QT_SQL_LIB QT_WIDGETS_LIB
 
+CONFIG += c++14
+CONFIG += warn_on
+
+#QMAKE_CXXFLAGS += -std=c++14
+#QMAKE_CXXFLAGS += -Wall
+
 #INCLUDEPATH += ./GeneratedFiles \
 #    . \
 #    ./GeneratedFiles/Debug

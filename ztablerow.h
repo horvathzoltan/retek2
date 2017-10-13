@@ -15,6 +15,8 @@ public:
     QString colType;
     int dlen;
     bool nullable;
+
+    QString toString();
 };
 
 #endif // ZTABLEROW_H

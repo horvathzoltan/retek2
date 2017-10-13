@@ -18,6 +18,8 @@ public:
     static void ShowDialog(QString str);
     void trace(QString);
     void log(QString);
+
+    void log(QList<QString>);
 };
 
 #endif // ZERROR_H
