@@ -85,7 +85,8 @@ void retek2::init(void)
 
 
     beallitasok.setUI();
-    zDataBase::Connect(beallitasok.getConnStr(),beallitasok.user,beallitasok.password);
+    //QString connstr = beallitasok.getConnStr();
+    zDataBase::Connect(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user,beallitasok.password);
     feltoltTabla(); // bal tábla panel feltöltése
 
     feltoltTmpMap(); // a view template könyvtárában az összes templatek feltöltése
@@ -129,7 +130,7 @@ void retek2::saveCaptionTabla(QString tablanev) {
 
 
 void retek2::feltoltTabla(void) {
-	if (!is_dbOK) return;
+    //if (!is_dbOK) return;
 
 	QString commandText = "SELECT "
 		"TableName = tbl.table_name, "
@@ -141,12 +142,15 @@ void retek2::feltoltTabla(void) {
 		"AND tableProp.name = 'MS_Description' "
 		"where tbl.table_name not like 'sys%' or tbl.table_name not like '__%' order by tbl.table_name asc;";
 
-	QSqlQuery query(commandText);
+    QString commandTextTemplate2 ="select table_name as TableName from information_schema.tables where TABLE_SCHEMA='%1'";
+    QString commandText2 = commandTextTemplate2.arg(beallitasok.adatbazisNev);
+
+    QSqlQuery query(commandText2);
 
     ui.listWidget_tabla->clear();
 
 	while (query.next()) {
-		QString tablename = query.value("TableName").toString();
+        QString tablename = query.value("TableName").toString();
 
 		new QListWidgetItem(tablename, ui.listWidget_tabla);
 	}
@@ -188,13 +192,13 @@ void retek2::TableSelect(QListWidgetItem* i) {
 
 
 void retek2::feltoltEljaras(QString tablanev) {
-	if (!is_dbOK) return;
+    //if (!is_dbOK) return;
 	qDebug() << "feltoltEljaras " << tablanev;
 
 }
 
 void retek2::feltoltIdegenkulcs(QString tablanev) {
-	if (!is_dbOK) return;
+    //if (!is_dbOK) return;
 	qDebug() << "feltoltIdegenkulcs " << tablanev;
 
 	ui.listWidget_IdegenKulcs->clear();
@@ -248,7 +252,7 @@ QString retek2::getCaptionFileName(QString tablanev){
 }
 
 void retek2::feltoltMezoLista(QString tablanev){
-    if (!is_dbOK) return;
+    //if (!is_dbOK) return;
     //qDebug() << "feltoltMezoLista " << tablanev;
     ui.tableWidget_MezoLista->setRowCount(0);
 
@@ -865,7 +869,8 @@ QString retek2::getePropType(QString tipusnev, int length, bool isnullable) {
 void retek2::on_pushButton_clicked()
 {
     beallitasok.getUI();
-    zDataBase::Connect(beallitasok.getConnStr(),beallitasok.user,beallitasok.password);
+
+    zDataBase::Connect(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user, beallitasok.password);
     feltoltTabla();
 }
 

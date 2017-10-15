@@ -14,7 +14,6 @@ zTable::zTable(QString n, QList<zTablerow> tr){
 }
 
 
-
 zTable zTable::LoadFromSQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn)
 {
 
@@ -33,9 +32,12 @@ zTable zTable::LoadFromSQL(QString tablanev, QMap<QString, QString> globalCaptio
         "Where TC.TABLE_SCHEMA = C.TABLE_SCHEMA And TC.TABLE_NAME = C.TABLE_NAME And TC.CONSTRAINT_TYPE = 'PRIMARY KEY' And CCU.COLUMN_NAME = C.COLUMN_NAME) As Z "
         "Where C.TABLE_NAME = '%1'";
 
+
     QString commandText = commandTextTemplate.arg(tablanev);
 
-    QSqlQuery query(commandText);   
+
+
+    QSqlQuery query(commandText);
 
     QList<zTablerow> tr;
 

@@ -21,12 +21,23 @@ public:
 
     void getUI();
     void setUI();
-    QString getConnStr();
 
+//zSQL("QMYSQL", "127.0.0.1", "wiki1", "root","Aladar123", "w1"),
+
+    QString driver = "QMYSQL";
+    QString adatbazisNev = "wiki1";
+    QString server = "127.0.0.1";
+    QString user = "root";
+    QString password= "Aladar123";
+
+    /*
+     * SQL SERVER
+    QString driver = "QODBC";
     QString adatbazisNev = "enyv";
     QString server = "DIMOTION";
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
+*/
 
     /*
     QString adatbazisNev = "Gloster";
@@ -59,7 +70,7 @@ public:
     QString password= "Aladar123";
 
 */
-	QString connectionTemplate = "DRIVER={SQL SERVER};SERVER=%1;DATABASE=%2;";
+
     //QString connectionString = connectionTemplate.arg(server).arg(adatbazisNev);
 
 	QString tmpDir = R"(C:\retek2\template_dir)";

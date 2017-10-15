@@ -12,12 +12,6 @@ void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEd
     this->widget_adatbazisNev = wcatalog;
 }
 
-
-QString Beallitasok::getConnStr(){
-    return  this->connectionTemplate.arg(this->server).arg(this->adatbazisNev);
-}
-
-
 void Beallitasok::getUI()
 {
     user = widget_user->text();

@@ -8,7 +8,13 @@ class zDataBase
 public:
     zDataBase();
 
-    static bool Connect(QString connectionString, QString u, QString p);
+    static const QString connectionTemplate;
+
+    static QString getConnStr(QString driverName, QString serverName, QString dbName);
+
+    static bool Connect(QString driver, QString hostname, QString databasename, QString u, QString p);
 };
+
+
 
 #endif // ZDATABASE_H
