@@ -15,7 +15,9 @@ public:
     QString tablename;
     QList<zTablerow> rows;
 
-    static zTable LoadFromSQL(QString tablename, QMap<QString, QString> globalCaptionMap, QString fn);
+    static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
+    static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );
+    static zTable LoadFromMySQL(QString, QMap<QString, QString>, QString );
 
     QString toString();
 

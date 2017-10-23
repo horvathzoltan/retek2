@@ -16,7 +16,7 @@
 
 #include "ztable.h"
 #include "ztablerow.h"
-#include "zdatabase.h"
+#include "zsql.h"
 #include "zstringmaphelper.h"
 #include "zfilenamehelper.h"
 #include "globals.h"
@@ -86,7 +86,11 @@ void retek2::init(void)
 
     beallitasok.setUI();
     //QString connstr = beallitasok.getConnStr();
-    zDataBase::Connect(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user,beallitasok.password);
+
+
+    zsql=new zSQL(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user,beallitasok.password);
+    zsql.createConnection();
+
     feltoltTabla(); // bal tábla panel feltöltése
 
     feltoltTmpMap(); // a view template könyvtárában az összes templatek feltöltése
@@ -180,7 +184,7 @@ void retek2::TableSelect(QListWidgetItem* i) {
 
 	tablanev = i->text();
 
-    zlog.log(QString("TableSelect: %1").arg(tablanev));
+    //zlog.log(QString("TableSelect: %1").arg(tablanev));
 
     //feltoltCaptionTabla(tablanev);
 
@@ -257,7 +261,7 @@ void retek2::feltoltMezoLista(QString tablanev){
     ui.tableWidget_MezoLista->setRowCount(0);
 
 
-    auto t = zTable::LoadFromSQL(tablanev, globalCaptionMap, getCaptionFileName(tablanev));
+    auto t = zTable::LoadFromMSSQL(tablanev, globalCaptionMap, getCaptionFileName(tablanev));
 
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
         auto r = t.rows[r_ix];
@@ -870,7 +874,7 @@ void retek2::on_pushButton_clicked()
 {
     beallitasok.getUI();
 
-    zDataBase::Connect(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user, beallitasok.password);
+    zSQL::createConnection(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user, beallitasok.password);
     feltoltTabla();
 }
 
@@ -910,7 +914,7 @@ void retek2::GenerateByText(){
             zlog.log("GenerateByText: "+t.toString());
         }
         zforeach(t,tl){
-            auto t_sql = zTable::LoadFromSQL(t->tablename, globalCaptionMap, getCaptionFileName(t->tablename));
+            auto t_sql = zTable::LoadFromMSSQL(t->tablename, globalCaptionMap, getCaptionFileName(t->tablename));
             auto vl = t_sql.Validate(*t);
             zlog.log("--- "+t->tablename+" ---");
             zlog.log(vl);

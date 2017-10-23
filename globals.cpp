@@ -2,3 +2,4 @@
 
 Beallitasok beallitasok;
 zLog zlog;
+zSQL zsql;
