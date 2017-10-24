@@ -88,8 +88,8 @@ void retek2::init(void)
     //QString connstr = beallitasok.getConnStr();
 
 
-    zsql=new zSQL(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user,beallitasok.password);
-    zsql.createConnection();
+    auto ysql=zSQL(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user, beallitasok.password);
+    //zsql.createConnection();
 
     feltoltTabla(); // bal tábla panel feltöltése
 
@@ -874,7 +874,8 @@ void retek2::on_pushButton_clicked()
 {
     beallitasok.getUI();
 
-    zSQL::createConnection(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user, beallitasok.password);
+    zsql = zSQL(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user, beallitasok.password);
+    zsql.createConnection();
     feltoltTabla();
 }
 

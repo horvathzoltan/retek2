@@ -6,8 +6,10 @@
 
 class zSQL
 {
-private:
+private:    
     static const QString connectionTemplate;
+    static const QString QODBC;
+    static const QString QMYSQL;
 
     QString driverName,
             hostName,
@@ -17,19 +19,20 @@ public:
     QString databaseName;
     QSqlDatabase db;
     QString connectionName;
-public:
-    zSQL(QString, QString, QString, QString, QString, QString);
+
+    zSQL();
+    zSQL(QString, QString, QString, QString, QString);
 
     ~zSQL(void){
         db.close();
         QSqlDatabase::removeDatabase(connectionName);
     }
 
-    void createConnection();
+    void createConnection(QString connectionName="default_conn");
     QString getLastErrorText();
     //QList<zField> getFields(QString tablename);
     QString toString();
-    static QString getConnStr(QString driverName, QString serverName, QString dbName);
+    QString getConnStr();
 };
 
 #endif // ZSQL_H

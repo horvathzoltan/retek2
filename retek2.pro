@@ -36,13 +36,13 @@ DESTDIR = ../Win32/Debug
 CONFIG += debug
 DEFINES += QT_DLL QT_SQL_LIB QT_WIDGETS_LIB
 
-CONFIG += c++14
+CONFIG += c++17
 CONFIG += warn_on
 
-LIBS += -L$$PWD/../../mysql/lib/ -lmysqlcppconn
+# LIBS += -L$$PWD/../../mysql/lib/ -lmysqlcppconn
 
-INCLUDEPATH += $$PWD/../../mysql/include
-DEPENDPATH += $$PWD/../../mysql/include
+#INCLUDEPATH += $$PWD/../../mysql/include
+#DEPENDPATH += $$PWD/../../mysql/include
 
 #QMAKE_CXXFLAGS += -std=c++14
 #QMAKE_CXXFLAGS += -Wall
@@ -56,5 +56,15 @@ DEPENDPATH += $$PWD/../../mysql/include
 #UI_DIR += ./GeneratedFiles
 #RCC_DIR += ./GeneratedFiles
 
-win32:RC_FILE = retek2.rc
+# win32:RC_FILE = retek2.rc
+
+# win32:CONFIG(release, debug|release): LIBS += -L$$PWD/'C:/Program Files/MySQL/MySQL Connector C++ 1.1.9/lib/opt/' -lmysqlcppconn.dll
+# else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/'C:/Program Files/MySQL/MySQL Connector C++ 1.1.9/lib/opt/' -lmysqlcppconn
+# else:unix:!macx: LIBS += -L$$PWD/'C:/Program Files/MySQL/MySQL Connector C++ 1.1.9/lib/opt/' -lmysqlcppconn
+
+#INCLUDEPATH += $$PWD/'C:/Program Files/MySQL/MySQL Connector C++ 1.1.9/lib/opt'
+#DEPENDPATH += $$PWD/'C:/Program Files/MySQL/MySQL Connector C++ 1.1.9/lib/opt'
+
+# INCLUDEPATH += C:\Program Files\MySQL\MySQL Connector C++ 1.1.9\lib\opt
+# DEPENDPATH += C:\Program Files\MySQL\MySQL Connector C++ 1.1.9\lib\opt
 
