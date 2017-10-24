@@ -88,8 +88,7 @@ void retek2::init(void)
     //QString connstr = beallitasok.getConnStr();
 
 
-    auto ysql=zSQL(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user, beallitasok.password);
-    //zsql.createConnection();
+    zsql.init(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user, beallitasok.password);
 
     feltoltTabla(); // bal tábla panel feltöltése
 
@@ -134,30 +133,11 @@ void retek2::saveCaptionTabla(QString tablanev) {
 
 
 void retek2::feltoltTabla(void) {
-    //if (!is_dbOK) return;
-
-	QString commandText = "SELECT "
-		"TableName = tbl.table_name, "
-		"TableDescription = tableProp.value "
-		"FROM information_schema.tables tbl "
-		"LEFT JOIN sys.extended_properties tableProp "
-		"ON tableProp.major_id = object_id(tbl.table_schema + '.' + tbl.table_name) "
-		"AND tableProp.minor_id = 0 "
-		"AND tableProp.name = 'MS_Description' "
-		"where tbl.table_name not like 'sys%' or tbl.table_name not like '__%' order by tbl.table_name asc;";
-
-    QString commandTextTemplate2 ="select table_name as TableName from information_schema.tables where TABLE_SCHEMA='%1'";
-    QString commandText2 = commandTextTemplate2.arg(beallitasok.adatbazisNev);
-
-    QSqlQuery query(commandText2);
-
+    QList<QString> tns = zsql.getTableNames();
     ui.listWidget_tabla->clear();
-
-	while (query.next()) {
-        QString tablename = query.value("TableName").toString();
-
-		new QListWidgetItem(tablename, ui.listWidget_tabla);
-	}
+    zforeach(tn,tns){
+        new QListWidgetItem(*tn, ui.listWidget_tabla);
+    }
 }
 
 void retek2::feltoltTmpMap(void){
@@ -874,8 +854,8 @@ void retek2::on_pushButton_clicked()
 {
     beallitasok.getUI();
 
-    zsql = zSQL(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user, beallitasok.password);
-    zsql.createConnection();
+    zsql.init(beallitasok.driver, beallitasok.server, beallitasok.adatbazisNev, beallitasok.user, beallitasok.password);
+    //zsql.createConnection();
     feltoltTabla();
 }
 

@@ -21,7 +21,9 @@ void zLog::trace(QString msg){
 }
 
 void zLog::log(QString msg){
+    #ifdef QT_DEBUG
     this->widget->append(msg);
+    #endif
 }
 
 void zLog::log(QList<QString>ml){

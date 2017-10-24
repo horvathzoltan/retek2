@@ -15,13 +15,14 @@ private:
             hostName,
             user,
             password;
-public:
+
     QString databaseName;
     QSqlDatabase db;
     QString connectionName;
 
+public:
     zSQL();
-    zSQL(QString, QString, QString, QString, QString);
+    void init(QString, QString, QString, QString, QString);
 
     ~zSQL(void){
         db.close();
@@ -29,10 +30,21 @@ public:
     }
 
     void createConnection(QString connectionName="default_conn");
-    QString getLastErrorText();
+
     //QList<zField> getFields(QString tablename);
     QString toString();
+
+
+    QList<QString> getTableNames();
+
+protected:
+    QString getLastErrorText();
     QString getConnStr();
+    bool createConnection_MSSQL();
+    bool createConnection_MYSQL();
+
+    QList<QString> getTableNames_MYSQL();
+    QList<QString> getTableNames_MSSQL();
 };
 
 #endif // ZSQL_H
