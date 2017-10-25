@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QSqlDatabase>
+#include "ztable.h"
+//#include "ztablerow.h"
 
 class zSQL
 {
@@ -36,6 +38,7 @@ public:
 
 
     QList<QString> getTableNames();
+    zTable zSQL::getTable(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn);
 
 protected:
     QString getLastErrorText();
@@ -45,6 +48,9 @@ protected:
 
     QList<QString> getTableNames_MYSQL();
     QList<QString> getTableNames_MSSQL();
+
+    zTable zSQL::getTable_MSSQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn);
+    int size(QSqlQuery);
 };
 
 #endif // ZSQL_H

@@ -36,7 +36,7 @@ DESTDIR = ../Win32/Debug
 CONFIG += debug
 DEFINES += QT_DLL QT_SQL_LIB QT_WIDGETS_LIB
 
-CONFIG += c++17
+CONFIG += c++14
 CONFIG += warn_on
 
 # LIBS += -L$$PWD/../../mysql/lib/ -lmysqlcppconn

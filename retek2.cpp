@@ -96,7 +96,7 @@ void retek2::init(void)
 
     zStringMapHelper::StringMapFeltolt(zFileNameHelper::getCClassFilename(beallitasok.munkadir, beallitasok.adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
 
-    zlog.trace("init OK");
+    zlog.trace("retek2 init OK");
 
     //ui.lineEdit_ContextName->setText(getAdatbazisnev()+"Context2");
 }
@@ -241,7 +241,7 @@ void retek2::feltoltMezoLista(QString tablanev){
     ui.tableWidget_MezoLista->setRowCount(0);
 
 
-    auto t = zTable::LoadFromMSSQL(tablanev, globalCaptionMap, getCaptionFileName(tablanev));
+    zTable t = zsql.getTable(tablanev, globalCaptionMap, getCaptionFileName(tablanev));
 
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
         auto r = t.rows[r_ix];
@@ -895,7 +895,7 @@ void retek2::GenerateByText(){
             zlog.log("GenerateByText: "+t.toString());
         }
         zforeach(t,tl){
-            auto t_sql = zTable::LoadFromMSSQL(t->tablename, globalCaptionMap, getCaptionFileName(t->tablename));
+            auto t_sql = zsql.getTable(t->tablename, globalCaptionMap, getCaptionFileName(t->tablename));
             auto vl = t_sql.Validate(*t);
             zlog.log("--- "+t->tablename+" ---");
             zlog.log(vl);

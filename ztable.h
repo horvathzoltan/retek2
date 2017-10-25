@@ -10,13 +10,15 @@ class zTable
 {
 public:
     zTable(QString tablanev, QList<zTablerow>);
-    //~zTable();
+
+    zTable();
+    ~zTable();
 
     QString tablename;
     QList<zTablerow> rows;
 
-    static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
-    static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );
+    //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
+    //static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );
     static zTable LoadFromMySQL(QString, QMap<QString, QString>, QString );
 
     QString toString();
