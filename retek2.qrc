@@ -1,4 +1,6 @@
 <RCC>
-    <qresource prefix="retek2">
+    <qresource prefix="/retek2"/>
+    <qresource prefix="/">
+        <file>retek.ico</file>
     </qresource>
 </RCC>

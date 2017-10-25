@@ -162,15 +162,13 @@ void retek2::TableSelect(QListWidgetItem* i) {
 	if(!tablanev.isEmpty())
 		saveCaptionTabla(tablanev);
 
-	tablanev = i->text();
-
-    //zlog.log(QString("TableSelect: %1").arg(tablanev));
-
-    //feltoltCaptionTabla(tablanev);
+	tablanev = i->text();    
 
 	feltoltIdegenkulcs(tablanev);
 	feltoltEljaras(tablanev);
-	feltoltMezoLista(tablanev);	
+    feltoltMezoLista(tablanev);
+
+    ui.tabWidget->setCurrentWidget(ui.tab);
 }
 
 
@@ -235,13 +233,10 @@ QString retek2::getCaptionFileName(QString tablanev){
     return fn;
 }
 
-void retek2::feltoltMezoLista(QString tablanev){
-    //if (!is_dbOK) return;
-    //qDebug() << "feltoltMezoLista " << tablanev;
+void retek2::feltoltMezoLista(QString tablanev){    
     ui.tableWidget_MezoLista->setRowCount(0);
 
-
-    zTable t = zsql.getTable(tablanev, globalCaptionMap, getCaptionFileName(tablanev));
+    zTable t = zsql.getTable(tablanev, getCaptionFileName(tablanev));
 
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
         auto r = t.rows[r_ix];
@@ -895,7 +890,7 @@ void retek2::GenerateByText(){
             zlog.log("GenerateByText: "+t.toString());
         }
         zforeach(t,tl){
-            auto t_sql = zsql.getTable(t->tablename, globalCaptionMap, getCaptionFileName(t->tablename));
+            auto t_sql = zsql.getTable(t->tablename, getCaptionFileName(t->tablename));
             auto vl = t_sql.Validate(*t);
             zlog.log("--- "+t->tablename+" ---");
             zlog.log(vl);

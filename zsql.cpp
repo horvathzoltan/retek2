@@ -86,12 +86,29 @@ void zSQL::createConnection(QString connectionName){
     return;
     }
 
+const QString zSQL::getTableNames_MYSQL_CMDTMP = "SELECT table_name AS TableName, table_comment AS TableDescription "
+                                                 "FROM INFORMATION_SCHEMA.TABLES "
+                                                 "WHERE table_schema='%1';";
+
+const QString zSQL::getTableNames_MSSQL_CMDTMP = "SELECT "
+                                                 "TableName = tbl.table_name, "
+                                                 "TableDescription = tableProp.value "
+                                                 "FROM information_schema.tables tbl "
+                                                 "LEFT JOIN sys.extended_properties tableProp "
+                                                 "ON tableProp.major_id = object_id(tbl.table_schema + '.' + tbl.table_name) "
+                                                 "AND tableProp.minor_id = 0 "
+                                                 "AND tableProp.name = 'MS_Description' "
+                                                 "where tbl.table_name not like 'sys%' or tbl.table_name not like '__%'";
+
+QString zSQL::getTableNames_MSSQL_CMD(){ return getTableNames_MSSQL_CMDTMP; }
+QString zSQL::getTableNames_MYSQL_CMD(){ return getTableNames_MYSQL_CMDTMP.arg(this->databaseName); }
+
 QList<QString> zSQL::getTableNames(){
     if(db.isValid() && db.isOpen()){
         if(driverName == QODBC)
-            return getTableNames_MSSQL();
+            return getTableNames_SQL(getTableNames_MSSQL_CMD());//.arg(beallitasok.adatbazisNev);
         else if(driverName == QMYSQL)
-            return getTableNames_MYSQL();
+            return getTableNames_SQL(getTableNames_MYSQL_CMD());
         else{
             zlog.log("getTableNames: unknown driver:" + driverName);
         }
@@ -102,45 +119,15 @@ QList<QString> zSQL::getTableNames(){
     return QList<QString>();
 }
 
-QList<QString> zSQL::getTableNames_MSSQL() {
-    QList<QString> eredmeny;
 
-    QString cmd = QString("SELECT "
-        "TableName = tbl.table_name, "
-        "TableDescription = tableProp.value "
-        "FROM information_schema.tables tbl "
-        "LEFT JOIN sys.extended_properties tableProp "
-        "ON tableProp.major_id = object_id(tbl.table_schema + '.' + tbl.table_name) "
-        "AND tableProp.minor_id = 0 "
-        "AND tableProp.name = 'MS_Description' "
-        "where tbl.table_name not like 'sys%' or tbl.table_name not like '__%'");//.arg(beallitasok.adatbazisNev);
+QList<QString> zSQL::getTableNames_SQL(QString cmd) {
+    QList<QString> eredmeny;
 
     QSqlQuery query(cmd, db);
     query.setForwardOnly(true);
 
     while (query.next())
         eredmeny.append(query.value("TableName").toString());
-
-    return eredmeny;
-}
-
-QList<QString> zSQL::getTableNames_MYSQL() {
-    QList<QString> eredmeny;
-
-    if(db.isValid()){
-        auto cmd = QString("SELECT table_name, table_comment "
-                           "FROM INFORMATION_SCHEMA.TABLES "
-                           "WHERE table_schema='%1';").arg(databaseName);
-
-        if(db.isOpen()){
-            QSqlQuery query(cmd, db);
-            query.setForwardOnly(true);
-
-                while (query.next())
-                    eredmeny.append(query.value("table_name").toString());
-
-            }
-        }
     return eredmeny;
 }
 
@@ -153,14 +140,41 @@ QString zSQL::toString()
     return this->databaseName+":"+this->connectionName;
 }
 
+const QString zSQL::getTable_MYSQL_CMDTMP ="SELECT "
+                                           "COLUMN_NAME, "
+                                           "DATA_TYPE, "
+                                           "CHARACTER_MAXIMUM_LENGTH, "
+                                           "NUMERIC_PRECISION, "
+                                           "NUMERIC_SCALE, "
+                                           "IS_NULLABLE "
+                                           "FROM INFORMATION_SCHEMA.COLUMNS "
+                                           "where table_schema = '%1' and table_name = '%2';";
 
-zTable zSQL::getTable(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn){
+const QString zSQL::getTable_MSSQL_CMDTMP = "Select "
+                                            "C.COLUMN_NAME, "
+                                            "C.DATA_TYPE, "
+                                            "C.CHARACTER_MAXIMUM_LENGTH, "
+                                            "C.NUMERIC_PRECISION, "
+                                            "C.NUMERIC_SCALE, "
+                                            "C.IS_NULLABLE, "
+                                            "Case When Z.CONSTRAINT_NAME Is Null Then 0 Else 1 End As IsPartOfPrimaryKey From INFORMATION_SCHEMA.COLUMNS "
+                                            "As C Outer Apply("
+                                            "Select CCU.CONSTRAINT_NAME From INFORMATION_SCHEMA.TABLE_CONSTRAINTS As TC "
+                                            "Join INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE As CCU "
+                                            "On CCU.CONSTRAINT_NAME = TC.CONSTRAINT_NAME "
+                                            "Where TC.TABLE_SCHEMA = C.TABLE_SCHEMA And TC.TABLE_NAME = C.TABLE_NAME And TC.CONSTRAINT_TYPE = 'PRIMARY KEY' And CCU.COLUMN_NAME = C.COLUMN_NAME) As Z "
+                                            "Where C.TABLE_NAME = '%1'";
+
+QString zSQL::getTable_MSSQL_CMD(QString tn){ return getTable_MSSQL_CMDTMP.arg(tn); }
+QString zSQL::getTable_MYSQL_CMD(QString tn){ return getTable_MYSQL_CMDTMP.arg(this->databaseName).arg(tn); }
+
+zTable zSQL::getTable(QString tablanev, QString fn){
 
     if(db.isValid() && db.isOpen()){
         if(driverName == QODBC)
-            return getTable_MSSQL(tablanev, globalCaptionMap, fn);
-        else if(driverName == QMYSQL){}
-            //return getTable_MYSQL();
+            return getTable_SQL(tablanev, fn, getTable_MSSQL_CMD(tablanev));
+        else if(driverName == QMYSQL)
+            return getTable_SQL(tablanev, fn, getTable_MYSQL_CMD(tablanev));
         else{
             zlog.log("getTable: unknown driver:" + driverName);
         }
@@ -171,24 +185,10 @@ zTable zSQL::getTable(QString tablanev, QMap<QString, QString> globalCaptionMap,
     return zTable();
 }
 
-zTable zSQL::getTable_MSSQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn)
+zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
 {
-    QString cmd = QString("Select "
-        "C.COLUMN_NAME, "
-        "C.DATA_TYPE, "
-        "C.CHARACTER_MAXIMUM_LENGTH, "
-        "C.NUMERIC_PRECISION, "
-        "C.NUMERIC_SCALE, "
-        "C.IS_NULLABLE, "
-        "Case When Z.CONSTRAINT_NAME Is Null Then 0 Else 1 End As IsPartOfPrimaryKey From INFORMATION_SCHEMA.COLUMNS "
-        "As C Outer Apply("
-        "Select CCU.CONSTRAINT_NAME From INFORMATION_SCHEMA.TABLE_CONSTRAINTS As TC "
-        "Join INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE As CCU "
-        "On CCU.CONSTRAINT_NAME = TC.CONSTRAINT_NAME "
-        "Where TC.TABLE_SCHEMA = C.TABLE_SCHEMA And TC.TABLE_NAME = C.TABLE_NAME And TC.CONSTRAINT_TYPE = 'PRIMARY KEY' And CCU.COLUMN_NAME = C.COLUMN_NAME) As Z "
-        "Where C.TABLE_NAME = '%1'").arg(tablanev);
-
     QSqlQuery query(cmd, db);
+    query.setForwardOnly(true);
 
     QList<zTablerow> tr;
 

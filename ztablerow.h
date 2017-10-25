@@ -17,6 +17,9 @@ public:
     bool nullable;
 
     QString toString();
+
+    bool operator==(const zTablerow&) const;
+
 };
 
 #endif // ZTABLEROW_H

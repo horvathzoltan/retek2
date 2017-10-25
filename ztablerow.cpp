@@ -13,3 +13,7 @@ zTablerow::zTablerow(QString colName, QString dtype, int dlen, bool nullable, QS
 QString zTablerow::toString(){
     return this->colName;
 }
+
+bool zTablerow::operator==(const zTablerow &o)const {
+    return colName==o.colName;
+}

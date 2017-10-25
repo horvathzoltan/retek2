@@ -25,7 +25,7 @@ private:
 
 
 	QMap<QString, QString> tmpMap;
-	QMap<QString, QString> globalCaptionMap;
+    //QMap<QString, QString> globalCaptionMap;
     //QMap<QString, QString> tablaCaptionMap;
 
     const int C_ix_Caption = 0;

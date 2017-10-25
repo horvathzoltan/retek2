@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>retek2</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="retek2.qrc">
+    <normaloff>:/retek.ico</normaloff>:/retek.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="maximumSize">
     <size>
@@ -31,8 +35,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1340</width>
-         <height>628</height>
+         <width>1326</width>
+         <height>697</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -544,7 +548,7 @@
      <x>0</x>
      <y>0</y>
      <width>1360</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu1">
@@ -565,7 +569,9 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="retek2.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>pushButton_GenerateAll</sender>

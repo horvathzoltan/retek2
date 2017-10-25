@@ -72,52 +72,52 @@ zTable::zTable(QString n, QList<zTablerow> tr){
 //    }
 //}
 
-zTable zTable::LoadFromMySQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn)
-{
-    QString commandTextTemplate = "SELECT "
-                "COLUMN_NAME,"
-                "DATA_TYPE,"
-                "CHARACTER_MAXIMUM_LENGTH,"
-                "NUMERIC_PRECISION,"
-                "NUMERIC_SCALE,"
-                "IS_NULLABLE"
-            "FROM INFORMATION_SCHEMA.COLUMNS "
-            "where table_schema = '%1' and table_name = '%2'";
+//zTable zTable::LoadFromMySQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn)
+//{
+//    QString commandTextTemplate = "SELECT "
+//                "COLUMN_NAME,"
+//                "DATA_TYPE,"
+//                "CHARACTER_MAXIMUM_LENGTH,"
+//                "NUMERIC_PRECISION,"
+//                "NUMERIC_SCALE,"
+//                "IS_NULLABLE"
+//            "FROM INFORMATION_SCHEMA.COLUMNS "
+//            "where table_schema = '%1' and table_name = '%2'";
 
-    QString commandText = commandTextTemplate.arg("wiki1").arg(tablanev);
+//    QString commandText = commandTextTemplate.arg("wiki1").arg(tablanev);
 
 
 
-    QSqlQuery query(commandText);
+//    QSqlQuery query(commandText);
 
-    QList<zTablerow> tr;
+//    QList<zTablerow> tr;
 
-    if(query.next()){
-        QMap<QString, QString> tablaCaptionMap;
-        zStringMapHelper::StringMapFeltolt(fn, &tablaCaptionMap);
+//    if(query.next()){
+//        QMap<QString, QString> tablaCaptionMap;
+//        zStringMapHelper::StringMapFeltolt(fn, &tablaCaptionMap);
 
-        while (query.next()) {
-            QString colName = query.value("COLUMN_NAME").toString();
-            QString dtype = query.value("DATA_TYPE").toString();
-            int dlen = query.value("CHARACTER_MAXIMUM_LENGTH").toInt();
-            bool nullable = query.value("IS_NULLABLE").toBool();
-            QString cn = colName.toLower();
+//        while (query.next()) {
+//            QString colName = query.value("COLUMN_NAME").toString();
+//            QString dtype = query.value("DATA_TYPE").toString();
+//            int dlen = query.value("CHARACTER_MAXIMUM_LENGTH").toInt();
+//            bool nullable = query.value("IS_NULLABLE").toBool();
+//            QString cn = colName.toLower();
 
-            QString caption = tablaCaptionMap.contains(cn)?tablaCaptionMap[cn]:globalCaptionMap.contains(cn)?globalCaptionMap[cn]:cn;
+//            QString caption = tablaCaptionMap.contains(cn)?tablaCaptionMap[cn]:globalCaptionMap.contains(cn)?globalCaptionMap[cn]:cn;
 
-            auto r = zTablerow(colName, dtype, dlen, nullable, caption);
+//            auto r = zTablerow(colName, dtype, dlen, nullable, caption);
 
-            tr.append(r);
-        }
+//            tr.append(r);
+//        }
 
-        auto e = zTable(tablanev, tr);
-        return e;
-    }
-    else{
-        //QList<zTablerow> trl;
-        return zTable("", QList<zTablerow>());
-    }
-}
+//        auto e = zTable(tablanev, tr);
+//        return e;
+//    }
+//    else{
+//        //QList<zTablerow> trl;
+//        return zTable("", QList<zTablerow>());
+//    }
+//}
 
 QString zTable::toString(){
     QString rs;

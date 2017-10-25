@@ -13,6 +13,12 @@ private:
     static const QString QODBC;
     static const QString QMYSQL;
 
+    static const QString getTableNames_MYSQL_CMDTMP;
+    static const QString getTableNames_MSSQL_CMDTMP;
+
+    static const QString getTable_MYSQL_CMDTMP;
+    static const QString getTable_MSSQL_CMDTMP;
+
     QString driverName,
             hostName,
             user,
@@ -21,6 +27,19 @@ private:
     QString databaseName;
     QSqlDatabase db;
     QString connectionName;
+
+    QString getLastErrorText();
+    QString getConnStr();
+    bool createConnection_MSSQL();
+    bool createConnection_MYSQL();
+
+    QList<QString> getTableNames_SQL(QString);
+    zTable getTable_SQL(QString tablanev, QString fn, QString);
+
+    QString getTable_MSSQL_CMD(QString tn);
+    QString getTable_MYSQL_CMD(QString tn);
+    QString getTableNames_MYSQL_CMD();
+    QString getTableNames_MSSQL_CMD();
 
 public:
     zSQL();
@@ -33,24 +52,9 @@ public:
 
     void createConnection(QString connectionName="default_conn");
 
-    //QList<zField> getFields(QString tablename);
     QString toString();
-
-
     QList<QString> getTableNames();
-    zTable zSQL::getTable(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn);
-
-protected:
-    QString getLastErrorText();
-    QString getConnStr();
-    bool createConnection_MSSQL();
-    bool createConnection_MYSQL();
-
-    QList<QString> getTableNames_MYSQL();
-    QList<QString> getTableNames_MSSQL();
-
-    zTable zSQL::getTable_MSSQL(QString tablanev, QMap<QString, QString> globalCaptionMap, QString fn);
-    int size(QSqlQuery);
+    zTable getTable(QString tablanev, QString fn);
 };
 
 #endif // ZSQL_H
