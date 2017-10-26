@@ -1,4 +1,5 @@
 #include "Beallitasok.h"
+#include "zfilenamehelper.h"
 
 Beallitasok::Beallitasok(){};
 
@@ -26,4 +27,10 @@ void Beallitasok::setUI()
     widget_password->setText(this->password);
     widget_server->setText(this->server);
     widget_adatbazisNev->setText(this->adatbazisNev);
+}
+
+
+QString Beallitasok::getCaptionFileName(QString tablanev){
+    QString fn = zFileNameHelper::getCClassFilename(munkadir, adatbazisNev, "caption_"+tablanev+".txt");
+    return fn;
 }

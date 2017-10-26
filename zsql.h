@@ -54,7 +54,7 @@ public:
 
     QString toString();
     QList<QString> getTableNames();
-    zTable getTable(QString tablanev, QString fn);
+    zTable getTable(QString tablanev);
 };
 
 #endif // ZSQL_H

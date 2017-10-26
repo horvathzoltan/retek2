@@ -168,9 +168,11 @@ const QString zSQL::getTable_MSSQL_CMDTMP = "Select "
 QString zSQL::getTable_MSSQL_CMD(QString tn){ return getTable_MSSQL_CMDTMP.arg(tn); }
 QString zSQL::getTable_MYSQL_CMD(QString tn){ return getTable_MYSQL_CMDTMP.arg(this->databaseName).arg(tn); }
 
-zTable zSQL::getTable(QString tablanev, QString fn){
+zTable zSQL::getTable(QString tablanev){
 
     if(db.isValid() && db.isOpen()){
+        QString fn = beallitasok.getCaptionFileName(tablanev);
+
         if(driverName == QODBC)
             return getTable_SQL(tablanev, fn, getTable_MSSQL_CMD(tablanev));
         else if(driverName == QMYSQL)

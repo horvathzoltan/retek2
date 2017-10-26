@@ -20,6 +20,13 @@ public:
 
     bool operator==(const zTablerow&) const;
 
+    static zTablerow* getByName(QList<zTablerow>*, QString);
+
+    QList<QString> Validate(zTablerow*);
+    QString ValidateCaption(QString);
+    QString ValidateColType(QString);
+    /*QString ValidateNullable(bool);
+    QString ValidateDLen(int);*/
 };
 
 #endif // ZTABLEROW_H

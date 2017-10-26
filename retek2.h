@@ -38,7 +38,7 @@ private:
 	QSqlDatabase db;
     //bool is_dbOK;
 	QString tablanev="";
-	QMap<QString, QVariant> typeMap;
+
 	QMap<QString, QString> dxMap;
 
 		

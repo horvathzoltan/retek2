@@ -23,23 +23,23 @@ public:
     void setUI();
 
 //zSQL("QMYSQL", "127.0.0.1", "wiki1", "root","Aladar123", "w1"),
-
+/*
     QString driver = "QMYSQL";
     QString adatbazisNev = "wiki1";
     QString server = "127.0.0.1";
     QString user = "root";
     QString password= "Aladar123";
+*/
 
 
-    /*
    // SQL SERVER
     QString driver = "QODBC";
     QString adatbazisNev = "enyv";
     QString server = "DIMOTION";
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
-*/
-    /*
+
+  /*
     QString adatbazisNev = "Gloster";
     QString server = "DEATHSTAR";
     QString user = "sa";
@@ -76,5 +76,7 @@ public:
 	QString tmpDir = R"(C:\retek2\template_dir)";
     QString munkadir = R"(C:\retek2\munka_dir)";
 	QString globalCaptionsFileName = "global_captions"; 
+
+    QString getCaptionFileName(QString tablanev);
 };
 

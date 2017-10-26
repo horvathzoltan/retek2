@@ -31,8 +31,6 @@ SOURCES += Beallitasok.cpp \
 FORMS += retek2.ui
 RESOURCES += retek2.qrc
 
-DESTDIR = ../Win32/Debug
-
 CONFIG += debug
 DEFINES += QT_DLL QT_SQL_LIB QT_WIDGETS_LIB
 

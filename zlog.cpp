@@ -27,5 +27,12 @@ void zLog::log(QString msg){
 }
 
 void zLog::log(QList<QString>ml){
-    zforeach(m, ml){this->log(*m);}
+    zforeach(m, ml){
+        if(m->endsWith("OK"))
+            this->log(QString("<font color=green>%1</font>").arg(*m));
+        else if(m->endsWith("ERROR"))
+            this->log(QString("<font color=red>%1</font>").arg(*m));
+        else
+            this->log(*m);
+    }
 }

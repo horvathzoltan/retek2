@@ -129,18 +129,20 @@ QString zTable::toString(){
 }
 
 
-QList<QString> zTable::Validate(zTable t){
+QList<QString> zTable::Validate(zTable tv){
     QList<QString> e;
 
-    if(this->tablename!=t.tablename)
-        e.append("Tablename not equals");
+    if(this->tablename!=tv.tablename)
+        e.append("Tablename: NOT_EQUALS ERROR");
     else
-        e.append("Tablename OK");
+        e.append("Tablename: OK");
 
-    zforeach(r,this->rows){
-        int i = t.rows.indexOf(*r);
-
-        e.append(QString((*r).colName)+QString::number(i));
+    zforeach(rv,tv.rows){
+        zTablerow* r = zTablerow::getByName(&rows, rv->colName);
+        if(r != nullptr)
+           e.append(r->Validate(rv.operator->()));
+        else
+           e.append(QString("row: '%1' NOT_EXIST ERROR").arg(rv->colName));
     }
     return e;
 }

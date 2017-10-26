@@ -35,8 +35,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1326</width>
-         <height>697</height>
+         <width>1340</width>
+         <height>628</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -512,7 +512,7 @@
                      </sizepolicy>
                     </property>
                     <property name="text">
-                     <string>Create</string>
+                     <string>Validate Db</string>
                     </property>
                    </widget>
                   </item>
@@ -548,7 +548,7 @@
      <x>0</x>
      <y>0</y>
      <width>1360</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu1">

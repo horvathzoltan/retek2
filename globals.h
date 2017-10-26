@@ -12,5 +12,5 @@ extern Beallitasok beallitasok;
 extern zLog zlog;
 extern zSQL zsql;
 extern QMap<QString, QString> globalCaptionMap;
-
+extern QMap<QString, QVariant> typeMap;
 #endif // GLOBALS_H

@@ -228,15 +228,12 @@ void retek2::feltoltIdegenkulcs(QString tablanev) {
 	}
 }
 
-QString retek2::getCaptionFileName(QString tablanev){
-    QString fn = zFileNameHelper::getCClassFilename(beallitasok.munkadir, beallitasok.adatbazisNev, "caption_"+tablanev+".txt");
-    return fn;
-}
+
 
 void retek2::feltoltMezoLista(QString tablanev){    
     ui.tableWidget_MezoLista->setRowCount(0);
 
-    zTable t = zsql.getTable(tablanev, getCaptionFileName(tablanev));
+    zTable t = zsql.getTable(tablanev);
 
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
         auto r = t.rows[r_ix];
@@ -890,7 +887,7 @@ void retek2::GenerateByText(){
             zlog.log("GenerateByText: "+t.toString());
         }
         zforeach(t,tl){
-            auto t_sql = zsql.getTable(t->tablename, getCaptionFileName(t->tablename));
+            auto t_sql = zsql.getTable(t->tablename);
             auto vl = t_sql.Validate(*t);
             zlog.log("--- "+t->tablename+" ---");
             zlog.log(vl);
