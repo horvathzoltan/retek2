@@ -25,8 +25,8 @@ public:
     QList<QString> Validate(zTablerow*);
     QString ValidateCaption(QString);
     QString ValidateColType(QString);
-    /*QString ValidateNullable(bool);
-    QString ValidateDLen(int);*/
+    QString ValidateNullable(bool);
+    QString ValidateDLen(int);
 };
 
 #endif // ZTABLEROW_H

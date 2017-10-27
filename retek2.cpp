@@ -877,7 +877,7 @@ void retek2::GenerateByText(){
             zforeach(fn, fns){
                QString dtype="";
                int dlen = 0;
-               bool isNullable = false;
+               bool isNullable = true;
                QString caption = "";
                auto r = zTablerow(*fn, dtype, dlen, isNullable, caption);
                rl.append(r);

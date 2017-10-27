@@ -1,7 +1,9 @@
 #include "ztablerow.h"
 #include "globals.h"
 
-zTablerow::zTablerow(){}
+zTablerow::zTablerow(){
+     this->nullable = true;
+}
 
 zTablerow::zTablerow(QString colName, QString dtype, int dlen, bool nullable, QString caption){
     this->colName = colName;
@@ -38,6 +40,8 @@ QList<QString> zTablerow::Validate(zTablerow* rv){
 
     e.append(ValidateCaption(rv->Caption));
     e.append(ValidateColType(rv->colType));
+    e.append(ValidateNullable(rv->nullable));
+    e.append(ValidateDLen(rv->dlen));
 
     return e;
 }
@@ -77,7 +81,31 @@ QString zTablerow::ValidateColType(QString rvcolType){
         }
     }
 
+QString zTablerow::ValidateNullable(bool rvnullable){
+        if(nullable == rvnullable)
+           return "Nullable OK";
+        else
+            return QString("Nullable NOT_EQUALS: '%1', '%2' ERROR").arg(nullable).arg(rvnullable);
+    }
 
-/*
-QString zTablerow::ValidateNullable(bool);
-QString zTablerow::ValidateDLen(int);*/
+QString zTablerow::ValidateDLen(int rvdLen){
+        if(colType.isEmpty())
+            return "Length: Type NOT_EXIST ERROR";
+        else{
+            if(!typeMap.contains(colType))
+                return QString("Length '%1' is NOT_VALID ERROR").arg(colType);
+             else{
+                if(colType.endsWith("char")){
+                    if(this->dlen == rvdLen)
+                        return "Type OK";
+                    else
+                        return QString("Length NOT_EQUALS: '%1', '%2' ERROR").arg(dlen).arg(rvdLen);
+                    }
+                else{
+                    return "Length NOT_TO_VALIDATE";
+                }
+            }
+        }
+    }
+
+
