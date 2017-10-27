@@ -23,21 +23,33 @@ public:
     void setUI();
 
 //zSQL("QMYSQL", "127.0.0.1", "wiki1", "root","Aladar123", "w1"),
-/*
+
     QString driver = "QMYSQL";
     QString adatbazisNev = "wiki1";
     QString server = "127.0.0.1";
     QString user = "root";
     QString password= "Aladar123";
+
+/*
+torzs_felhasznalo
+id
+firstname, char, 45, "Vezetéknév"
+username, char 50, "Felhasználó"
+passwd, "Jelszó"
+lastname, "Keresztnév"
+admin, nullable varchar(256)
+inactive, bit(1)
+abrachadabra
 */
 
-
+    /*
    // SQL SERVER
     QString driver = "QODBC";
     QString adatbazisNev = "enyv";
     QString server = "DIMOTION";
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
+*/
 
   /*
     QString adatbazisNev = "Gloster";

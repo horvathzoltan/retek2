@@ -863,7 +863,7 @@ void retek2::GenerateByText(){
     //tablanev
     auto txt = ui.textEdit->toPlainText();
 
-    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ ]*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption);
+    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto i = re.globalMatch(txt);
 
     if(i.hasNext()){

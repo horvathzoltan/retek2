@@ -33,6 +33,6 @@ void zLog::log(QList<QString>ml){
         else if(m->endsWith("ERROR"))
             this->log(QString("<font color=red>%1</font>").arg(*m));
         else
-            this->log(*m);
+            this->log(QString("<font color=black>%1</font>").arg(*m));
     }
 }
