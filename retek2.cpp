@@ -864,6 +864,10 @@ void retek2::GenerateByText(){
     auto txt = ui.textEdit->toPlainText();
 
     auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re2 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re3 = QRegularExpression(R"(([\d]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re4 = QRegularExpression(R"((?:\"([\w]+)\"))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
     auto i = re.globalMatch(txt);
 
     if(i.hasNext()){
@@ -875,11 +879,66 @@ void retek2::GenerateByText(){
             QList<zTablerow> rl;
 
             zforeach(fn, fns){
+               if(fn->isEmpty()) continue;
+
+
                QString dtype="";
                int dlen = 0;
                bool isNullable = true;
                QString caption = "";
-               auto r = zTablerow(*fn, dtype, dlen, isNullable, caption);
+
+               auto fns = fn->split(',', QString::SkipEmptyParts);
+               QString fname = fns[0].trimmed();
+
+               if(fns.length()>1){
+                   zforeach_from(fn2, fns, 1){
+                       auto fn3s= fn2->split(' ', QString::SkipEmptyParts);
+                       bool isDtype = false;
+                       zforeach(fn3, fn3s){
+                           if(typeMap.contains(*fn3)){
+                                dtype=*fn3;
+                                isDtype = true;
+                                }
+                           else{
+                               auto i2 = re2.match(*fn3);
+                               if(i2.hasMatch()){
+                                   bool isOK;
+                                   int n = i2.captured(1).toInt(&isOK);
+                                   if(isOK) dlen = n;
+                                   }
+                               else{
+                                    i2 = re3.match(*fn3);
+                                    if(i2.hasMatch()){
+                                        bool isOK;
+                                        int n = i2.captured(1).toInt(&isOK);
+                                        if(isOK) dlen = n;
+                                        }
+                                    }
+                                }
+                            }
+                       if(isDtype==false){
+                           auto i2 = re4.match(*fn2);
+                           if(i2.hasMatch())
+                               caption = i2.captured(1);
+                       } else{
+                           auto i2 = re3.match(*fn2);
+                           if(i2.hasMatch()){
+                               bool isOK;
+                               int n = i2.captured(1).toInt(&isOK);
+                               if(isOK) dlen = n;
+                               }
+                        }
+
+
+
+
+
+                       /**/
+                   zlog.log(*fn2);
+                   }
+               }
+
+               auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
                rl.append(r);
             }
             auto t = zTable(tn, rl);

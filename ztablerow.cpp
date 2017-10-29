@@ -74,8 +74,14 @@ QString zTablerow::ValidateColType(QString rvcolType){
              else{
                 if(colType == rvcolType)
                    return "Type OK";
-                else
-                    return QString("Type NOT_EQUALS: '%1', '%2' ERROR").arg(colType).arg(rvcolType);
+                else{
+                    QString c1 = typeMap.value(colType).toString();
+                    QString c2 = typeMap.value(rvcolType).toString();
+                    if(c1 == c2)
+                        return QString("Type EQUALS: '%1(%3)', '%2(%4)' OK").arg(colType,rvcolType,c1,c2);
+                    else
+                        return QString("Type NOT_EQUALS: '%1(%3)', '%2(%4)' ERROR").arg(colType,rvcolType,c1,c2);
+                    }
                 }
             }
         }
@@ -97,7 +103,7 @@ QString zTablerow::ValidateDLen(int rvdLen){
              else{
                 if(colType.endsWith("char")){
                     if(this->dlen == rvdLen)
-                        return "Type OK";
+                        return "Length OK";
                     else
                         return QString("Length NOT_EQUALS: '%1', '%2' ERROR").arg(dlen).arg(rvdLen);
                     }
