@@ -4,6 +4,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_retek2.h"
 #include <QSqlQuery>
+#include "ztable.h"
 
 class retek2 : public QMainWindow
 {
@@ -19,6 +20,8 @@ private slots:
     void GenerateByText();
 	void TableSelect(QListWidgetItem*);
     void on_pushButton_clicked();
+
+    void on_pushButton_3_clicked();
 
 private:
     Ui::retek2Class ui;
@@ -52,6 +55,7 @@ private:
 	void feltoltEljaras(QString tablanev);
 	void feltoltIdegenkulcs(QString tablanev);
 	void feltoltMezoLista(QString tablanev);
+    void feltoltMezoLista(zTable t);
 
 	QString generateTmp(QString);
 	
@@ -86,8 +90,7 @@ private:
     //static void zError(QString str);
 
 
-    static QTableWidgetItem* CreateTableItem(QVariant v);
-
+    static QTableWidgetItem* CreateTableItem(QVariant v);    
 };
 
 #endif // RETEK2_H

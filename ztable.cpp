@@ -7,6 +7,7 @@
 #include "ztablerow.h"
 #include "ztable.h"
 #include "zstringmaphelper.h"
+#include <QRegularExpression>
 
 zTable::zTable(){};
 
@@ -145,4 +146,105 @@ QList<QString> zTable::Validate(zTable tv){
            e.append(QString("row: '%1' NOT_EXIST ERROR").arg(rv->colName));
     }
     return e;
+}
+
+
+QList<zTable> zTable::createTableByText(QString txt)
+{
+   // qDebug("createTableByText");
+
+    //tablanev
+    //auto txt = ui.textEdit->toPlainText();
+
+    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_dlen1 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_dlen2 = QRegularExpression(R"(([\d]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_caption = QRegularExpression(R"((?:\"([\w]+)\"))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_nullable = QRegularExpression(R"((?:((?:not\s*)?(?:nullable|null))))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
+    auto i = re.globalMatch(txt);
+
+    QList<zTable> tl;
+
+    if(i.hasNext()){
+
+        while(i.hasNext()){
+            QRegularExpressionMatch m = i.next();
+            QString tn=m.captured(1).trimmed();
+            auto fns=m.captured(2).split(QRegularExpression(R"([\n|\r\n|\r])"), QString::SkipEmptyParts);
+            QList<zTablerow> rl;
+
+            zforeach(fn, fns){
+               if(fn->isEmpty()) continue;
+
+
+               QString dtype="";
+               int dlen = 0;
+               bool isNullable = true;
+               QString caption = "";
+
+               auto fns = fn->split(',', QString::SkipEmptyParts);
+               QString fname = fns[0].trimmed();
+
+               if(fns.length()>1){
+                   zforeach_from(fn2, fns, 1){
+                       auto fn3s= fn2->split(' ', QString::SkipEmptyParts);
+                       bool isDtype = false;
+                       zforeach(fn3, fn3s){
+                           if(typeMap.contains(*fn3)){
+                                dtype=*fn3;
+                                isDtype = true;
+                                }
+                           else{
+                               auto i2 = re_dlen1.match(*fn3);
+                               if(i2.hasMatch()){
+                                   bool isOK;
+                                   int n = i2.captured(1).toInt(&isOK);
+                                   if(isOK) dlen = n;
+                                   }
+                               else{
+                                    i2 = re_dlen2.match(*fn3);
+                                    if(i2.hasMatch()){
+                                        bool isOK;
+                                        int n = i2.captured(1).toInt(&isOK);
+                                        if(isOK) dlen = n;
+                                        }
+                                    }
+                                }
+                            }
+                       if(isDtype==false){
+                            auto i2 = re_caption.match(*fn2);
+                            if(i2.hasMatch())
+                               caption = i2.captured(1);
+                            else{
+                                auto i2 = re_dlen2.match(*fn2);
+                                if(i2.hasMatch()){
+                                    bool isOK;
+                                    int n = i2.captured(1).toInt(&isOK);
+                                    if(isOK) dlen = n;
+                                    }
+                                else{
+                                    auto i2 = re_nullable.match(*fn2);
+                                    if(i2.hasMatch()){
+                                        auto n_str = i2.captured(1);
+                                        if(n_str.contains("not"))
+                                            isNullable = false;
+                                        else
+                                            isNullable = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+               auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
+               rl.append(r);
+            }
+            auto t = zTable(tn, rl);
+            tl.append(t);
+            zlog.log("GenerateByText: "+t.toString());
+        }
+    }
+    return tl;
 }

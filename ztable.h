@@ -24,6 +24,8 @@ public:
     QString toString();
 
     QList<QString> Validate(zTable);
+
+    static QList<zTable> createTableByText(QString txt);
 };
 
 #endif // ZTABLE_H

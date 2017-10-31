@@ -17,22 +17,33 @@ void zLog::ShowDialog(QString str) {
 }
 
 void zLog::trace(QString msg){
-    this->widget->append(msg);
+    auto c = this->widget->textColor();
+    this->widget->setTextColor(QColor(Qt::blue));
+    this->widget->insertPlainText("\n"+msg);
+    this->widget->setTextColor(c);
 }
 
-void zLog::log(QString msg){
+void zLog::log(QString m){
     #ifdef QT_DEBUG
-    this->widget->append(msg);
+
+    auto c = this->widget->textColor();
+
+    QColor c2;
+
+    if(m.endsWith("OK"))
+        c2 = QColor(Qt::green);
+    else if(m.endsWith("ERROR"))
+        c2 = QColor(Qt::red);
+    else
+        c2 = QColor(Qt::black);
+
+    this->widget->insertPlainText("\n"+m);
+    this->widget->setTextColor(c);
     #endif
 }
 
 void zLog::log(QList<QString>ml){
     zforeach(m, ml){
-        if(m->endsWith("OK"))
-            this->log(QString("<font color=green>%1</font color>").arg(*m));
-        else if(m->endsWith("ERROR"))
-            this->log(QString("<font color=red>%1</font color>").arg(*m));
-        else
-            this->log(QString("<font color=black>%1</font color>").arg(*m));
-    }
+        this->log(*m);
+        }
 }

@@ -231,10 +231,12 @@ void retek2::feltoltIdegenkulcs(QString tablanev) {
 
 
 void retek2::feltoltMezoLista(QString tablanev){    
-    ui.tableWidget_MezoLista->setRowCount(0);
-
     zTable t = zsql.getTable(tablanev);
+    feltoltMezoLista(t);
+}
 
+void retek2::feltoltMezoLista(zTable t){
+    ui.tableWidget_MezoLista->setRowCount(0);
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
         auto r = t.rows[r_ix];
         ui.tableWidget_MezoLista->insertRow(r_ix);
@@ -272,11 +274,12 @@ void retek2::GenerateAll() {
 	qDebug("GenerateAll");
     if (!tablanev.isEmpty()){
 		saveCaptionTabla(tablanev);
-
+        }
 	if (ui.checkBox_CClass->isChecked()) {
 		qDebug("C# Class");
 
         auto txt = generateTmp("MVC_CClass.cs");
+        zlog.trace(txt);
         SaveAllTextToFile(&txt, zFileNameHelper::getCClassFilename(beallitasok.munkadir,beallitasok.adatbazisNev,tablanev + ".cs"));
 	}
 	//checkBox_Context
@@ -289,6 +292,7 @@ void retek2::GenerateAll() {
 	if (ui.checkBox_Model->isChecked()) {
 		qDebug("Model");
 		auto txt = generateTmp("MVC_Model.cs");
+        //zlog.trace(txt);
         SaveAllTextToFile(&txt, getModelFilename(getOsztalynevUpper(tablanev) + ".cs"));
 	}
 	if (ui.checkBox_Meta->isChecked()) {
@@ -346,11 +350,11 @@ void retek2::GenerateAll() {
 		qDebug("Delete");
 		auto txt = generateTmp("MVC_Delete.cshtml");
 		SaveAllTextToFile(&txt, getModelFilename(getOsztalynevLower(tablanev) + "ViewDelete" + ".cshtml"));
-	}
+
     }
-    else{
-        qDebug("Nincs tabla kivalasztva!");
-    }
+    //else{
+    //    qDebug("Nincs tabla kivalasztva!");
+    //}
 
 }
 
@@ -857,112 +861,41 @@ void retek2::on_pushButton_clicked()
  * A 2-es tabon megadott szöveg alapján generál táblaszerkezetet
  * amialapján validálja az adatbázisban szereplő táblát.
  */
+
+
 void retek2::GenerateByText(){
     qDebug("GenerateByText");
 
-    //tablanev
     auto txt = ui.textEdit->toPlainText();
-
-    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    auto re_dlen1 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    auto re_dlen2 = QRegularExpression(R"(([\d]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    auto re_caption = QRegularExpression(R"((?:\"([\w]+)\"))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    auto re_nullable = QRegularExpression(R"((?:((?:not\s*)?(?:nullable|null))))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-
-    auto i = re.globalMatch(txt);
-
-    if(i.hasNext()){
-        QList<zTable> tl;
-        while(i.hasNext()){
-            QRegularExpressionMatch m = i.next();
-            QString tn=m.captured(1).trimmed();
-            auto fns=m.captured(2).split(QRegularExpression(R"([\n|\r\n|\r])"), QString::SkipEmptyParts);
-            QList<zTablerow> rl;
-
-            zforeach(fn, fns){
-               if(fn->isEmpty()) continue;
-
-
-               QString dtype="";
-               int dlen = 0;
-               bool isNullable = true;
-               QString caption = "";
-
-               auto fns = fn->split(',', QString::SkipEmptyParts);
-               QString fname = fns[0].trimmed();
-
-               if(fns.length()>1){
-                   zforeach_from(fn2, fns, 1){
-                       auto fn3s= fn2->split(' ', QString::SkipEmptyParts);
-                       bool isDtype = false;
-                       zforeach(fn3, fn3s){
-                           if(typeMap.contains(*fn3)){
-                                dtype=*fn3;
-                                isDtype = true;
-                                }
-                           else{
-                               auto i2 = re_dlen1.match(*fn3);
-                               if(i2.hasMatch()){
-                                   bool isOK;
-                                   int n = i2.captured(1).toInt(&isOK);
-                                   if(isOK) dlen = n;
-                                   }
-                               else{
-                                    i2 = re_dlen2.match(*fn3);
-                                    if(i2.hasMatch()){
-                                        bool isOK;
-                                        int n = i2.captured(1).toInt(&isOK);
-                                        if(isOK) dlen = n;
-                                        }
-                                    }
-                                }
-                            }
-                       if(isDtype==false){
-                            auto i2 = re_caption.match(*fn2);
-                            if(i2.hasMatch())
-                               caption = i2.captured(1);
-                            else{
-                                auto i2 = re_dlen2.match(*fn2);
-                                if(i2.hasMatch()){
-                                    bool isOK;
-                                    int n = i2.captured(1).toInt(&isOK);
-                                    if(isOK) dlen = n;
-                                    }
-                                else{
-                                auto i2 = re_nullable.match(*fn2);
-                                if(i2.hasMatch()){
-                                   auto n_str = i2.captured(1);
-                                   if(n_str.contains("not"))
-                                       isNullable = false;
-                                   else
-                                       isNullable = true;
-                                }
-                            }
-                        }
-                       }
-                       /**/
-                   /*zlog.log(*fn2);*/
-                   }
-               }
-
-               auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
-               rl.append(r);
-            }
-            auto t = zTable(tn, rl);
-            tl.append(t);
-            zlog.log("GenerateByText: "+t.toString());
-        }
+    auto tl = zTable::createTableByText(txt);
+    if(tl.length()>0){
         zforeach(t,tl){
             auto t_sql = zsql.getTable(t->tablename);
             auto vl = t_sql.Validate(*t);
             zlog.log("--- "+t->tablename+" ---");
             zlog.log(vl);
-        }
+            }
         zlog.log("--- --- ---");
-    }
+        }
     else{
         zlog.log("nincs egyezés, nincs vizsgálat");
-    }
+        }
 
     return;
+}
+
+
+void retek2::on_pushButton_3_clicked()
+{
+    qDebug("on_pushButton_3_clicked");
+
+    auto txt = ui.textEdit->toPlainText();
+    auto tl = zTable::createTableByText(txt);
+    if(tl.length()>0){
+        feltoltMezoLista(tl[0]);
+        tablanev = tl[0].tablename;
+        }
+    else{
+        zlog.log("nincs egyezés, nincs vizsgálat");
+        }
 }
