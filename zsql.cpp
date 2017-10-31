@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "zstringmaphelper.h"
 #include <QSqlDriver>
+#include "zstringhelper.h"
 
 // szerver adatokat kitenni izébe, struktúrába
 // new zSQL("QMYSQL", "127.0.0.1", "wiki1", "root","Aladar123", "w1"),
@@ -201,7 +202,8 @@ zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
         QString colName = query.value("COLUMN_NAME").toString();
         QString dtype = query.value("DATA_TYPE").toString();
         int dlen = query.value("CHARACTER_MAXIMUM_LENGTH").toInt();
-        bool nullable = query.value("IS_NULLABLE").toBool();
+
+        bool nullable = zStringHelper::toBool(query.value("IS_NULLABLE").toString());
         QString cn = colName.toLower();
 
         QString caption = tablaCaptionMap.contains(cn)?tablaCaptionMap[cn]:globalCaptionMap.contains(cn)?globalCaptionMap[cn]:cn;

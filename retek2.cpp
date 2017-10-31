@@ -864,9 +864,10 @@ void retek2::GenerateByText(){
     auto txt = ui.textEdit->toPlainText();
 
     auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    auto re2 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    auto re3 = QRegularExpression(R"(([\d]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    auto re4 = QRegularExpression(R"((?:\"([\w]+)\"))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_dlen1 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_dlen2 = QRegularExpression(R"(([\d]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_caption = QRegularExpression(R"((?:\"([\w]+)\"))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_nullable = QRegularExpression(R"((?:((?:not\s*)?(?:nullable|null))))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
     auto i = re.globalMatch(txt);
 
@@ -900,14 +901,14 @@ void retek2::GenerateByText(){
                                 isDtype = true;
                                 }
                            else{
-                               auto i2 = re2.match(*fn3);
+                               auto i2 = re_dlen1.match(*fn3);
                                if(i2.hasMatch()){
                                    bool isOK;
                                    int n = i2.captured(1).toInt(&isOK);
                                    if(isOK) dlen = n;
                                    }
                                else{
-                                    i2 = re3.match(*fn3);
+                                    i2 = re_dlen2.match(*fn3);
                                     if(i2.hasMatch()){
                                         bool isOK;
                                         int n = i2.captured(1).toInt(&isOK);
@@ -917,24 +918,30 @@ void retek2::GenerateByText(){
                                 }
                             }
                        if(isDtype==false){
-                           auto i2 = re4.match(*fn2);
-                           if(i2.hasMatch())
+                            auto i2 = re_caption.match(*fn2);
+                            if(i2.hasMatch())
                                caption = i2.captured(1);
-                       } else{
-                           auto i2 = re3.match(*fn2);
-                           if(i2.hasMatch()){
-                               bool isOK;
-                               int n = i2.captured(1).toInt(&isOK);
-                               if(isOK) dlen = n;
-                               }
+                            else{
+                                auto i2 = re_dlen2.match(*fn2);
+                                if(i2.hasMatch()){
+                                    bool isOK;
+                                    int n = i2.captured(1).toInt(&isOK);
+                                    if(isOK) dlen = n;
+                                    }
+                                else{
+                                auto i2 = re_nullable.match(*fn2);
+                                if(i2.hasMatch()){
+                                   auto n_str = i2.captured(1);
+                                   if(n_str.contains("not"))
+                                       isNullable = false;
+                                   else
+                                       isNullable = true;
+                                }
+                            }
                         }
-
-
-
-
-
+                       }
                        /**/
-                   zlog.log(*fn2);
+                   /*zlog.log(*fn2);*/
                    }
                }
 
