@@ -14,4 +14,5 @@ extern zLog zlog;
 extern zSQL zsql;
 extern QMap<QString, QString> globalCaptionMap;
 extern QMap<QString, QVariant> typeMap;
+extern QMap<QString, QString> macroMap;
 #endif // GLOBALS_H
