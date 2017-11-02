@@ -157,20 +157,42 @@ QList<zTable> zTable::createTableByText(QString txt)
     //auto txt = ui.textEdit->toPlainText();
 
 //    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-        auto re = QRegularExpression(R"(^\s*(?:(^\w*)\s+)((?:^[\w, ()\"']+\n?)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re = QRegularExpression(R"(^\s*(?:(^\w*)\s+)((?:^[\w, ()\"'<>\.]+\n?)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen1 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen2 = QRegularExpression(R"(([\d]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_caption = QRegularExpression(R"((?:\"([\w]+)\"))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_nullable = QRegularExpression(R"((?:((?:not\s*)?(?:nullable|null))))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
-    auto re_macro_def = QRegularExpression(R"(^\s*(?:(^#\w*)\s+)((?:^[\w, ()"']+\n?)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_macro_def = QRegularExpression(R"(^\s*(?:^#(\w*)\s+)((?:[\w, ()\"'<>\.]+\s)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+//    auto re_macro_use = QRegularExpression(R"((?:^([\w]+)\s*$))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_macro_use_tmp = QString(R"((?:^(%1)\s*$))");
+
+    auto j = re_macro_def.globalMatch(txt);
+
+        while(j.hasNext()){
+            QRegularExpressionMatch m = j.next();
+            QString m_name=m.captured(1);
+            QString m_txt=m.captured(2).trimmed();
+
+            if(!macroMap.contains(m_name)){
+                macroMap.insert(m_name, m_txt);
+                zlog.trace(QString("Macro def: %1").arg(m_name));
+                }
+        }
+
+    //QString txt2;
+        auto keys = macroMap.keys();
+    zforeach(m, keys){
+        auto mcr = QRegularExpression(re_macro_use_tmp.arg(*m), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
+        //if(txt.contains(mcr)){
+            txt.replace(mcr,macroMap.value(*m));
+        //}
+    }
 
     auto i = re.globalMatch(txt);
-
     QList<zTable> tl;
-
     if(i.hasNext()){
-
         while(i.hasNext()){
             QRegularExpressionMatch m = i.next();
             QString tn=m.captured(1).trimmed();
@@ -179,7 +201,7 @@ QList<zTable> zTable::createTableByText(QString txt)
 
             zforeach(fn, fns){
                if(fn->isEmpty()) continue;
-
+               if(*fn=="_") continue;
 
                QString dtype="";
                int dlen = 0;
