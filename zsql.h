@@ -15,6 +15,7 @@ private:
 
     static const QString getTableNames_MYSQL_CMDTMP;
     static const QString getTableNames_MSSQL_CMDTMP;
+    static const QString getTable_MSSQL_PKTMP;
 
     static const QString getTable_MYSQL_CMDTMP;
     static const QString getTable_MSSQL_CMDTMP;
@@ -41,6 +42,7 @@ private:
     QString getTableNames_MYSQL_CMD();
     QString getTableNames_MSSQL_CMD();
 
+    QString getTable_MSSQL_PK(QString tn);
 public:
     zSQL();
     void init(QString, QString, QString, QString, QString);

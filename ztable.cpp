@@ -13,9 +13,10 @@ zTable::zTable(){};
 
 zTable::~zTable(){};
 
-zTable::zTable(QString n, QList<zTablerow> tr){
+zTable::zTable(QString n, QString pkn, QList<zTablerow> tr){
     this->tablename = n;
     this->rows = tr;
+    this->pkname = pkn;
 }
 
 
@@ -124,6 +125,7 @@ QString zTable::toString(){
     QString rs;
     zforeach(r, this->rows){
         if(!rs.isEmpty()) rs+=",";
+        if(r->colName==this->pkname) rs+="PK:";
         rs+=r->toString();
     }
     return  this->tablename+"("+rs+")";
@@ -196,6 +198,7 @@ QList<zTable> zTable::createTableByText(QString txt)
         while(i.hasNext()){
             QRegularExpressionMatch m = i.next();
             QString tn=m.captured(1).trimmed();
+            QString pkn = "id";
             auto fns=m.captured(2).split(QRegularExpression(R"([\n|\r\n|\r])"), QString::SkipEmptyParts);
             QList<zTablerow> rl;
 
@@ -257,6 +260,11 @@ QList<zTable> zTable::createTableByText(QString txt)
                                         else
                                             isNullable = true;
                                         }
+                                    else{
+                                        if(*fn2=="key"){
+                                            pkn = fname;
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -266,10 +274,22 @@ QList<zTable> zTable::createTableByText(QString txt)
                auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
                rl.append(r);
             }
-            auto t = zTable(tn, rl);
+            auto t = zTable(tn, pkn, rl);
             tl.append(t);
             zlog.log("GenerateByText: "+t.toString());
         }
     }
     return tl;
+}
+
+zTable* zTable::getByName(QList<zTable> *tables, QString rn){
+    if(rn.isEmpty()) return nullptr;
+    zforeach(r,*tables){
+        if(!r->tablename.isEmpty())
+            if(r->tablename == rn){
+                zTable *r2 = r.operator->();
+                return r2;
+            }
+        }
+    return nullptr;
 }

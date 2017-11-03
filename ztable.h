@@ -9,12 +9,14 @@
 class zTable
 {
 public:
-    zTable(QString tablanev, QList<zTablerow>);
+    zTable(QString tablanev, QString pkn, QList<zTablerow>);
 
     zTable();
     ~zTable();
 
     QString tablename;
+    QString pkname;
+
     QList<zTablerow> rows;
 
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
@@ -26,6 +28,7 @@ public:
     QList<QString> Validate(zTable);
 
     static QList<zTable> createTableByText(QString txt);
+    static zTable* getByName(QList<zTable> *tables, QString rn);
 };
 
 #endif // ZTABLE_H
