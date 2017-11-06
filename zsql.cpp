@@ -169,12 +169,6 @@ const QString zSQL::getTable_MSSQL_CMDTMP = "Select "
 QString zSQL::getTable_MSSQL_CMD(QString tn){ return getTable_MSSQL_CMDTMP.arg(tn); }
 QString zSQL::getTable_MYSQL_CMD(QString tn){ return getTable_MYSQL_CMDTMP.arg(this->databaseName).arg(tn); }
 
-const QString zSQL::getTable_MSSQL_PKTMP = "SELECT COLUMN_NAME"
-                                           "FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE "
-                                           "WHERE OBJECTPROPERTY(OBJECT_ID(CONSTRAINT_SCHEMA + '.' + QUOTENAME(CONSTRAINT_NAME)), 'IsPrimaryKey') = 1 "
-                                           "AND TABLE_NAME = '%1' AND TABLE_SCHEMA = '%2';";// AND TABLE_CATALOG='enyv';";
-
-QString zSQL::getTable_MSSQL_PK(QString tn){ return getTable_MSSQL_PKTMP.arg(this->databaseName).arg(tn); }
 
 zTable zSQL::getTable(QString tablanev){
 
@@ -218,8 +212,53 @@ zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
         tr.append(zTablerow(colName, dtype, dlen, nullable, caption));
         }
 
-    QString pkn = "id";
-    auto e = zTable(tablanev, pkn, tr);
+    QString pkn = getTablePK(tablanev);
+
+    auto e = zTable(tablanev, (pkn.isEmpty()?"zId":pkn), tr);
     return e;
 }
 
+
+/*
+PK kezelés
+*/
+
+const QString zSQL::getTable_MSSQL_PKTMP = "SELECT COLUMN_NAME "
+                                           "FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE "
+                                           "WHERE OBJECTPROPERTY(OBJECT_ID(CONSTRAINT_SCHEMA + '.' + QUOTENAME(CONSTRAINT_NAME)), 'IsPrimaryKey') = 1 "
+                                           "AND TABLE_NAME = '%1';";// AND TABLE_CATALOG ='%2' AND TABLE_SCHEMA = 'dbo';";// AND TABLE_CATALOG='enyv';";
+
+QString zSQL::getTable_MSSQL_PK(QString tn){
+    return getTable_MSSQL_PKTMP.arg(tn);//.arg(this->databaseName);
+}
+
+QString zSQL::getTablePK(QString tablanev){
+
+    if(db.isValid() && db.isOpen()){
+        //QString fn = beallitasok.getCaptionFileName(tablanev);
+
+        if(driverName == QODBC)
+            return getTable_SQL_PK(tablanev, getTable_MSSQL_PK(tablanev));
+        else if(driverName == QMYSQL){}
+
+        else{
+            zlog.log("getTable: unknown driver:" + driverName);
+        }
+    }
+    else{
+        zlog.log("getTable: db closed" + driverName);
+    }
+    return "";
+}
+
+QString zSQL::getTable_SQL_PK(QString tablanev, QString cmd)
+{
+    QSqlQuery query(cmd, db);
+    query.setForwardOnly(true);
+
+    if(query.next()) {
+        return query.value("COLUMN_NAME").toString();
+        }
+
+    return "";
+}

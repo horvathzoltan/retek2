@@ -42,45 +42,43 @@ inactive, bit(1)
 abrachadabra
 */
 
-
+/*
    // SQL SERVER
     QString driver = "QODBC";
     QString adatbazisNev = "enyv";
     QString server = "DIMOTION";
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
-
-
-  /*
+*/
+/*
     QString adatbazisNev = "Gloster";
     QString server = "DEATHSTAR";
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
-    */
-
-/*
+*/
+    QString driver = "QODBC";
     QString adatbazisNev = "ServiceFlex";
     QString server = "deathstar";
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
-*/
+
 /*
    QString adatbazisNev = "d_solutions";
     QString server = "178.48.178.42,420";
     QString user = "digital";
     QString password= "Aladar123";
 */
-    /*
-    QString adatbazisNev = "digman";
+/*
+     QString adatbazisNev = "digman";
      QString server = "178.48.178.42,420";
      QString user = "digital";
      QString password= "Aladar123";
 */
- /*    QString adatbazisNev = "elelmiszermentes";
+/*
+    QString adatbazisNev = "elelmiszermentes";
     QString server = "178.48.178.42,420";
     QString user = "elelmiszermentes";
     QString password= "Aladar123";
-
 */
 
     //QString connectionString = connectionTemplate.arg(server).arg(adatbazisNev);

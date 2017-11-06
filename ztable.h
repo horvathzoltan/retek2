@@ -18,6 +18,7 @@ public:
     QString pkname;
 
     QList<zTablerow> rows;
+    //QList<zTablerow> navprops;
 
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );

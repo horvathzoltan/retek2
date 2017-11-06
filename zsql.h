@@ -57,6 +57,8 @@ public:
     QString toString();
     QList<QString> getTableNames();
     zTable getTable(QString tablanev);
+    QString getTablePK(QString tablanev);
+    QString getTable_SQL_PK(QString tablanev, QString cmd);
 };
 
 #endif // ZSQL_H

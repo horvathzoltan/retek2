@@ -151,6 +151,7 @@ QList<QString> zTable::Validate(zTable tv){
 }
 
 
+
 QList<zTable> zTable::createTableByText(QString txt)
 {
    // qDebug("createTableByText");
@@ -192,6 +193,8 @@ QList<zTable> zTable::createTableByText(QString txt)
         //}
     }
 
+
+
     auto i = re.globalMatch(txt);
     QList<zTable> tl;
     if(i.hasNext()){
@@ -219,11 +222,17 @@ QList<zTable> zTable::createTableByText(QString txt)
                        auto fn3s= fn2->split(' ', QString::SkipEmptyParts);
                        bool isDtype = false;
                        zforeach(fn3, fn3s){
-                           if(typeMap.contains(*fn3)){
+                           if(typeMap.contains(fn3->toLower())){
                                 dtype=*fn3;
                                 isDtype = true;
-                                }
+                                }                           
                            else{
+                               auto ks = typeMap.keys(fn3->toLower());
+                               if(ks.length()>0){
+                                   dtype = typeMap[ks[0]].toString();
+                                   isDtype = true;
+                               }
+                                else{
                                auto i2 = re_dlen1.match(*fn3);
                                if(i2.hasMatch()){
                                    bool isOK;
@@ -239,6 +248,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                                         }
                                     }
                                 }
+                           }
                             }
                        if(isDtype==false){
                             auto i2 = re_caption.match(*fn2);
@@ -255,13 +265,13 @@ QList<zTable> zTable::createTableByText(QString txt)
                                     auto i2 = re_nullable.match(*fn2);
                                     if(i2.hasMatch()){
                                         auto n_str = i2.captured(1);
-                                        if(n_str.contains("not"))
+                                        if(n_str.toLower().contains("not"))
                                             isNullable = false;
                                         else
                                             isNullable = true;
                                         }
                                     else{
-                                        if(*fn2=="key"){
+                                        if((*fn2).toLower()=="key"){
                                             pkn = fname;
                                             }
                                         }
@@ -270,6 +280,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                             }
                         }
                     }
+               //if(dtype.isEmpty()) continue;
 
                auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
                rl.append(r);
