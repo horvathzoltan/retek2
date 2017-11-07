@@ -61,8 +61,8 @@ void retek2::init(void)
 	typeMap.insert("int", "int");
 	typeMap.insert("datetime", "DateTime");
 	typeMap.insert("date", "Date");
-	typeMap.insert("nchar", "string");
-	typeMap.insert("nvarchar", "string");
+    typeMap.insert("nvarchar", "string");
+	typeMap.insert("nchar", "string");	
 	typeMap.insert("char", "string");
 	typeMap.insert("varchar", "string");
 	typeMap.insert("float", "float");

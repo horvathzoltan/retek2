@@ -223,15 +223,40 @@ QList<zTable> zTable::createTableByText(QString txt)
                        auto fn3s= fn2->split(' ', QString::SkipEmptyParts);
                        bool isDtype = false;
                        zforeach(fn3, fn3s){
+                           QString k = zTypemapHelper::getKey(&typeMap, *fn3);
+                           //auto isKey = zTypemapHelper::contains(&typeMap, *fn3);
+                           if(!k.isEmpty()){
+                               //QString k = zTypemapHelper::getKey(&typeMap, *fn3);
+                               dtype = k;
+                               isDtype = true;
+                           }
+                            else{
+                           auto i2 = re_dlen1.match(*fn3);
+                           if(i2.hasMatch()){
+                               bool isOK;
+                               int n = i2.captured(1).toInt(&isOK);
+                               if(isOK) dlen = n;
+                               }
+                           else{
+                                i2 = re_dlen2.match(*fn3);
+                                if(i2.hasMatch()){
+                                    bool isOK;
+                                    int n = i2.captured(1).toInt(&isOK);
+                                    if(isOK) dlen = n;
+                                    }
+                                }
+                            }
+                           /*
                            if(zTypemapHelper::containsKey(&typeMap, *fn3)){
-                                dtype=*fn3;
+                                QString k = zTypemapHelper::getKey(&typeMap, *fn3);
+                                dtype=k;
                                 isDtype = true;
                                 }                           
                            else{
                                auto isKey = zTypemapHelper::contains(&typeMap, *fn3);
                                if(isKey){
                                    QString k = zTypemapHelper::getKey(&typeMap, *fn3);
-                                   dtype = typeMap[k].toString();
+                                   dtype = k;
                                    isDtype = true;
                                }
                                 else{
@@ -250,7 +275,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                                         }
                                     }
                                 }
-                           }
+                           }*/
                             }
                        if(isDtype==false){
                             auto i2 = re_caption.match(*fn2);
