@@ -224,13 +224,11 @@ QList<zTable> zTable::createTableByText(QString txt)
                        bool isDtype = false;
                        zforeach(fn3, fn3s){
                            QString k = zTypemapHelper::getKey(&typeMap, *fn3);
-                           //auto isKey = zTypemapHelper::contains(&typeMap, *fn3);
                            if(!k.isEmpty()){
-                               //QString k = zTypemapHelper::getKey(&typeMap, *fn3);
                                dtype = k;
                                isDtype = true;
                            }
-                            else{
+                           else{
                            auto i2 = re_dlen1.match(*fn3);
                            if(i2.hasMatch()){
                                bool isOK;
