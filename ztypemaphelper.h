@@ -10,10 +10,11 @@ class zTypemapHelper
 public:
     //zTypemapHelper();
 
-    static bool containsKey(QMap<QString, QVariant>&, QString k);
-    static bool contains(QMap<QString, QVariant>&, QString v);
+    static bool containsKey(QMap<QString, QVariant> *, QString k);
+    static bool contains(QMap<QString, QVariant> *, QString v);
 
-
+    static QString getValue(QMap<QString, QVariant> *map, QString k);
+    static QString getKey(QMap<QString, QVariant> *map, QString v);
 };
 
 #endif // ZTYPEMAPHELPER_H

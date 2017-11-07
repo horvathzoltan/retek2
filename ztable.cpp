@@ -7,6 +7,7 @@
 #include "ztablerow.h"
 #include "ztable.h"
 #include "zstringmaphelper.h"
+#include"ztypemaphelper.h"
 #include <QRegularExpression>
 
 zTable::zTable(){};
@@ -222,14 +223,15 @@ QList<zTable> zTable::createTableByText(QString txt)
                        auto fn3s= fn2->split(' ', QString::SkipEmptyParts);
                        bool isDtype = false;
                        zforeach(fn3, fn3s){
-                           if(typeMap.contains(fn3->toLower())){
+                           if(zTypemapHelper::containsKey(&typeMap, *fn3)){
                                 dtype=*fn3;
                                 isDtype = true;
                                 }                           
                            else{
-                               auto ks = typeMap.keys(fn3->toLower());
-                               if(ks.length()>0){
-                                   dtype = typeMap[ks[0]].toString();
+                               auto isKey = zTypemapHelper::contains(&typeMap, *fn3);
+                               if(isKey){
+                                   QString k = zTypemapHelper::getKey(&typeMap, *fn3);
+                                   dtype = typeMap[k].toString();
                                    isDtype = true;
                                }
                                 else{
