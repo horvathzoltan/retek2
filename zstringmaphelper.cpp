@@ -65,3 +65,20 @@ void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
 
     zlog.log(QString("Kiírva: %1").arg(fn));
 }
+
+bool zStringMapHelper::contains(QMap<QString, QString> *map, QString k){
+    auto ks = map->keys();
+    zforeach(e, ks){
+       if(e->toLower()==k.toLower()) return true;
+    }
+    return false;
+}
+
+QString zStringMapHelper::getKey(QMap<QString, QString> *map, QString k){
+    auto ks = map->keys();
+    zforeach(e, ks){
+       if(e->toLower()==k.toLower()) return *e;
+    }
+    return "";
+}
+

@@ -57,6 +57,7 @@ void retek2::init(void)
     zlog.init(ui.textBrowser);
     beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog);
 
+    //sql->c# irány
 	typeMap.insert("uniqueidentifier", "Guid");
 	typeMap.insert("int", "int");
 	typeMap.insert("datetime", "DateTime");
@@ -69,6 +70,18 @@ void retek2::init(void)
 	typeMap.insert("bit", "bool");
 	typeMap.insert("decimal", "decimal");
 	typeMap.insert("xml", "string");
+
+    //c# -> sql irány
+    typeMapR.insert("Guid","uniqueidentifier");
+    typeMapR.insert("int", "int");
+    typeMapR.insert("DateTime", "datetime");
+    typeMapR.insert("Date","date");
+    typeMapR.insert("string","nvarchar");
+    typeMapR.insert("float", "float");
+    typeMapR.insert("bool","bit");
+    typeMapR.insert("decimal", "decimal");
+
+    //TODO beállításfájlból felolvasás, ahol már nincs c#-ra korlátozva, illetve a két táblát lehet egy mapból építeni
 
 	dxMap.insert("uniqueidentifier", "dxTextBox");
 	dxMap.insert("int", "dxNumberBox");
@@ -841,7 +854,7 @@ QString retek2::getPropList2(QString tmp, QString param, int whsp) {
 
 
 QString retek2::getPropType(QString tipusnev, int length, bool isnullable) {
-	QString pt = typeMap.value(tipusnev).toString();
+    QString pt = typeMap.value(tipusnev);//.toString();
 	if (isnullable && !tipusnev.endsWith("char")) pt += '?';
 	return pt;
 }

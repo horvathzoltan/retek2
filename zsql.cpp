@@ -214,7 +214,9 @@ zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
 
     QString pkn = getTablePK(tablanev);
 
-    auto e = zTable(tablanev, (pkn.isEmpty()?"zId":pkn), tr);
+    QList<zTablerow> pr;
+
+    auto e = zTable(tablanev, (pkn.isEmpty()?"zId":pkn), tr, pr);
     return e;
 }
 

@@ -9,7 +9,7 @@
 class zTable
 {
 public:
-    zTable(QString tablanev, QString pkn, QList<zTablerow>);
+    zTable(QString tablanev, QString pkn, QList<zTablerow>, QList<zTablerow>);
 
     zTable();
     ~zTable();
@@ -18,7 +18,7 @@ public:
     QString pkname;
 
     QList<zTablerow> rows;
-    //QList<zTablerow> navprops;
+    QList<zTablerow> props;
 
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );

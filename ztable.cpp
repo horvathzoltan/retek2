@@ -7,16 +7,17 @@
 #include "ztablerow.h"
 #include "ztable.h"
 #include "zstringmaphelper.h"
-#include"ztypemaphelper.h"
+
 #include <QRegularExpression>
 
 zTable::zTable(){};
 
 zTable::~zTable(){};
 
-zTable::zTable(QString n, QString pkn, QList<zTablerow> tr){
+zTable::zTable(QString n, QString pkn, QList<zTablerow> tr, QList<zTablerow> pl){
     this->tablename = n;
     this->rows = tr;
+    this->props = pl;
     this->pkname = pkn;
 }
 
@@ -124,12 +125,20 @@ zTable::zTable(QString n, QString pkn, QList<zTablerow> tr){
 
 QString zTable::toString(){
     QString rs;
+    QString ps;
     zforeach(r, this->rows){
         if(!rs.isEmpty()) rs+=",";
         if(r->colName==this->pkname) rs+="PK:";
         rs+=r->toString();
     }
-    return  this->tablename+"("+rs+")";
+
+    zforeach(p, this->props){
+        if(!rs.isEmpty()) ps+=",";
+        //if(p->colName==this->pkname) ps+="PK:";
+        ps+=p->toString();
+    }
+
+    return  this->tablename+"("+rs+")"+(!ps.isEmpty()?ps:"");
 }
 
 
@@ -164,6 +173,8 @@ QList<zTable> zTable::createTableByText(QString txt)
     auto re = QRegularExpression(R"(^\s*(?:(^\w*)\s+)((?:^[\w, ()\"'<>\.]+\n?)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen1 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen2 = QRegularExpression(R"(([\d]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_dlen3 = QRegularExpression(R"((?:(\w+)\s*\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    //(?:(\w+)\s*\(([\d]+)\))
     auto re_caption = QRegularExpression(R"((?:\"([\w]+)\"))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_nullable = QRegularExpression(R"((?:((?:not\s*)?(?:nullable|null))))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
@@ -205,6 +216,7 @@ QList<zTable> zTable::createTableByText(QString txt)
             QString pkn = "id";
             auto fns=m.captured(2).split(QRegularExpression(R"([\n|\r\n|\r])"), QString::SkipEmptyParts);
             QList<zTablerow> rl;
+            QList<zTablerow> pl;
 
             zforeach(fn, fns){
                if(fn->isEmpty()) continue;
@@ -223,49 +235,36 @@ QList<zTable> zTable::createTableByText(QString txt)
                        auto fn3s= fn2->split(' ', QString::SkipEmptyParts);
                        bool isDtype = false;
                        zforeach(fn3, fn3s){
-                           QString k = zTypemapHelper::getKey(&typeMap, *fn3);
-                           if(!k.isEmpty()){
-                               dtype = k;
-                               isDtype = true;
-                           }
-                           else{
-                           auto i2 = re_dlen1.match(*fn3);
-                           if(i2.hasMatch()){
+                           QString ezt1;
+                           auto i3 = re_dlen3.match(*fn3);
+                           if(i3.hasMatch()){
+                               ezt1 = i3.captured(1);
                                bool isOK;
-                               int n = i2.captured(1).toInt(&isOK);
+                               int n = i3.captured(2).toInt(&isOK);
                                if(isOK) dlen = n;
                                }
                            else{
-                                i2 = re_dlen2.match(*fn3);
-                                if(i2.hasMatch()){
-                                    bool isOK;
-                                    int n = i2.captured(1).toInt(&isOK);
-                                    if(isOK) dlen = n;
-                                    }
-                                }
-                            }
-                           /*
-                           if(zTypemapHelper::containsKey(&typeMap, *fn3)){
-                                QString k = zTypemapHelper::getKey(&typeMap, *fn3);
-                                dtype=k;
-                                isDtype = true;
-                                }                           
+                               ezt1 = *fn3;
+                           }
+                           if(zStringMapHelper::contains(&typeMap, ezt1)){
+                               QString k = zStringMapHelper::getKey(&typeMap, ezt1);
+                               dtype =  typeMap.value(k);;
+                               isDtype = true;
+                           }
+                           else if(zStringMapHelper::contains(&typeMapR, ezt1)){
+                               QString k = zStringMapHelper::getKey(&typeMapR, ezt1);
+                               dtype =  typeMapR.value(k);;
+                               isDtype = true;
+                           }
                            else{
-                               auto isKey = zTypemapHelper::contains(&typeMap, *fn3);
-                               if(isKey){
-                                   QString k = zTypemapHelper::getKey(&typeMap, *fn3);
-                                   dtype = k;
-                                   isDtype = true;
-                               }
-                                else{
-                               auto i2 = re_dlen1.match(*fn3);
+                               auto i2 = re_dlen1.match(ezt1);
                                if(i2.hasMatch()){
                                    bool isOK;
                                    int n = i2.captured(1).toInt(&isOK);
                                    if(isOK) dlen = n;
                                    }
                                else{
-                                    i2 = re_dlen2.match(*fn3);
+                                    i2 = re_dlen2.match(ezt1);
                                     if(i2.hasMatch()){
                                         bool isOK;
                                         int n = i2.captured(1).toInt(&isOK);
@@ -273,7 +272,6 @@ QList<zTable> zTable::createTableByText(QString txt)
                                         }
                                     }
                                 }
-                           }*/
                             }
                        if(isDtype==false){
                             auto i2 = re_caption.match(*fn2);
@@ -305,12 +303,16 @@ QList<zTable> zTable::createTableByText(QString txt)
                             }
                         }
                     }
-               //if(dtype.isEmpty()) continue;
-
-               auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
-               rl.append(r);
+               if(dtype.isEmpty()){
+                   auto p = zTablerow(fname, "property", dlen, isNullable, caption);
+                   pl.append(p);
+                   }
+               else{
+                   auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
+                   rl.append(r);
+                   }
             }
-            auto t = zTable(tn, pkn, rl);
+            auto t = zTable(tn, pkn, rl, pl);
             tl.append(t);
             zlog.log("GenerateByText: "+t.toString());
         }

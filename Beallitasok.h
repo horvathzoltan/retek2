@@ -23,13 +23,13 @@ public:
     void setUI();
 
 //zSQL("QMYSQL", "127.0.0.1", "wiki1", "root","Aladar123", "w1"),
-
+/*
     QString driver = "QMYSQL";
     QString adatbazisNev = "wiki1";
     QString server = "127.0.0.1";
     QString user = "root";
     QString password= "Aladar123";
-
+*/
 /*
 torzs_felhasznalo
 id
@@ -56,13 +56,13 @@ abrachadabra
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
 */
-    /*
+
     QString driver = "QODBC";
     QString adatbazisNev = "ServiceFlex";
     QString server = "deathstar";
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
-*/
+
 /*
    QString adatbazisNev = "d_solutions";
     QString server = "178.48.178.42,420";

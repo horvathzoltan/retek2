@@ -75,8 +75,8 @@ QString zTablerow::ValidateColType(QString rvcolType){
                 if(colType == rvcolType)
                    return "Type OK";
                 else{
-                    QString c1 = typeMap.value(colType).toString();
-                    QString c2 = typeMap.value(rvcolType).toString();
+                    QString c1 = typeMap.value(colType);
+                    QString c2 = typeMap.value(rvcolType);
                     if(c1 == c2)
                         return QString("Type EQUALS: '%1(%3)', '%2(%4)' OK").arg(colType,rvcolType,c1,c2);
                     else
