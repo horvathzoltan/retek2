@@ -8,6 +8,9 @@ class zStringHelper
 public:
     zStringHelper();
     static bool toBool(QString);
+
+    static QString Load(QString filename);
+    static void Save(QString *classTxt, QString fn);
 };
 
 #endif // ZSTRINGHELPER_H

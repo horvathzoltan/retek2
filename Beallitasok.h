@@ -22,6 +22,10 @@ public:
     void getUI();
     void setUI();
 
+    QString getTemplateFilename(QString tfname);
+
+    QString getModelFilename(QString tfname, QString dirname);
+
 //zSQL("QMYSQL", "127.0.0.1", "wiki1", "root","Aladar123", "w1"),
 /*
     QString driver = "QMYSQL";
