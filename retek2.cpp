@@ -382,11 +382,20 @@ void retek2::on_pushButton_3_clicked()
     zforeach(t,tl){
         ztables.append(*t);
         new QListWidgetItem("txt."+t->tablename, ui.listWidget_tabla);
-        }
-        /*feltoltMezoLista(tl[0]);
-        tablanev = tl[0].tablename;
-        }
-    else{
+        }       
+}
 
-        }*/
+void retek2::on_pushButton_4_clicked()
+{
+    zlog.trace("on_pushButton_4_clicked");
+
+    auto txt = ui.textEdit->toPlainText();
+    auto tl = zTable::createTableByText_2(txt);
+
+    if(tl.length()==0) { zlog.log("nincs egyezés, nincs vizsgálat"); return;}
+
+    zforeach(t,tl){
+        ztables.append(*t);
+        new QListWidgetItem("txt."+t->tablename, ui.listWidget_tabla);
+        }
 }

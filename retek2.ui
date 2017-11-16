@@ -35,8 +35,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1340</width>
-         <height>628</height>
+         <width>1326</width>
+         <height>649</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -526,6 +526,13 @@
                      </widget>
                     </item>
                     <item>
+                     <widget class="QPushButton" name="pushButton_4">
+                      <property name="text">
+                       <string>Load 2</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
                      <spacer name="horizontalSpacer_2">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -572,7 +579,7 @@
      <x>0</x>
      <y>0</y>
      <width>1360</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu1">

@@ -28,7 +28,9 @@ public:
 
     QList<QString> Validate(zTable);
 
-    static QList<zTable> createTableByText(QString txt);
+    static QList<zTable> createTableByText(QString txt);    
+    static QList<zTable> createTableByText_2(QString txt);
+
     static zTable* getByName(QList<zTable> *tables, QString rn);
 };
 

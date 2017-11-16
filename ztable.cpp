@@ -160,15 +160,20 @@ QList<QString> zTable::Validate(zTable tv){
     return e;
 }
 
-
+zTable* zTable::getByName(QList<zTable> *tables, QString rn){
+    if(rn.isEmpty()) return nullptr;
+    zforeach(r,*tables){
+        if(!r->tablename.isEmpty())
+            if(r->tablename == rn){
+                zTable *r2 = r.operator->();
+                return r2;
+            }
+        }
+    return nullptr;
+}
 
 QList<zTable> zTable::createTableByText(QString txt)
-{
-   // qDebug("createTableByText");
-
-    //tablanev
-    //auto txt = ui.textEdit->toPlainText();
-
+{   
 //    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re = QRegularExpression(R"(^\s*(?:(^\w*)\s+)((?:^[\w, ()\"'<>\.]+\n?)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen1 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -184,19 +189,19 @@ QList<zTable> zTable::createTableByText(QString txt)
 
     auto j = re_macro_def.globalMatch(txt);
 
-        while(j.hasNext()){
-            QRegularExpressionMatch m = j.next();
-            QString m_name=m.captured(1);
-            QString m_txt=m.captured(2).trimmed();
+    while(j.hasNext()){
+        QRegularExpressionMatch m = j.next();
+        QString m_name=m.captured(1);
+        QString m_txt=m.captured(2).trimmed();
 
-            if(!macroMap.contains(m_name)){
-                macroMap.insert(m_name, m_txt);
-                zlog.trace(QString("Macro def: %1").arg(m_name));
-                }
-        }
+        if(!macroMap.contains(m_name)){
+            macroMap.insert(m_name, m_txt);
+            zlog.trace(QString("Macro def: %1").arg(m_name));
+            }
+    }
 
     //QString txt2;
-        auto keys = macroMap.keys();
+    auto keys = macroMap.keys();
     zforeach(m, keys){
         auto mcr = QRegularExpression(re_macro_use_tmp.arg(*m), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
@@ -320,14 +325,81 @@ QList<zTable> zTable::createTableByText(QString txt)
     return tl;
 }
 
-zTable* zTable::getByName(QList<zTable> *tables, QString rn){
-    if(rn.isEmpty()) return nullptr;
-    zforeach(r,*tables){
-        if(!r->tablename.isEmpty())
-            if(r->tablename == rn){
-                zTable *r2 = r.operator->();
-                return r2;
+QList<zTable> zTable::createTableByText_2(QString txt){
+    auto re = QRegularExpression(R"(^\s*(?:(^\w*)\s+)((?:^[\w, ()\"'<>\.]+\n?)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
+    auto re_macro_def = QRegularExpression(R"(^\s*(?:^#(\w*)\s+)((?:[\w, ()\"'<>\.]+\s)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_macro_use_tmp = QString(R"((?:^(%1)\s*$))");
+
+    auto j = re_macro_def.globalMatch(txt);
+
+    while(j.hasNext()){
+        QRegularExpressionMatch m = j.next();
+        QString m_name=m.captured(1);
+        QString m_txt=m.captured(2).trimmed();
+
+        if(!macroMap.contains(m_name)){
+            macroMap.insert(m_name, m_txt);
+            zlog.trace(QString("Macro def: %1").arg(m_name));
             }
+    }
+
+    auto keys = macroMap.keys();
+    zforeach(m, keys){
+        auto mcr = QRegularExpression(re_macro_use_tmp.arg(*m), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
+        //if(txt.contains(mcr)){
+            txt.replace(mcr,macroMap.value(*m));
+        //}
+    }
+
+
+    auto i = re.globalMatch(txt);
+    QList<zTable> tl;
+    if(i.hasNext()){
+        while(i.hasNext()){
+            QRegularExpressionMatch m = i.next();
+            QString tn=m.captured(1).trimmed();
+            QString pkn = "id";
+            auto fns=m.captured(2).split(QRegularExpression(R"([\n|\r\n|\r])"), QString::SkipEmptyParts);
+            QList<zTablerow> rl;
+            QList<zTablerow> pl;
+
+            zforeach(fn, fns){ // sorok
+               if(fn->isEmpty()) continue;
+               if(*fn=="_") continue;
+
+               QString dtype="";
+               int dlen = 0;
+               bool isNullable = true;
+               QString caption = "";
+
+               auto fns = fn->split(' ', QString::SkipEmptyParts);
+               QString fname = fns[0].trimmed();
+
+               zlog.trace("sor:"+*fn);
+
+               if(fns.length()>1){ //szavak (mezők)
+                    zforeach(fn2, fns){
+                        zlog.trace("szó:"+*fn2);
+                    }
+               }
+
+               if(dtype.isEmpty()){
+                   auto p = zTablerow(fname, "property", dlen, isNullable, caption);
+                   pl.append(p);
+                   }
+               else{
+                   auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
+                   rl.append(r);
+                   }
+            }
+            auto t = zTable(tn, pkn, rl, pl);
+            tl.append(t);
+            zlog.log("GenerateByText2: "+t.toString());
         }
-    return nullptr;
+    }
+
+    return tl;
 }
+
