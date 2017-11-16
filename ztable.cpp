@@ -375,24 +375,31 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                QString caption = "";
 
                auto fns = fn->split(' ', QString::SkipEmptyParts);
-               QString fname = fns[0].trimmed();
 
                zlog.trace("sor:"+*fn);
 
-               if(fns.length()>1){ //szavak (mezők)
+               if(fns.length()>2){ //szavak (mezők)
                     zforeach(fn2, fns){
                         zlog.trace("szó:"+*fn2);
+                        // todo vizsgálni, típus-e, ha igen, megvan. (string - hossz)
+                        // amúgy mezőnév lesz
+                        // ezért megy a mezőnév listába
                     }
+                    // ha van mezőnév lista
+                    // ha van ismert típus, akkor mezőlistához,
+                    // ha nincs ismert a típus,
+                    // a property listához adjuk hozzá
+
                }
 
-               if(dtype.isEmpty()){
-                   auto p = zTablerow(fname, "property", dlen, isNullable, caption);
-                   pl.append(p);
-                   }
-               else{
-                   auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
-                   rl.append(r);
-                   }
+//               if(dtype.isEmpty()){
+//                   auto p = zTablerow(fname, "property", dlen, isNullable, caption);
+//                   pl.append(p);
+//                   }
+//               else{
+//                   auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
+//                   rl.append(r);
+//                   }
             }
             auto t = zTable(tn, pkn, rl, pl);
             tl.append(t);
