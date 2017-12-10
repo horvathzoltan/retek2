@@ -172,6 +172,51 @@ zTable* zTable::getByName(QList<zTable> *tables, QString rn){
     return nullptr;
 }
 
+/*
+Inventory
+Id,int,key,Identity
+Name,String,30
+OperationTypeId,int
+...
+*/
+bool zTable::getType(QString ezt1,  QString *dtype, int *dlen)
+{
+    auto re_dlen1 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_dlen2 = QRegularExpression(R"(([\d]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    bool isDtype = false;
+
+    if(zStringMapHelper::contains(&typeMap, ezt1)){
+        QString k = zStringMapHelper::getKey(&typeMap, ezt1);
+        *dtype =  typeMap.value(k);;
+        isDtype = true;
+    }
+    else if(zStringMapHelper::contains(&typeMapR, ezt1)){
+        QString k = zStringMapHelper::getKey(&typeMapR, ezt1);
+        *dtype =  typeMapR.value(k);;
+        isDtype = true;
+    }
+    else {//
+        auto i2 = re_dlen1.match(ezt1);
+        if(i2.hasMatch()){
+            bool isOK;
+            int n = i2.captured(1).toInt(&isOK);
+            if(isOK) *dlen = n;
+            }
+        else{
+             i2 = re_dlen2.match(ezt1);
+             if(i2.hasMatch()){
+                 bool isOK;
+                 int n = i2.captured(1).toInt(&isOK);
+                 if(isOK) *dlen = n;
+                 }
+             }
+         }
+//    else {
+//        *dtype="";*dlen =0;
+//    }
+    return isDtype;
+}
+
 QList<zTable> zTable::createTableByText(QString txt)
 {   
 //    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -251,33 +296,9 @@ QList<zTable> zTable::createTableByText(QString txt)
                            else{
                                ezt1 = *fn3;
                            }
-                           if(zStringMapHelper::contains(&typeMap, ezt1)){
-                               QString k = zStringMapHelper::getKey(&typeMap, ezt1);
-                               dtype =  typeMap.value(k);;
-                               isDtype = true;
+                           //típus vizsgálat
+                           isDtype = zTable::getType(ezt1, &dtype, &dlen);
                            }
-                           else if(zStringMapHelper::contains(&typeMapR, ezt1)){
-                               QString k = zStringMapHelper::getKey(&typeMapR, ezt1);
-                               dtype =  typeMapR.value(k);;
-                               isDtype = true;
-                           }
-                           else{
-                               auto i2 = re_dlen1.match(ezt1);
-                               if(i2.hasMatch()){
-                                   bool isOK;
-                                   int n = i2.captured(1).toInt(&isOK);
-                                   if(isOK) dlen = n;
-                                   }
-                               else{
-                                    i2 = re_dlen2.match(ezt1);
-                                    if(i2.hasMatch()){
-                                        bool isOK;
-                                        int n = i2.captured(1).toInt(&isOK);
-                                        if(isOK) dlen = n;
-                                        }
-                                    }
-                                }
-                            }
                        if(isDtype==false){
                             auto i2 = re_caption.match(*fn2);
                             if(i2.hasMatch())
@@ -305,6 +326,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                                         }
                                     }
                                 }
+                            /**/
                             }
                         }
                     }
@@ -325,6 +347,13 @@ QList<zTable> zTable::createTableByText(QString txt)
     return tl;
 }
 
+
+/*
+class1
+mezo1 mezo2 mezo3 string
+mezo4 mezo5 int
+...
+*/
 QList<zTable> zTable::createTableByText_2(QString txt){
     auto re = QRegularExpression(R"(^\s*(?:(^\w*)\s+)((?:^[\w, ()\"'<>\.]+\n?)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
@@ -371,20 +400,48 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
                QString dtype="";
                int dlen = 0;
-               bool isNullable = true;
-               QString caption = "";
+              // bool isNullable = true;
+              // QString caption = "";
 
                auto fns = fn->split(' ', QString::SkipEmptyParts);
 
-               zlog.trace("sor:"+*fn);
+               //zlog.trace("sor:"+*fn);
 
                if(fns.length()>2){ //szavak (mezők)
+                    bool isDtype = false;
+                    QList<zTablerow> pls;
+
                     zforeach(fn2, fns){
-                        zlog.trace("szó:"+*fn2);
+                        //zlog.trace("szó:"+*fn2);
                         // todo vizsgálni, típus-e, ha igen, megvan. (string - hossz)
                         // amúgy mezőnév lesz
                         // ezért megy a mezőnév listába
+                        isDtype = zTable::getType(*fn2, &dtype, &dlen);
+                        if (!isDtype){
+                            dtype = "property";
+                            dlen = 0;
+
+                            auto r = zTablerow(*fn2, dtype, dlen, false, "");
+                            pls.append(r);
+                        }
+                        else{
+                            zlog.trace("sortípus:"+*fn2);
+                        }
                     }
+
+                    zforeach(p, pls){
+                        if(isDtype){
+                            p->colType = dtype;
+                            p->dlen = dlen;
+                            rl.append(*p);
+                            }
+                        else{                          
+                            pl.append(*p);
+                        }
+
+                    }
+
+
                     // ha van mezőnév lista
                     // ha van ismert típus, akkor mezőlistához,
                     // ha nincs ismert a típus,
@@ -392,14 +449,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
                }
 
-//               if(dtype.isEmpty()){
-//                   auto p = zTablerow(fname, "property", dlen, isNullable, caption);
-//                   pl.append(p);
-//                   }
-//               else{
-//                   auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
-//                   rl.append(r);
-//                   }
+
             }
             auto t = zTable(tn, pkn, rl, pl);
             tl.append(t);

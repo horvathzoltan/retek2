@@ -32,6 +32,9 @@ public:
     static QList<zTable> createTableByText_2(QString txt);
 
     static zTable* getByName(QList<zTable> *tables, QString rn);
+    //void getType(auto re_dlen1, QString dtype, auto re_dlen2, QString ezt1, bool isDtype, int dlen);
+
+    static bool getType(QString ezt1,  QString *dtype, int *dlen);
 };
 
 #endif // ZTABLE_H

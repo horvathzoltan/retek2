@@ -369,7 +369,7 @@ void retek2::GenerateByText(){
     return;
 }
 
-
+// osztályleíró - tagonkénti
 void retek2::on_pushButton_3_clicked()
 {
     zlog.trace("on_pushButton_3_clicked");
@@ -385,6 +385,7 @@ void retek2::on_pushButton_3_clicked()
         }       
 }
 
+// típusonkénti
 void retek2::on_pushButton_4_clicked()
 {
     zlog.trace("on_pushButton_4_clicked");
