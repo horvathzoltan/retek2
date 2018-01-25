@@ -317,10 +317,13 @@ void retek2::GenerateAll() {
 
 
 QString retek2::generateTmp(QString tmp_file) {
-	qDebug() << tmp_file;
+    //qDebug() << tmp_file;
+    if(tmp_file.isEmpty())
+        {zLog::ShowDialog("Nincs sablon fájl");return "";}
+
     auto tmp_fn = beallitasok.getTemplateFilename(tmp_file);
 
-    if(tmp_fn == NULL) {zLog::ShowDialog("nincs sablon: "+ tmp_file);return "";}
+    if(tmp_fn == NULL) {zLog::ShowDialog("A sablon fájl nem található: "+ tmp_file);return "";}
 
     QString tmp = zStringHelper::Load(tmp_fn);
 

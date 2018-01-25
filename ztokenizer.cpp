@@ -35,8 +35,9 @@ void zTokenizer::init(QTableWidget *w){
 
 
 void zTokenizer::feltoltTmpMap(void){
-    QString viewTemplateDirName = beallitasok.getTemplateFilename("View");
-    if(viewTemplateDirName == NULL) {zLog::ShowDialog("nincs sablon:");return;}
+    QString tn = "View";
+    QString viewTemplateDirName = beallitasok.getTemplateFilename(tn);
+
 
     auto viewTemplateDir = QDir(viewTemplateDirName);
 

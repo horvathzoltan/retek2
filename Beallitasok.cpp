@@ -46,20 +46,36 @@ QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
     return e;
 }
 
+/*
+ * a beállítások alapján a template névhez tartozó fájl nevét adja
+*/
 QString Beallitasok::getTemplateFilename(QString tfname) {
-    auto fn = QString(beallitasok.tmpDir+R"(\%1\%2)").arg(beallitasok.adatbazisNev).arg(tfname);
+    bool isVal = true;
+    if(beallitasok.tmpDir.isEmpty())
+        {zlog.log("A template könyvtár a beállításokban nincs megadva");isVal=false;}
+    if(tfname.isEmpty())
+        {zlog.log("A template fájlnév nincs megadva");isVal=false;}
+    if(beallitasok.adatbazisNev.isEmpty())
+        {zlog.log("Az adatbázisnév nincs megadva");isVal=false;}
+    if(isVal == false)
+        {zLog::ShowDialog("A template fájlnév nem meghatározható");return NULL;}
+
+    auto fn = QString(beallitasok.tmpDir+R"(\%1\%2)").arg(beallitasok.adatbazisNev).arg(tfname);    
+
     if(QFileInfo(fn).exists())
         return fn;
     else{
         zlog.log("nincs project templatefile:"+ fn);
         fn = QString(beallitasok.tmpDir+R"(\%1)").arg(tfname);
-        zlog.log("nincs defaule template:" +fn);
+        zlog.log("nincs default template:" +fn);
         if(QFileInfo(fn).exists())
             return fn;
         else{
             zlog.log("nincs default templatefile:"+ fn);
             }
         }
+
+
     return NULL;
 }
 
