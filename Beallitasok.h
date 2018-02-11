@@ -87,9 +87,14 @@ abrachadabra
 */
 
     //QString connectionString = connectionTemplate.arg(server).arg(adatbazisNev);
-
+#if defined(Q_OS_WIN)
 	QString tmpDir = R"(C:\retek2\template_dir)";
     QString munkadir = R"(C:\retek2\munka_dir)";
+#elif defined(Q_OS_LINUX)
+    QString tmpDir = R"(retek2/template_dir)";
+    QString munkadir = R"(retek2/munka_dir)";
+#endif
+
 	QString globalCaptionsFileName = "global_captions"; 
 
     QString getCaptionFileName(QString tablanev);

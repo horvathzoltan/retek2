@@ -1,6 +1,7 @@
 #include "Beallitasok.h"
 #include "zfilenamehelper.h"
 #include "globals.h"
+
 #include <QDir>
 
 Beallitasok::Beallitasok(){};
@@ -33,15 +34,16 @@ void Beallitasok::setUI()
 
 
 QString Beallitasok::getCaptionFileName(QString tablanev){
-    QString fn = zFileNameHelper::getCClassFilename(munkadir, adatbazisNev, "caption_"+tablanev+".txt");
+    QString fn = zFileNameHelper::append(QDir::homePath(), munkadir, adatbazisNev, "caption_"+tablanev+".txt");
     return fn;
 }
 
 QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
-    auto e = QString(munkadir+R"(\%2\%1)").arg(dirname).arg(adatbazisNev);
+    //auto e = QString(munkadir+R"(\%2\%1)").arg(dirname).arg(adatbazisNev);
+    QString  e = zFileNameHelper::append(QDir::homePath(),munkadir, dirname, adatbazisNev);
     QDir d(e);if(!d.exists()){d.mkpath(d.absolutePath());}
 
-    e += "\\"+tfname;
+    e += QDir::separator()+tfname;
     zlog.trace(e);
     return e;
 }
@@ -60,7 +62,8 @@ QString Beallitasok::getTemplateFilename(QString tfname) {
     if(isVal == false)
         {zLog::ShowDialog("A template fájlnév nem meghatározható");return NULL;}
 
-    auto fn = QString(beallitasok.tmpDir+R"(\%1\%2)").arg(beallitasok.adatbazisNev).arg(tfname);    
+    auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.tmpDir, beallitasok.adatbazisNev, tfname);
+
 
     if(QFileInfo(fn).exists())
         return fn;

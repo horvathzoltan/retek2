@@ -69,7 +69,7 @@ void retek2::init(void)
 
     feltoltTabla(); // bal tábla panel feltöltése
 
-    zStringMapHelper::StringMapFeltolt(zFileNameHelper::getCClassFilename(beallitasok.munkadir, beallitasok.adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
+    zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, beallitasok.adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
 
     zlog.trace("retek2 init OK");
 
@@ -78,7 +78,7 @@ void retek2::init(void)
 
 
 void retek2::saveCaptionTabla(QString tablanev) {
-    QString fn = zFileNameHelper::getCClassFilename(beallitasok.munkadir,beallitasok.adatbazisNev, "caption_" + tablanev + ".txt");
+    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,beallitasok.adatbazisNev, "caption_" + tablanev + ".txt");
 
     QMap<QString, QString> tablaCaptionMap;
     //tablaCaptionMap.clear();
@@ -221,7 +221,7 @@ void retek2::GenerateAll() {
 
         auto txt = generateTmp("MVC_CClass.cs");
         zlog.trace(txt);
-        zStringHelper::Save(&txt, zFileNameHelper::getCClassFilename(beallitasok.munkadir,beallitasok.adatbazisNev,tablanev + ".cs"));
+        zStringHelper::Save(&txt, zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,beallitasok.adatbazisNev,tablanev + ".cs"));
 	}
 
     if (ui.checkBox_Entity->isChecked()) {
