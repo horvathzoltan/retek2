@@ -64,17 +64,19 @@ QString Beallitasok::getTemplateFilename(QString tfname) {
 
     auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.tmpDir, beallitasok.adatbazisNev, tfname);
 
-
+    //zlog.log("project template keresese:"+ fn);
     if(QFileInfo(fn).exists())
         return fn;
     else{
-        zlog.log("nincs project templatefile:"+ fn);
-        fn = QString(beallitasok.tmpDir+R"(\%1)").arg(tfname);
-        zlog.log("nincs default template:" +fn);
+        zlog.log("nincs project template:" +fn);
+
+        fn = zFileNameHelper::append(QDir::homePath(),beallitasok.tmpDir, tfname);
+        //fn = QString(beallitasok.tmpDir+R"(\%1)").arg(tfname);
+
         if(QFileInfo(fn).exists())
             return fn;
         else{
-            zlog.log("nincs default templatefile:"+ fn);
+            zlog.log("nincs default template:"+ fn);
             }
         }
 
