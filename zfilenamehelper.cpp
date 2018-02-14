@@ -20,7 +20,15 @@ zFileNameHelper::zFileNameHelper()
 
 QString zFileNameHelper::append(QString h, QString p0, QString p1, QString p2){
     auto s = QDir::separator();
-    auto e = h+s+p0;
+
+    QString e;
+
+    if(p0.length()>3 && QString("CDEFGHIJKL").contains(p0[0]) && p0[1]==QChar(':')){
+        e = p0;
+    }else{
+        e = h+s+p0;
+    }
+
 
     if(p1.isEmpty()) return e;
     e += s+p1;

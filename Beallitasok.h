@@ -27,13 +27,13 @@ public:
     QString getModelFilename(QString tfname, QString dirname);
 
 //zSQL("QMYSQL", "127.0.0.1", "wiki1", "root","Aladar123", "w1"),
-
+/*
     QString driver = "QMYSQL";
     QString adatbazisNev = "wiki1";
     QString server = "127.0.0.1";
     QString user = "root";
     QString password= "Aladar123";
-
+*/
 /*
 torzs_felhasznalo
 id
@@ -54,12 +54,13 @@ abrachadabra
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
 */
-/*
+
+    QString driver = "QODBC";
     QString adatbazisNev = "Gloster";
     QString server = "DEATHSTAR";
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
-*/
+
 
 //    QString driver = "QODBC";
 //    QString adatbazisNev = "ServiceFlex";
