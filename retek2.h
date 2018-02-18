@@ -25,6 +25,8 @@ private slots:
 
     void on_pushButton_4_clicked();
 
+    void on_pushButton_5_clicked();
+
 private:
     Ui::retek2Class ui;
 
@@ -34,10 +36,13 @@ private:
 
 	void feltoltTabla(void);		
 	void feltoltTmpMap(void);
-	void feltoltEljaras(QString tablanev);
-	void feltoltIdegenkulcs(QString tablanev);
+    //void feltoltEljaras(QString tablanev);
+
+    //void feltoltIdegenkulcs(QString tablanev);
 	void feltoltMezoLista(QString tablanev);
+
     void feltoltMezoLista(zTable t);
+    void feltoltPk(zTable t);
 
 	QString generateTmp(QString);
 	

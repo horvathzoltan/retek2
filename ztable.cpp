@@ -172,12 +172,30 @@ zTable* zTable::getByName(QList<zTable> *tables, QString rn){
     return nullptr;
 }
 
+
+QString zTable::getPkByName(QList<zTable> *tables, QString rn){
+    if(rn.isEmpty()) return nullptr;
+
+    zforeach(r,*tables){
+        if(!r->tablename.isEmpty())
+            if(r->tablename == rn){
+                QString r2 = r.operator->()->pkname;
+                return r2;
+            }
+        }
+    return nullptr;
+}
+
 /*
 Inventory
 Id,int,key,Identity
 Name,String,30
 OperationTypeId,int
 ...
+*/
+
+/*
+A sorból kiszerzi a típust - mérettel/hosszal együtt
 */
 bool zTable::getType(QString ezt1,  QString *dtype, int *dlen)
 {
@@ -349,10 +367,14 @@ QList<zTable> zTable::createTableByText(QString txt)
 
 
 /*
+#Adm
+DateCre DateMod datetime
+
 class1
 mezo1 mezo2 mezo3 string
 mezo4 mezo5 int
-...
+int mezo6 mezo7
+Adm
 */
 QList<zTable> zTable::createTableByText_2(QString txt){
     auto re = QRegularExpression(R"(^\s*(?:(^\w*)\s+)((?:^[\w, ()\"'<>\.]+\n?)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -371,7 +393,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
             macroMap.insert(m_name, m_txt);
             zlog.trace(QString("Macro def: %1").arg(m_name));
             }
-    }
+        }
 
     auto keys = macroMap.keys();
     zforeach(m, keys){
@@ -418,10 +440,10 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                         // ezért megy a mezőnév listába
                         isDtype = zTable::getType(*fn2, &dtype, &dlen);
                         if (!isDtype){
-                            dtype = "property";
-                            dlen = 0;
+                            //dtype = "property";
+                            //dlen = 0;
 
-                            auto r = zTablerow(*fn2, dtype, dlen, false, "");
+                            auto r = zTablerow(*fn2, "property", 0, false, "");
                             pls.append(r);
                         }
                         else{
@@ -430,7 +452,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                     }
 
                     zforeach(p, pls){
-                        if(isDtype){
+                        if(!dtype.isEmpty()){
                             p->colType = dtype;
                             p->dlen = dlen;
                             rl.append(*p);

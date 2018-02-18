@@ -35,8 +35,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1340</width>
-         <height>628</height>
+         <width>1326</width>
+         <height>649</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -505,6 +505,9 @@
                       <verstretch>0</verstretch>
                      </sizepolicy>
                     </property>
+                    <property name="toolTip">
+                     <string/>
+                    </property>
                    </widget>
                   </item>
                   <item row="1" column="0">
@@ -524,15 +527,34 @@
                     </item>
                     <item>
                      <widget class="QPushButton" name="pushButton_3">
+                      <property name="toolTip">
+                       <string>adatbeolvasás</string>
+                      </property>
+                      <property name="whatsThis">
+                       <string>ezitta ezitt</string>
+                      </property>
                       <property name="text">
                        <string>Load</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
                       </property>
                      </widget>
                     </item>
                     <item>
                      <widget class="QPushButton" name="pushButton_4">
+                      <property name="whatsThis">
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;típusonkénti sororientált leíró makródefiníciós lehetőséggel&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;#Adm &lt;/p&gt;&lt;p&gt;DateCre DateMod datetime&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;class1&lt;/p&gt;&lt;p&gt;mezo1 mezo2 mezo3 string&lt;/p&gt;&lt;p&gt;mezo4 mezo5 int&lt;/p&gt;&lt;p&gt;int mezo6 mezo7&lt;/p&gt;&lt;p&gt;Adm&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      </property>
                       <property name="text">
                        <string>Load 2</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButton_5">
+                      <property name="text">
+                       <string>Enum</string>
                       </property>
                      </widget>
                     </item>
@@ -583,7 +605,7 @@
      <x>0</x>
      <y>0</y>
      <width>1360</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu1">

@@ -109,64 +109,73 @@ void retek2::TableSelect(QListWidgetItem* i) {
 
 	tablanev = i->text();    
 
-	feltoltIdegenkulcs(tablanev);
-	feltoltEljaras(tablanev);    
+
+    //feltoltEljaras(tablanev);
     feltoltMezoLista(tablanev);
 
-    ui.tabWidget->setCurrentWidget(ui.tab);
+    //ui.listWidget_IdegenKulcs->clear();
+    //feltoltPk(tablanev);
+
+    //feltoltIdegenkulcs(tablanev);
+    //ui.tabWidget->setCurrentWidget(ui.tab);
 }
 
-void retek2::feltoltEljaras(QString tablanev) {
-    zlog.trace("feltoltEljaras " + tablanev);
-}
+//void retek2::feltoltEljaras(QString tablanev) {
+//    zlog.trace("feltoltEljaras " + tablanev);
+//}
 
-void retek2::feltoltIdegenkulcs(QString tablanev) {
-    zlog.trace("feltoltIdegenkulcs " + tablanev);
 
-	ui.listWidget_IdegenKulcs->clear();
+//void retek2::feltoltIdegenkulcs(QString tablanev) {
+//    zlog.trace("feltoltIdegenkulcs " + tablanev);
 
-	QString commandTextTemplate = "SELECT  obj.name AS FK_NAME, "
-		"sch.name AS[schema_name], "
-		"tab1.name AS[table], "
-		"col1.name AS[column], "
-		"tab2.name AS[referenced_table], "
-		"col2.name AS[referenced_column] "
-		"FROM sys.foreign_key_columns fkc "
-		"INNER JOIN sys.objects obj "
-		"ON obj.object_id = fkc.constraint_object_id "
-		"INNER JOIN sys.tables tab1 "
-		"ON tab1.object_id = fkc.parent_object_id "
-		"INNER JOIN sys.schemas sch "
-		"ON tab1.schema_id = sch.schema_id "
-		"INNER JOIN sys.columns col1 "
-		"ON col1.column_id = parent_column_id AND col1.object_id = tab1.object_id "
-		"INNER JOIN sys.tables tab2 "
-		"ON tab2.object_id = fkc.referenced_object_id "
-		"INNER JOIN sys.columns col2 "
-		"ON col2.column_id = referenced_column_id AND col2.object_id = tab2.object_id "
-		"where tab1.name = '%1'";
+//	ui.listWidget_IdegenKulcs->clear();
 
-	QString commandText = commandTextTemplate.arg(tablanev);
+//    //QString str("***");
 
-	QSqlQuery query(commandText);
+//    //ui.listWidget_IdegenKulcs->addItem(str);
 
-	// FK_NAME	schema_name	table	column	referenced_table	referenced_column
-	//
-	//FK_k_szallitolevel_tetel_szallitolevel1	dbo	k_szallitolevel_tetel	szallitolevel_id	szallitolevel	id
-	//FK_k_szallitolevel_tetel_szallitotetel	dbo	k_szallitolevel_tetel	szallitotetel_id	szallitotetel	id
-	//
-	// column -> referenced_table . referenced_column
-	while (query.next()) {
-		QString col = query.value("column").toString();
-		QString r_tab = query.value("referenced_table").toString();
-		QString r_col = query.value("referenced_column").toString();
+////	QString commandTextTemplate = "SELECT  obj.name AS FK_NAME, "
+////		"sch.name AS[schema_name], "
+////		"tab1.name AS[table], "
+////		"col1.name AS[column], "
+////		"tab2.name AS[referenced_table], "
+////		"col2.name AS[referenced_column] "
+////		"FROM sys.foreign_key_columns fkc "
+////		"INNER JOIN sys.objects obj "
+////		"ON obj.object_id = fkc.constraint_object_id "
+////		"INNER JOIN sys.tables tab1 "
+////		"ON tab1.object_id = fkc.parent_object_id "
+////		"INNER JOIN sys.schemas sch "
+////		"ON tab1.schema_id = sch.schema_id "
+////		"INNER JOIN sys.columns col1 "
+////		"ON col1.column_id = parent_column_id AND col1.object_id = tab1.object_id "
+////		"INNER JOIN sys.tables tab2 "
+////		"ON tab2.object_id = fkc.referenced_object_id "
+////		"INNER JOIN sys.columns col2 "
+////		"ON col2.column_id = referenced_column_id AND col2.object_id = tab2.object_id "
+////		"where tab1.name = '%1'";
 
-		QString tmp = "%1 -> %2.%3";
-		QString str = tmp.arg(col).arg(r_tab).arg(r_col);
+////	QString commandText = commandTextTemplate.arg(tablanev);
 
-		ui.listWidget_IdegenKulcs->addItem(str);
-	}
-}
+////	QSqlQuery query(commandText);
+
+////	// FK_NAME	schema_name	table	column	referenced_table	referenced_column
+////	//
+////	//FK_k_szallitolevel_tetel_szallitolevel1	dbo	k_szallitolevel_tetel	szallitolevel_id	szallitolevel	id
+////	//FK_k_szallitolevel_tetel_szallitotetel	dbo	k_szallitolevel_tetel	szallitotetel_id	szallitotetel	id
+////	//
+////	// column -> referenced_table . referenced_column
+////	while (query.next()) {
+////		QString col = query.value("column").toString();
+////		QString r_tab = query.value("referenced_table").toString();
+////		QString r_col = query.value("referenced_column").toString();
+
+////		QString tmp = "%1 -> %2.%3";
+////		QString str = tmp.arg(col).arg(r_tab).arg(r_col);
+
+////		ui.listWidget_IdegenKulcs->addItem(str);
+////	}
+//}
 
 
 
@@ -183,6 +192,8 @@ void retek2::feltoltMezoLista(QString tablanev){
     else
         t = zsql.getTable(tablanev);
     feltoltMezoLista(t);
+    ui.listWidget_IdegenKulcs->clear();
+    feltoltPk(t);
 }
 
 void retek2::feltoltMezoLista(zTable t){
@@ -196,9 +207,17 @@ void retek2::feltoltMezoLista(zTable t){
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, CreateTableItem(QVariant(r.Caption)));
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, CreateTableItem(QVariant(r.nullable)));
     }
-
     zlog.log("feltoltMezoLista: "+t.toString());
 }
+
+void retek2::feltoltPk(zTable t) {
+    zlog.trace("feltoltPk " + tablanev);
+
+    if(!t.pkname.isEmpty()){
+        ui.listWidget_IdegenKulcs->addItem("Pk:"+t.pkname);
+        }
+}
+
 
 QTableWidgetItem* retek2::CreateTableItem(QVariant v){
     auto a = new QTableWidgetItem();
@@ -347,7 +366,7 @@ void retek2::on_pushButton_clicked()
  * \brief retek2::GenerateByText
  *
  * A 2-es tabon megadott szöveg alapján generál táblaszerkezetet
- * amialapján validálja az adatbázisban szereplő táblát.
+ * ami alapján validálja az adatbázisban szereplő táblát.
  */
 
 
@@ -373,6 +392,36 @@ void retek2::GenerateByText(){
 }
 
 // osztályleíró - tagonkénti
+/*
+#Adm
+DateCre,DateTime
+DateMod,datetime
+
+
+Inventory
+Id,int,key,Identity
+Name,String,30
+OperationTypeId,int
+InventoryStatusId,int
+StorageId,int
+DateStart,DateTime,nullable
+DateEnd,datetime,nullable
+Adm
+RecountRequired,bool
+UserId,guid
+Comments,string,200
+_
+OperationType,OperationType
+InventoryStatus,OperationType
+Storage,Storage
+User,User
+InventoryItem[]
+*/
+/*
+on_pushButton_3_clicked
+Macro def: Adm
+GenerateByText: Inventory(PK:Id,Name,OperationTypeId,InventoryStatusId,StorageId,DateStart,DateEnd,DateCre,DateMod,RecountRequired,UserId,Comments),OperationType,InventoryStatus,Storage,User,InventoryItem
+*/
 void retek2::on_pushButton_3_clicked()
 {
     zlog.trace("on_pushButton_3_clicked");
@@ -388,7 +437,17 @@ void retek2::on_pushButton_3_clicked()
         }       
 }
 
-// típusonkénti
+// típusonkénti sororientált leíró
+/*
+#Adm
+DateCre DateMod datetime
+
+class1
+mezo1 mezo2 mezo3 string
+mezo4 mezo5 int
+int mezo6 mezo7
+Adm
+*/
 void retek2::on_pushButton_4_clicked()
 {
     zlog.trace("on_pushButton_4_clicked");
@@ -403,3 +462,15 @@ void retek2::on_pushButton_4_clicked()
         new QListWidgetItem("txt."+t->tablename, ui.listWidget_tabla);
         }
 }
+
+/*
+Enumot készít a megnevezés és az id mező adatbázisban lévő értéke alapján
+*/
+void retek2::on_pushButton_5_clicked()
+{
+    zlog.trace("on_pushButton_5_clicked");
+
+
+}
+
+

@@ -31,6 +31,7 @@ public:
     static QList<zTable> createTableByText(QString txt);    
     static QList<zTable> createTableByText_2(QString txt);
 
+    static QString getPkByName(QList<zTable> *tables, QString rn);
     static zTable* getByName(QList<zTable> *tables, QString rn);
     //void getType(auto re_dlen1, QString dtype, auto re_dlen2, QString ezt1, bool isDtype, int dlen);
 

@@ -228,10 +228,23 @@ PK kezelés
 const QString zSQL::getTable_MSSQL_PKTMP = "SELECT COLUMN_NAME "
                                            "FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE "
                                            "WHERE OBJECTPROPERTY(OBJECT_ID(CONSTRAINT_SCHEMA + '.' + QUOTENAME(CONSTRAINT_NAME)), 'IsPrimaryKey') = 1 "
-                                           "AND TABLE_NAME = '%1';";// AND TABLE_CATALOG ='%2' AND TABLE_SCHEMA = 'dbo';";// AND TABLE_CATALOG='enyv';";
+                                           "AND TABLE_NAME = '%1';";
+
+// AND TABLE_CATALOG ='%2' AND TABLE_SCHEMA = 'dbo';";// AND TABLE_CATALOG='enyv';";
+
+const QString zSQL::getTable_MYSQL_PKTMP = "SELECT COLUMN_NAME "
+                                           "FROM INFORMATION_SCHEMA.COLUMNS "
+
+                                           "where table_name = '%1' "
+                                           "and COLUMN_KEY = 'PRI';";
+//   "where table_schema = '%1' "
 
 QString zSQL::getTable_MSSQL_PK(QString tn){
     return getTable_MSSQL_PKTMP.arg(tn);//.arg(this->databaseName);
+}
+
+QString zSQL::getTable_MYSQL_PK(QString tn){
+    return getTable_MYSQL_PKTMP.arg(tn);//.arg(this->databaseName);
 }
 
 QString zSQL::getTablePK(QString tablanev){
@@ -241,7 +254,11 @@ QString zSQL::getTablePK(QString tablanev){
 
         if(driverName == QODBC)
             return getTable_SQL_PK(tablanev, getTable_MSSQL_PK(tablanev));
-        else if(driverName == QMYSQL){}
+        else if(driverName == QMYSQL){
+            auto q = getTable_MYSQL_PK(tablanev);
+            auto e = getTable_SQL_PK(tablanev, q);
+            return e;
+        }
 
         else{
             zlog.log("getTable: unknown driver:" + driverName);
@@ -264,3 +281,5 @@ QString zSQL::getTable_SQL_PK(QString tablanev, QString cmd)
 
     return "";
 }
+
+
