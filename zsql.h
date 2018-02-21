@@ -64,6 +64,11 @@ public:
     zTable getTable(QString tablanev);
     QString getTablePK(QString tablanev);
     QString getTable_SQL_PK(QString tablanev, QString cmd);
+
+    static const QString getTable_SQL_ENUMTMP;
+
+    QMap<int, QString> getTable_SQL_ENUM(QString tablanev, QString mezonev);
+
 };
 
 #endif // ZSQL_H

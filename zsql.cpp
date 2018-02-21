@@ -283,3 +283,22 @@ QString zSQL::getTable_SQL_PK(QString tablanev, QString cmd)
 }
 
 
+const QString zSQL::getTable_SQL_ENUMTMP = "SELECT id, %1 as name FROM %2";
+
+QMap<int, QString> zSQL::getTable_SQL_ENUM(QString tablanev, QString mezonev)
+{
+    QString cmd = getTable_SQL_ENUMTMP.arg(mezonev).arg(tablanev);
+
+    QSqlQuery query(cmd, db);
+    query.setForwardOnly(true);
+    auto e = QMap<int, QString>();
+
+    while(query.next()) {
+        auto i = query.value("id").toInt();
+        auto n = query.value("name").toString();
+        e.insert(i, n);
+        }
+
+    return e;
+}
+

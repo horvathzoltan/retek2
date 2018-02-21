@@ -470,7 +470,51 @@ void retek2::on_pushButton_5_clicked()
 {
     zlog.trace("on_pushButton_5_clicked");
 
+    auto select = ui.tableWidget_MezoLista->selectionModel();
+    if(select->hasSelection()){
+        auto r = select->selectedRows();
+        QString fn;
+        QString ft;
+        int idix = 0;
+
+        ft = ui.tableWidget_MezoLista->item(idix, C_ix_colType)->text();
+
+        if(r.length()<1){
+            zlog.trace("Nincs megnevezés sor kijelölve");
+            return;
+        }
+        else if (r.length()>1){
+            QString rs = "";
+            zforeach(r1, r){
+                int ix = (*r1).row();
+                if(!rs.isEmpty()) rs+=",";
+                rs+= ui.tableWidget_MezoLista->item(ix, C_ix_colName)->text();
+            }
+            fn = QString("concat_ws(\"_\", %1)").arg(rs);
+        }
+        else{
+            int ix = r.first().row();
+            fn = ui.tableWidget_MezoLista->item(ix, C_ix_colName)->text();
+        }
+
+        auto ms = zsql.getTable_SQL_ENUM(tablanev, fn);
+
+
+        QString vl = "";
+        zforeach(m, ms){
+            if(!vl.isEmpty()) vl+=",\n";
+            auto en = m.value().normalized(QString::NormalizationForm_D).replace(QRegExp("[^a-zA-Z0-9_\\s]"), "").toLower();
+            vl += QString("\t%1 = %2").arg(en).arg(m.key());
+        }
+
+        auto cn = ztokenizer.getOsztalynevUpper(tablanev);
+
+        zlog.trace(QString("enum %1 : %2\n {\n%3\n};").arg(cn).arg(ft).arg(vl));
+    }
+   // ui.listWidget_tabla->sele
 
 }
+
+
 
 

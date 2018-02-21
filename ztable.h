@@ -20,6 +20,8 @@ public:
     QList<zTablerow> rows;
     QList<zTablerow> props;
 
+    QString name_formatstring;
+
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMySQL(QString, QMap<QString, QString>, QString );
