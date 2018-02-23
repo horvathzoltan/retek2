@@ -21,6 +21,7 @@
 #include "zstringmaphelper.h"
 #include "zfilenamehelper.h"
 #include "globals.h"
+#include "zenumizer.h"
 
 retek2::retek2(QWidget *parent):QMainWindow(parent){
 	ui.setupUi(this);
@@ -235,6 +236,7 @@ void retek2::GenerateAll() {
     if (!tablanev.isEmpty()){
 		saveCaptionTabla(tablanev);
         }
+
 	if (ui.checkBox_CClass->isChecked()) {
 		qDebug("C# Class");
 
@@ -242,6 +244,16 @@ void retek2::GenerateAll() {
         zlog.trace(txt);
         zStringHelper::Save(&txt, zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,beallitasok.adatbazisNev,tablanev + ".cs"));
 	}
+
+    if (ui.checkBox_Enum->isChecked()) {
+        qDebug("Enum");
+
+        auto ed = GetEnumData();
+        QString txt = zEnumizer::GenerateEnum(ed);
+
+        zlog.trace(txt);
+        zStringHelper::Save(&txt, zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,beallitasok.adatbazisNev,tablanev + "_enum.cs"));
+    }
 
     if (ui.checkBox_Entity->isChecked()) {
         qDebug("C# Entity");
@@ -363,14 +375,12 @@ void retek2::on_pushButton_clicked()
 }
 
 /*!
- * \brief retek2::GenerateByText
- *
  * A 2-es tabon megadott szöveg alapján generál táblaszerkezetet
  * ami alapján validálja az adatbázisban szereplő táblát.
  */
 
-
-void retek2::GenerateByText(){
+void retek2::on_pushButton_2_clicked()
+{
     zlog.trace("GenerateByText");
 
     auto txt = ui.textEdit->toPlainText();
@@ -390,6 +400,7 @@ void retek2::GenerateByText(){
 
     return;
 }
+
 
 // osztályleíró - tagonkénti
 /*
@@ -466,22 +477,34 @@ void retek2::on_pushButton_4_clicked()
 /*
 Enumot készít a megnevezés és az id mező adatbázisban lévő értéke alapján
 */
+
 void retek2::on_pushButton_5_clicked()
 {
     zlog.trace("on_pushButton_5_clicked");
 
+    auto ed = GetEnumData();
+    QString enumstr = zEnumizer::GenerateEnum(ed);
+    zlog.trace(enumstr);
+}
+
+/*
+ * A guiról felszedi az enum adatait
+ * előállítja az azonosítót és a bázistípust
+ * Az SQLből lekérdezi az enumerátor-listát
+*/
+zEnumizer::EnumSource retek2::GetEnumData(){
     auto select = ui.tableWidget_MezoLista->selectionModel();
     if(select->hasSelection()){
         auto r = select->selectedRows();
-        QString fn;
-        QString ft;
+        QString fn; // name
+        QString ft; // type
         int idix = 0;
 
         ft = ui.tableWidget_MezoLista->item(idix, C_ix_colType)->text();
 
         if(r.length()<1){
             zlog.trace("Nincs megnevezés sor kijelölve");
-            return;
+            return { "", "", QMap<int, QString>() };
         }
         else if (r.length()>1){
             QString rs = "";
@@ -498,23 +521,13 @@ void retek2::on_pushButton_5_clicked()
         }
 
         auto ms = zsql.getTable_SQL_ENUM(tablanev, fn);
+        QString cn = ztokenizer.getOsztalynevUpper(tablanev);
 
-
-        QString vl = "";
-        zforeach(m, ms){
-            if(!vl.isEmpty()) vl+=",\n";
-            auto en = m.value().normalized(QString::NormalizationForm_D).replace(QRegExp("[^a-zA-Z0-9_\\s]"), "").toLower();
-            vl += QString("\t%1 = %2").arg(en).arg(m.key());
+        return { cn, ft, ms };
         }
-
-        auto cn = ztokenizer.getOsztalynevUpper(tablanev);
-
-        zlog.trace(QString("enum %1 : %2\n {\n%3\n};").arg(cn).arg(ft).arg(vl));
+    else{
+        zlog.trace("Nincs sor kijelölve");
+        return { "", "", QMap<int, QString>() };
     }
-   // ui.listWidget_tabla->sele
-
 }
-
-
-
 

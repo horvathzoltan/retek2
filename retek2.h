@@ -5,6 +5,7 @@
 #include "ui_retek2.h"
 #include <QSqlQuery>
 #include "ztable.h"
+#include "zenumizer.h"
 
 class retek2 : public QMainWindow
 {
@@ -17,7 +18,7 @@ public:
 
 private slots:
 	void GenerateAll();
-    void GenerateByText();
+    void ValidateByText();
 	void TableSelect(QListWidgetItem*);
     void on_pushButton_clicked();
 
@@ -26,6 +27,8 @@ private slots:
     void on_pushButton_4_clicked();
 
     void on_pushButton_5_clicked();
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::retek2Class ui;
@@ -48,6 +51,8 @@ private:
 	
 
     static QTableWidgetItem* CreateTableItem(QVariant v);    
+
+    zEnumizer::EnumSource GetEnumData();
 };
 
 #endif // RETEK2_H

@@ -356,9 +356,9 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_ViewDelete">
+                  <widget class="QCheckBox" name="checkBox_Enum">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -367,7 +367,7 @@
                     </sizepolicy>
                    </property>
                    <property name="text">
-                    <string>MVC View Delete</string>
+                    <string>Enum</string>
                    </property>
                   </widget>
                  </item>
@@ -454,7 +454,7 @@
               <item>
                <widget class="QTabWidget" name="tabWidget">
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>1</number>
                 </property>
                 <widget class="QWidget" name="tab">
                  <attribute name="title">
@@ -548,13 +548,6 @@
                       </property>
                       <property name="text">
                        <string>Load 2</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="pushButton_5">
-                      <property name="text">
-                       <string>Enum</string>
                       </property>
                      </widget>
                     </item>
@@ -659,22 +652,6 @@
     <hint type="destinationlabel">
      <x>135</x>
      <y>704</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_2</sender>
-   <signal>clicked()</signal>
-   <receiver>retek2Class</receiver>
-   <slot>GenerateByText()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>632</x>
-     <y>620</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>618</x>
-     <y>770</y>
     </hint>
    </hints>
   </connection>
