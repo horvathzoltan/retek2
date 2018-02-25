@@ -236,7 +236,7 @@ bool zTable::getType(QString ezt1,  QString *dtype, int *dlen)
 }
 
 QList<zTable> zTable::createTableByText(QString txt)
-{   
+{
 //    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re = QRegularExpression(R"(^\s*(?:(^\w*)\s+)((?:^[\w, ()\"'<>\.]+\n?)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen1 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -340,6 +340,9 @@ QList<zTable> zTable::createTableByText(QString txt)
                                     else{
                                         if((*fn2).toLower()=="key"){
                                             pkn = fname;
+                                            }
+                                        else if((*fn2).toLower()=="required"){
+                                            isNullable = false;
                                             }
                                         }
                                     }
@@ -457,7 +460,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                             p->dlen = dlen;
                             rl.append(*p);
                             }
-                        else{                          
+                        else{
                             pl.append(*p);
                         }
 
