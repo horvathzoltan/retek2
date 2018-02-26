@@ -9,7 +9,7 @@ QString zEnumizer::GenerateEnum(EnumSource es)
     QString vl = "";
     zforeach(m, es.ms){
         if(!vl.isEmpty()) vl+=",\n";
-        auto en = m.value().normalized(QString::NormalizationForm_D).replace(QRegExp("[^a-zA-Z0-9_\\s]"), "").toLower();
+        auto en = m.value().normalized(QString::NormalizationForm_D).replace(QRegExp("[^a-zA-Z0-9_\\s]"), "").replace(' ', '_').toLower();
         vl += QString("\t%1 = %2").arg(en).arg(m.key());
     }
 

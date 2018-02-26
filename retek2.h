@@ -18,7 +18,7 @@ public:
 
 private slots:
 	void GenerateAll();
-    void ValidateByText();
+    //void ValidateByText();
 	void TableSelect(QListWidgetItem*);
     void on_pushButton_clicked();
 

@@ -16,6 +16,8 @@ public:
     zTokenizer();
     void init(QTableWidget*);
 
+    static const QString TXT;
+
 
     void tokenize(QString *tmp, QMap<QString, QVariant> *, int);
     int tokenizeR(QString *txt, int ix, int*, QMap<QString, QVariant>*, int);

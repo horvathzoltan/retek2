@@ -15,6 +15,7 @@ public:
     QString colType;
     int dlen;
     bool nullable;
+    QString comment;
 
     QString toString();
 
