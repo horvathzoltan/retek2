@@ -4,7 +4,12 @@
 
 #include <QDir>
 
-Beallitasok::Beallitasok(){};
+Beallitasok::Beallitasok(){
+    //"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"
+    beallitasok.append(Beallitas{"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"});
+
+     selected_ix = 0;
+};
 
 Beallitasok::~Beallitasok(){};
 
@@ -16,31 +21,46 @@ void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEd
     this->widget_adatbazisNev = wcatalog;
 }
 
-void Beallitasok::getUI()
+/*
+        QString driver;
+        QString adatbazisNev;
+        QString server;
+        QString user;
+        QString password;
+*/
+Beallitasok::Beallitas Beallitasok::getUI()
 {
-    user = widget_user->text();
-    password = widget_password->text();
-    server = widget_server->text();
-    adatbazisNev = widget_adatbazisNev->text();
+    QString driver = "QMYSQL";
+    QString user = widget_user->text();
+    QString password = widget_password->text();
+    QString server = widget_server->text();
+    QString adatbazisNev = widget_adatbazisNev->text();
+
+    return Beallitas{ driver, adatbazisNev, server, user, password};
 }
 
-void Beallitasok::setUI()
+void Beallitasok::setUI(Beallitas b)
 {
-    widget_user->setText(this->user);
-    widget_password->setText(this->password);
-    widget_server->setText(this->server);
-    widget_adatbazisNev->setText(this->adatbazisNev);
+    widget_user->setText(b.user);
+    widget_password->setText(b.password);
+    widget_server->setText(b.server);
+    widget_adatbazisNev->setText(b.adatbazisNev);
+    //b.driver
 }
 
 
 QString Beallitasok::getCaptionFileName(QString tablanev){
-    QString fn = zFileNameHelper::append(QDir::homePath(), munkadir, adatbazisNev, "caption_"+tablanev+".txt");
+    auto b = beallitasok[selected_ix];
+
+    QString fn = zFileNameHelper::append(QDir::homePath(), munkadir, b.adatbazisNev, "caption_"+tablanev+".txt");
     return fn;
 }
 
 QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
+     auto b = get();
+
     //auto e = QString(munkadir+R"(\%2\%1)").arg(dirname).arg(adatbazisNev);
-    QString  e = zFileNameHelper::append(QDir::homePath(),munkadir, dirname, adatbazisNev);
+    QString  e = zFileNameHelper::append(QDir::homePath(),munkadir, dirname, b.adatbazisNev);
     QDir d(e);if(!d.exists()){d.mkpath(d.absolutePath());}
 
     e += QDir::separator()+tfname;
@@ -52,17 +72,19 @@ QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
  * a beállítások alapján a template névhez tartozó fájl nevét adja
 */
 QString Beallitasok::getTemplateFilename(QString tfname) {
+     auto b = get();
+
     bool isVal = true;
-    if(beallitasok.tmpDir.isEmpty())
+    if(tmpDir.isEmpty())
         {zlog.log("A template könyvtár a beállításokban nincs megadva");isVal=false;}
     if(tfname.isEmpty())
         {zlog.log("A template fájlnév nincs megadva");isVal=false;}
-    if(beallitasok.adatbazisNev.isEmpty())
+    if(b.adatbazisNev.isEmpty())
         {zlog.log("Az adatbázisnév nincs megadva");isVal=false;}
     if(isVal == false)
         {zLog::ShowDialog("A template fájlnév nem meghatározható");return NULL;}
 
-    auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.tmpDir, beallitasok.adatbazisNev, tfname);
+    auto fn = zFileNameHelper::append(QDir::homePath(),tmpDir, b.adatbazisNev, tfname);
 
     //zlog.log("project template keresese:"+ fn);
     if(QFileInfo(fn).exists())
@@ -70,7 +92,7 @@ QString Beallitasok::getTemplateFilename(QString tfname) {
     else{
         zlog.log("nincs project template:" +fn);
 
-        fn = zFileNameHelper::append(QDir::homePath(),beallitasok.tmpDir, tfname);
+        fn = zFileNameHelper::append(QDir::homePath(),tmpDir, tfname);
         //fn = QString(beallitasok.tmpDir+R"(\%1)").arg(tfname);
 
         if(QFileInfo(fn).exists())
@@ -82,5 +104,9 @@ QString Beallitasok::getTemplateFilename(QString tfname) {
 
 
     return NULL;
+}
+
+Beallitasok::Beallitas Beallitasok::get(){
+    return beallitasok[selected_ix];
 }
 

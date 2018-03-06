@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <QLineEdit>
+#include <QList>
 
 class Beallitasok
 {
@@ -11,7 +12,18 @@ private:
     QLineEdit *widget_server;
     QLineEdit *widget_adatbazisNev;
 
+    typedef struct {
+        QString driver;
+        QString adatbazisNev;
+        QString server;
+        QString user;
+        QString password;
+        } Beallitas;
+
+    int selected_ix;
+
 public:
+
     Beallitasok();
     ~Beallitasok();
 
@@ -19,14 +31,19 @@ public:
 
     void Load();
 
-    void getUI();
-    void setUI();
+    Beallitas getUI();
+    void setUI(Beallitas);
 
     QString getTemplateFilename(QString tfname);
 
     QString getModelFilename(QString tfname, QString dirname);
 
+    Beallitas get();
+
+
 //zSQL("QMYSQL", "127.0.0.1", "wiki1", "root","Aladar123", "w1"),
+
+    QList<Beallitas> beallitasok;
 /*
     QString driver = "QMYSQL";
     QString adatbazisNev = "wiki1";
@@ -34,6 +51,7 @@ public:
     QString user = "root";
     QString password= "Aladar123";
 */
+
 /*
 torzs_felhasznalo
 id
@@ -54,13 +72,13 @@ abrachadabra
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
 */
-
+/*
     QString driver = "QODBC";
     QString adatbazisNev = "Gloster";
     QString server = "DEATHSTAR";
     QString user = "sa";
     QString password= "Gtr7jv8fh2";
-
+*/
 
 //    QString driver = "QODBC";
 //    QString adatbazisNev = "ServiceFlex";

@@ -64,12 +64,12 @@ ha for ciklust hasznlunk, akkor elkerlhet a vgtelen ciklus, s maximalizlhat a te
 for(int i = 10 ... ha elrtk a 10-et, akkor a template too complex
 */
 
-void zTokenizer::tokenize(QString *tmp, QMap<QString, QVariant>*map, int whsp) {
+void zTokenizer::tokenize(QString *tmp, QMap<QString, QVariant>*map, int whsp, QString dbname) {
     int szint = 0;
-    tokenizeR(tmp, 0, &szint, map, whsp);
+    tokenizeR(tmp, 0, &szint, map, whsp, dbname);
 }
 
-int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVariant> *map, int whsp) {
+int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVariant> *map, int whsp, QString dbname) {
     int ix1 = 0;
     //int ix2 = ix;
     int spc = 0;
@@ -83,7 +83,7 @@ int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVaria
 
         if ((*tmp)[i] == '<' && (*tmp)[i + 1] == '%' && (*tmp)[i + 2] == '=') {
             (*szint)++;
-            i = tokenizeR(tmp, i + 3, szint, map, whsp+spc);
+            i = tokenizeR(tmp, i + 3, szint, map, whsp+spc, dbname);
             }
         else if ((*tmp)[i] == '%' && (*tmp)[i + 1] == '>') {
             ix1 = i;
@@ -99,7 +99,7 @@ int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVaria
         if (*szint > 0) {
         if ((*tmp)[i] == '(' && (*tmp)[i + 1] == '\"') {
             (*szint)++;
-            i = tokenizeR(tmp, i + 2, szint, map, whsp+spc);
+            i = tokenizeR(tmp, i + 2, szint, map, whsp+spc, dbname);
         }
         else if ((*tmp)[i] == '\"' && (*tmp)[i + 1] == ')') {
             ix1 = i;
@@ -128,7 +128,7 @@ int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVaria
         else
             eredmeny = eredmeny.trimmed();
 
-        eredmeny = getToken(eredmeny, parameter, map, whsp);
+        eredmeny = getToken(eredmeny, parameter, map, whsp, dbname);
         if (eredmeny.isEmpty()) {
             tmp->remove(ix - 3, ix1 - ix + 5);
             ix1 -= l1 + 5;
@@ -142,16 +142,16 @@ int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVaria
     return ix1;
 }
 
-QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant> *map, int whsp) {
+QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant> *map, int whsp, QString dbname) {
     auto t1List = token1.split(' ', QString::SplitBehavior::SkipEmptyParts);
     QString t1 = t1List[0];
     QString t3 = (t1List.length()>1) ? t1List[1] : nullptr;
 
-    if (t1 == "dbname") return beallitasok.adatbazisNev;
+    if (t1 == "dbname") return dbname;
     else if (t1 == "tablename") return tablanev;
-    else if (t1 == "classname") return getOsztalynevUpper(tablanev);
-    else if (t1 == "proplist") return getPropList2(t2, t3, whsp);
-    else if (t1 == "propline") return getPropList2(nullptr, t3, whsp);
+    else if (t1 == "classname") return getClassNameCamelCase(tablanev);
+    else if (t1 == "proplist") return getPropList2(t2, t3, whsp, dbname);
+    else if (t1 == "propline") return getPropList2(nullptr, t3, whsp, dbname);
     else if (t1 == "attrlist") return getAttrList(t2, map, whsp);
     else if (t1 == "contextname") return getContextNev();
     else if (t1 == "newline") return "\n";
@@ -237,7 +237,7 @@ QString zTokenizer::getAttrList(QString tmp, QMap<QString, QVariant> *map, int w
     return  e;
 }
 
-QString zTokenizer::getPropList2(QString tmp, QString param, int whsp) {
+QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString dbname) {
     int rows = MezoLista->rowCount();
     QString proplist = "";
     QStringList exPropsBynameList;
@@ -319,7 +319,7 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp) {
             else
                 e1 = tmp;
 
-            tokenize(&e1, &map, whsp);
+            tokenize(&e1, &map, whsp, dbname);
 
             proplist += QString(j++==0?0:whsp, ' ') + e1;// +"// " + item_colName->text();
             if (i < rows - 1) proplist += "\n";
@@ -350,7 +350,8 @@ QString zTokenizer::getePropType(QString tipusnev, int length, bool isnullable) 
 
 const QString zTokenizer::TXT = "txt";
 
-QString zTokenizer::getOsztalynevUpper(QString tnev) {
+//ClassnameCamelCase
+QString zTokenizer::getClassNameCamelCase(QString tnev) {
     QString t2 = tnev.toLower();
     QString sep = TXT+'.';
 

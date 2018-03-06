@@ -19,20 +19,20 @@ public:
     static const QString TXT;
 
 
-    void tokenize(QString *tmp, QMap<QString, QVariant> *, int);
-    int tokenizeR(QString *txt, int ix, int*, QMap<QString, QVariant>*, int);
-    QString getToken(QString t1, QString t2, QMap<QString, QVariant> *map, int);
+    void tokenize(QString *tmp, QMap<QString, QVariant> *, int, QString dbname);
+    int tokenizeR(QString *txt, int ix, int*, QMap<QString, QVariant>*, int, QString dbname);
+    QString getToken(QString t1, QString t2, QMap<QString, QVariant> *map, int, QString dbname);
 
     //QString getAdatbazisnev(void);
     QString getCaptionFileName(QString);
     QString getOsztalynevLower(QString tablanev);
-    QString getOsztalynevUpper(QString tablanev);
+    QString getClassNameCamelCase(QString tablanev);
     QString getContextNev(void);
 
     QString get_liNev(QString o);
 
     QString getPropList();
-    QString getPropList2(QString tmp, QString param, int whsp);
+    QString getPropList2(QString tmp, QString param, int whsp, QString dbname);
 
     QString getAttrList(QString tmp, QMap<QString, QVariant> *map, int whsp);
 
