@@ -61,8 +61,9 @@ void retek2::init(void)
     typeMapR.insert("bool","bit");
     typeMapR.insert("decimal", "decimal");
 
-    //beallitasok.Load();
-    auto b = beallitasok.get();
+    beallitasok.Load();
+
+    auto b = beallitasok.getSelected();
 
     beallitasok.setUI(b);
     zsql.init(b.driver, b.server, b.adatbazisNev, b.user, b.password);
@@ -80,7 +81,7 @@ void retek2::init(void)
 
 
 void retek2::saveCaptionTabla(QString tablanev) {
-     auto b = beallitasok.get();
+     auto b = beallitasok.getSelected();
 
     QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b.adatbazisNev, "caption_" + tablanev + ".txt");
 
@@ -235,7 +236,7 @@ QTableWidgetItem* retek2::CreateTableItem(QVariant v){
  generate files by selected templates
 */
 void retek2::GenerateAll() {
-     auto b = beallitasok.get();
+     auto b = beallitasok.getSelected();
 
 	qDebug("GenerateAll");
     if (!tablanev.isEmpty()){
@@ -363,7 +364,7 @@ QString retek2::generateTmp(QString tmp_file) {
 
     QString tmp = zStringHelper::Load(tmp_fn);
 
-    auto b = beallitasok.get();
+    auto b = beallitasok.getSelected();
     ztokenizer.tokenize(&tmp, nullptr, 0, b.adatbazisNev);
 
 	return tmp;

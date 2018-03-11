@@ -6,7 +6,7 @@
 
 Beallitasok::Beallitasok(){
     //"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"
-    beallitasok.append(Beallitas{"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"});
+    dbConnections.append(dbConnection{"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"});
 
      selected_ix = 0;
 };
@@ -28,7 +28,7 @@ void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEd
         QString user;
         QString password;
 */
-Beallitasok::Beallitas Beallitasok::getUI()
+dbConnection Beallitasok::getUI()
 {
     QString driver = "QMYSQL";
     QString user = widget_user->text();
@@ -36,10 +36,10 @@ Beallitasok::Beallitas Beallitasok::getUI()
     QString server = widget_server->text();
     QString adatbazisNev = widget_adatbazisNev->text();
 
-    return Beallitas{ driver, adatbazisNev, server, user, password};
+    return dbConnection{ driver, adatbazisNev, server, user, password};
 }
 
-void Beallitasok::setUI(Beallitas b)
+void Beallitasok::setUI(dbConnection b)
 {
     widget_user->setText(b.user);
     widget_password->setText(b.password);
@@ -50,14 +50,14 @@ void Beallitasok::setUI(Beallitas b)
 
 
 QString Beallitasok::getCaptionFileName(QString tablanev){
-    auto b = beallitasok[selected_ix];
+    auto b = dbConnections[selected_ix];
 
     QString fn = zFileNameHelper::append(QDir::homePath(), munkadir, b.adatbazisNev, "caption_"+tablanev+".txt");
     return fn;
 }
 
 QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
-     auto b = get();
+     auto b = getSelected();
 
     //auto e = QString(munkadir+R"(\%2\%1)").arg(dirname).arg(adatbazisNev);
     QString  e = zFileNameHelper::append(QDir::homePath(),munkadir, dirname, b.adatbazisNev);
@@ -72,7 +72,7 @@ QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
  * a beállítások alapján a template névhez tartozó fájl nevét adja
 */
 QString Beallitasok::getTemplateFilename(QString tfname) {
-     auto b = get();
+     auto b = getSelected();
 
     bool isVal = true;
     if(tmpDir.isEmpty())
@@ -106,7 +106,19 @@ QString Beallitasok::getTemplateFilename(QString tfname) {
     return NULL;
 }
 
-Beallitasok::Beallitas Beallitasok::get(){
-    return beallitasok[selected_ix];
+dbConnection Beallitasok::getSelected(){
+    return dbConnections[selected_ix];
 }
 
+
+/*
+template_dir/connections.xml
+
+
+*/
+void Beallitasok::Load(){
+
+    QString  e = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, "");
+
+    return;
+}

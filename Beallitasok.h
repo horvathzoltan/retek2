@@ -3,6 +3,7 @@
 #include <QString>
 #include <QLineEdit>
 #include <QList>
+#include "dbconnection.h"
 
 class Beallitasok
 {
@@ -10,18 +11,9 @@ private:
     QLineEdit *widget_user;
     QLineEdit *widget_password;
     QLineEdit *widget_server;
-    QLineEdit *widget_adatbazisNev;
-
-    typedef struct {
-        QString driver;
-        QString adatbazisNev;
-        QString server;
-        QString user;
-        QString password;
-        } Beallitas;
+    QLineEdit *widget_adatbazisNev;        
 
     int selected_ix;
-
 public:
 
     Beallitasok();
@@ -31,19 +23,20 @@ public:
 
     void Load();
 
-    Beallitas getUI();
-    void setUI(Beallitas);
 
     QString getTemplateFilename(QString tfname);
 
     QString getModelFilename(QString tfname, QString dirname);
 
-    Beallitas get();
-
 
 //zSQL("QMYSQL", "127.0.0.1", "wiki1", "root","Aladar123", "w1"),
 
-    QList<Beallitas> beallitasok;
+    dbConnection getUI();
+    void setUI(dbConnection);
+
+    QList<dbConnection> dbConnections;
+
+    dbConnection getSelected();
 /*
     QString driver = "QMYSQL";
     QString adatbazisNev = "wiki1";
@@ -108,6 +101,9 @@ abrachadabra
     //QString connectionString = connectionTemplate.arg(server).arg(adatbazisNev);
     QString tmpDir = R"(retek2/template_dir)";
     QString munkadir = R"(retek2/munka_dir)";
+    QString settingsdir = R"(retek2/settings)";
+
+    QString dbconnections_filename = R"(dbconnections.csv)";
     /*
 #if defined(Q_OS_WIN)
 	QString tmpDir = R"(C:\retek2\template_dir)";
