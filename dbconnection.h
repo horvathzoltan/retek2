@@ -4,7 +4,9 @@
 
 class dbConnection
 {
-public:
+private:
+    static const QChar SEP;
+public:    
     QString driver;
     QString adatbazisNev;
     QString server;
@@ -13,8 +15,13 @@ public:
 
     dbConnection(QString, QString, QString, QString, QString);
 
-    QString ToCSV(dbConnection);
-    dbConnection FromCSV(QString);
+    QString ToCSV();
+    static dbConnection FromCSV(QString);
+
+    bool isValid();
+
+    bool operator==(dbConnection const& b);
 };
+
 
 #endif // DBCONNECTION_H

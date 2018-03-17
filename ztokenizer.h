@@ -34,10 +34,10 @@ public:
     QString getPropList();
     QString getPropList2(QString tmp, QString param, int whsp, QString dbname);
 
-    QString getAttrList(QString tmp, QMap<QString, QVariant> *map, int whsp);
+    QString getAttrList(QMap<QString, QVariant> *map, int whsp);
 
-    QString getPropType(QString tipusnev, int length, bool isnullable);
-    QString getePropType(QString tipusnev, int length, bool isnullable);
+    QString getPropType(QString tipusnev, bool isnullable);
+    QString getePropType(QString tipusnev, int length);
     //QString getReq(QString tmp, QMap<QString, QVariant> *map);
 
 };

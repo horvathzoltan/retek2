@@ -21,7 +21,8 @@ public:
 
     void init(QLineEdit*, QLineEdit*, QLineEdit*, QLineEdit*);
 
-    void Load();
+    void load();
+    void addConnection(dbConnection);
 
 
     QString getTemplateFilename(QString tfname);
@@ -36,7 +37,9 @@ public:
 
     QList<dbConnection> dbConnections;
 
-    dbConnection getSelected();
+    dbConnection* getSelected();
+
+
 /*
     QString driver = "QMYSQL";
     QString adatbazisNev = "wiki1";

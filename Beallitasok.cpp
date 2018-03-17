@@ -1,12 +1,14 @@
 #include "Beallitasok.h"
 #include "zfilenamehelper.h"
+#include "ztextfilehelper.h"
+#include "zstringhelper.h"
 #include "globals.h"
 
 #include <QDir>
 
 Beallitasok::Beallitasok(){
     //"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"
-    dbConnections.append(dbConnection{"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"});
+    //dbConnections.append(dbConnection{"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"});
 
      selected_ix = 0;
 };
@@ -59,32 +61,35 @@ QString Beallitasok::getCaptionFileName(QString tablanev){
 QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
      auto b = getSelected();
 
-    //auto e = QString(munkadir+R"(\%2\%1)").arg(dirname).arg(adatbazisNev);
-    QString  e = zFileNameHelper::append(QDir::homePath(),munkadir, dirname, b.adatbazisNev);
-    QDir d(e);if(!d.exists()){d.mkpath(d.absolutePath());}
+     if(b!=nullptr){
+        //auto e = QString(munkadir+R"(\%2\%1)").arg(dirname).arg(adatbazisNev);
+        QString  e = zFileNameHelper::append(QDir::homePath(),munkadir, dirname, b->adatbazisNev);
+        QDir d(e);if(!d.exists()){d.mkpath(d.absolutePath());}
 
-    e += QDir::separator()+tfname;
-    zlog.trace(e);
-    return e;
+        e += QDir::separator()+tfname;
+        zlog.trace(e);
+        return e;
+     }
 }
 
 /*
  * a beállítások alapján a template névhez tartozó fájl nevét adja
 */
 QString Beallitasok::getTemplateFilename(QString tfname) {
-     auto b = getSelected();
+    auto b = getSelected();
 
+    if(b!=nullptr){
     bool isVal = true;
     if(tmpDir.isEmpty())
         {zlog.log("A template könyvtár a beállításokban nincs megadva");isVal=false;}
     if(tfname.isEmpty())
         {zlog.log("A template fájlnév nincs megadva");isVal=false;}
-    if(b.adatbazisNev.isEmpty())
+    if(b->adatbazisNev.isEmpty())
         {zlog.log("Az adatbázisnév nincs megadva");isVal=false;}
     if(isVal == false)
         {zLog::ShowDialog("A template fájlnév nem meghatározható");return NULL;}
 
-    auto fn = zFileNameHelper::append(QDir::homePath(),tmpDir, b.adatbazisNev, tfname);
+    auto fn = zFileNameHelper::append(QDir::homePath(),tmpDir, b->adatbazisNev, tfname);
 
     //zlog.log("project template keresese:"+ fn);
     if(QFileInfo(fn).exists())
@@ -101,24 +106,51 @@ QString Beallitasok::getTemplateFilename(QString tfname) {
             zlog.log("nincs default template:"+ fn);
             }
         }
-
+}
+    else
+        zlog.log("nincs kiválasztott dbconnection:");
 
     return NULL;
 }
 
-dbConnection Beallitasok::getSelected(){
-    return dbConnections[selected_ix];
+dbConnection* Beallitasok::getSelected(){
+    if(dbConnections.isEmpty())
+        return nullptr;
+    return
+        &(dbConnections[selected_ix]);
 }
 
 
 /*
-template_dir/connections.xml
-
+fel kell olvasni a kapcsolatokat
+template_dir/connections.csv
+fel kell olvasni a kapcsolat fájlt
 
 */
-void Beallitasok::Load(){
+void Beallitasok::load(){
 
-    QString  e = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, "");
+    QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, "");
 
+    QString txt = zTextFileHelper::load(fn);
+
+    if(!txt.isEmpty()){
+        //zlog.log(QString("beállítások_dbconnections: %1").arg(fn));
+        QStringList csvl = zStringHelper::toStringList(txt);
+        zforeach(csvr, csvl){
+            auto dbconn = dbConnection::FromCSV(*csvr);
+            if(dbconn.isValid())
+                beallitasok.dbConnections.append(dbconn);
+        }
+    }
     return;
 }
+
+void Beallitasok::addConnection(dbConnection b){
+    QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, "");
+    QString csvr= b.ToCSV();
+
+    zlog.log(QString("dbconnection append %1 %2").arg(fn).arg(csvr));
+    zTextFileHelper::append(fn, csvr);
+}
+
+

@@ -19,16 +19,23 @@ QString zSQL::getConnStr(){
 
 zSQL::zSQL(){};
 
-void zSQL::init(QString _driverName, QString _hostName, QString _databaseName, QString _user, QString _pass){
+bool zSQL::init(dbConnection c){
+    return init(c.driver, c.server, c.adatbazisNev, c.user, c.password);
+}
+
+bool zSQL::init(QString _driverName, QString _hostName, QString _databaseName, QString _user, QString _pass){
     connectionName = "conn1";
     user = _user;
     password = _pass;
     driverName = _driverName;
     hostName = _hostName;
     databaseName = _databaseName;    
-    this->createConnection();
-    zlog.log("init:"+this->toString());        
-    zlog.log("hasFeature: QuerySize "+QString(db.driver()->hasFeature(QSqlDriver::QuerySize)?"true":"false"));
+    bool isok = this->createConnection();
+    if(isok){
+        zlog.log("init:"+this->toString());
+        zlog.log("hasFeature: QuerySize "+QString(db.driver()->hasFeature(QSqlDriver::QuerySize)?"true":"false"));
+        }
+    return isok;
     }
 
 bool zSQL::createConnection_MSSQL()
@@ -66,7 +73,7 @@ bool zSQL::createConnection_MYSQL()
     return db.open();
 }
 
-void zSQL::createConnection(QString connectionName){
+bool zSQL::createConnection(QString connectionName){
     connectionName = connectionName;
 
     bool isok;
@@ -76,7 +83,7 @@ void zSQL::createConnection(QString connectionName){
         isok = createConnection_MYSQL();
     else{
         zlog.log("createConnection: unknown driver:" + driverName);
-        return;
+        return false;
     }
 
     if(isok)
@@ -84,7 +91,7 @@ void zSQL::createConnection(QString connectionName){
     else
         zlog.log("Not Connected: " + this->getLastErrorText());
 
-    return;
+    return isok;
     }
 
 const QString zSQL::getTableNames_MYSQL_CMDTMP = "SELECT table_name AS TableName, table_comment AS TableDescription "
@@ -253,10 +260,10 @@ QString zSQL::getTablePK(QString tablanev){
         //QString fn = beallitasok.getCaptionFileName(tablanev);
 
         if(driverName == QODBC)
-            return getTable_SQL_PK(tablanev, getTable_MSSQL_PK(tablanev));
+            return getTable_SQL_PK(getTable_MSSQL_PK(tablanev));
         else if(driverName == QMYSQL){
             auto q = getTable_MYSQL_PK(tablanev);
-            auto e = getTable_SQL_PK(tablanev, q);
+            auto e = getTable_SQL_PK(q);
             return e;
         }
 
@@ -270,7 +277,7 @@ QString zSQL::getTablePK(QString tablanev){
     return "";
 }
 
-QString zSQL::getTable_SQL_PK(QString tablanev, QString cmd)
+QString zSQL::getTable_SQL_PK(QString cmd)
 {
     QSqlQuery query(cmd, db);
     query.setForwardOnly(true);

@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "ztokenizer.h"
 #include "zstringhelper.h"
+#include "ztextfilehelper.h"
 
 zTokenizer::zTokenizer()
 {
@@ -48,7 +49,7 @@ void zTokenizer::feltoltTmpMap(void){
         auto ix = f->indexOf('.');
         if (ix > -1) k = f->left(ix);
 
-        QString v = zStringHelper::Load(viewTemplateDirName + "\\" + *f);
+        QString v = zTextFileHelper::load(viewTemplateDirName + "\\" + *f);
         tmpMap.insert(k, v);
     }
 }
@@ -152,7 +153,7 @@ QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant>
     else if (t1 == "classname") return getClassNameCamelCase(tablanev);
     else if (t1 == "proplist") return getPropList2(t2, t3, whsp, dbname);
     else if (t1 == "propline") return getPropList2(nullptr, t3, whsp, dbname);
-    else if (t1 == "attrlist") return getAttrList(t2, map, whsp);
+    else if (t1 == "attrlist") return getAttrList(map, whsp);
     else if (t1 == "contextname") return getContextNev();
     else if (t1 == "newline") return "\n";
     //else if (t1 == "dispnameforprop") return getDispnameforprop(t2, map);
@@ -186,8 +187,8 @@ QString zTokenizer::getPropList() {
         QString e1;
 
         int len = item_len->text().toInt();
-        bool isnullable = zStringHelper::toBool(item_isnullable->text());
-        auto pType = getPropType(item_colType->text(), len, isnullable);
+        zStringHelper::toBool(item_isnullable->text());
+        auto pType = getPropType(item_colType->text(), len);
         auto osztalyNev = getOsztalynevLower(item_colName->text());
 
         e1 = QString("public %1 %2 { get; set; }").arg(pType).arg(osztalyNev);
@@ -198,7 +199,7 @@ QString zTokenizer::getPropList() {
     return proplist;
 }
 
-QString zTokenizer::getAttrList(QString tmp, QMap<QString, QVariant> *map, int whsp) {
+QString zTokenizer::getAttrList(QMap<QString, QVariant> *map, int whsp) {
     QString  e;
     QString spacer = QString(whsp, ' ');
     if (!map) return "";
@@ -264,7 +265,7 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
             int len = item_len->text().toInt();
             bool isnullable = zStringHelper::toBool(item_isnullable->text());
             auto colType = item_colType->text();
-            auto propType = getPropType(colType, len, isnullable);
+            auto propType = getPropType(colType, len);
             //auto propName = getOsztalynev(colName);
             QString caption = (item_Caption) ? item_Caption->text() : "";
             QString coltypeName = item_colType->text();
@@ -335,13 +336,13 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
 }
 
 
-QString zTokenizer::getPropType(QString tipusnev, int length, bool isnullable) {
+QString zTokenizer::getPropType(QString tipusnev, bool isnullable) {
     QString pt = typeMap.value(tipusnev);//.toString();
     if (isnullable && !tipusnev.endsWith("char")) pt += '?';
     return pt;
 }
 
-QString zTokenizer::getePropType(QString tipusnev, int length, bool isnullable) {
+QString zTokenizer::getePropType(QString tipusnev, int length) {
     QString pt = tipusnev;
     if (length > 0 && tipusnev.endsWith("char")) pt += QString("(%1)").arg(length);
     return pt;

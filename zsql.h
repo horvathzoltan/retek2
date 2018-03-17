@@ -4,7 +4,7 @@
 #include <QString>
 #include <QSqlDatabase>
 #include "ztable.h"
-//#include "ztablerow.h"
+#include "dbconnection.h"
 
 class zSQL
 {
@@ -48,22 +48,26 @@ A tábla PK mező nevének lekérdezése
 
     QString getTable_MSSQL_PK(QString tn);
     QString getTable_MYSQL_PK(QString tn);
+
+    bool init(QString, QString, QString, QString, QString);
+
 public:
     zSQL();
-    void init(QString, QString, QString, QString, QString);
+    bool init(dbConnection c);
+
 
     ~zSQL(void){
         db.close();
         QSqlDatabase::removeDatabase(connectionName);
     }
 
-    void createConnection(QString connectionName="default_conn");
+    bool createConnection(QString connectionName="default_conn");
 
     QString toString();
     QList<QString> getTableNames();
     zTable getTable(QString tablanev);
     QString getTablePK(QString tablanev);
-    QString getTable_SQL_PK(QString tablanev, QString cmd);
+    QString getTable_SQL_PK(QString cmd);
 
     static const QString getTable_SQL_ENUMTMP;
 
