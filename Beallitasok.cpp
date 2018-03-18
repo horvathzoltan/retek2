@@ -5,6 +5,7 @@
 #include "globals.h"
 
 #include <QDir>
+#include <QFileInfo>
 
 Beallitasok::Beallitasok(){
     //"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"
@@ -129,7 +130,7 @@ fel kell olvasni a kapcsolat fájlt
 */
 void Beallitasok::load(){
 
-    QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, "");
+    QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, "");       
 
     QString txt = zTextFileHelper::load(fn);
 
@@ -145,7 +146,7 @@ void Beallitasok::load(){
     return;
 }
 
-void Beallitasok::addConnection(dbConnection b){
+void Beallitasok::addConnection(dbConnection b){  
     QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, "");
     QString csvr= b.ToCSV();
 
