@@ -21,6 +21,8 @@ public:
     bool isValid();
 
     bool operator==(dbConnection const& b);
+
+    QString Getname();
 };
 
 

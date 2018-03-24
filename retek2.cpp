@@ -36,7 +36,7 @@ retek2::~retek2()
 void retek2::init(void)
 {	
     zlog.init(ui.textBrowser);
-    beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog);
+    beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections);
 
     //sql->c# irány
 	typeMap.insert("uniqueidentifier", "Guid");
@@ -62,23 +62,24 @@ void retek2::init(void)
     typeMapR.insert("bool","bit");
     typeMapR.insert("decimal", "decimal");
 
-    beallitasok.load();
+    beallitasok.load();    
 
-    auto b = beallitasok.getSelected();
-
-    if(b!=nullptr){
-        beallitasok.setUI(*b);
-        zsql.init(*b);
-        ztokenizer.init(ui.tableWidget_MezoLista);
-        feltoltTabla(); // bal tábla panel feltöltése
-        zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, b->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
-        }
+    initBy(beallitasok.getSelected());
 
     zlog.trace("retek2 init OK");
 
     //ui.lineEdit_ContextName->setText(getAdatbazisnev()+"Context2");
 }
 
+void retek2::initBy(dbConnection* b){
+    if(b==nullptr) return;
+
+    beallitasok.setUI(*b);
+    zsql.init(*b);
+    ztokenizer.init(ui.tableWidget_MezoLista);
+    feltoltTabla(); // bal tábla panel feltöltése
+    zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, b->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
+}
 
 void retek2::saveCaptionTabla(QString tablanev) {
     auto b = beallitasok.getSelected();
@@ -546,3 +547,9 @@ zEnumizer::EnumSource retek2::GetEnumData(){
     }
 }
 
+
+void retek2::on_comboBox_connections_currentIndexChanged(int index)
+{
+    beallitasok.setSelected(index);
+    initBy(beallitasok.getSelected());
+}

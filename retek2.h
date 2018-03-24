@@ -6,7 +6,7 @@
 #include <QSqlQuery>
 #include "ztable.h"
 #include "zenumizer.h"
-
+#include "dbconnection.h"
 class retek2 : public QMainWindow
 {
 	Q_OBJECT
@@ -27,6 +27,8 @@ private slots:
     void on_pushButton_4_clicked();   
 
     void on_pushButton_2_clicked();
+
+    void on_comboBox_connections_currentIndexChanged(int index);
 
 private:
     Ui::retek2Class ui;
@@ -51,6 +53,9 @@ private:
     static QTableWidgetItem* CreateTableItem(QVariant v);    
 
     zEnumizer::EnumSource GetEnumData();
+
+    void initBy(dbConnection* b);
+
 };
 
 #endif // RETEK2_H

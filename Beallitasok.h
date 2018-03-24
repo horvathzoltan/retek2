@@ -3,6 +3,7 @@
 #include <QString>
 #include <QLineEdit>
 #include <QList>
+#include <QComboBox>
 #include "dbconnection.h"
 
 class Beallitasok
@@ -11,7 +12,8 @@ private:
     QLineEdit *widget_user;
     QLineEdit *widget_password;
     QLineEdit *widget_server;
-    QLineEdit *widget_adatbazisNev;        
+    QLineEdit *widget_adatbazisNev;
+    QComboBox *widget_connections;
 
     int selected_ix;
 public:
@@ -19,7 +21,7 @@ public:
     Beallitasok();
     ~Beallitasok();
 
-    void init(QLineEdit*, QLineEdit*, QLineEdit*, QLineEdit*);
+    void init(QLineEdit*, QLineEdit*, QLineEdit*, QLineEdit*, QComboBox *qc);
 
     void load();
     void addConnection(dbConnection);
@@ -119,5 +121,8 @@ abrachadabra
 	QString globalCaptionsFileName = "global_captions"; 
 
     QString getCaptionFileName(QString tablanev);
+    void setSelected(int i);
+
+    void addDbConnection(dbConnection b);
 };
 

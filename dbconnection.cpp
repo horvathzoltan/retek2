@@ -48,5 +48,10 @@ bool dbConnection::isValid(){
 
 bool dbConnection::operator==(dbConnection const& b){
     if(adatbazisNev==b.adatbazisNev)
-    return true;
+        return true;
+}
+
+QString dbConnection::Getname()
+{
+    return this->server+"."+this->adatbazisNev;
 }

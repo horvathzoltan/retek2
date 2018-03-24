@@ -24,9 +24,9 @@ void zTextFileHelper::save(QString txt, QString fn, bool isAppend) {
         zLog::ShowDialog("nem menthető: "+fn);
         return;
         }
-    else{
-        zLog::ShowDialog("mentve: "+fn);
-    }
+//    else{
+//        zLog.("mentve: "+fn);
+//    }
 
     QTextStream out(&f);
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));

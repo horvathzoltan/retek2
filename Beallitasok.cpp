@@ -16,12 +16,13 @@ Beallitasok::Beallitasok(){
 
 Beallitasok::~Beallitasok(){};
 
-void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEdit* wcatalog)
+void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEdit* wcatalog, QComboBox *qc)
 {
     this->widget_user = wu;
     this->widget_password = wp;
     this->widget_server = wserver;
     this->widget_adatbazisNev = wcatalog;
+    this->widget_connections = qc;
 }
 
 /*
@@ -121,6 +122,9 @@ dbConnection* Beallitasok::getSelected(){
         &(dbConnections[selected_ix]);
 }
 
+void Beallitasok::setSelected(int i){
+   selected_ix = i;
+}
 
 /*
 fel kell olvasni a kapcsolatokat
@@ -133,15 +137,19 @@ void Beallitasok::load(){
     QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, "");       
 
     QString txt = zTextFileHelper::load(fn);
+    widget_connections->clear();
 
     if(!txt.isEmpty()){
         //zlog.log(QString("beállítások_dbconnections: %1").arg(fn));
         QStringList csvl = zStringHelper::toStringList(txt);
         zforeach(csvr, csvl){
             auto dbconn = dbConnection::FromCSV(*csvr);
-            if(dbconn.isValid())
-                beallitasok.dbConnections.append(dbconn);
+            if(dbconn.isValid()){
+                addDbConnection(dbconn);
+            }
         }
+
+        selected_ix = 0;
     }
     return;
 }
@@ -151,7 +159,14 @@ void Beallitasok::addConnection(dbConnection b){
     QString csvr= b.ToCSV();
 
     zlog.log(QString("dbconnection append %1 %2").arg(fn).arg(csvr));
-    zTextFileHelper::append(fn, csvr);
+    zTextFileHelper::append(fn, csvr);  
+
+    addDbConnection(b);
+}
+
+void Beallitasok::addDbConnection(dbConnection b){
+    beallitasok.dbConnections.append(b);
+    widget_connections->addItem(b.Getname());
 }
 
 
