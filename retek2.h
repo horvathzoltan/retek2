@@ -30,6 +30,8 @@ private slots:
 
     void on_comboBox_connections_currentIndexChanged(int index);
 
+    void on_listWidget_tabla_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+
 private:
     Ui::retek2Class ui;
 
@@ -46,6 +48,7 @@ private:
 
     void feltoltMezoLista(zTable t);
     void feltoltPk(zTable t);
+    void feltoltFk(zTable t);
 
 	QString generateTmp(QString);
 	

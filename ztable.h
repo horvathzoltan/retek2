@@ -17,6 +17,8 @@ public:
     QString tablename;
     QString pkname;
 
+    QStringList fknames;
+
     QList<zTablerow> rows;
     QList<zTablerow> props;
 

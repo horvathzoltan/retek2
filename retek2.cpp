@@ -199,8 +199,10 @@ void retek2::feltoltMezoLista(QString tablanev){
     else
         t = zsql.getTable(tablanev);
     feltoltMezoLista(t);
-    ui.listWidget_IdegenKulcs->clear();
+    ui.listWidget_IdegenKulcs->clear();    
     feltoltPk(t);
+
+    feltoltFk(t);
 }
 
 void retek2::feltoltMezoLista(zTable t){
@@ -218,13 +220,24 @@ void retek2::feltoltMezoLista(zTable t){
 }
 
 void retek2::feltoltPk(zTable t) {
-    zlog.trace("feltoltPk " + tablanev);
+    zlog.trace("feltoltPK " + tablanev);
 
     if(!t.pkname.isEmpty()){
-        ui.listWidget_IdegenKulcs->addItem("Pk:"+t.pkname);
-        }
+        ui.listWidget_IdegenKulcs->addItem("PK:"+t.pkname);
+        }   
 }
 
+void retek2::feltoltFk(zTable t) {
+    zlog.trace("feltoltFK " + tablanev);
+
+//    QStringList fkl;
+
+//    if(!fkl.isEmpty()){
+//        zforeach(fk, fkl){
+//            ui.listWidget_IdegenKulcs->addItem("FK:"+t.pkname);
+//            }
+//    }
+}
 
 QTableWidgetItem* retek2::CreateTableItem(QVariant v){
     auto a = new QTableWidgetItem();
