@@ -49,6 +49,8 @@ bool dbConnection::isValid(){
 bool dbConnection::operator==(dbConnection const& b){
     if(adatbazisNev==b.adatbazisNev)
         return true;
+    else
+        return false;
 }
 
 QString dbConnection::Getname()

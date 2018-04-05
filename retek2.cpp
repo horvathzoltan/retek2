@@ -36,7 +36,7 @@ retek2::~retek2()
 void retek2::init(void)
 {	
     zlog.init(ui.textBrowser);
-    beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections);
+    beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox);
 
     //sql->c# irány
 	typeMap.insert("uniqueidentifier", "Guid");
@@ -388,7 +388,7 @@ QString retek2::generateTmp(QString tmp_file) {
 }
 
 //KSzallitolevelTetel.SzallitolevelId -> 
-
+// connect button
 void retek2::on_pushButton_clicked()
 {
     auto dbconn = beallitasok.getUI();
@@ -398,9 +398,13 @@ void retek2::on_pushButton_clicked()
             if(!beallitasok.dbConnections.contains(dbconn)){
                 beallitasok.addConnection(dbconn);
             }
+        feltoltTabla();
         }
+    else{
+       zlog.log(QString("Az adatbáziskapcsolat adatai hibásak: %1 driver: %2").arg(dbconn.Getname()).arg(dbconn.driver));
+    }
     //zsql.createConnection();
-    feltoltTabla();
+
 }
 
 /*!
@@ -566,3 +570,4 @@ void retek2::on_comboBox_connections_currentIndexChanged(int index)
     beallitasok.setSelected(index);
     initBy(beallitasok.getSelected());
 }
+

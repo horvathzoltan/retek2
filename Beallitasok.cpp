@@ -16,13 +16,14 @@ Beallitasok::Beallitasok(){
 
 Beallitasok::~Beallitasok(){};
 
-void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEdit* wcatalog, QComboBox *qc)
+void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEdit* wcatalog, QComboBox *qc, QComboBox *dc)
 {
     this->widget_user = wu;
     this->widget_password = wp;
     this->widget_server = wserver;
     this->widget_adatbazisNev = wcatalog;
     this->widget_connections = qc;
+    this->widget_driver = dc;
 }
 
 /*
@@ -34,7 +35,11 @@ void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEd
 */
 dbConnection Beallitasok::getUI()
 {
-    QString driver = "QMYSQL";
+    QString driver;
+    //int i = widget_driver->currentIndex();
+    //if(i>-1)
+         driver = widget_driver->currentText();
+
     QString user = widget_user->text();
     QString password = widget_password->text();
     QString server = widget_server->text();
@@ -45,6 +50,7 @@ dbConnection Beallitasok::getUI()
 
 void Beallitasok::setUI(dbConnection b)
 {
+    widget_driver->setCurrentText(b.driver);
     widget_user->setText(b.user);
     widget_password->setText(b.password);
     widget_server->setText(b.server);
@@ -72,6 +78,8 @@ QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
         zlog.trace(e);
         return e;
      }
+     else
+        return QString();
 }
 
 /*
@@ -155,6 +163,7 @@ void Beallitasok::load(){
 }
 
 void Beallitasok::addConnection(dbConnection b){  
+
     QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, "");
     QString csvr= b.ToCSV();
 

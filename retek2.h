@@ -28,9 +28,7 @@ private slots:
 
     void on_pushButton_2_clicked();
 
-    void on_comboBox_connections_currentIndexChanged(int index);
-
-    void on_listWidget_tabla_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+    void on_comboBox_connections_currentIndexChanged(int index);   
 
 private:
     Ui::retek2Class ui;

@@ -14,6 +14,7 @@ private:
     QLineEdit *widget_server;
     QLineEdit *widget_adatbazisNev;
     QComboBox *widget_connections;
+    QComboBox *widget_driver;
 
     int selected_ix;
 public:
@@ -21,7 +22,7 @@ public:
     Beallitasok();
     ~Beallitasok();
 
-    void init(QLineEdit*, QLineEdit*, QLineEdit*, QLineEdit*, QComboBox *qc);
+    void init(QLineEdit*, QLineEdit*, QLineEdit*, QLineEdit*, QComboBox *qc, QComboBox *dc);
 
     void load();
     void addConnection(dbConnection);
