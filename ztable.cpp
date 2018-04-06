@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "ztablerow.h"
 #include "ztable.h"
+#include "zstringhelper.h"
 #include "zstringmaphelper.h"
 
 #include <QRegularExpression>
@@ -233,6 +234,19 @@ bool zTable::getType(QString ezt1,  QString *dtype, int *dlen)
 //        *dtype="";*dlen =0;
 //    }
     return isDtype;
+}
+
+void zTable::getFK(){
+    QStringList ml;
+    zforeach(r, this->rows){ml<<(*(r)).colName;}
+
+    zforeach(pk, pks){
+
+        QString pn = zStringHelper::toCamelCase(*(pk));
+
+        if(ml.contains(pn))
+            this->fknames<<pn;
+    }
 }
 
 QList<zTable> zTable::createTableByText(QString txt)

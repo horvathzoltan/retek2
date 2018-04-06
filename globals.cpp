@@ -14,6 +14,8 @@ QMap<QString, QString> typeMapR;
 QMap<QString, QString> macroMap;
 QList<zTable> ztables;
 
+QStringList pks;
+
 QString tablanev = "";
 
 const int C_ix_Caption = 0;

@@ -9,6 +9,7 @@ public:
     zStringHelper();
     static bool toBool(QString);  
 
+    static QString toCamelCase(QString);
     static QStringList toStringList(QString s);
 };
 

@@ -361,7 +361,8 @@ QString zTokenizer::getClassNameCamelCase(QString tnev) {
 
     auto o = t2.split('_');
 
-    for (int i = 0; i < o.length(); i++) o[i][0] = o[i][0].toUpper();
+    for (int i = 0; i < o.length(); i++)
+        o[i][0] = o[i][0].toUpper();
 
     return o.join("");
 }

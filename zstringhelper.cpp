@@ -17,6 +17,16 @@ bool zStringHelper::toBool(QString ezt){
     return false;
 }
 
+QString zStringHelper::toCamelCase(QString s)
+{
+    auto o = s.split('.');
+
+    for (int i = 0; i < o.length(); i++)
+        o[i][0] = o[i][0].toUpper();
+
+    return o.join("");
+}
+
 QStringList zStringHelper::toStringList(QString s){
     return s.split(QRegExp("(\\r\\n)|(\\n\\r)|\\r|\\n"), QString::SkipEmptyParts);
 }

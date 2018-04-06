@@ -67,6 +67,7 @@ void retek2::init(void)
     initBy(beallitasok.getSelected());
 
     zlog.trace("retek2 init OK");
+    //zlog.trace(QString("ztables: %1").arg(ztables.count()));
 
     //ui.lineEdit_ContextName->setText(getAdatbazisnev()+"Context2");
 }
@@ -78,6 +79,7 @@ void retek2::initBy(dbConnection* b){
     zsql.init(*b);
     ztokenizer.init(ui.tableWidget_MezoLista);
     feltoltTabla(); // bal tábla panel feltöltése
+
     zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, b->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
 }
 
@@ -106,9 +108,25 @@ void retek2::feltoltTabla(void) {
     QList<QString> tns = zsql.getTableNames();
     ui.listWidget_tabla->clear();
     zforeach(tn,tns){
-        new QListWidgetItem(*tn, ui.listWidget_tabla);
+        tablaAdatokBejegyez(*(tn));
     }
 }
+
+void retek2::tablaAdatokBejegyez(QString tn){
+    new QListWidgetItem(tn, ui.listWidget_tabla);
+    QString pkn;
+
+    if(tn.startsWith("txt.")){
+        pkn = tn+'.'+zTable::getPkByName(&ztables, tn);
+    }else{
+        pkn = tn+'.'+zsql.getTablePK(tn);
+    }
+
+    zlog.trace(QString("pk: %1").arg(pkn));
+    pks<<pkn;
+}
+
+
 
 void retek2::TableSelect(QListWidgetItem* i) {
 	if(!tablanev.isEmpty())
@@ -202,8 +220,12 @@ void retek2::feltoltMezoLista(QString tablanev){
     ui.listWidget_IdegenKulcs->clear();    
     feltoltPk(t);
 
+    t.getFK();
     feltoltFk(t);
 }
+
+
+
 
 void retek2::feltoltMezoLista(zTable t){
     ui.tableWidget_MezoLista->setRowCount(0);
@@ -230,13 +252,13 @@ void retek2::feltoltPk(zTable t) {
 void retek2::feltoltFk(zTable t) {
     zlog.trace("feltoltFK " + tablanev);
 
-//    QStringList fkl;
+    //QStringList fkl;
 
-//    if(!fkl.isEmpty()){
-//        zforeach(fk, fkl){
-//            ui.listWidget_IdegenKulcs->addItem("FK:"+t.pkname);
-//            }
-//    }
+   // if(!t.fknames.isEmpty()){
+        zforeach(fk, t.fknames){
+            ui.listWidget_IdegenKulcs->addItem("FK:"+*(fk));
+            }
+  //  }
 }
 
 QTableWidgetItem* retek2::CreateTableItem(QVariant v){
@@ -477,7 +499,7 @@ void retek2::on_pushButton_3_clicked()
 
     zforeach(t,tl){
         ztables.append(*t);
-        new QListWidgetItem("txt."+t->tablename, ui.listWidget_tabla);
+        tablaAdatokBejegyez("txt."+t->tablename);
         }       
 }
 
@@ -503,7 +525,7 @@ void retek2::on_pushButton_4_clicked()
 
     zforeach(t,tl){
         ztables.append(*t);
-        new QListWidgetItem("txt."+t->tablename, ui.listWidget_tabla);
+        tablaAdatokBejegyez("txt."+t->tablename);
         }
 }
 

@@ -24,6 +24,7 @@ extern QMap<QString, QString> typeMapR;
 
 extern QMap<QString, QString> macroMap;
 extern QList<zTable> ztables;
+extern QStringList pks;
 
 extern QString tablanev;
 

@@ -16,6 +16,7 @@ public:
 	~retek2();
 	void init(void);	       
 
+    void tablaAdatokBejegyez(QString tn);
 private slots:
 	void GenerateAll();
     //void ValidateByText();
@@ -37,7 +38,7 @@ private:
 
     void saveCaptionTabla(QString);
 
-	void feltoltTabla(void);		
+    void feltoltTabla(void);
 	void feltoltTmpMap(void);
     //void feltoltEljaras(QString tablanev);
 

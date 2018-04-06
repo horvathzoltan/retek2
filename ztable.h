@@ -40,6 +40,8 @@ public:
     //void getType(auto re_dlen1, QString dtype, auto re_dlen2, QString ezt1, bool isDtype, int dlen);
 
     static bool getType(QString ezt1,  QString *dtype, int *dlen);
+
+    void getFK();
 };
 
 #endif // ZTABLE_H
