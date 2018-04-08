@@ -116,7 +116,8 @@ void retek2::tablaAdatokBejegyez(QString tn){
     new QListWidgetItem(tn, ui.listWidget_tabla);
     QString pkn;
 
-    if(tn.startsWith("txt.")){
+    if(tn.startsWith("txt.")){        
+        tn =  tn.right(tn.length()-4);
         pkn = tn+'.'+zTable::getPkByName(&ztables, tn);
     }else{
         pkn = tn+'.'+zsql.getTablePK(tn);

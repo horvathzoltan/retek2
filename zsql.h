@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QSqlDatabase>
+#include <QSqlError>
 #include "ztable.h"
 #include "dbconnection.h"
 
@@ -58,7 +59,9 @@ public:
 
     ~zSQL(void){
         db.close();
-        QSqlDatabase::removeDatabase(connectionName);
+        //QSqlDatabase::removeDatabase(connectionName);
+
+        return;
     }
 
     bool createConnection(QString connectionName="default_conn");
