@@ -235,6 +235,9 @@ void retek2::feltoltMezoLista(QString tablanev){
 
     t.getFK();
     feltoltFk(t);
+
+    t.getRPK();
+    feltoltRPk(t);
 }
 
 

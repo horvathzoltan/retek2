@@ -255,6 +255,26 @@ void zTable::getFK(){
     }
 }
 
+void zTable::getRPK(){
+    QStringList ml;
+
+//    zforeach(r, this->rows){ml<<(*(r)).colName;}
+
+//    zforeach(pk, pks){
+
+//        QString pn = zStringHelper::toCamelCase(*(pk));
+
+//        if(ml.contains(pn))
+//            this->fknames<<pn;
+//        else{
+//            auto pks = zStringHelper::singularizeAll(*(pk));
+//            pn = zStringHelper::toCamelCase(pks);
+//            if(ml.contains(pn))
+//                this->fknames<<pn;
+//        }
+//    }
+}
+
 QList<zTable> zTable::createTableByText(QString txt)
 {
 //    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);

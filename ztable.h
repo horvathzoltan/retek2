@@ -42,6 +42,7 @@ public:
     static bool getType(QString ezt1,  QString *dtype, int *dlen);
 
     void getFK();
+    void getRPK();
 };
 
 #endif // ZTABLE_H
