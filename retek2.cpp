@@ -64,7 +64,7 @@ void retek2::init(void)
 
     beallitasok.load();    
 
-    initBy(beallitasok.getSelected());
+    //initBy(beallitasok.getSelected());
 
     zlog.trace("retek2 init OK");
     //zlog.trace(QString("ztables: %1").arg(ztables.count()));
@@ -114,17 +114,29 @@ void retek2::feltoltTabla(void) {
 
 void retek2::tablaAdatokBejegyez(QString tn){
     new QListWidgetItem(tn, ui.listWidget_tabla);
-    QString pkn;
+    QString pkn, pkp;
 
-    if(tn.startsWith("txt.")){        
+    if(tn.startsWith("txt.")){
         tn =  tn.right(tn.length()-4);
-        pkn = tn+'.'+zTable::getPkByName(&ztables, tn);
-    }else{
-        pkn = tn+'.'+zsql.getTablePK(tn);
+
+        pkp = zTable::getPkByName(&ztables, tn);
+//        if(pkp.isEmpty()){
+//            tn = zStringHelper::singularize(tn);
+//            pkp = zTable::getPkByName(&ztables, tn);
+//        }
+    }else{        
+        pkp= zsql.getTablePK(tn);
+//        if(pkp.isEmpty()){
+//            tn = zStringHelper::singularize(tn);
+//            pkp = zsql.getTablePK(tn);
+//        }
     }
 
-    zlog.trace(QString("pk: %1").arg(pkn));
-    pks<<pkn;
+    if(!pkp.isEmpty()){
+        pkn = tn+'.'+pkp;
+        zlog.trace(QString("pk: %1").arg(pkn));
+        pks<<pkn;
+    }
 }
 
 
@@ -254,7 +266,12 @@ void retek2::feltoltFk(zTable t) {
     zlog.trace("feltoltFK " + tablanev);
 
     //QStringList fkl;
-
+/*
+ if(pkp.isEmpty()){
+//            tn = zStringHelper::singularize(tn);
+//            pkp = zTable::getPkByName(&ztables, tn);
+//        }
+*/
    // if(!t.fknames.isEmpty()){
         zforeach(fk, t.fknames){
             ui.listWidget_IdegenKulcs->addItem("FK:"+*(fk));

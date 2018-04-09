@@ -246,6 +246,12 @@ void zTable::getFK(){
 
         if(ml.contains(pn))
             this->fknames<<pn;
+        else{
+            auto pks = zStringHelper::singularizeAll(*(pk));
+            pn = zStringHelper::toCamelCase(pks);
+            if(ml.contains(pn))
+                this->fknames<<pn;
+        }
     }
 }
 
