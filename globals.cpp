@@ -15,6 +15,7 @@ QMap<QString, QString> macroMap;
 QList<zTable> ztables;
 
 QStringList pks;
+QStringList fs;
 
 QString tablanev = "";
 

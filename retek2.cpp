@@ -234,10 +234,11 @@ void retek2::feltoltMezoLista(QString tablanev){
     feltoltPk(t);
 
     t.getFK();
-    feltoltFk(t);
+    //feltoltFk(t);
 
     t.getRPK();
-    feltoltRPk(t);
+    feltoltFk(t);
+   // feltoltRPk(t);
 }
 
 
@@ -281,6 +282,16 @@ void retek2::feltoltFk(zTable t) {
             }
   //  }
 }
+
+//void retek2::feltoltRPk(zTable t){
+//    zlog.trace("feltoltRPK " + tablanev);
+
+//    zforeach(fk, t.fknames){
+//        ui.listWidget_IdegenKulcs->addItem("FK:"+*(fk));
+//        }
+//}
+
+
 
 QTableWidgetItem* retek2::CreateTableItem(QVariant v){
     auto a = new QTableWidgetItem();

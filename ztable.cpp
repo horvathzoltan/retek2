@@ -255,8 +255,14 @@ void zTable::getFK(){
     }
 }
 
-void zTable::getRPK(){
-    QStringList ml;
+
+/*
+Minden entitás minden mezőjének figyelembevételével
+meg kell keresni névegyezés alapján
+hogy az elsődleges kulcs milyen entitásokban szerepel mezőként
+*/
+void zTable::getRPK(){    
+    QString pk = zStringHelper::toCamelCase(this->tablename+'.'+this->pkname);
 
 //    zforeach(r, this->rows){ml<<(*(r)).colName;}
 

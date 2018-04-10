@@ -17,6 +17,7 @@ public:
 	void init(void);	       
 
     void tablaAdatokBejegyez(QString tn);
+    //void feltoltRPk(zTable t);
 private slots:
 	void GenerateAll();
     //void ValidateByText();
