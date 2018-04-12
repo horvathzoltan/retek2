@@ -18,7 +18,7 @@ void zLog::ShowDialog(QString str) {
 
 void zLog::trace(QString msg){
     auto c = this->widget->textColor();
-    this->widget->setTextColor(QColor(Qt::blue));
+    this->widget->setTextColor(QColor(Qt::gray));
     this->widget->append(msg);
     this->widget->setTextColor(c);
 }

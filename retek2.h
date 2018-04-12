@@ -39,7 +39,7 @@ private:
 
     void saveCaptionTabla(QString);
 
-    void feltoltTabla(void);
+    void listWidget_tablaFeltolt(void);
 	void feltoltTmpMap(void);
     //void feltoltEljaras(QString tablanev);
 

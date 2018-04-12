@@ -24,10 +24,6 @@ extern QMap<QString, QString> typeMapR;
 
 extern QMap<QString, QString> macroMap;
 extern QList<zTable> ztables;
-// entitások elsődleges kulcsai
-extern QStringList pks;
-// entitások mezőnevei
-extern QStringList fs;//QMap<QString, QString>
 
 extern QString tablanev;
 

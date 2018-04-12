@@ -14,6 +14,11 @@ public:
     zTable();
     ~zTable();
 
+    int sourcetype;
+    QString sourcepath;
+
+
+
     QString tablename;
     QString pkname;
 

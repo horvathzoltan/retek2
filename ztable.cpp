@@ -236,18 +236,21 @@ bool zTable::getType(QString ezt1,  QString *dtype, int *dlen)
     return isDtype;
 }
 
+/*
+
+*/
 void zTable::getFK(){
     QStringList ml;
     zforeach(r, this->rows){ml<<(*(r)).colName;}
 
-    zforeach(pk, pks){
+    zforeach(t, ztables){
 
-        QString pn = zStringHelper::toCamelCase(*(pk));
+        QString pn = zStringHelper::toCamelCase(t->pkname);
 
         if(ml.contains(pn))
             this->fknames<<pn;
         else{
-            auto pks = zStringHelper::singularizeAll(*(pk));
+            auto pks = zStringHelper::singularizeAll(t->pkname);
             pn = zStringHelper::toCamelCase(pks);
             if(ml.contains(pn))
                 this->fknames<<pn;
