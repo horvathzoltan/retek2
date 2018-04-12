@@ -15,11 +15,14 @@ zTable::zTable(){};
 
 zTable::~zTable(){};
 
-zTable::zTable(QString n, QString pkn, QList<zTablerow> tr, QList<zTablerow> pl){
+zTable::zTable(QString n, QString pkn, QList<zTablerow> tr, QList<zTablerow> pl, int type){
     this->tablename = n;
+    this->entityname = zStringHelper::singularize(n);
+
     this->rows = tr;
     this->props = pl;
     this->pkname = pkn;
+    this->sourcetype = type;
 }
 
 
@@ -239,33 +242,37 @@ bool zTable::getType(QString ezt1,  QString *dtype, int *dlen)
 /*
 
 */
-void zTable::getFK(){
-    QStringList ml;
-    zforeach(r, this->rows){ml<<(*(r)).colName;}
-
+QStringList zTable::getFK(){
+    QStringList fknames;
     zforeach(t, ztables){
-
-        QString pn = zStringHelper::toCamelCase(t->pkname);
-
-        if(ml.contains(pn))
-            this->fknames<<pn;
-        else{
-            auto pks = zStringHelper::singularizeAll(t->pkname);
-            pn = zStringHelper::toCamelCase(pks);
-            if(ml.contains(pn))
-                this->fknames<<pn;
+        QString pn = t->entityname+t->pkname;
+        if(containsRow(pn))
+           fknames<<pn;
         }
-    }
+    return fknames;
 }
 
+bool zTable::containsRow(QString n){
+    zforeach(r, this->rows)
+        if( r->colName.toLower()==n.toLower() ) return true;
+    return false;
+}
 
 /*
 Minden entitás minden mezőjének figyelembevételével
 meg kell keresni névegyezés alapján
 hogy az elsődleges kulcs milyen entitásokban szerepel mezőként
 */
-void zTable::getRPK(){    
-    QString pk = zStringHelper::toCamelCase(this->tablename+'.'+this->pkname);
+QStringList zTable::getRFK(){
+    QStringList rfknames;
+    QString pn = entityname+pkname;
+
+    zforeach(t, ztables){
+        if(t->containsRow(pn))
+            rfknames<<t->entityname;
+    }
+    return rfknames;
+    //QString pk = zStringHelper::toCamelCase(this->tablename+'.'+this->pkname);
 
 //    zforeach(r, this->rows){ml<<(*(r)).colName;}
 
@@ -409,7 +416,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                    rl.append(r);
                    }
             }
-            auto t = zTable(tn, pkn, rl, pl);
+            auto t = zTable(tn, pkn, rl, pl, TXT);
             tl.append(t);
             zlog.log("GenerateByText: "+t.toString());
         }
@@ -525,7 +532,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
 
             }
-            auto t = zTable(tn, pkn, rl, pl);
+            auto t = zTable(tn, pkn, rl, pl, TXT);
             tl.append(t);
             zlog.log("GenerateByText2: "+t.toString());
         }

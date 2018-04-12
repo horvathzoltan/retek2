@@ -219,11 +219,11 @@ zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
         tr.append(zTablerow(colName, dtype, dlen, nullable, caption));
         }
 
-    QString pkn = getTablePK(tablanev);
+    QString pkn = getTablePKName(tablanev);
 
     QList<zTablerow> pr;
 
-    auto e = zTable(tablanev, (pkn.isEmpty()?"zId":pkn), tr, pr);
+    auto e = zTable(tablanev, (pkn.isEmpty()?"zId":pkn), tr, pr, zTable::SQL);
     return e;
 }
 
@@ -254,26 +254,18 @@ QString zSQL::getTable_MYSQL_PK(QString tn){
     return getTable_MYSQL_PKTMP.arg(tn);//.arg(this->databaseName);
 }
 
-QString zSQL::getTablePK(QString tablanev){
+QString zSQL::getTablePKName(QString tablanev){
 
     if(db.isValid() && db.isOpen()){
-        //QString fn = beallitasok.getCaptionFileName(tablanev);
-
         if(driverName == QODBC)
             return getTable_SQL_PK(getTable_MSSQL_PK(tablanev));
-        else if(driverName == QMYSQL){
-            auto q = getTable_MYSQL_PK(tablanev);
-            auto e = getTable_SQL_PK(q);
-            return e;
-        }
-
-        else{
-            zlog.log("getTable: unknown driver:" + driverName);
-        }
+        else if(driverName == QMYSQL)
+            return getTable_SQL_PK(getTable_MYSQL_PK(tablanev));
+        else
+            zlog.log("getTable: unknown driver:" + driverName);        
     }
-    else{
-        zlog.log("getTable: db closed" + driverName);
-    }
+    else
+        zlog.log("getTable: db closed" + driverName);    
     return "";
 }
 

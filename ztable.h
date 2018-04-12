@@ -9,20 +9,22 @@
 class zTable
 {
 public:
-    zTable(QString tablanev, QString pkn, QList<zTablerow>, QList<zTablerow>);
+    zTable(QString tablanev, QString pkn, QList<zTablerow>, QList<zTablerow>, int type);
 
     zTable();
     ~zTable();
 
+    enum SourceTypes:int { SQL=0, TXT=1 };
+
     int sourcetype;
     QString sourcepath;
 
-
-
     QString tablename;
-    QString pkname;
+    QString entityname;
 
-    QStringList fknames;
+    QString pkname; // rowix
+
+    //QStringList fknames;
 
     QList<zTablerow> rows;
     QList<zTablerow> props;
@@ -46,8 +48,10 @@ public:
 
     static bool getType(QString ezt1,  QString *dtype, int *dlen);
 
-    void getFK();
-    void getRPK();
+    QStringList getFK();
+    QStringList getRFK();
+
+    bool containsRow(QString n);
 };
 
 #endif // ZTABLE_H

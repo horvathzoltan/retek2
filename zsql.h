@@ -69,7 +69,7 @@ public:
     QString toString();
     QList<QString> getTableNames();
     zTable getTable(QString tablanev);
-    QString getTablePK(QString tablanev);
+    QString getTablePKName(QString tablanev);
     QString getTable_SQL_PK(QString cmd);
 
     static const QString getTable_SQL_ENUMTMP;

@@ -39,16 +39,16 @@ private:
 
     void saveCaptionTabla(QString);
 
-    void listWidget_tablaFeltolt(void);
+    void tablaListaFeltolt(void);
 	void feltoltTmpMap(void);
     //void feltoltEljaras(QString tablanev);
 
     //void feltoltIdegenkulcs(QString tablanev);
-	void feltoltMezoLista(QString tablanev);
+    //void mezoListaFeltolt(QString tablanev);
 
-    void feltoltMezoLista(zTable t);
-    void feltoltPk(zTable t);
-    void feltoltFk(zTable t);
+    void mezoListaFeltolt(zTable t);
+    void feltoltKulcsLista(zTable t);
+    //void feltoltFk(zTable t);
 
 	QString generateTmp(QString);
 	
