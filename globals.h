@@ -25,7 +25,9 @@ extern QMap<QString, QString> typeMapR;
 extern QMap<QString, QString> macroMap;
 extern QList<zTable> ztables;
 
-extern QString tablanev;
+//extern QString tablanev;
+
+extern zTable *table;
 
 extern const int C_ix_Caption;
 extern const int C_ix_colName;

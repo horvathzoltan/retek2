@@ -149,8 +149,8 @@ QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant>
     QString t3 = (t1List.length()>1) ? t1List[1] : nullptr;
 
     if (t1 == "dbname") return dbname;
-    else if (t1 == "tablename") return tablanev;
-    else if (t1 == "classname") return getClassNameCamelCase(tablanev);
+    else if (t1 == "tablename") return table->tablename;
+    else if (t1 == "classname") return getClassNameCamelCase(table->tablename);
     else if (t1 == "proplist") return getPropList2(t2, t3, whsp, dbname);
     else if (t1 == "propline") return getPropList2(nullptr, t3, whsp, dbname);
     else if (t1 == "attrlist") return getAttrList(map, whsp);

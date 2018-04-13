@@ -72,15 +72,15 @@ void retek2::init(void)
     //ui.lineEdit_ContextName->setText(getAdatbazisnev()+"Context2");
 }
 
-void retek2::initBy(dbConnection* b){
-    if(b==nullptr) return;
+void retek2::initBy(dbConnection* c){
+    if(c==nullptr) return;
 
-    beallitasok.setUI(*b);
-    zsql.init(*b);
+    beallitasok.setUI(*c);
+    zsql.init(*c);
     ztokenizer.init(ui.tableWidget_MezoLista);
     tablaListaFeltolt(); // bal tábla panel feltöltése
 
-    zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, b->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
+    zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, c->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
 }
 
 void retek2::saveCaptionTabla(QString tablanev) {
@@ -127,13 +127,13 @@ void retek2::tablaAdatokBejegyez(QString tn){
 
 
 void retek2::TableSelect(QListWidgetItem* i) {   
-    if(!tablanev.isEmpty())
-        saveCaptionTabla(tablanev);
+    if(table != nullptr)
+        saveCaptionTabla(table->tablename);
 
     auto tablanev = i->text();
-    auto t = zTable::getByName(&ztables, tablanev);
-    mezoListaFeltolt(*t);
-    feltoltKulcsLista(*t);  
+    table = zTable::getByName(&ztables, tablanev);
+    mezoListaFeltolt(*table);
+    feltoltKulcsLista(*table);
 }
 
 //void retek2::feltoltEljaras(QString tablanev) {
@@ -212,7 +212,7 @@ void retek2::mezoListaFeltolt(zTable t){
 }
 
 void retek2::feltoltKulcsLista(zTable t) {
-    zlog.trace("feltoltKulcsLista: " + tablanev);
+    zlog.trace("feltoltKulcsLista: " + t.tablename);
 
     ui.listWidget_IdegenKulcs->clear();
     if(!t.pkname.isEmpty()){
@@ -241,20 +241,22 @@ QTableWidgetItem* retek2::CreateTableItem(QVariant v){
  generate files by selected templates
 */
 void retek2::GenerateAll() {
-     auto b = beallitasok.getSelected();
-     if(b==nullptr) return;
+    if (table == nullptr){
 
-	qDebug("GenerateAll");
-    if (!tablanev.isEmpty()){
-		saveCaptionTabla(tablanev);
-        }
+        return;
+    }
+
+    auto b = beallitasok.getSelected();
+    if(b==nullptr) return;
+
+    saveCaptionTabla(table->tablename);
 
 	if (ui.checkBox_CClass->isChecked()) {
 		qDebug("C# Class");
 
         auto txt = generateTmp("MVC_CClass.cs");
         zlog.trace(txt);
-        zTextFileHelper::save(txt, zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev,tablanev + ".cs"));
+        zTextFileHelper::save(txt, zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev,table->tablename + ".cs"));
 	}
 
     if (ui.checkBox_Enum->isChecked()) {
@@ -264,7 +266,7 @@ void retek2::GenerateAll() {
         QString txt = zEnumizer::GenerateEnum(ed);
 
         zlog.trace(txt);
-        zTextFileHelper::save(txt, zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev,tablanev + "_enum.cs"));
+        zTextFileHelper::save(txt, zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev,table->tablename + "_enum.cs"));
     }
 
     if (ui.checkBox_Entity->isChecked()) {
@@ -272,7 +274,7 @@ void retek2::GenerateAll() {
 
         auto txt = generateTmp("DAL_Entity.cs");
         zlog.trace(txt);
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getClassNameCamelCase(tablanev) + ".cs", "Entities"));
+        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getClassNameCamelCase(table->tablename) + ".cs", "Entities"));
     }
 
 	//checkBox_Context
@@ -286,46 +288,46 @@ void retek2::GenerateAll() {
 		qDebug("Model");
 		auto txt = generateTmp("MVC_Model.cs");
         //zlog.trace(txt);
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getClassNameCamelCase(tablanev) + ".cs", "Models"));
+        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getClassNameCamelCase(table->tablename) + ".cs", "Models"));
 	}
 
 	if (ui.checkBox_Meta->isChecked()) {
 		qDebug("ModelMeta");
 		auto txt = generateTmp("MVC_ModelMeta.cs");
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getClassNameCamelCase(tablanev) + "Meta" + ".cs", "Models"));
+        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getClassNameCamelCase(table->tablename) + "Meta" + ".cs", "Models"));
 	}
 
 	if (ui.checkBox_Controller->isChecked()) {
 		qDebug("Controller");
 		auto txt = generateTmp("MVC_Controller.cs");
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getClassNameCamelCase(tablanev) + "Controller" + ".cs", "Controllers"));
+        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getClassNameCamelCase(table->tablename) + "Controller" + ".cs", "Controllers"));
 	}
 
     if (ui.checkBox_DataProvider->isChecked()) {
         qDebug("DataProvider");
         auto txt = generateTmp("MVC_DataProvider.cs");
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getClassNameCamelCase(tablanev) + "DataProvider" + ".cs", "DataProviders"));
+        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getClassNameCamelCase(table->tablename) + "DataProvider" + ".cs", "DataProviders"));
     }
 
     if (ui.checkBox_View->isChecked()) {
         qDebug("View");
         auto txtIndex = generateTmp("MVC_ViewIndex.cshtml");
-        zTextFileHelper::save(txtIndex, beallitasok.getModelFilename(ztokenizer.getOsztalynevLower(tablanev) + "ViewIndex" + ".cshtml", "Views"));
+        zTextFileHelper::save(txtIndex, beallitasok.getModelFilename(ztokenizer.getOsztalynevLower(table->tablename) + "ViewIndex" + ".cshtml", "Views"));
 
         auto txtAdatlap = generateTmp("MVC_ViewAdatlapDX.cshtml");
-        zTextFileHelper::save(txtAdatlap, beallitasok.getModelFilename(ztokenizer.getOsztalynevLower(tablanev) + "ViewAdatlapDX" + ".cshtml", "Views"));
+        zTextFileHelper::save(txtAdatlap, beallitasok.getModelFilename(ztokenizer.getOsztalynevLower(table->tablename) + "ViewAdatlapDX" + ".cshtml", "Views"));
     }
 
 	if (ui.checkBox_ViewIndex->isChecked()) {
 		qDebug("Index");
 		auto txt = generateTmp("MVC_Index.cshtml");
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getOsztalynevLower(tablanev) + "ViewIndex" + ".cshtml", "Views"));
+        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getOsztalynevLower(table->tablename) + "ViewIndex" + ".cshtml", "Views"));
 	}
 
 	if (ui.checkBox_ViewEdit->isChecked()) {
 		qDebug("Edit");
         auto txt = generateTmp("MVC_Edit.cshtml");
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getOsztalynevLower(tablanev) + "ViewEdit" + ".cshtml", "Views"));
+        zTextFileHelper::save(txt, beallitasok.getModelFilename(ztokenizer.getOsztalynevLower(table->tablename) + "ViewEdit" + ".cshtml", "Views"));
 	}
 /*
 	if (ui.checkBox_ViewCreate->isChecked()) {
@@ -543,8 +545,8 @@ zEnumizer::EnumSource retek2::GetEnumData(){
             fn = ui.tableWidget_MezoLista->item(ix, C_ix_colName)->text();
         }
 
-        auto ms = zsql.getTable_SQL_ENUM(tablanev, fn);
-        QString cn = ztokenizer.getClassNameCamelCase(tablanev);
+        auto ms = zsql.getTable_SQL_ENUM(table->tablename, fn);
+        QString cn = ztokenizer.getClassNameCamelCase(table->tablename);
 
         return { cn, ft, ms };
         }
