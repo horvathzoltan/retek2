@@ -7,6 +7,8 @@
 #include "ztable.h"
 #include "zenumizer.h"
 #include "dbconnection.h"
+#include "zsql.h"
+
 class retek2 : public QMainWindow
 {
 	Q_OBJECT
@@ -55,7 +57,7 @@ private:
 
     static QTableWidgetItem* CreateTableItem(QVariant v);    
 
-    zEnumizer::EnumSource GetEnumData();
+    zEnumizer::EnumSource GetEnumData(zSQL *zsql);
 
     void initBy(dbConnection* b);
 

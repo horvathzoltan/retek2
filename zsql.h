@@ -57,9 +57,12 @@ public:
     bool init(dbConnection c);
 
 
-    ~zSQL(void){
+    ~zSQL(void){        
+        //qDebug("%s", qUtf8Printable( QString("~zSQL %1").arg(connectionName)));
+
         db.close();
-        //QSqlDatabase::removeDatabase(connectionName);
+        db = QSqlDatabase();
+        QSqlDatabase::removeDatabase(connectionName);
 
         return;
     }

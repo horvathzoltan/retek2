@@ -76,7 +76,7 @@ void retek2::initBy(dbConnection* c){
     if(c==nullptr) return;
 
     beallitasok.setUI(*c);
-    zsql.init(*c);
+    //zsql.init(*c);
     ztokenizer.init(ui.tableWidget_MezoLista);
     tablaListaFeltolt(); // bal tábla panel feltöltése
 
@@ -105,6 +105,10 @@ void retek2::saveCaptionTabla(QString tablanev) {
 }
 
 void retek2::tablaListaFeltolt(void) {
+    zSQL zsql;
+    auto c = beallitasok.getSelected();
+    zsql.init(*c);
+
     QList<QString> tns = zsql.getTableNames();
     ui.listWidget_tabla->clear();
     zTable t;
@@ -262,12 +266,24 @@ void retek2::GenerateAll() {
     if (ui.checkBox_Enum->isChecked()) {
         qDebug("Enum");
 
-        auto ed = GetEnumData();
-        QString txt = zEnumizer::GenerateEnum(ed);
 
-        zlog.trace(txt);
-        zTextFileHelper::save(txt, zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev,table->tablename + "_enum.cs"));
-    }
+        auto dbconn = beallitasok.getUI();
+        if(dbconn.isValid()){
+            zSQL zsql;
+            if(zsql.init(dbconn)){
+                auto ed = GetEnumData(&zsql);
+                QString txt = zEnumizer::GenerateEnum(ed);
+
+                zlog.log(txt);
+                zTextFileHelper::save(txt, zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev,table->tablename + "_enum.cs"));
+            }
+            else
+                zlog.trace("nincs sqlinit");
+        }
+        else
+            zlog.trace("nincs dbconn");
+        }
+
 
     if (ui.checkBox_Entity->isChecked()) {
         qDebug("C# Entity");
@@ -383,8 +399,8 @@ QString retek2::generateTmp(QString tmp_file) {
 // connect button
 void retek2::on_pushButton_clicked()
 {
-    auto dbconn = beallitasok.getUI();
-
+    zSQL zsql;
+    auto dbconn = beallitasok.getUI();   
     if(dbconn.isValid()){
         if(zsql.init(dbconn))
             if(!beallitasok.dbConnections.contains(dbconn)){
@@ -406,23 +422,27 @@ void retek2::on_pushButton_clicked()
 
 void retek2::on_pushButton_2_clicked()
 {
-    zlog.trace("GenerateByText");
+    zSQL zsql;
+    auto dbconn = beallitasok.getUI();
+    if(dbconn.isValid()){
+        if(zsql.init(dbconn))
+        zlog.trace("GenerateByText");
 
-    auto txt = ui.textEdit->toPlainText();
-    auto tl = zTable::createTableByText(txt);
-    if(tl.length()>0){
-        zforeach(t,tl){
-            auto t_sql = zsql.getTable(t->tablename);
-            auto vl = t_sql.Validate(*t);
-            zlog.log("--- "+t->tablename+" ---");
-            zlog.log(vl);
+        auto txt = ui.textEdit->toPlainText();
+        auto tl = zTable::createTableByText(txt);
+        if(tl.length()>0){
+            zforeach(t,tl){
+                auto t_sql = zsql.getTable(t->tablename);
+                auto vl = t_sql.Validate(*t);
+                zlog.log("--- "+t->tablename+" ---");
+                zlog.log(vl);
+                }
+            zlog.log("--- --- ---");
             }
-        zlog.log("--- --- ---");
-        }
-    else{
-        zlog.log("nincs egyezés, nincs vizsgálat");
-        }
-
+        else{
+            zlog.log("nincs egyezés, nincs vizsgálat");
+            }
+    }
     return;
 }
 
@@ -517,7 +537,7 @@ void retek2::on_pushButton_5_clicked()
  * előállítja az azonosítót és a bázistípust
  * Az SQLből lekérdezi az enumerátor-listát
 */
-zEnumizer::EnumSource retek2::GetEnumData(){
+zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
     auto select = ui.tableWidget_MezoLista->selectionModel();
     if(select->hasSelection()){
         auto r = select->selectedRows();
@@ -545,7 +565,7 @@ zEnumizer::EnumSource retek2::GetEnumData(){
             fn = ui.tableWidget_MezoLista->item(ix, C_ix_colName)->text();
         }
 
-        auto ms = zsql.getTable_SQL_ENUM(table->tablename, fn);
+        auto ms = (*zsql).getTable_SQL_ENUM(table->tablename, fn);
         QString cn = ztokenizer.getClassNameCamelCase(table->tablename);
 
         return { cn, ft, ms };

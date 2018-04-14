@@ -2,7 +2,7 @@
 
 Beallitasok beallitasok;
 zLog zlog;
-zSQL zsql;
+//zSQL zsql;
 zTokenizer ztokenizer;
 
 QMap<QString, QString> globalCaptionMap;

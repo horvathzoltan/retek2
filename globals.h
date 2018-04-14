@@ -13,7 +13,7 @@
 
 extern Beallitasok beallitasok;
 extern zLog zlog;
-extern zSQL zsql;
+//extern zSQL zsql;
 extern zTokenizer ztokenizer;
 extern QMap<QString, QString> globalCaptionMap;
 //extern QMap<QString, QVariant> typeMap;
