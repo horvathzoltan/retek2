@@ -18,6 +18,7 @@ extern zTokenizer ztokenizer;
 extern QMap<QString, QString> globalCaptionMap;
 //extern QMap<QString, QVariant> typeMap;
 //extern QMap<QString, QVariant> typeMapR;
+//valami 2
 
 extern QMap<QString, QString> typeMap;
 extern QMap<QString, QString> typeMapR;
