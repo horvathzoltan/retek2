@@ -17,25 +17,46 @@ void zLog::ShowDialog(QString str) {
 }
 
 void zLog::trace(QString msg){
-    auto c = this->widget->textColor();
-    this->widget->setTextColor(QColor(Qt::gray));
-    this->widget->append(msg);
-    this->widget->setTextColor(c);
+//    auto c = this->widget->textColor();
+//    this->widget->setTextColor(QColor(Qt::gray));
+//    this->widget->append(msg);
+//    this->widget->setTextColor(c);
+    log(msg, TRACE);
 }
 
 void zLog::log(QString m){
     #ifdef QT_DEBUG
 
+    if(m.endsWith("OK"))
+        log(m.left(m.length()-2), OK);
+    else if(m.endsWith("ERROR"))
+        log(m.left(m.length()-5), ERROR);    
+    else if(m.endsWith("TRACE"))
+        log(m.left(m.length()-5), TRACE);
+    else
+        log(m, -1);
+    #endif
+}
+
+void zLog::log(QString m, int errlevel){
+    #ifdef QT_DEBUG
+
     auto c = this->widget->textColor();
 
-    QColor c2;
-
-    if(m.endsWith("OK"))
-        c2 = QColor(Qt::green);
-    else if(m.endsWith("ERROR"))
-        c2 = QColor(Qt::red);
-    else
-        c2 = QColor(Qt::black);
+    switch(errlevel){
+    case OK:
+        this->widget->setTextColor(QColor(Qt::green));
+        break;
+    case ERROR:
+        this->widget->setTextColor(QColor(Qt::red));
+        break;
+    case TRACE:
+        this->widget->setTextColor(QColor(Qt::gray));
+        break;
+    default:
+        this->widget->setTextColor(QColor(Qt::black));
+        break;
+    }
 
     this->widget->append(m);
     this->widget->setTextColor(c);

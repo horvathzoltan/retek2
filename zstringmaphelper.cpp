@@ -63,7 +63,7 @@ void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
 
     file.close();
 
-    zlog.log(QString("Kiírva: %1").arg(fn));
+    zlog.log(QString("Kiírva: %1").arg(fn), zLog::OK);
 }
 
 bool zStringMapHelper::contains(QMap<QString, QString> *map, QString k){

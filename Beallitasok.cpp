@@ -71,7 +71,7 @@ QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
 
      if(b!=nullptr){
         //auto e = QString(munkadir+R"(\%2\%1)").arg(dirname).arg(adatbazisNev);
-        QString  e = zFileNameHelper::append(QDir::homePath(),munkadir, dirname, b->adatbazisNev);
+        QString  e = zFileNameHelper::append(QDir::homePath(),munkadir, b->adatbazisNev, dirname);
         QDir d(e);if(!d.exists()){d.mkpath(d.absolutePath());}
 
         e += QDir::separator()+tfname;
