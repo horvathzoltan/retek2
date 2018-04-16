@@ -2,7 +2,7 @@
 
 Beallitasok beallitasok;
 zLog zlog;
-zSQL zsql;
+//zSQL zsql;
 zTokenizer ztokenizer;
 
 QMap<QString, QString> globalCaptionMap;
@@ -14,7 +14,9 @@ QMap<QString, QString> typeMapR;
 QMap<QString, QString> macroMap;
 QList<zTable> ztables;
 
-QString tablanev = "";
+//QString tablanev = "";
+
+zTable *table = nullptr;
 
 const int C_ix_Caption = 0;
 const int C_ix_colName = 1;
