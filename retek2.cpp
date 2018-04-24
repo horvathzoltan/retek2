@@ -383,7 +383,10 @@ void retek2::GenerateAll() {
 
 
 
-
+/*
+tmp file tartalmának feldolgozása
+- tokenek alapján a táblákból generált adatok beillesztése
+*/
 
 QString retek2::generateTmp(QString tmp_file) {
     //qDebug() << tmp_file;

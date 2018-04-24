@@ -56,7 +56,9 @@ void zTokenizer::feltoltTmpMap(void){
 
 
 /*!
-Szmolni kell, hny tokent sikerl feloldani. az utols lps az, amelyikben mr nem sikerl tokent feloldani, teht marad mg token, de egyet sem sikerl kzlk feloldani.
+Szmolni kell, hány tokent sikerl feloldani. az utols léps az, amelyikben már nem sikerül
+tokent feloldani, tehát marad még token, de ezeket már nem sikerül feloldani.
+
 Ezzel el lehet kerlni, hogy:
 1. a templateban logiktlan szerkezetek jelenjenek meg
 2. a kd byonyolultsgn lehet cskkenteni.
@@ -142,6 +144,10 @@ int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVaria
     }
     return ix1;
 }
+
+/*
+A
+*/
 
 QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant> *map, int whsp, QString dbname) {
     auto t1List = token1.split(' ', QString::SplitBehavior::SkipEmptyParts);
