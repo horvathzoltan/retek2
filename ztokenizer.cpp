@@ -146,7 +146,36 @@ int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVaria
 }
 
 /*
-A
+A tokenek értékét szerzi meg
+
+a zTablesben előre meg kell generálni az értékeket - így azok felülírhatóvá válnak
+
+- vagy egyszerű értéket ad vissza, vagy imlementált funkciót hív
+
+*** sql - adatbázis szintű tokenek
+dbname - adatbázisnév / egyadatbázisos project esetén a model névtere
+tablename - adattábla neve -
+
+*** MVC tokenek
+attrlist - attribútumlista - viewmodell adatannotációs attribútumok
+
+contextname - az adat kontext neve -
+newline - új sor
+
+*** osztálydefiníciós tokenek
+classname - az osztály neve - a modellként használatos osztály neve
+proplist - egy adott templattel definiált szintaxisú  - propertyk listája
+propline - propertyfelsorolás (pl. vesszővel elválasztott)
+
+***entity framework tokenek
+
+entityname - classname?
+entity_attrlist -
+prop_attrlist -
+
+nav_proplist -
+nav_proptype -
+nav_propname -
 */
 
 QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant> *map, int whsp, QString dbname) {
@@ -154,14 +183,29 @@ QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant>
     QString t1 = t1List[0];
     QString t3 = (t1List.length()>1) ? t1List[1] : nullptr;
 
+    // sql tokenek
     if (t1 == "dbname") return dbname;
     else if (t1 == "tablename") return table->tablename;
-    else if (t1 == "classname") return getClassNameCamelCase(table->tablename);
+    else if (t1 == "contextname") return getContextNev();
+    // osztály tokenek
+    else if (t1 == "classname") return getClassNameCamelCase(table->tablename);    
     else if (t1 == "proplist") return getPropList2(t2, t3, whsp, dbname);
     else if (t1 == "propline") return getPropList2(nullptr, t3, whsp, dbname);
+    // MVC - viewmodel adatannotációs attribútumok
     else if (t1 == "attrlist") return getAttrList(map, whsp);
-    else if (t1 == "contextname") return getContextNev();
+    // entitás tokenek
+    else if (t1 == "entityname") return getClassNameCamelCase(table->tablename);
+    //else if (t1 == "entity_attrlist") return getAttrListForEntity(map, whsp);
+    //else if (t1 == "prop_attrlist") return getAttrListForEntityProp(map, whsp);
+    //else if (t1 == "proplist") return getPropListForEntity(t2, t3, whsp, dbname);
+
     else if (t1 == "newline") return "\n";
+
+
+/*
+ * entity_attrlist , entityname , prop_attrlist , nav_proplist , nav_proptype , nav_propname
+*/
+
     //else if (t1 == "dispnameforprop") return getDispnameforprop(t2, map);
     //else if (t1 == "dispforprop") return getDispforprop(t2, map);
     //dispnameforprop
@@ -205,6 +249,30 @@ QString zTokenizer::getPropList() {
     return proplist;
 }
 
+/*
+https://www.tutorialspoint.com/asp.net_mvc/asp.net_mvc_data_annotations.htm
+
+System.ComponentModel.DataAnnotations includes the following attributes that impacts the nullability or size of the column.
+
+Key - System.ComponentModel.DataAnnotations
+Timestamp
+ConcurrencyCheck
+Required
+MinLength
+MaxLength
+StringLength
+
+---
+System.ComponentModel.DataAnnotations.Schema namespace includes the following attributes that impacts the schema of the database.
+
+Table -  System.ComponentModel.DataAnnotations.Schema
+Column
+Index
+ForeignKey
+NotMapped
+InverseProperty
+
+*/
 QString zTokenizer::getAttrList(QMap<QString, QVariant> *map, int whsp) {
     QString  e;
     QString spacer = QString(whsp, ' ');

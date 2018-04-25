@@ -17,6 +17,9 @@ bool zStringHelper::toBool(QString ezt){
     return false;
 }
 
+/*
+ * ponttal elválasztott tagok esetén
+*/
 QString zStringHelper::toCamelCase(QString s)
 {
     auto o = s.split('.');
