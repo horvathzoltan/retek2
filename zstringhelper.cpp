@@ -30,6 +30,22 @@ QString zStringHelper::toCamelCase(QString s)
     return o.join("");
 }
 
+//ClassnameCamelCase
+QString zStringHelper::getClassNameCamelCase(QString tnev) {
+    QString t2 = tnev.toLower();
+    //QString sep = TXT+'.';
+
+    //if(t2.startsWith(sep))
+    //    t2 = t2.remove(0,sep.length());
+
+    auto o = t2.split('_');
+
+    for (int i = 0; i < o.length(); i++)
+        o[i][0] = o[i][0].toUpper();
+
+    return o.join("");
+}
+
 QStringList zStringHelper::toStringList(QString s){
     return s.split(QRegExp("(\\r\\n)|(\\n\\r)|\\r|\\n"), QString::SkipEmptyParts);
 }

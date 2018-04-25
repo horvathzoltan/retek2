@@ -188,13 +188,13 @@ QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant>
     else if (t1 == "tablename") return table->tablename;
     else if (t1 == "contextname") return getContextNev();
     // osztály tokenek
-    else if (t1 == "classname") return getClassNameCamelCase(table->tablename);    
+    else if (t1 == "classname") return zStringHelper::getClassNameCamelCase(table->tablename);
     else if (t1 == "proplist") return getPropList2(t2, t3, whsp, dbname);
     else if (t1 == "propline") return getPropList2(nullptr, t3, whsp, dbname);
     // MVC - viewmodel adatannotációs attribútumok
     else if (t1 == "attrlist") return getAttrList(map, whsp);
     // entitás tokenek
-    else if (t1 == "entityname") return getClassNameCamelCase(table->tablename);
+    //else if (t1 == "entityname") return zStringHelper::getClassNameCamelCase(table->tablename);
     //else if (t1 == "entity_attrlist") return getAttrListForEntity(map, whsp);
     //else if (t1 == "prop_attrlist") return getAttrListForEntityProp(map, whsp);
     //else if (t1 == "proplist") return getPropListForEntity(t2, t3, whsp, dbname);
@@ -423,23 +423,9 @@ QString zTokenizer::getePropType(QString tipusnev, int length) {
 }
 
 
-const QString zTokenizer::TXT = "txt";
+//const QString zTokenizer::TXT = "txt";
 
-//ClassnameCamelCase
-QString zTokenizer::getClassNameCamelCase(QString tnev) {
-    QString t2 = tnev.toLower();
-    QString sep = TXT+'.';
 
-    if(t2.startsWith(sep))
-        t2 = t2.remove(0,sep.length());
-
-    auto o = t2.split('_');
-
-    for (int i = 0; i < o.length(); i++)
-        o[i][0] = o[i][0].toUpper();
-
-    return o.join("");
-}
 
 QString zTokenizer::getOsztalynevLower(QString tnev) {
     return tnev;

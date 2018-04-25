@@ -26,7 +26,7 @@ public:
     //QString getAdatbazisnev(void);
     QString getCaptionFileName(QString);
     QString getOsztalynevLower(QString tablanev);
-    QString getClassNameCamelCase(QString tablanev);
+
     QString getContextNev(void);
 
     QString get_liNev(QString o);

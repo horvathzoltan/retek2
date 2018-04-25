@@ -20,7 +20,7 @@ public:
     QString sourcepath;
 
     QString tablename;
-    QString entityname;
+    QString classname;
 
     QString pkname; // rowix
 

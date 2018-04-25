@@ -14,6 +14,8 @@ public:
 
     static QString singularize(QString s);
     static QString singularizeAll(QString s);
+
+    static QString getClassNameCamelCase(QString tablanev);
 };
 
 #endif // ZSTRINGHELPER_H

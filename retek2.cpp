@@ -250,7 +250,7 @@ void retek2::GenerateAll() {
         return;
     }
 
-    auto classname = ztokenizer.getClassNameCamelCase(table->tablename);
+    auto classname = zStringHelper::getClassNameCamelCase(table->tablename);
 
     auto b = beallitasok.getSelected();
     if(b==nullptr) return;
@@ -577,7 +577,7 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
         }
 
         auto ms = (*zsql).getTable_SQL_ENUM(table->tablename, fn);
-        QString cn = ztokenizer.getClassNameCamelCase(table->tablename);
+        QString cn = zStringHelper::getClassNameCamelCase(table->tablename);
 
         return { cn, ft, ms };
         }
