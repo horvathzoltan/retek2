@@ -17,7 +17,7 @@ zTable::~zTable(){};
 
 zTable::zTable(QString n, QString pkn, QList<zTablerow> tr, QList<zTablerow> pl, int type){
     this->tablename = n;
-    this->entityname = zStringHelper::singularize(n);
+    this->classname = zStringHelper::singularize(n);
 
     this->rows = tr;
     this->props = pl;
@@ -245,7 +245,7 @@ bool zTable::getType(QString ezt1,  QString *dtype, int *dlen)
 QStringList zTable::getFK(){
     QStringList fknames;
     zforeach(t, ztables){
-        QString pn = t->entityname+t->pkname;
+        QString pn = t->classname+t->pkname;
         if(containsRow(pn))
            fknames<<pn;
         }
@@ -265,11 +265,11 @@ hogy az elsődleges kulcs milyen entitásokban szerepel mezőként
 */
 QStringList zTable::getRFK(){
     QStringList rfknames;
-    QString pn = entityname+pkname;
+    QString pn = classname+pkname;
 
     zforeach(t, ztables){
         if(t->containsRow(pn))
-            rfknames<<t->entityname;
+            rfknames<<t->classname;
     }
     return rfknames;
     //QString pk = zStringHelper::toCamelCase(this->tablename+'.'+this->pkname);
