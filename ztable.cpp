@@ -16,13 +16,31 @@ zTable::zTable(){};
 zTable::~zTable(){};
 
 zTable::zTable(QString n, QString pkn, QList<zTablerow> tr, QList<zTablerow> pl, int type){
-    this->tablename = n;
-    this->classname = zStringHelper::singularize(n);
 
     this->rows = tr;
     this->props = pl;
     this->pkname = pkn;
     this->sourcetype = type;
+
+    switch (type) {
+        case SQL:{ // n táblanév
+            this->tablename = n;
+            QString sn = zStringHelper::singularize(n);
+
+            this->classname = zStringHelper::getClassNameCamelCase(sn);
+            this->classname_plural = zStringHelper::pluralize(sn);
+            }
+            break;
+        case TXT:
+            {
+            this->classname = n;
+            QString pn = zStringHelper::pluralize(n);
+
+            this->tablename = pn;
+            this->classname_plural = pn;
+            }
+            break;
+    }
 }
 
 

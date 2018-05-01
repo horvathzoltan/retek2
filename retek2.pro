@@ -21,7 +21,8 @@ HEADERS += Beallitasok.h \
     ztokenizer.h \
     zenumizer.h \
     dbconnection.h \
-    ztextfilehelper.h
+    ztextfilehelper.h \
+    zpluralize.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \
@@ -37,7 +38,8 @@ SOURCES += Beallitasok.cpp \
     ztokenizer.cpp \
     zenumizer.cpp \
     dbconnection.cpp \
-    ztextfilehelper.cpp
+    ztextfilehelper.cpp \
+    zpluralize.cpp
 FORMS += retek2.ui
 RESOURCES += retek2.qrc
 

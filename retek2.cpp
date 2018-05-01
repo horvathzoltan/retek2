@@ -136,6 +136,8 @@ void retek2::TableSelect(QListWidgetItem* i) {
 
     auto tablanev = i->text();
     table = zTable::getByName(&ztables, tablanev);
+
+    fejadatFeltolt(*table);
     mezoListaFeltolt(*table);
     feltoltKulcsLista(*table);
 }
@@ -199,7 +201,11 @@ void retek2::TableSelect(QListWidgetItem* i) {
 
 
 
-
+void retek2::fejadatFeltolt(zTable t){
+    ui.lineEdit_tablename->setText(t.tablename);
+    ui.lineEdit_classname->setText(t.classname);
+    ui.lineEdit_classname_plural->setText(t.classname_plural);
+}
 
 void retek2::mezoListaFeltolt(zTable t){
     zlog.trace("feltoltMezoLista: "+t.toString());

@@ -48,6 +48,7 @@ private:
     //void feltoltIdegenkulcs(QString tablanev);
     //void mezoListaFeltolt(QString tablanev);
 
+    void fejadatFeltolt(zTable t);
     void mezoListaFeltolt(zTable t);
     void feltoltKulcsLista(zTable t);
     //void feltoltFk(zTable t);

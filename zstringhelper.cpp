@@ -64,6 +64,17 @@ QString zStringHelper::singularize(QString s)
     }
 }
 
+QString zStringHelper::pluralize(QString s)
+{
+    if(s.endsWith('s')){
+        return s+"es";
+    }
+    else{
+        return s+"s";
+    }
+}
+
+
 QString zStringHelper::singularizeAll(QString s)
 {
     auto o = s.split('.');

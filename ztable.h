@@ -22,6 +22,7 @@ public:
     QString tablename;
     // osztálynév - singular, ezt a zTables példány létrehozásakor létre lehet már hozni, és validálni egy szabály szerint
     QString classname;
+    QString classname_plural;
 
     QString pkname; // rowix
 
