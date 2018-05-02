@@ -6,15 +6,15 @@
 
 #include "ztablerow.h"
 
+enum zTableSourceTypes:int { SQL=0, TXT=1 };
+
 class zTable
 {
 public:
-    zTable(QString tablanev, QString pkn, QList<zTablerow>, QList<zTablerow>, int type);
+    zTable(QString tablanev, QString pkn, QList<zTablerow>, QList<zTablerow>, int type);    
 
     zTable();
     ~zTable();
-
-    enum SourceTypes:int { SQL=0, TXT=1 };
 
     int sourcetype;
     QString sourcepath;
@@ -54,6 +54,9 @@ public:
     QStringList getRFK();
 
     bool containsRow(QString n);
+
+    QString toXML();
+    static zTable fromXML(QString);
 };
 
 #endif // ZTABLE_H

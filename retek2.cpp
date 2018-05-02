@@ -205,6 +205,10 @@ void retek2::fejadatFeltolt(zTable t){
     ui.lineEdit_tablename->setText(t.tablename);
     ui.lineEdit_classname->setText(t.classname);
     ui.lineEdit_classname_plural->setText(t.classname_plural);
+
+    ui.lineEdit_tablename->setDisabled(t.sourcetype==SQL);
+    ui.lineEdit_classname->setDisabled(t.sourcetype==TXT);
+
 }
 
 void retek2::mezoListaFeltolt(zTable t){
@@ -263,6 +267,13 @@ void retek2::GenerateAll() {
 
     saveCaptionTabla(table->tablename);
 
+    if (ui.checkBox_XML->isChecked()) {
+        zlog.trace("XML");
+
+        auto txt = table->toXML();
+        zlog.log(txt);
+    }
+
 	if (ui.checkBox_CClass->isChecked()) {
         zlog.trace("C# Class");
 
@@ -273,7 +284,7 @@ void retek2::GenerateAll() {
 	}
 
     if (ui.checkBox_Enum->isChecked()) {
-        if( table->sourcetype==zTable::SQL){
+        if( table->sourcetype==SQL){
         zlog.trace("Enum");
 
         auto dbconn = beallitasok.getUI();
@@ -600,3 +611,18 @@ void retek2::on_comboBox_connections_currentIndexChanged(int index)
     initBy(beallitasok.getSelected());
 }
 
+
+void retek2::on_lineEdit_classname_plural_editingFinished()
+{
+    table->classname_plural =  ui.lineEdit_classname_plural->text();
+}
+
+void retek2::on_lineEdit_classname_editingFinished()
+{
+     table->classname =  ui.lineEdit_classname->text();
+}
+
+void retek2::on_lineEdit_tablename_editingFinished()
+{
+    table->tablename =  ui.lineEdit_tablename->text();
+}

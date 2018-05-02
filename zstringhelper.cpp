@@ -54,34 +54,34 @@ QStringList zStringHelper::toStringList(QString s){
     return s.split(QRegExp("(\\r\\n)|(\\n\\r)|\\r|\\n"), QString::SkipEmptyParts);
 }
 
-QString zStringHelper::singularize(QString s)
-{
-    if(s.endsWith('s')){
-        return s.left(s.length()-1);
-    }
-    else{
-        return s;
-    }
-}
+//QString zStringHelper::singularize(QString s)
+//{
+//    if(s.endsWith('s')){
+//        return s.left(s.length()-1);
+//    }
+//    else{
+//        return s;
+//    }
+//}
 
-QString zStringHelper::pluralize(QString s)
-{
-    if(s.endsWith('s')){
-        return s+"es";
-    }
-    else{
-        return s+"s";
-    }
-}
+//QString zStringHelper::pluralize(QString s)
+//{
+//    if(s.endsWith('s')){
+//        return s+"es";
+//    }
+//    else{
+//        return s+"s";
+//    }
+//}
 
 
-QString zStringHelper::singularizeAll(QString s)
-{
-    auto o = s.split('.');
+//QString zStringHelper::singularizeAll(QString s)
+//{
+//    auto o = s.split('.');
 
-    for (int i = 0; i < o.length(); i++)
-        o[i] = singularize(o[i]);
+//    for (int i = 0; i < o.length(); i++)
+//        o[i] = singularize(o[i]);
 
-    return o.join(".");
-}
+//    return o.join(".");
+//}
 

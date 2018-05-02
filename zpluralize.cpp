@@ -8,12 +8,12 @@ zPluralizer::zPluralizer()
 //    zPluralizer::_userDictionary = QMap<QString, QString>();
 }
 
-QMap<QString, QString> _userDictionary = QMap<QString, QString>();
+QMap<QString, QString> zPluralizer::_userDictionary = QMap<QString, QString>();
 
-QRegularExpression IsAlphabetsRegexp("[^a-zA-Z\\s]");
+QRegularExpression zPluralizer::IsAlphabetsRegexp("[^a-zA-Z\\s]");
 
 // névmások
-QStringList _pronounList = QStringList {
+QStringList zPluralizer::_pronounList = QStringList {
                    "I", "we", "you", "he", "she", "they", "it",
                    "me", "us", "him", "her", "them",
                    "myself", "ourselves", "yourself", "himself", "herself", "itself",
@@ -28,7 +28,7 @@ QStringList _pronounList = QStringList {
                };
 
 // nem ragozható/ragozandó szavak
-QStringList _uninflectiveWordList = QStringList {
+QStringList zPluralizer::_uninflectiveWordList = QStringList {
                 "bison", "flounder", "pliers", "bream", "gallows", "proceedings",
                 "breeches", "graffiti", "rabies", "britches", "headquarters", "salmon",
                 "carp", "----", "scissors", "ch----is", "high-jinks", "sea-bass",
@@ -42,12 +42,13 @@ QStringList _uninflectiveWordList = QStringList {
                 "lettuce", "beef", "pork", "venison", "mutton",  "cattle", "offspring",
                 "molasses", "shambles", "shingles"};
 
-QStringList _uninflectiveSuffixList =QStringList {
+QStringList zPluralizer::_uninflectiveSuffixList =QStringList {
         "fish", "ois", "sheep", "deer", "pos", "itis", "ism" };
 
-QStringList _knownPluralWords = QStringList {};
+QStringList zPluralizer::_knownPluralWords = QStringList {};
+QStringList zPluralizer::_knownSingluarWords = QStringList {};
 
-QMap<QString, QString> _irregularPluralsDictionary = QMap<QString, QString> {
+QMap<QString, QString> zPluralizer::_irregularPluralsDictionary = QMap<QString, QString> {
                     {"brother", "brothers"}, {"child", "children"},
                     {"cow", "cows"}, {"ephemeris", "ephemerides"}, {"genie", "genies"},
                     {"money", "moneys"}, {"mongoose", "mongooses"}, {"mythos", "mythoi"},
@@ -67,7 +68,7 @@ QMap<QString, QString> _irregularPluralsDictionary = QMap<QString, QString> {
                     {"movie", "movies"}, {"bonus", "bonuses"}, {"specimen", "specimens"}
                 };
 
-QMap<QString, QString> _assimilatedClassicalInflectionDictionary = QMap<QString, QString> {
+QMap<QString, QString> zPluralizer::_assimilatedClassicalInflectionDictionary = QMap<QString, QString> {
                         {"alumna", "alumnae"}, {"alga", "algae"}, {"vertebra", "vertebrae"},
                         {"codex", "codices"},
                         {"murex", "murices"}, {"silex", "silices"}, {"aphelion", "aphelia"},
@@ -81,7 +82,7 @@ QMap<QString, QString> _assimilatedClassicalInflectionDictionary = QMap<QString,
                         {"automaton", "automata"}, {"polyhedron", "polyhedra"},
                     };
 
-QMap<QString, QString> _classicalInflectionDictionary = QMap<QString, QString> {
+QMap<QString, QString> zPluralizer::_classicalInflectionDictionary = QMap<QString, QString> {
                        {"stamen", "stamina"}, {"foramen", "foramina"}, {"lumen", "lumina"},
                        {"anathema", "anathemata"}, {"----", "----ta"}, {"oedema", "oedemata"},
                        {"bema", "bemata"}, {"enigma", "enigmata"}, {"sarcoma", "sarcomata"},
@@ -122,6 +123,95 @@ QMap<QString, QString> _classicalInflectionDictionary = QMap<QString, QString> {
                        {"goy", "goyim"}, {"seraph", "seraphim"}, {"alumnus", "alumni"}
                    };
 
+
+QMap<QString, QString> zPluralizer::_wordsEndingWithInxAnxYnxPluralizationDictionary = QMap<QString, QString>{
+    {"sphinx", "sphinxes"},
+    {"larynx", "larynges"}, {"lynx", "lynxes"}, {"pharynx", "pharynxes"},
+    {"phalanx", "phalanxes"}
+};
+
+QMap<QString, QString> zPluralizer::_oSuffixPluralizationDictionary = QMap<QString, QString>{
+    {"albino", "albinos"}, {"generalissimo", "generalissimos"},
+    {"manifesto", "manifestos"}, {"archipelago", "archipelagos"},
+    {"ghetto", "ghettos"}, {"medico", "medicos"}, {"armadillo", "armadillos"},
+    {"guano", "guanos"}, {"octavo", "octavos"}, {"commando", "commandos"},
+    {"inferno", "infernos"}, {"photo", "photos"}, {"ditto", "dittos"},
+    {"jumbo", "jumbos"}, {"pro", "pros"}, {"dynamo", "dynamos"},
+    {"lingo", "lingos"}, {"quarto", "quartos"}, {"embryo", "embryos"},
+    {"lumbago", "lumbagos"}, {"rhino", "rhinos"}, {"fiasco", "fiascos"},
+    {"magneto", "magnetos"}, {"stylo", "stylos"}
+};
+
+QMap<QString, QString> zPluralizer::_irregularVerbList = QMap<QString, QString>{
+    {"am", "are"}, {"are", "are"}, {"is", "are"}, {"was", "were"}, {"were", "were"},
+    {"has", "have"}, {"have", "have"}
+};
+
+QMap<QString, QString> zPluralizer::_wordsEndingWithSisDictionary = QMap<QString, QString> {
+    {"analysis", "analyses"}, {"crisis", "crises"}, {"basis", "bases"},
+    {"atherosclerosis", "atheroscleroses"}, {"electrophoresis", "electrophoreses"},
+    {"psychoanalysis", "psychoanalyses"}, {"photosynthesis", "photosyntheses"},
+    {"amniocentesis", "amniocenteses"}, {"metamorphosis", "metamorphoses"},
+    {"toxoplasmosis", "toxoplasmoses"}, {"endometriosis", "endometrioses"},
+    {"tuberculosis", "tuberculoses"}, {"pathogenesis", "pathogeneses"},
+    {"osteoporosis", "osteoporoses"}, {"parenthesis", "parentheses"},
+    {"anastomosis", "anastomoses"}, {"peristalsis", "peristalses"},
+    {"hypothesis", "hypotheses"}, {"antithesis", "antitheses"},
+    {"apotheosis", "apotheoses"}, {"thrombosis", "thromboses"},
+    {"diagnosis", "diagnoses"}, {"synthesis", "syntheses"},
+    {"paralysis", "paralyses"}, {"prognosis", "prognoses"},
+    {"cirrhosis", "cirrhoses"}, {"sclerosis", "scleroses"},
+    {"psychosis", "psychoses"}, {"apoptosis", "apoptoses"}, {"symbiosis", "symbioses"}
+};
+
+QMap<QString, QString> zPluralizer::_wordsEndingWithSeDictionary = QMap<QString, QString> {
+    {"house", "houses"}, {"case", "cases"}, {"enterprise", "enterprises"},
+    {"purchase", "purchases"}, {"surprise", "surprises"}, {"release", "releases"},
+    {"disease", "diseases"}, {"promise", "promises"}, {"refuse", "refuses"},
+    {"whose", "whoses"}, {"phase", "phases"}, {"noise", "noises"},
+    {"nurse", "nurses"}, {"rose", "roses"}, {"franchise", "franchises"},
+    {"supervise", "supervises"}, {"farmhouse", "farmhouses"},
+    {"suitcase", "suitcases"}, {"recourse", "recourses"}, {"impulse", "impulses"},
+    {"license", "licenses"}, {"diocese", "dioceses"}, {"excise", "excises"},
+    {"demise", "demises"}, {"blouse", "blouses"},
+    {"bruise", "bruises"}, {"misuse", "misuses"}, {"curse", "curses"},
+    {"prose", "proses"}, {"purse", "purses"}, {"goose", "gooses"},
+    {"tease", "teases"}, {"poise", "poises"}, {"vase", "vases"},
+    {"fuse", "fuses"}, {"muse", "muses"},
+    {"slaughterhouse", "slaughterhouses"}, {"clearinghouse", "clearinghouses"},
+    {"endonuclease", "endonucleases"}, {"steeplechase", "steeplechases"},
+    {"metamorphose", "metamorphoses"}, {"----", "----s"},
+    {"commonsense", "commonsenses"}, {"intersperse", "intersperses"},
+    {"merchandise", "merchandises"}, {"phosphatase", "phosphatases"},
+    {"summerhouse", "summerhouses"}, {"watercourse", "watercourses"},
+    {"catchphrase", "catchphrases"}, {"compromise", "compromises"},
+    {"greenhouse", "greenhouses"}, {"lighthouse", "lighthouses"},
+    {"paraphrase", "paraphrases"}, {"mayonnaise", "mayonnaises"},
+    {"----course", "----courses"}, {"apocalypse", "apocalypses"},
+    {"courthouse", "courthouses"}, {"powerhouse", "powerhouses"},
+    {"storehouse", "storehouses"}, {"glasshouse", "glasshouses"},
+    {"hypotenuse", "hypotenuses"}, {"peroxidase", "peroxidases"},
+    {"pillowcase", "pillowcases"}, {"roundhouse", "roundhouses"},
+    {"streetwise", "streetwises"}, {"expertise", "expertises"},
+    {"discourse", "discourses"}, {"warehouse", "warehouses"},
+    {"staircase", "staircases"}, {"workhouse", "workhouses"},
+    {"briefcase", "briefcases"}, {"clubhouse", "clubhouses"},
+    {"clockwise", "clockwises"}, {"concourse", "concourses"},
+    {"playhouse", "playhouses"}, {"turquoise", "turquoises"},
+    {"boathouse", "boathouses"}, {"cellulose", "celluloses"},
+    {"epitomise", "epitomises"}, {"gatehouse", "gatehouses"},
+    {"grandiose", "grandioses"}, {"menopause", "menopauses"},
+    {"penthouse", "penthouses"}, {"----horse", "----horses"},
+    {"transpose", "transposes"}, {"almshouse", "almshouses"},
+    {"customise", "customises"}, {"footloose", "footlooses"},
+    {"galvanise", "galvanises"}, {"princesse", "princesses"},
+    {"universe", "universes"}, {"workhorse", "workhorses"}
+};
+
+
+QMap<QString, QString> zPluralizer::_wordsEndingWithSusDictionary = QMap<QString, QString> {
+    {"consensus","consensuses"}, {"census", "censuses"}
+};
 
 bool zPluralizer::IsAlphabets(QString word)
         {
@@ -208,7 +298,7 @@ bool zPluralizer::IsPlural(QString word)
             {
                 return true;
             }
-            else if (InternalSingularize(word) == word)
+            else if (Singularize(word) == word)
             {
                 return false;
             }
@@ -217,6 +307,34 @@ bool zPluralizer::IsPlural(QString word)
                 return true;
             }
         }
+
+bool zPluralizer::IsSingular(QString word)
+        {
+            //EDesignUtil.CheckArgumentNull<string>(word, "word");
+
+            if (_userDictionary.contains(word))
+            {
+                return true;
+            }
+            if (_userDictionary.values().contains(word))
+            {
+                return false;
+            }
+
+            if (IsUninflective(word) || _knownSingluarWords.contains(word.toLower()))
+            {
+                return true;
+            }
+            else if (!IsNoOpWord(word) && Singularize(word) == word)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
 // https://referencesource.microsoft.com/#System.Data.Entity.Design/System/Data/Entity/Design/PluralizationService/PluralizationServiceUtil.cs,a56c9a76ca325fc3
 bool zPluralizer::TryInflectOnSuffixInWord(QString word, QStringList suffixes,  int l, QString newWord, QString *outWord)
         {
@@ -224,7 +342,10 @@ bool zPluralizer::TryInflectOnSuffixInWord(QString word, QStringList suffixes,  
 
             if (DoesWordContainSuffix(word, suffixes))
             {
-                *outWord =  word.left(word.length()-l) + newWord;
+                if(l>0)
+                    *outWord =  word.left(word.length()-l) + newWord;
+                else
+                    *outWord = word+ newWord;
 
                 return true;
             }
@@ -242,11 +363,11 @@ bool zPluralizer::TryInflectOnSuffixInWord(QString word, QStringList suffixes,  
 /*
  * https://referencesource.microsoft.com/#System.Data.Entity.Design/System/Data/Entity/Design/PluralizationService/EnglishPluralizationService.cs,9f7905f058826204,references
 */
-QString zPluralizer::InternalPluralize(QString word){
+QString zPluralizer::Pluralize(QString word){
 
     // ha felvettük sajátba, akkor úgy konvertáljuk
-    if (this->_userDictionary.contains(word)){
-                return this->_userDictionary.value(word);
+    if (_userDictionary.contains(word)){
+                return _userDictionary.value(word);
             }
 
     // ha tartalom alapján nem lehet átalakítani
@@ -319,316 +440,233 @@ QString zPluralizer::InternalPluralize(QString word){
         return prefixWord + _classicalInflectionDictionary.values().contains(suffixWord);
     }
 
-//    if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//        new List<string>() { "trix" },
-//        (s) => s.Remove(s.Length - 1, 1) + "ces", this.Culture, out newSuffixWord))
-//    {
-//        return prefixWord + newSuffixWord;
-//    }
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "trix" }, 1, "ces", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//    if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//        new List<string>() { "eau", "ieu" },
-//        (s) => s + "x", this.Culture, out newSuffixWord))
-//    {
-//        return prefixWord + newSuffixWord;
-//    }
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "eau", "ieu" }, 0, "x", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//    if (this._wordsEndingWithInxAnxYnxPluralizationService.ExistsInFirst(suffixWord))
-//    {
-//        return prefixWord + this._wordsEndingWithInxAnxYnxPluralizationService.GetSecondValue(suffixWord);
-//    }
 
-//    // [cs]h and ss that take es as plural form
-//    if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord, new List<string>() { "ch", "sh", "ss" }, (s) => s + "es", this.Culture, out newSuffixWord))
-//    {
-//        return prefixWord + newSuffixWord;
-//    }
+    if (_wordsEndingWithInxAnxYnxPluralizationDictionary.contains(suffixWord)){
+        return prefixWord + _wordsEndingWithInxAnxYnxPluralizationDictionary.values().contains(suffixWord);
+    }
 
-//    // f, fe that take ves as plural form
-//    if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//        new List<string>() { "alf", "elf", "olf", "eaf", "arf" },
-//        (s) => s.EndsWith("deaf", true, this.Culture) ? s : s.Remove(s.Length - 1, 1) + "ves", this.Culture, out newSuffixWord))
-//    {
-//        return prefixWord + newSuffixWord;
-//    }
+    // [cs]h and ss that take es as plural form
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "ch", "sh", "ss" }, 0, "es", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//    if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//        new List<string>() { "nife", "life", "wife" },
-//        (s) => s.Remove(s.Length - 2, 2) + "ves", this.Culture, out newSuffixWord))
-//    {
-//        return prefixWord + newSuffixWord;
-//    }
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "deaf" }, 0, "", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//    // y takes ys as plural form if preceded by a vowel, but ies if preceded by a consonant, e.g. stays, skies
-//    if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//        new List<string>() { "ay", "ey", "iy", "oy", "uy" },
-//        (s) => s + "s", this.Culture, out newSuffixWord))
-//    {
-//        return prefixWord + newSuffixWord;
-//    }
+    // f, fe that take ves as plural form
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "alf", "elf", "olf", "eaf", "arf" }, 1 , "ves", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//    //
+    if (TryInflectOnSuffixInWord(suffixWord,QStringList { "nife", "life", "wife" },2, "ves", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//    if (suffixWord.EndsWith("y", true, this.Culture))
-//    {
-//        return prefixWord + suffixWord.Remove(suffixWord.Length - 1, 1) + "ies";
-//    }
+    // y takes ys as plural form if preceded by a vowel, but ies if preceded by a consonant, e.g. stays, skies
+    if (TryInflectOnSuffixInWord(suffixWord,QStringList { "ay", "ey", "iy", "oy", "uy" },0, "s", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//    // handle some of the words o -> os, and [vowel]o -> os, and the rest are o->oes
-//    if (this._oSuffixPluralizationService.ExistsInFirst(suffixWord))
-//    {
-//        return prefixWord + this._oSuffixPluralizationService.GetSecondValue(suffixWord);
-//    }
+    //
 
-//    if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//        new List<string>() { "ao", "eo", "io", "oo", "uo" },
-//        (s) => s + "s", this.Culture, out newSuffixWord))
-//    {
-//        return prefixWord + newSuffixWord;
-//    }
+    if (suffixWord.endsWith("y")){
+        return prefixWord + suffixWord.remove(suffixWord.length() - 1, 1) + "ies";
+    }
 
-//    if (suffixWord.EndsWith("o", true, this.Culture) || suffixWord.EndsWith("s", true, this.Culture))
-//    {
-//        return prefixWord + suffixWord + "es";
-//    }
+    // handle some of the words o -> os, and [vowel]o -> os, and the rest are o->oes
+    if (_oSuffixPluralizationDictionary.contains(suffixWord)){
+        return prefixWord + _oSuffixPluralizationDictionary.values().contains(suffixWord);
+    }
 
-//    if (suffixWord.EndsWith("x", true, this.Culture))
-//    {
-//        return prefixWord + suffixWord + "es";
-//    }
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "ao", "eo", "io", "oo", "uo" },0,  "s", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
+
+    if (suffixWord.endsWith("o") || suffixWord.endsWith("s"))
+    {
+        return prefixWord + suffixWord + "es";
+    }
+
+    if (suffixWord.endsWith("x"))
+    {
+        return prefixWord + suffixWord + "es";
+    }
 
     // cats, bags, hats, speakers
     return prefixWord + suffixWord + "s";
 }
 
 
- QString zPluralizer::InternalSingularize(QString word){
-     return "a";
- }
+QString zPluralizer::Singularize(QString word){
 
-//               // words that we know of
-//               if (this._userDictionary.ExistsInSecond(word))
-//               {
-//                   return this._userDictionary.GetFirstValue(word);
-//               }
+    // words that we know of
+    if (_userDictionary.values().contains(word)){
+        return _userDictionary.key(word);
+    }
 
-//               if (IsNoOpWord(word))
-//               {
-//                   return word;
-//               }
+    if (IsNoOpWord(word)){
+        return word;
+    }
 
-//               string prefixWord;
-//               string suffixWord = GetSuffixWord(word, out prefixWord);
+    QString prefixWord;
+    QString suffixWord = GetSuffixWord(word, &prefixWord);
 
-//               if (IsNoOpWord(suffixWord))
-//               {
-//                   return prefixWord + suffixWord;
-//               }
+    if (IsNoOpWord(suffixWord)){
+        return prefixWord + suffixWord;
+    }
 
-//               // handle the word that is the same as the plural form
-//               if (this.IsUninflective(suffixWord))
-//               {
-//                   return prefixWord + suffixWord;
-//               }
+    // handle the word that is the same as the plural form
+    if (IsUninflective(suffixWord)){
+        return prefixWord + suffixWord;
+    }
 
-//               // if word is one of the known singular words, then just return
+    // if word is one of the known singular words, then just return
+    if (_knownSingluarWords.contains(suffixWord.toLower()))
+    {
+        return prefixWord + suffixWord;
+    }
 
-//               if (this._knownSingluarWords.Contains(suffixWord.ToLowerInvariant()))
-//               {
-//                   return prefixWord + suffixWord;
-//               }
+    // handle simple irregular verbs, e.g. was -> were
+    if (_irregularVerbList.values().contains(suffixWord)){
+        return prefixWord + _irregularVerbList.key(suffixWord);
+    }
 
-//               // handle simple irregular verbs, e.g. was -> were
-//               if (this._irregularVerbPluralizationService.ExistsInSecond(suffixWord))
-//               {
-//                   return prefixWord + this._irregularVerbPluralizationService.GetFirstValue(suffixWord);
-//               }
+    // handle irregular plurals, e.g. "ox" -> "oxen"
+    if (_irregularPluralsDictionary.values().contains(suffixWord)){
+        return prefixWord + _irregularPluralsDictionary.key(suffixWord);
+    }
 
-//               // handle irregular plurals, e.g. "ox" -> "oxen"
-//               if (this._irregularPluralsPluralizationService.ExistsInSecond(suffixWord))
-//               {
-//                   return prefixWord + this._irregularPluralsPluralizationService.GetFirstValue(suffixWord);
-//               }
+    // handle singluarization for words ending with sis and pluralized to ses,
+    // e.g. "ses" -> "sis"
+    if (_wordsEndingWithSisDictionary.values().contains(suffixWord)){
+        return prefixWord + _wordsEndingWithSisDictionary.key(suffixWord);
+    }
 
-//               // handle singluarization for words ending with sis and pluralized to ses,
-//               // e.g. "ses" -> "sis"
-//               if (this._wordsEndingWithSisPluralizationService.ExistsInSecond(suffixWord))
-//               {
-//                   return prefixWord + this._wordsEndingWithSisPluralizationService.GetFirstValue(suffixWord);
-//               }
+    // handle words ending with se, e.g. "ses" -> "se"
+    if (_wordsEndingWithSeDictionary.values().contains(suffixWord)){
+        return prefixWord + _wordsEndingWithSeDictionary.key(suffixWord);
+    }
 
-//               // handle words ending with se, e.g. "ses" -> "se"
-//               if (this._wordsEndingWithSePluralizationService.ExistsInSecond(suffixWord))
-//               {
-//                   return prefixWord + this._wordsEndingWithSePluralizationService.GetFirstValue(suffixWord);
-//               }
+    // handle words ending with sus, e.g. "suses" -> "sus"
+    if (_wordsEndingWithSusDictionary.values().contains(suffixWord)){
+        return prefixWord + _wordsEndingWithSusDictionary.key(suffixWord);
+    }
 
-//               // handle words ending with sus, e.g. "suses" -> "sus"
-//               if (this._wordsEndingWithSusPluralizationService.ExistsInSecond(suffixWord))
-//               {
-//                   return prefixWord + this._wordsEndingWithSusPluralizationService.GetFirstValue(suffixWord);
-//               }
+    QString newSuffixWord;
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "men" },2, "an", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//               string newSuffixWord;
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "men" },
-//                   (s) => s.Remove(s.Length - 2, 2) + "an", this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    // handle irregular inflections for common suffixes, e.g. "mouse" -> "mice"
+    if (TryInflectOnSuffixInWord(suffixWord,QStringList { "lice", "mice" },3, "ouse", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//               // handle irregular inflections for common suffixes, e.g. "mouse" -> "mice"
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "lice", "mice" },
-//                   (s) => s.Remove(s.Length - 3, 3) + "ouse", this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "teeth" },4,  "ooth", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "teeth" },
-//                   (s) => s.Remove(s.Length - 4, 4) + "ooth", this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "geese" },
-//                   (s) => s.Remove(s.Length - 4, 4) + "oose", this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "feet" },
-//                   (s) => s.Remove(s.Length - 3, 3) + "oot", this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "zoa" },
-//                   (s) => s.Remove(s.Length - 2, 2) + "oon", this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "geese" },4, "oose", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//               // [cs]h and ss that take es as plural form, this is being moved up since the sses will be override by the ses
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "ches", "shes", "sses" },
-//                   (s) => s.Remove(s.Length - 2, 2), this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "feet" },3,  "oot", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
+    if (TryInflectOnSuffixInWord(suffixWord,QStringList { "zoa" },2,  "oon", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
+
+    // [cs]h and ss that take es as plural form, this is being moved up since the sses will be override by the ses
+    if (TryInflectOnSuffixInWord(suffixWord,QStringList { "ches", "shes", "sses" },2, "", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
 
-//               // handle assimilated classical inflections, e.g. vertebra -> vertebrae
-//               if (this._assimilatedClassicalInflectionPluralizationService.ExistsInSecond(suffixWord))
-//               {
-//                   return prefixWord + this._assimilatedClassicalInflectionPluralizationService.GetFirstValue(suffixWord);
-//               }
+    // handle assimilated classical inflections, e.g. vertebra -> vertebrae
+    if (_assimilatedClassicalInflectionDictionary.values().contains(suffixWord)){
+        return prefixWord + _assimilatedClassicalInflectionDictionary.key(suffixWord);
+    }
 
-//               // Handle the classical variants of modern inflections
-//               //
-//               if (this._classicalInflectionPluralizationService.ExistsInSecond(suffixWord))
-//               {
-//                   return prefixWord + this._classicalInflectionPluralizationService.GetFirstValue(suffixWord);
-//               }
+    // Handle the classical variants of modern inflections
+    //
+    if (_classicalInflectionDictionary.values().contains(suffixWord)){
+        return prefixWord + _classicalInflectionDictionary.key(suffixWord);
+        }
 
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "trices" },
-//                   (s) => s.Remove(s.Length - 3, 3) + "x", this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "trices" },3,  "x", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "eaux", "ieux" },
-//                   (s) => s.Remove(s.Length - 1, 1), this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "eaux", "ieux" },1, "", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//               if (this._wordsEndingWithInxAnxYnxPluralizationService.ExistsInSecond(suffixWord))
-//               {
-//                   return prefixWord + this._wordsEndingWithInxAnxYnxPluralizationService.GetFirstValue(suffixWord);
-//               }
+    if (_wordsEndingWithInxAnxYnxPluralizationDictionary.values().contains(suffixWord)){
+        return prefixWord + _wordsEndingWithInxAnxYnxPluralizationDictionary.key(suffixWord);
+    }
 
-//               // f, fe that take ves as plural form
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "alves", "elves", "olves", "eaves", "arves" },
-//                   (s) => s.Remove(s.Length - 3, 3) + "f", this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    // f, fe that take ves as plural form
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "alves", "elves", "olves", "eaves", "arves" },3, "f", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "nives", "lives", "wives" },
-//                   (s) => s.Remove(s.Length - 3, 3) + "fe", this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "nives", "lives", "wives" },3, "fe", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//               // y takes ys as plural form if preceded by a vowel, but ies if preceded by a consonant, e.g. stays, skies
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "ays", "eys", "iys", "oys", "uys" },
-//                   (s) => s.Remove(s.Length - 1, 1), this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    // y takes ys as plural form if preceded by a vowel, but ies if preceded by a consonant, e.g. stays, skies
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "ays", "eys", "iys", "oys", "uys" },1, "", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//               //
+    //
 
-//               if (suffixWord.EndsWith("ies", true, this.Culture))
-//               {
-//                   return prefixWord + suffixWord.Remove(suffixWord.Length - 3, 3) + "y";
-//               }
+    if (suffixWord.endsWith("ies")){
+        return prefixWord + suffixWord.remove(suffixWord.length() - 3, 3) + "y";
+    }
 
-//               // handle some of the words o -> os, and [vowel]o -> os, and the rest are o->oes
-//               if (this._oSuffixPluralizationService.ExistsInSecond(suffixWord))
-//               {
-//                   return prefixWord + this._oSuffixPluralizationService.GetFirstValue(suffixWord);
-//               }
+    // handle some of the words o -> os, and [vowel]o -> os, and the rest are o->oes
+    if (_oSuffixPluralizationDictionary.values().contains(suffixWord)){
+        return prefixWord + _oSuffixPluralizationDictionary.key(suffixWord);
+    }
 
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "aos", "eos", "ios", "oos", "uos" },
-//                   (s) => suffixWord.Remove(suffixWord.Length - 1, 1), this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "aos", "eos", "ios", "oos", "uos" },1, "", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
-//               //
+    //
 
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "ces" },1, "", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
+    if (TryInflectOnSuffixInWord(suffixWord, QStringList { "ces", "ses", "xes" },2, "", &newSuffixWord)){
+        return prefixWord + newSuffixWord;
+    }
 
+    if (suffixWord.endsWith("oes")){
+        return prefixWord + suffixWord.remove(suffixWord.length() - 2, 2);
+    }
 
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "ces" },
-//                   (s) => s.Remove(s.Length - 1, 1), this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    if (suffixWord.endsWith("ss")){
+        return prefixWord + suffixWord;
+    }
 
-//               if (PluralizationServiceUtil.TryInflectOnSuffixInWord(suffixWord,
-//                   new List<string>() { "ces", "ses", "xes" },
-//                   (s) => s.Remove(s.Length - 2, 2), this.Culture, out newSuffixWord))
-//               {
-//                   return prefixWord + newSuffixWord;
-//               }
+    if (suffixWord.endsWith("s")){
+        return prefixWord + suffixWord.remove(suffixWord.length() - 1, 1);
+    }
 
-//               if (suffixWord.EndsWith("oes", true, this.Culture))
-//               {
-//                   return prefixWord + suffixWord.Remove(suffixWord.Length - 2, 2);
-//               }
+    // word is a singlar
+    return prefixWord + suffixWord;
+}
 
-//               if (suffixWord.EndsWith("ss", true, this.Culture))
-//               {
-//                   return prefixWord + suffixWord;
-//               }
-
-//               if (suffixWord.EndsWith("s", true, this.Culture))
-//               {
-//                   return prefixWord + suffixWord.Remove(suffixWord.Length - 1, 1);
-//               }
-
-//               // word is a singlar
-//               return prefixWord + suffixWord;
-//           }
-//}

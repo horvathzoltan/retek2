@@ -209,9 +209,9 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="checkBox_ViewDetails">
+                  <widget class="QCheckBox" name="checkBox_XML">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -220,7 +220,10 @@
                     </sizepolicy>
                    </property>
                    <property name="text">
-                    <string>MVC View Details</string>
+                    <string>XML</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>

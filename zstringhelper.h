@@ -12,10 +12,10 @@ public:
     static QString toCamelCase(QString);
     static QStringList toStringList(QString s);
 
-    static QString singularize(QString s);
-    static QString pluralize(QString s);
+//    static QString singularize(QString s);
+//    static QString pluralize(QString s);
 
-    static QString singularizeAll(QString s);
+//    static QString singularizeAll(QString s);
 
     static QString getClassNameCamelCase(QString tablanev);
 };

@@ -8,8 +8,10 @@
 #include "ztable.h"
 #include "zstringhelper.h"
 #include "zstringmaphelper.h"
+#include "zpluralize.h"
 
 #include <QRegularExpression>
+#include <QXmlStreamWriter>
 
 zTable::zTable(){};
 
@@ -25,16 +27,16 @@ zTable::zTable(QString n, QString pkn, QList<zTablerow> tr, QList<zTablerow> pl,
     switch (type) {
         case SQL:{ // n táblanév
             this->tablename = n;
-            QString sn = zStringHelper::singularize(n);
+            QString sn = zPluralizer::Singularize(n);
 
             this->classname = zStringHelper::getClassNameCamelCase(sn);
-            this->classname_plural = zStringHelper::pluralize(sn);
+            this->classname_plural = zPluralizer::Pluralize(classname);
             }
             break;
         case TXT:
             {
             this->classname = n;
-            QString pn = zStringHelper::pluralize(n);
+            QString pn = zPluralizer::Pluralize(n);
 
             this->tablename = pn;
             this->classname_plural = pn;
@@ -274,6 +276,28 @@ bool zTable::containsRow(QString n){
     zforeach(r, this->rows)
         if( r->colName.toLower()==n.toLower() ) return true;
     return false;
+}
+
+QString zTable::toXML()
+{
+    QString e;
+
+    QXmlStreamWriter s(&e);
+    s.setAutoFormatting(true);
+    s.writeStartDocument();
+
+    //auto a = nameof(this->classname);
+
+    s.writeStartElement("ztable");
+    s.writeAttribute(nameof(this->classname), this->classname);
+    s.writeAttribute(nameof(this->classname_plural), this->classname_plural);
+    s.writeAttribute(nameof(this->tablename), this->tablename);
+    //s.writeStartElement("zrow");
+    //s.writeEndElement();
+    s.writeEndElement();
+    s.writeEndDocument();
+
+    return e;
 }
 
 /*

@@ -13,21 +13,31 @@ private:
     static QStringList _uninflectiveWordList;
     static QStringList _uninflectiveSuffixList;
     static QStringList _knownPluralWords;
+    static QStringList _knownSingluarWords;
     static QMap<QString, QString> _irregularPluralsDictionary;
     static QMap<QString, QString> _assimilatedClassicalInflectionDictionary;
+    static QMap<QString, QString> _wordsEndingWithInxAnxYnxPluralizationDictionary;
+    static QMap<QString, QString> _oSuffixPluralizationDictionary;
 
-    bool IsNoOpWord(QString word);
-    bool IsAlphabets(QString word);
-    QString GetSuffixWord(QString word, QString *prefixWord);
-    bool IsUninflective(QString word);
-    bool DoesWordContainSuffix(QString word, QStringList suffixes);
+    static QMap<QString, QString> _classicalInflectionDictionary;
+    static QMap<QString, QString> _irregularVerbList;
+    static QMap<QString, QString> _wordsEndingWithSisDictionary;
+    static QMap<QString, QString> _wordsEndingWithSeDictionary;
+    static QMap<QString, QString> _wordsEndingWithSusDictionary;
+
+    static bool IsNoOpWord(QString word);
+    static bool IsAlphabets(QString word);
+    static QString GetSuffixWord(QString word, QString *prefixWord);
+    static bool IsUninflective(QString word);
+    static bool DoesWordContainSuffix(QString word, QStringList suffixes);
+    static bool TryInflectOnSuffixInWord(QString word, QStringList suffixes,  int l, QString newWord, QString *outWord);
 public:
     zPluralizer();
-    //QString ToLowerInvariant(QString word);
-    QString InternalPluralize(QString word);
-    bool IsPlural(QString word);
-    QString InternalSingularize(QString );
-    bool TryInflectOnSuffixInWord(QString word, QStringList suffixes,  int l, QString newWord, QString *outWord);
+
+    static QString Pluralize(QString word);
+    static QString Singularize(QString );
+    static bool IsPlural(QString word);
+    static bool IsSingular(QString word);
 };
 
 #endif // ZPLURALIZE_H

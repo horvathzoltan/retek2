@@ -34,6 +34,12 @@ private slots:
 
     void on_comboBox_connections_currentIndexChanged(int index);   
 
+    void on_lineEdit_classname_plural_editingFinished();
+
+    void on_lineEdit_classname_editingFinished();
+
+    void on_lineEdit_tablename_editingFinished();
+
 private:
     Ui::retek2Class ui;
 
