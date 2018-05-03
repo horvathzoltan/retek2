@@ -270,8 +270,15 @@ void retek2::GenerateAll() {
     if (ui.checkBox_XML->isChecked()) {
         zlog.trace("XML");
 
-        auto txt = table->toXML();
-        zlog.log(txt);
+        QString e;
+        QXmlStreamWriter s(&e);
+        s.setAutoFormatting(true);
+        s.writeStartDocument();
+
+        table->toXML(&s);
+        s.writeEndDocument();
+
+        zlog.log(e);
     }
 
 	if (ui.checkBox_CClass->isChecked()) {

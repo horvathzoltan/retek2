@@ -278,26 +278,24 @@ bool zTable::containsRow(QString n){
     return false;
 }
 
-QString zTable::toXML()
-{
-    QString e;
+void zTable::toXML(QXmlStreamWriter *s)
+{  
 
-    QXmlStreamWriter s(&e);
-    s.setAutoFormatting(true);
-    s.writeStartDocument();
+    s->writeStartElement(nameof(zTable));
+    s->writeAttribute(nameof(this->sourcetype), QString::number(this->sourcetype));
+    s->writeAttribute(nameof(this->sourcepath), this->sourcepath);
 
-    //auto a = nameof(this->classname);
+    s->writeAttribute(nameof(this->tablename), this->tablename);
+    s->writeAttribute(nameof(this->classname), this->classname);
+    s->writeAttribute(nameof(this->classname_plural), this->classname_plural);
+    s->writeAttribute(nameof(this->pkname), this->pkname);
+    s->writeAttribute(nameof(this->name_formatstring), this->name_formatstring);
 
-    s.writeStartElement("ztable");
-    s.writeAttribute(nameof(this->classname), this->classname);
-    s.writeAttribute(nameof(this->classname_plural), this->classname_plural);
-    s.writeAttribute(nameof(this->tablename), this->tablename);
-    //s.writeStartElement("zrow");
-    //s.writeEndElement();
-    s.writeEndElement();
-    s.writeEndDocument();
+    s->writeStartElement(nameof(this->rows));
+    zforeach(r, this->rows){ (*r).toXML(s); }
+    s->writeEndElement();
 
-    return e;
+    s->writeEndElement();
 }
 
 /*

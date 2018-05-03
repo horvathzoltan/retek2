@@ -3,6 +3,7 @@
 
 
 #include <QString>
+#include <QXmlStreamWriter>
 
 class zTablerow
 {
@@ -28,6 +29,7 @@ public:
     QString ValidateColType(QString);
     QString ValidateNullable(bool);
     QString ValidateDLen(int);
+    void toXML(QXmlStreamWriter*);
 };
 
 #endif // ZTABLEROW_H

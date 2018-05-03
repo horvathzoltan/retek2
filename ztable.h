@@ -20,17 +20,13 @@ public:
     QString sourcepath;
 
     QString tablename;
-    // osztálynév - singular, ezt a zTables példány létrehozásakor létre lehet már hozni, és validálni egy szabály szerint
-    QString classname;
+    QString classname; // osztálynév - singular, ezt a zTables példány létrehozásakor létre lehet már hozni, és validálni egy szabály szerint
     QString classname_plural;
 
     QString pkname; // rowix
 
-    //QStringList fknames;
-
     QList<zTablerow> rows;
     QList<zTablerow> props;
-
     QString name_formatstring;
 
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
@@ -55,7 +51,7 @@ public:
 
     bool containsRow(QString n);
 
-    QString toXML();
+    void toXML(QXmlStreamWriter*);
     static zTable fromXML(QString);
 };
 

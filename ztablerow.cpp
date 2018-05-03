@@ -1,6 +1,8 @@
 #include "ztablerow.h"
 #include "globals.h"
 
+#include <QXmlStreamWriter>
+
 zTablerow::zTablerow(){
      this->nullable = true;
 }
@@ -114,4 +116,18 @@ QString zTablerow::ValidateDLen(int rvdLen){
         }
     }
 
+
+void zTablerow::toXML(QXmlStreamWriter *s)
+{    
+    s->writeStartElement(nameof(zTablerow));
+    s->writeAttribute(nameof(this->Caption), this->Caption);
+    s->writeAttribute(nameof(this->colName), this->colName);
+    s->writeAttribute(nameof(this->colType), this->colType);
+
+    s->writeAttribute(nameof(this->dlen), QString::number(this->dlen));
+    s->writeAttribute(nameof(this->nullable), QString::number(this->nullable));
+    s->writeAttribute(nameof(this->comment), this->comment);
+
+    s->writeEndElement();
+}
 
