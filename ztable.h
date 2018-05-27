@@ -1,8 +1,9 @@
 #ifndef ZTABLE_H
 #define ZTABLE_H
 
-#include <QString>
 #include <QList>
+#include <QString>
+#include <QDateTime>
 
 #include "ztablerow.h"
 
@@ -29,6 +30,9 @@ public:
     QList<zTablerow> props;
     QString name_formatstring;
 
+    QDateTime updateTime;
+
+
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMySQL(QString, QMap<QString, QString>, QString );
@@ -39,6 +43,7 @@ public:
 
     static QList<zTable> createTableByText(QString txt);    
     static QList<zTable> createTableByText_2(QString txt);
+    static QList<zTable> createTableByXML(const QString& txt);
 
     static QString getPkByName(QList<zTable> *tables, QString rn);
     static zTable* getByName(QList<zTable> *tables, QString rn);

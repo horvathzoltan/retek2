@@ -13,5 +13,5 @@ QString zEnumizer::GenerateEnum(EnumSource es)
         vl += QString("\t%1 = %2").arg(en).arg(m.key());
     }
 
-    return QString("enum %1 : %2\n{\n%3\n};").arg(es.cn).arg(es.ft).arg(vl);
+    return QString("enum %1 : %2\n{\n%3\n};").arg(es.cn).arg(es.ft, vl);
 }

@@ -2,8 +2,9 @@
 #define ZTOKENIZER_H
 
 #include <QString>
-#include <QVariant>
 #include <QTableWidget>
+#include <QVariant>
+
 
 class zTokenizer
 {

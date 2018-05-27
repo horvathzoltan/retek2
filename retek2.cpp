@@ -1,39 +1,42 @@
+#include "globals.h"
 #include "retek2.h"
-#include <QDebug>
-#include <QString>
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QListWidget>
-#include <QTableWidgetItem>
-#include <QFileInfo>
-#include <QFile>
-#include <QRegularExpression>
-#include <QTableWidgetItem>
-#include <QDir>
-#include <QTextCodec>
-#include <QMap>
-#include <QMessageBox>
-
-#include "ztable.h"
-#include "ztablerow.h"
-#include "zsql.h"
+#include "zfilenamehelper.h"
 #include "zstringhelper.h"
 #include "zstringmaphelper.h"
-#include "zfilenamehelper.h"
-#include "globals.h"
-#include "zenumizer.h"
+#include "ztablerow.h"
 #include "ztextfilehelper.h"
+
+
+#include <QRegularExpression>
+#include <QTableWidgetItem>
+
+#include <QFileInfo>
+
+#include <QListWidget>
+#include <QMessageBox>
+#include <QSqlError>
+
+#include <QDir>
+
+//#include <QDebug>
+//#include <QString>
+//#include <QSqlQuery>
+//#include <QFile>
+//#include <QTableWidgetItem>
+//#include <QTextCodec>
+//#include <QMap>
+//#include "ztable.h"
+//#include "zsql.h"
+//#include "zenumizer.h"
+
 
 retek2::retek2(QWidget *parent):QMainWindow(parent){
 	ui.setupUi(this);
 }
 
-retek2::~retek2()
-{
+retek2::~retek2()= default;
 
-}
-
-void retek2::init(void)
+void retek2::init()
 {	
     zlog.init(ui.textBrowser);
     beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox);
@@ -76,16 +79,15 @@ void retek2::initBy(dbConnection* c){
     if(c==nullptr) return;
 
     beallitasok.setUI(*c);
-    //zsql.init(*c);
     ztokenizer.init(ui.tableWidget_MezoLista);
     tablaListaFeltolt(); // bal tábla panel feltöltése
 
     zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, c->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
 }
 
-void retek2::saveCaptionTabla(QString tablanev) {
+void retek2::saveCaptionTabla(const QString& tablanev) {
     auto b = beallitasok.getSelected();
-    if(b==nullptr) return;
+    if(b==nullptr) return;    
 
     QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev, "caption_" + tablanev + ".txt");
 
@@ -100,11 +102,12 @@ void retek2::saveCaptionTabla(QString tablanev) {
 
 		tablaCaptionMap.insert(item_colName->text(), item_Caption->text());
 	}
-	if(tablaCaptionMap.count()>0)
+    if(tablaCaptionMap.count()>0){
         zStringMapHelper::StringMapSave(fn, &tablaCaptionMap);
+    }
 }
 
-void retek2::tablaListaFeltolt(void) {
+void retek2::tablaListaFeltolt() {
     zSQL zsql;
     auto c = beallitasok.getSelected();
     zsql.init(*c);
@@ -124,22 +127,25 @@ void retek2::tablaListaFeltolt(void) {
 /*
  *
 */
-void retek2::tablaAdatokBejegyez(QString tn){
+void retek2::tablaAdatokBejegyez(const QString& tn){
     new QListWidgetItem(tn, ui.listWidget_tabla); 
 }
 
 
 
 void retek2::TableSelect(QListWidgetItem* i) {   
-    if(table != nullptr)
+    if(table != nullptr){
         saveCaptionTabla(table->tablename);
+    }
 
     auto tablanev = i->text();
     table = zTable::getByName(&ztables, tablanev);
 
-    fejadatFeltolt(*table);
-    mezoListaFeltolt(*table);
-    feltoltKulcsLista(*table);
+    if(table != nullptr){
+        fejadatFeltolt(*table);
+        mezoListaFeltolt(*table);
+        feltoltKulcsLista(*table);
+        }
 }
 
 //void retek2::feltoltEljaras(QString tablanev) {
@@ -243,7 +249,7 @@ void retek2::feltoltKulcsLista(zTable t) {
 }
 
 
-QTableWidgetItem* retek2::CreateTableItem(QVariant v){
+QTableWidgetItem* retek2::CreateTableItem(const QVariant& v){
     auto a = new QTableWidgetItem();
     a->setData(Qt::DisplayRole, v);
     return a;
@@ -305,15 +311,18 @@ void retek2::GenerateAll() {
                 auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev,table->tablename + "_enum.cs");
                 zTextFileHelper::save(txt, fn);
             }
-            else
+            else{
                 zlog.trace("nincs sqlinit");
+            }
         }
-        else
+        else{
             zlog.trace("nincs dbconn");
         }
-        else
-            zlog.trace("nem sql típusú");
     }
+    else{
+        zlog.trace("nem sql típusú");
+    }
+}
 
 
     if (ui.checkBox_Entity->isChecked()) {
@@ -412,17 +421,18 @@ tmp file tartalmának feldolgozása
 - tokenek alapján a táblákból generált adatok beillesztése
 */
 
-QString retek2::generateTmp(QString tmp_file) {
+QString retek2::generateTmp(const QString& tmp_file) {
     //qDebug() << tmp_file;
     if(tmp_file.isEmpty())
         {zLog::ShowDialog("Nincs sablon fájl");return "";}
 
     auto tmp_fn = beallitasok.getTemplateFilename(tmp_file);
 
-    if(tmp_fn == NULL) {zLog::ShowDialog("A sablon fájl nem található: "+ tmp_file);return "";}
+    if(tmp_fn == nullptr) {zLog::ShowDialog("A sablon fájl nem található: "+ tmp_file);return "";}
 
     QString tmp = zTextFileHelper::load(tmp_fn);
 
+   // auto aaa = QString.is
     auto b = beallitasok.getSelected();
     if(b != nullptr){
         ztokenizer.tokenize(&tmp, nullptr, 0, b->adatbazisNev);
@@ -437,14 +447,15 @@ void retek2::on_pushButton_clicked()
     zSQL zsql;
     auto dbconn = beallitasok.getUI();   
     if(dbconn.isValid()){
-        if(zsql.init(dbconn))
+        if(zsql.init(dbconn)){
             if(!beallitasok.dbConnections.contains(dbconn)){
                 beallitasok.addConnection(dbconn);
             }
+        }
         tablaListaFeltolt();
         }
     else{
-       zlog.log(QString("Az adatbáziskapcsolat adatai hibásak: %1 driver: %2").arg(dbconn.Getname()).arg(dbconn.driver), zLog::ERROR);
+       zlog.log(QString("Az adatbáziskapcsolat adatai hibásak: %1 driver: %2").arg(dbconn.Getname(),dbconn.driver), zLog::ERROR);
     }
     //zsql.createConnection();
 
@@ -460,8 +471,9 @@ void retek2::on_pushButton_2_clicked()
     zSQL zsql;
     auto dbconn = beallitasok.getUI();
     if(dbconn.isValid()){
-        if(zsql.init(dbconn))
-        zlog.trace("GenerateByText");
+        if(zsql.init(dbconn)){
+            zlog.trace("GenerateByText");
+            }
 
         auto txt = ui.textEdit->toPlainText();
         auto tl = zTable::createTableByText(txt);
@@ -550,7 +562,24 @@ void retek2::on_pushButton_4_clicked()
 
     zforeach(t,tl){
         ztables.append(*t);
-        tablaAdatokBejegyez("txt."+t->tablename);
+        tablaAdatokBejegyez(t->tablename);
+        }
+}
+
+
+// load from xml
+void retek2::on_pushButton_5_clicked()
+{
+    zlog.trace("on_pushButton_5_clicked");
+
+    auto txt = ui.textEdit->toPlainText();
+    auto tl = zTable::createTableByXML(txt);
+
+   /* if(tl.length()==0) { zlog.log("nincs egyezés, nincs vizsgálat"); return;}
+*/
+    zforeach(t,tl){
+        ztables.append(*t);
+        tablaAdatokBejegyez(t->tablename);
         }
 }
 
@@ -633,3 +662,5 @@ void retek2::on_lineEdit_tablename_editingFinished()
 {
     table->tablename =  ui.lineEdit_tablename->text();
 }
+
+

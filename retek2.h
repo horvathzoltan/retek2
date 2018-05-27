@@ -1,6 +1,7 @@
 #ifndef RETEK2_H
 #define RETEK2_H
 
+
 #include <QtWidgets/QMainWindow>
 #include "ui_retek2.h"
 #include <QSqlQuery>
@@ -9,16 +10,17 @@
 #include "dbconnection.h"
 #include "zsql.h"
 
+#endif // RETEK2_H
 class retek2 : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	retek2(QWidget *parent = 0);
-	~retek2();
-	void init(void);	       
+    explicit retek2(QWidget *parent = nullptr);
+    ~retek2() final;
+    void init();
 
-    void tablaAdatokBejegyez(QString tn);
+    void tablaAdatokBejegyez(const QString& tn);
     //void feltoltRPk(zTable t);
 private slots:
 	void GenerateAll();
@@ -40,15 +42,17 @@ private slots:
 
     void on_lineEdit_tablename_editingFinished();
 
+    void on_pushButton_5_clicked();
+
 private:
     Ui::retek2Class ui;
 
 	QSqlDatabase db;
 
-    void saveCaptionTabla(QString);
+    void saveCaptionTabla(const QString&);
 
-    void tablaListaFeltolt(void);
-	void feltoltTmpMap(void);
+    void tablaListaFeltolt();
+    void feltoltTmpMap();
     //void feltoltEljaras(QString tablanev);
 
     //void feltoltIdegenkulcs(QString tablanev);
@@ -59,10 +63,10 @@ private:
     void feltoltKulcsLista(zTable t);
     //void feltoltFk(zTable t);
 
-	QString generateTmp(QString);
+	QString generateTmp(const QString&);
 	
 
-    static QTableWidgetItem* CreateTableItem(QVariant v);    
+    static QTableWidgetItem* CreateTableItem(const QVariant& v);    
 
     zEnumizer::EnumSource GetEnumData(zSQL *zsql);
 
@@ -70,4 +74,4 @@ private:
 
 };
 
-#endif // RETEK2_H
+//#endif // RETEK2_H

@@ -1,6 +1,6 @@
 #include "retek2.h"
-#include <QtWidgets/QApplication>
-#include <QDebug>
+//#include <QtWidgets/QApplication>
+//#include <QDebug>
 
 int main(int argc, char *argv[])
 {

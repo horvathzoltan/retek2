@@ -71,7 +71,7 @@ public:
 
     QString toString();
     QList<QString> getTableNames();
-    zTable getTable(QString tablanev);
+    zTable getTable(const QString& tablanev);
     QString getTablePKName(QString tablanev);
     QString getTable_SQL_PK(QString cmd);
 

@@ -307,7 +307,7 @@
               <item>
                <widget class="QTabWidget" name="tabWidget">
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>3</number>
                 </property>
                 <widget class="QWidget" name="tab_4">
                  <attribute name="title">
@@ -720,6 +720,13 @@
                       </property>
                       <property name="text">
                        <string>Load 2</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButton_5">
+                      <property name="text">
+                       <string>LoadXML</string>
                       </property>
                      </widget>
                     </item>

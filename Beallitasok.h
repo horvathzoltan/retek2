@@ -1,10 +1,19 @@
+#ifndef BEALLITASOK_H
+#define BEALLITASOK_H
+
+
 #pragma once
 
-#include <QString>
+#include "dbconnection.h"
+
 #include <QLineEdit>
 #include <QList>
+#include <QString>
+
 #include <QComboBox>
-#include "dbconnection.h"
+
+
+
 
 class Beallitasok
 {
@@ -121,9 +130,10 @@ abrachadabra
 */
 	QString globalCaptionsFileName = "global_captions"; 
 
-    QString getCaptionFileName(QString tablanev);
+    QString getCaptionFileName(const QString& tablanev);
     void setSelected(int i);
 
     void addDbConnection(dbConnection b);
 };
 
+#endif

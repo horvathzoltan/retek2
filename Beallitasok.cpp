@@ -1,8 +1,11 @@
-#include "Beallitasok.h"
-#include "zfilenamehelper.h"
-#include "ztextfilehelper.h"
-#include "zstringhelper.h"
 #include "globals.h"
+//#include "Beallitasok.h"
+#include "zfilenamehelper.h"
+#include "zstringhelper.h"
+
+#include "ztextfilehelper.h"
+
+
 
 #include <QDir>
 #include <QFileInfo>
@@ -14,7 +17,7 @@ Beallitasok::Beallitasok(){
      selected_ix = 0;
 };
 
-Beallitasok::~Beallitasok(){};
+Beallitasok::~Beallitasok()= default;;
 
 void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEdit* wcatalog, QComboBox *qc, QComboBox *dc)
 {
@@ -59,7 +62,7 @@ void Beallitasok::setUI(dbConnection b)
 }
 
 
-QString Beallitasok::getCaptionFileName(QString tablanev){
+QString Beallitasok::getCaptionFileName(const QString& tablanev){
     auto b = dbConnections[selected_ix];
 
     QString fn = zFileNameHelper::append(QDir::homePath(), munkadir, b.adatbazisNev, "caption_"+tablanev+".txt");

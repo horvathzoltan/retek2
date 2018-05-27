@@ -6,8 +6,8 @@
 #include "zsql.h"
 #include "ztable.h"
 #include "ztokenizer.h"
-#include <QException>
 #include <QDebug>
+#include <QException>
 
 #define zforeach(var, container) for(auto var = (container).begin(); var != (container).end(); ++var)
 #define zforeach_from(var, container, ix) for(auto var = (container).begin()+ix; var != (container).end(); ++var)

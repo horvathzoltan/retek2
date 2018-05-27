@@ -30,6 +30,7 @@ public:
     QString ValidateNullable(bool);
     QString ValidateDLen(int);
     void toXML(QXmlStreamWriter*);
+    static zTablerow fromXML(QXmlStreamReader*);
 };
 
 #endif // ZTABLEROW_H

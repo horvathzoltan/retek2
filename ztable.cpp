@@ -9,6 +9,7 @@
 #include "zstringhelper.h"
 #include "zstringmaphelper.h"
 #include "zpluralize.h"
+#include "zxmlhelper.h"
 
 #include <QRegularExpression>
 #include <QXmlStreamWriter>
@@ -278,6 +279,7 @@ bool zTable::containsRow(QString n){
     return false;
 }
 
+
 void zTable::toXML(QXmlStreamWriter *s)
 {  
 
@@ -290,12 +292,60 @@ void zTable::toXML(QXmlStreamWriter *s)
     s->writeAttribute(nameof(this->classname_plural), this->classname_plural);
     s->writeAttribute(nameof(this->pkname), this->pkname);
     s->writeAttribute(nameof(this->name_formatstring), this->name_formatstring);
+    s->writeAttribute(nameof(this->updateTime), this->updateTime.toString());
 
     s->writeStartElement(nameof(this->rows));
     zforeach(r, this->rows){ (*r).toXML(s); }
     s->writeEndElement();
 
     s->writeEndElement();
+}
+
+QList<zTable> zTable::createTableByXML(const QString& txt){
+   QList<zTable> tl;
+
+    QXmlStreamReader xml(txt);
+
+    while(!xml.atEnd()){
+        xml.readNext();
+        if(xml.isStartElement() && (xml.name() == nameof(zTable))){
+            auto a = xml.attributes();
+
+            zTable t;
+
+            zXmlHelper::putXmlAttr(a, nameof(tablename), &(t.tablename));
+            zXmlHelper::putXmlAttr(a, nameof(sourcetype), &(t.sourcetype));
+            zXmlHelper::putXmlAttr(a, nameof(sourcepath), &(t.sourcepath));
+            zXmlHelper::putXmlAttr(a, nameof(classname), &(t.classname));
+            zXmlHelper::putXmlAttr(a, nameof(classname_plural), &(t.classname_plural));
+            zXmlHelper::putXmlAttr(a, nameof(pkname), &(t.pkname));
+            zXmlHelper::putXmlAttr(a, nameof(name_formatstring), &(t.name_formatstring));
+            zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));
+
+            if (xml.readNextStartElement() && xml.name() == "rows"){
+                    t.rows = QList<zTablerow>();
+
+                    while(xml.readNextStartElement()) {
+                        if(xml.name()=="zTablerow"){                            
+                            auto r = zTablerow::fromXML(&xml);
+                            t.rows.append(r);
+                            QString txt = xml.readElementText();
+                            }                        
+                        }
+                    }                
+                t.props = QList<zTablerow>();
+
+                tl.append(t);
+                zlog.log("XML: "+nameof(tablename)+xml.errorString());
+            }
+     /*   else
+                   xml.skipCurrentElement();*/
+        }    
+    if(xml.hasError()){
+        zlog.log("createTableByXML: "+xml.errorString());
+    }
+
+    return tl;
 }
 
 /*
@@ -580,4 +630,6 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
     return tl;
 }
+
+
 

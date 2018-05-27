@@ -1,10 +1,12 @@
 #ifndef ZTEXTFILEHELPER_H
 #define ZTEXTFILEHELPER_H
 
+
 #include <QFile>
-#include <QTextStream>
-#include <QTextCodec>
 #include <QString>
+#include <QTextCodec>
+#include <QTextStream>
+
 
 class zTextFileHelper
 {

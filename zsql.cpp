@@ -177,15 +177,17 @@ QString zSQL::getTable_MSSQL_CMD(QString tn){ return getTable_MSSQL_CMDTMP.arg(t
 QString zSQL::getTable_MYSQL_CMD(QString tn){ return getTable_MYSQL_CMDTMP.arg(this->databaseName).arg(tn); }
 
 
-zTable zSQL::getTable(QString tablanev){
+zTable zSQL::getTable(const QString& tablanev){
 
     if(db.isValid() && db.isOpen()){
         QString fn = beallitasok.getCaptionFileName(tablanev);
 
-        if(driverName == QODBC)
+        if(driverName == QODBC){
             return getTable_SQL(tablanev, fn, getTable_MSSQL_CMD(tablanev));
-        else if(driverName == QMYSQL)
+        }
+        else if(driverName == QMYSQL){
             return getTable_SQL(tablanev, fn, getTable_MYSQL_CMD(tablanev));
+        }
         else{
             zlog.log("getTable: unknown driver:" + driverName);
         }

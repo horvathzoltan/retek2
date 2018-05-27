@@ -1,5 +1,7 @@
 #include "ztablerow.h"
 #include "globals.h"
+#include "zstringhelper.h"
+#include "zxmlhelper.h"
 
 #include <QXmlStreamWriter>
 
@@ -117,6 +119,12 @@ QString zTablerow::ValidateDLen(int rvdLen){
     }
 
 
+///
+/// \brief zTablerow::toXML
+/// \param s
+///
+/// s as stream
+///
 void zTablerow::toXML(QXmlStreamWriter *s)
 {    
     s->writeStartElement(nameof(zTablerow));
@@ -130,4 +138,30 @@ void zTablerow::toXML(QXmlStreamWriter *s)
 
     s->writeEndElement();
 }
+
+///
+/// \brief zTablerow::fromXML
+/// \param xml
+/// \return
+///
+/// r as row
+/// s as stream
+/// a as attribute
+///
+zTablerow zTablerow::fromXML(QXmlStreamReader* s){
+    zTablerow r;
+
+    auto a = s->attributes();
+
+    zXmlHelper::putXmlAttr(a, nameof(Caption), &(r.Caption));
+    zXmlHelper::putXmlAttr(a, nameof(colName), &(r.colName));
+    zXmlHelper::putXmlAttr(a, nameof(colType), &(r.colType));
+    zXmlHelper::putXmlAttr(a, nameof(dlen), &(r.dlen));
+    zXmlHelper::putXmlAttr(a, nameof(nullable), &(r.nullable));
+    zXmlHelper::putXmlAttr(a, nameof(comment), &(r.comment));
+
+    return r;
+}
+
+
 
