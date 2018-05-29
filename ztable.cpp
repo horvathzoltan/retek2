@@ -306,46 +306,71 @@ QList<zTable> zTable::createTableByXML(const QString& txt){
 
     QXmlStreamReader xml(txt);
 
-    while(!xml.atEnd()){
-        xml.readNext();
-        if(xml.isStartElement() && (xml.name() == nameof(zTable))){
-            auto a = xml.attributes();
+//    while(!xml.atEnd()){
+//        xml.readNext();
+//        if(xml.isStartElement() && (xml.name() == nameof(zTable))){
 
-            zTable t;
-
-            zXmlHelper::putXmlAttr(a, nameof(tablename), &(t.tablename));
-            zXmlHelper::putXmlAttr(a, nameof(sourcetype), &(t.sourcetype));
-            zXmlHelper::putXmlAttr(a, nameof(sourcepath), &(t.sourcepath));
-            zXmlHelper::putXmlAttr(a, nameof(classname), &(t.classname));
-            zXmlHelper::putXmlAttr(a, nameof(classname_plural), &(t.classname_plural));
-            zXmlHelper::putXmlAttr(a, nameof(pkname), &(t.pkname));
-            zXmlHelper::putXmlAttr(a, nameof(name_formatstring), &(t.name_formatstring));
-            zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));
-
-            if (xml.readNextStartElement() && xml.name() == "rows"){
-                    t.rows = QList<zTablerow>();
-
-                    while(xml.readNextStartElement()) {
-                        if(xml.name()=="zTablerow"){                            
-                            auto r = zTablerow::fromXML(&xml);
-                            t.rows.append(r);
-                            QString txt = xml.readElementText();
-                            }                        
-                        }
-                    }                
-                t.props = QList<zTablerow>();
-
-                tl.append(t);
-                zlog.log("XML: "+nameof(tablename)+xml.errorString());
+    if (xml.readNextStartElement()){
+        if(xml.name() == "zTables"){
+            while(xml.readNextStartElement()) {
+                if(xml.name()==nameof(zTable)){
+                    zTable t = fromXML(&xml);
+                    tl.append(t);
+                }
+                else{
+                    xml.skipCurrentElement();
+                }
             }
-     /*   else
-                   xml.skipCurrentElement();*/
-        }    
+        }
+        else if(xml.name() == "zTable"){
+            zTable t = fromXML(&xml);
+            tl.append(t);
+        }
+        else{
+            xml.skipCurrentElement();
+        }
+    }
     if(xml.hasError()){
         zlog.log("createTableByXML: "+xml.errorString());
-    }
-
+        }
     return tl;
+}
+
+zTable zTable::fromXML(QXmlStreamReader* xml){
+    zTable t;
+
+    auto a = xml->attributes();
+
+    zXmlHelper::putXmlAttr(a, nameof(tablename), &(t.tablename));
+    zXmlHelper::putXmlAttr(a, nameof(sourcetype), &(t.sourcetype));
+    zXmlHelper::putXmlAttr(a, nameof(sourcepath), &(t.sourcepath));
+    zXmlHelper::putXmlAttr(a, nameof(classname), &(t.classname));
+    zXmlHelper::putXmlAttr(a, nameof(classname_plural), &(t.classname_plural));
+    zXmlHelper::putXmlAttr(a, nameof(pkname), &(t.pkname));
+    zXmlHelper::putXmlAttr(a, nameof(name_formatstring), &(t.name_formatstring));
+    zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));
+
+    if (xml->readNextStartElement() && xml->name() == "rows"){
+            t.rows = QList<zTablerow>();
+
+            while(xml->readNextStartElement()) {
+                if(xml->name()==nameof(zTablerow)){
+                    auto r = zTablerow::fromXML(xml);
+                    t.rows.append(r);
+                    QString txt = xml->readElementText();
+                    }
+                else{
+                    xml->skipCurrentElement();
+                }
+
+            }
+            xml->readNextStartElement();
+        }
+
+    t.props = QList<zTablerow>();
+    //tl.append(t);
+    zlog.log("XML beolvasva: "+ t.tablename +xml->errorString());
+    return t;
 }
 
 /*

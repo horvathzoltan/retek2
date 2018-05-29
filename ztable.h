@@ -57,7 +57,8 @@ public:
     bool containsRow(QString n);
 
     void toXML(QXmlStreamWriter*);
-    static zTable fromXML(QString);
+    //static zTable fromXML(QString);
+    static zTable fromXML(QXmlStreamReader* xml);
 };
 
 #endif // ZTABLE_H
