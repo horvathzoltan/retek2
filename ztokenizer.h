@@ -41,6 +41,9 @@ public:
     QString getePropType(QString tipusnev, int length);
     //QString getReq(QString tmp, QMap<QString, QVariant> *map);
 
+    QString getEntityAttrList(QMap<QString, QVariant> *map, int whsp);
+    QString getEntityPropAttrList(QString tmp, QString param, int whsp, QString dbname);
+    QString getEntityNavPropList(QString tmp, QString param, int whsp, QString dbname);
 };
 
 #endif // ZTOKENIZER_H

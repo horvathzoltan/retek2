@@ -192,11 +192,16 @@ QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant>
     else if (t1 == "proplist") return getPropList2(t2, t3, whsp, dbname);
     else if (t1 == "propline") return getPropList2(nullptr, t3, whsp, dbname);
     // MVC - viewmodel adatannotációs attribútumok
-    else if (t1 == "attrlist") return getAttrList(map, whsp);
+    else if (t1 == "attrlist") {
+        auto a = getAttrList(map, whsp);
+        return a;}
     // entitás tokenek
-    //else if (t1 == "entityname") return zStringHelper::getClassNameCamelCase(table->tablename);
-    //else if (t1 == "entity_attrlist") return getAttrListForEntity(map, whsp);
-    //else if (t1 == "prop_attrlist") return getAttrListForEntityProp(map, whsp);
+    else if (t1 == "entity_attrlist") {
+        auto a =  getEntityAttrList(map, whsp);
+        return a;
+    }
+    else if (t1 == "prop_attrlist") return getEntityPropAttrList(t2, t3, whsp, dbname);
+    else if (t1 == "nav_proplist") return getEntityNavPropList(t2, t3, whsp, dbname);
     //else if (t1 == "proplist") return getPropListForEntity(t2, t3, whsp, dbname);
 
     else if (t1 == "newline") return "\n";
@@ -217,7 +222,7 @@ QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant>
     }
     else
         return "?" + t1 + "?";
-    return "!" + t1.toUpper() + "!";
+    return "!" + t1 + "!";
 }
 
 /*
@@ -310,6 +315,18 @@ QString zTokenizer::getAttrList(QMap<QString, QVariant> *map, int whsp) {
     }
 
     return  e;
+}
+
+//Table,NotMapped
+QString zTokenizer::getEntityAttrList(QMap<QString, QVariant> *map, int whsp) {
+    QStringList attrList;
+    if(table->tablename.isEmpty())
+        attrList<<"[NotMapped]";
+    if(table->tablename!=table->classname)
+        attrList<<"[Table(\""+table->tablename+"\")]";
+//    if(table->desc)
+//        attrList<<"[Description(\""+table->tablename+"\")]";
+    return attrList.join("\n");
 }
 
 QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString dbname) {
@@ -407,6 +424,14 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
     }
 
     return proplist;
+}
+
+QString zTokenizer::getEntityPropAttrList(QString tmp, QString param, int whsp, QString dbname) {
+    return "EntityPropAttrList";
+}
+
+QString zTokenizer::getEntityNavPropList(QString tmp, QString param, int whsp, QString dbname){
+    return "EntityNavPropList";
 }
 
 
