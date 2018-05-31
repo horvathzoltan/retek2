@@ -9,13 +9,13 @@ class zTablerow
 {
 public:
     zTablerow();
-    zTablerow(QString colName, QString dtype, int dlen, bool nullable, QString caption);
+    zTablerow(QString colName, QString dtype, int dlen, bool isNullable, QString caption);
 
     QString Caption;
     QString colName;
     QString colType;
     int dlen;
-    bool nullable;
+    bool isNullable;
     QString comment;
 
     QString toString();

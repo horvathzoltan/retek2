@@ -6,14 +6,14 @@
 #include <QXmlStreamWriter>
 
 zTablerow::zTablerow(){
-     this->nullable = true;
+     this->isNullable = true;
 }
 
 zTablerow::zTablerow(QString colName, QString dtype, int dlen, bool nullable, QString caption){
     this->colName = colName;
     this->colType=dtype;
     this->dlen = dlen;
-    this->nullable = nullable;
+    this->isNullable = nullable;
     this->Caption=caption;
 }
 
@@ -44,7 +44,7 @@ QList<QString> zTablerow::Validate(zTablerow* rv){
 
     e.append(ValidateCaption(rv->Caption));
     e.append(ValidateColType(rv->colType));
-    e.append(ValidateNullable(rv->nullable));
+    e.append(ValidateNullable(rv->isNullable));
     e.append(ValidateDLen(rv->dlen));
 
     return e;
@@ -92,10 +92,10 @@ QString zTablerow::ValidateColType(QString rvcolType){
     }
 
 QString zTablerow::ValidateNullable(bool rvnullable){
-        if(nullable == rvnullable)
+        if(isNullable == rvnullable)
            return "Nullable OK";
         else
-            return QString("Nullable NOT_EQUALS: '%1', '%2' ERROR").arg(nullable).arg(rvnullable);
+            return QString("Nullable NOT_EQUALS: '%1', '%2' ERROR").arg(isNullable).arg(rvnullable);
     }
 
 QString zTablerow::ValidateDLen(int rvdLen){
@@ -133,7 +133,7 @@ void zTablerow::toXML(QXmlStreamWriter *s)
     s->writeAttribute(nameof(this->colType), this->colType);
 
     s->writeAttribute(nameof(this->dlen), QString::number(this->dlen));
-    s->writeAttribute(nameof(this->nullable), QString::number(this->nullable));
+    s->writeAttribute(nameof(this->isNullable), QString::number(this->isNullable));
     s->writeAttribute(nameof(this->comment), this->comment);
 
     s->writeEndElement();
@@ -157,7 +157,7 @@ zTablerow zTablerow::fromXML(QXmlStreamReader* s){
     zXmlHelper::putXmlAttr(a, nameof(colName), &(r.colName));
     zXmlHelper::putXmlAttr(a, nameof(colType), &(r.colType));
     zXmlHelper::putXmlAttr(a, nameof(dlen), &(r.dlen));
-    zXmlHelper::putXmlAttr(a, nameof(nullable), &(r.nullable));
+    zXmlHelper::putXmlAttr(a, nameof(isNullable), &(r.isNullable));
     zXmlHelper::putXmlAttr(a, nameof(comment), &(r.comment));
 
     return r;

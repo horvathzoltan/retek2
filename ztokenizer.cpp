@@ -200,7 +200,7 @@ QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant>
         auto a =  getEntityAttrList(map, whsp);
         return a;
     }
-    else if (t1 == "prop_attrlist") return getEntityPropAttrList(t2, t3, whsp, dbname);
+    else if (t1 == "prop_attrlist") return getEntityPropAttrList(map, whsp);
     else if (t1 == "nav_proplist") return getEntityNavPropList(t2, t3, whsp, dbname);
     //else if (t1 == "proplist") return getPropListForEntity(t2, t3, whsp, dbname);
 
@@ -317,17 +317,7 @@ QString zTokenizer::getAttrList(QMap<QString, QVariant> *map, int whsp) {
     return  e;
 }
 
-//Table,NotMapped
-QString zTokenizer::getEntityAttrList(QMap<QString, QVariant> *map, int whsp) {
-    QStringList attrList;
-    if(table->tablename.isEmpty())
-        attrList<<"[NotMapped]";
-    if(table->tablename!=table->classname)
-        attrList<<"[Table(\""+table->tablename+"\")]";
-//    if(table->desc)
-//        attrList<<"[Description(\""+table->tablename+"\")]";
-    return attrList.join("\n");
-}
+
 
 QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString dbname) {
     int rows = MezoLista->rowCount();
@@ -367,6 +357,7 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
             map.insert("propname", propName);
             map.insert("isnullable", isnullable);
             map.insert("proplen", len);
+            map.insert("colname", colName);
 
             if (dxMap.contains(colType)) {
                 map.insert("dxWidget", dxMap.value(colType) );
@@ -426,9 +417,60 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
     return proplist;
 }
 
-QString zTokenizer::getEntityPropAttrList(QString tmp, QString param, int whsp, QString dbname) {
-    return "EntityPropAttrList";
+//Table,NotMapped
+QString zTokenizer::getEntityAttrList(QMap<QString, QVariant> *map, int w) {
+    QStringList attrList;
+    if(table->tablename.isEmpty())
+        AttrListAdd(attrList, "[NotMapped]", w);
+    if(table->tablename!=table->classname)
+        AttrListAdd(attrList, "[Table(\""+table->tablename+"\")]", w);
+    if(!table->comment.isEmpty())
+        AttrListAdd(attrList, "[Description(\""+table->tablename+"\")]", w);
+
+    return AttrListJoin(attrList, w);
 }
+
+QString zTokenizer::getEntityPropAttrList(QMap<QString, QVariant> *map, int w) {
+    QStringList attrList;
+
+    QString colname = map->value("colname").toString();
+
+    auto r = zTablerow::getByName(&(table->rows), colname);
+    if(!r->comment.isEmpty())
+
+    if(!r->isNullable)
+        AttrListAdd(attrList, "[Reqiured]", w);
+    if(table->pkname == r->colName)
+        AttrListAdd(attrList, "[Key]", w);
+    if(r->dlen>0){
+        if(r->colType.contains("char")){
+            AttrListAdd(attrList, QString("[StringLength(%0)]").arg(r->dlen), w);
+        }else{
+            AttrListAdd(attrList, QString("[MaxLength(%0)]").arg(r->dlen), w);
+        }
+    }   
+
+    return AttrListJoin(attrList, w);
+}
+
+void zTokenizer::AttrListAdd(QStringList& e, const QString& str, int whsp){
+    e.append(str);
+}
+
+QString zTokenizer::AttrListJoin(QStringList& e, int w){
+
+    if(e.length()>1) {
+        QString s = e[0];
+        for(int i=1;i<e.length();i++){
+            s+=("\n"+QString(w, ' ')+e[i]);//+QString(w, ' ');
+        }
+        return s;
+    } else if(e.length()==1){
+        return e[0];//+"\n"+QString(w, ' ');//+QString(w, ' ');
+    }
+    else return "";
+}
+
 
 QString zTokenizer::getEntityNavPropList(QString tmp, QString param, int whsp, QString dbname){
     return "EntityNavPropList";

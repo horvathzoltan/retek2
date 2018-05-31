@@ -42,8 +42,10 @@ public:
     //QString getReq(QString tmp, QMap<QString, QVariant> *map);
 
     QString getEntityAttrList(QMap<QString, QVariant> *map, int whsp);
-    QString getEntityPropAttrList(QString tmp, QString param, int whsp, QString dbname);
+    QString getEntityPropAttrList(QMap<QString, QVariant> *map, int whsp);
     QString getEntityNavPropList(QString tmp, QString param, int whsp, QString dbname);
+    static void AttrListAdd(QStringList& e, const QString& string, int whsp);
+    static QString AttrListJoin(QStringList &e, int w);
 };
 
 #endif // ZTOKENIZER_H
