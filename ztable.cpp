@@ -273,6 +273,16 @@ QStringList zTable::getFK(){
     return fknames;
 }
 
+QStringList zTable::getFKClassName(){
+    QStringList fknames;
+    zforeach(t, ztables){
+        QString pn = t->classname+t->pkname;
+        if(containsRow(pn))
+           fknames<<t->classname;
+        }
+    return fknames;
+}
+
 bool zTable::containsRow(QString n){
     zforeach(r, this->rows)
         if( r->colName.toLower()==n.toLower() ) return true;
@@ -387,6 +397,18 @@ QStringList zTable::getRFK(){
             rfknames<<t->classname;
     }
     return rfknames;
+}
+
+QStringList zTable::getRFKClassNamePlural(){
+    QStringList rfknames;
+    QString pn = classname+pkname;
+
+    zforeach(t, ztables){
+        if(t->containsRow(pn))
+            rfknames<<t->classname+';'+t->classname_plural;
+    }
+    return rfknames;
+}
     //QString pk = zStringHelper::toCamelCase(this->tablename+'.'+this->pkname);
 
 //    zforeach(r, this->rows){ml<<(*(r)).colName;}
@@ -404,7 +426,7 @@ QStringList zTable::getRFK(){
 //                this->fknames<<pn;
 //        }
 //    }
-}
+//}
 
 QList<zTable> zTable::createTableByText(QString txt)
 {

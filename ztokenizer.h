@@ -11,7 +11,7 @@ class zTokenizer
 private:
     QTableWidget* MezoLista;
     QMap<QString, QString> dxMap;
-    QMap<QString, QString> tmpMap;
+    //QMap<QString, QString> tmpMap;
     void feltoltTmpMap(void);
 public:
     zTokenizer();
@@ -26,13 +26,13 @@ public:
 
     //QString getAdatbazisnev(void);
     QString getCaptionFileName(QString);
-    QString getOsztalynevLower(QString tablanev);
+    //QString getOsztalynevLower(QString tablanev);
 
     QString getContextNev(void);
 
-    QString get_liNev(QString o);
+    //QString get_liNev(QString o);
 
-    QString getPropList();
+    //QString getPropList();
     QString getPropList2(QString tmp, QString param, int whsp, QString dbname);
 
     QString getAttrList(QMap<QString, QVariant> *map, int whsp);
@@ -44,8 +44,9 @@ public:
     QString getEntityAttrList(QMap<QString, QVariant> *map, int whsp);
     QString getEntityPropAttrList(QMap<QString, QVariant> *map, int whsp);
     QString getEntityNavPropList(QString tmp, QString param, int whsp, QString dbname);
-    static void AttrListAdd(QStringList& e, const QString& string, int whsp);
+    //static void AttrListAdd(QStringList& e, const QString& string, int whsp);
     static QString AttrListJoin(QStringList &e, int w);
+    QString getProp(QString propType, QString propName, QString tmp, int whsp, QString dbname);
 };
 
 #endif // ZTOKENIZER_H

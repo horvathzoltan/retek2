@@ -30,29 +30,29 @@ void zTokenizer::init(QTableWidget *w){
     dxMap.insert("decimal", "dxNumberBox");
     dxMap.insert("xml", "dxTextBox");
 
-    feltoltTmpMap();
+    //feltoltTmpMap();
 }
 
 
 
-void zTokenizer::feltoltTmpMap(void){
-    QString tn = "View";
-    QString viewTemplateDirName = beallitasok.getTemplateFilename(tn);
+//void zTokenizer::feltoltTmpMap(void){
+//    QString tn = "View";
+//    QString viewTemplateDirName = beallitasok.getTemplateFilename(tn);
 
 
-    auto viewTemplateDir = QDir(viewTemplateDirName);
+//    auto viewTemplateDir = QDir(viewTemplateDirName);
 
-    auto filelist = viewTemplateDir.entryList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::AllDirs | QDir::Files, QDir::DirsFirst);//(QDir::Filter::Files,QDir::SortFlag::NoSort)
+//    auto filelist = viewTemplateDir.entryList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::AllDirs | QDir::Files, QDir::DirsFirst);//(QDir::Filter::Files,QDir::SortFlag::NoSort)
 
-    zforeach(f, filelist) {
-        QString k = *f;
-        auto ix = f->indexOf('.');
-        if (ix > -1) k = f->left(ix);
+//    zforeach(f, filelist) {
+//        QString k = *f;
+//        auto ix = f->indexOf('.');
+//        if (ix > -1) k = f->left(ix);
 
-        QString v = zTextFileHelper::load(viewTemplateDirName + "\\" + *f);
-        tmpMap.insert(k, v);
-    }
-}
+//        QString v = zTextFileHelper::load(viewTemplateDirName + "\\" + *f);
+//        tmpMap.insert(k, v);
+//    }
+//}
 
 
 /*!
@@ -117,7 +117,7 @@ int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVaria
         int l1 = ix1 - ix;
 
         QString eredmeny = tmp->mid(ix, ix1 - ix);
-        QString eredmeny2 = eredmeny;
+        //QString eredmeny2 = eredmeny;
         QString parameter;
 
         int ix_p1 = eredmeny.indexOf("(\"");
@@ -186,9 +186,9 @@ QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant>
     // sql tokenek
     if (t1 == "dbname") return dbname;
     else if (t1 == "tablename") return table->tablename;
-    else if (t1 == "contextname") return getContextNev();
+    else if (t1 == "contextname") return dbname;
     // osztály tokenek
-    else if (t1 == "classname") return zStringHelper::getClassNameCamelCase(table->tablename);
+    else if (t1 == "classname") return table->classname;//zStringHelper::getClassNameCamelCase(table->tablename);
     else if (t1 == "proplist") return getPropList2(t2, t3, whsp, dbname);
     else if (t1 == "propline") return getPropList2(nullptr, t3, whsp, dbname);
     // MVC - viewmodel adatannotációs attribútumok
@@ -217,42 +217,50 @@ QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant>
     //dispforprop
     else if (map) {
         auto a = map->value(t1).toString();
-        if (!a.isEmpty())
+        if (!a.isEmpty()){
             return a;
+        }else{
+            auto colname = map->value("colname").toString();
+            zlog.log(QString("A tokenhez nincs érték párosítva: %1 => %2").arg(t1, colname));
+            return "?1" + t1 + "?";
+        }
+    } else{
+        zlog.log(QString("Token nem oldható fel: %1").arg(t1));
+        return "?2" + t1 + "?";
     }
-    else
-        return "?" + t1 + "?";
-    return "!" + t1 + "!";
+
+//    zlog.log(QString("Ismeretlen token: %1").arg(t1));
+//    return "?3" + t1 + "?";
 }
 
 /*
 tokenelemek feloldsa
 */
 
-QString zTokenizer::getPropList() {
-    int rows = MezoLista->rowCount();
-    QString proplist = "";
+//QString zTokenizer::getPropList() {
+//    int rows = MezoLista->rowCount();
+//    QString proplist = "";
 
-    for (int i = 0; i < rows; i++) {
-        QTableWidgetItem *item_colName = MezoLista->item(i, C_ix_colName);
-        QTableWidgetItem *item_colType = MezoLista->item(i, C_ix_colType);
-        QTableWidgetItem *item_len = MezoLista->item(i, C_ix_dlen);
-        QTableWidgetItem *item_isnullable = MezoLista->item(i, C_ix_nullable);
-        //QTableWidgetItem *item_Caption = ui.tableWidget_MezoLista->item(i, C_ix_Caption);
-        QString e1;
+//    for (int i = 0; i < rows; i++) {
+//        QTableWidgetItem *item_colName = MezoLista->item(i, C_ix_colName);
+//        QTableWidgetItem *item_colType = MezoLista->item(i, C_ix_colType);
+//        QTableWidgetItem *item_len = MezoLista->item(i, C_ix_dlen);
+//        QTableWidgetItem *item_isnullable = MezoLista->item(i, C_ix_nullable);
+//        //QTableWidgetItem *item_Caption = ui.tableWidget_MezoLista->item(i, C_ix_Caption);
+//        QString e1;
 
-        int len = item_len->text().toInt();
-        zStringHelper::toBool(item_isnullable->text());
-        auto pType = getPropType(item_colType->text(), len);
-        auto osztalyNev = getOsztalynevLower(item_colName->text());
+//        int len = item_len->text().toInt();
+//        zStringHelper::toBool(item_isnullable->text());
+//        auto pType = getPropType(item_colType->text(), len);
+//        auto osztalyNev = getOsztalynevLower(item_colName->text());
 
-        e1 = QString("public %1 %2 { get; set; }").arg(pType).arg(osztalyNev);
+//        e1 = QString("public %1 %2 { get; set; }").arg(pType).arg(osztalyNev);
 
-        proplist += e1 + "// " + item_colName->text() + "\n";
-    }
+//        proplist += e1 + "// " + item_colName->text() + "\n";
+//    }
 
-    return proplist;
-}
+//    return proplist;
+//}
 
 /*
 https://www.tutorialspoint.com/asp.net_mvc/asp.net_mvc_data_annotations.htm
@@ -321,6 +329,7 @@ QString zTokenizer::getAttrList(QMap<QString, QVariant> *map, int whsp) {
 
 QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString dbname) {
     int rows = MezoLista->rowCount();
+
     QString proplist = "";
     QStringList exPropsBynameList;
     if (!param.isEmpty() && param.startsWith('-')) {
@@ -338,15 +347,22 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
 
         QString colName = item_colName->text();
         if (exPropsBynameList.contains(colName.toLower())) continue;
-        auto propName = getOsztalynevLower(colName);
+        auto propName = colName;//getOsztalynevLower(colName);
 
         if (!tmp.isEmpty()) {
             QString e1;
 
             int len = item_len->text().toInt();
             bool isnullable = zStringHelper::toBool(item_isnullable->text());
-            auto colType = item_colType->text();
-            auto propType = getPropType(colType, len);
+            auto colType = item_colType->text();            
+            QString propType;
+            propType = getPropType(colType, len); //mindíg c típusok kellenek
+
+//            if(table->sourcetype==zTableSourceTypes::SQL) {
+//                propType = getPropType(colType, len);
+//            }else{
+//                propType = colType;
+//            }
             //auto propName = getOsztalynev(colName);
             QString caption = (item_Caption) ? item_Caption->text() : "";
             QString coltypeName = item_colType->text();
@@ -359,16 +375,16 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
             map.insert("proplen", len);
             map.insert("colname", colName);
 
-            if (dxMap.contains(colType)) {
-                map.insert("dxWidget", dxMap.value(colType) );
-            }
+//            if (dxMap.contains(colType)) {
+//                map.insert("dxWidget", dxMap.value(colType) );
+//            }
 
-            if (!caption.isEmpty())
+            //if (!caption.isEmpty())
                 map.insert("caption", caption);
             map.insert("proptypeoriginal", coltypeName);
 
             /*
-            ha a tmp !-al kezddik, akkor fjlbl jn a template
+            ha a tmp !-al kezddik, akkor fájlból jön a template
 
             !bytype,edit.cshtml : a edit_cshtml sztrbl jn fieldtypeName alapjn
             !bytype,create.cshtml : a create_cshtml sztrbl jn fieldtypeName alapjn
@@ -376,31 +392,33 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
 
             -- egymsba gyazott mapok kellenek
             */
-            map.insert("controlid", colName+'_'+QString::number(i));
+//            map.insert("controlid", colName+'_'+QString::number(i));
 
-            if (tmp.startsWith('!')) {
-                auto templatekeyList = tmp.right(tmp.length() - 1).split(',');
+//            if (tmp.startsWith('!')) {
+//                auto templatekeyList = tmp.right(tmp.length() - 1).split(',');
 
-                if (templatekeyList.length() > 2 && templatekeyList.indexOf(colName) > -1)
-                    templatekeyList[0] = "byname";
+//                if (templatekeyList.length() > 2 && templatekeyList.indexOf(colName) > -1)
+//                    templatekeyList[0] = "byname";
 
-                QString tmpkRoot = templatekeyList[0]+ '_'+ templatekeyList[1];
-                QString tmpkDefault = tmpkRoot + "_default";
-                QString tmpk = tmpkRoot;
+//                QString tmpkRoot = templatekeyList[0]+ '_'+ templatekeyList[1];
+//                QString tmpkDefault = tmpkRoot + "_default";
+//                QString tmpk = tmpkRoot;
 
-                if (templatekeyList[0] == "bytype") {
-                    tmpk += "_" + coltypeName;
-                }
-                else if (templatekeyList[0] == "byname")
-                    tmpk += "_" + colName;
+//                if (templatekeyList[0] == "bytype") {
+//                    tmpk += "_" + coltypeName;
+//                }
+//                else if (templatekeyList[0] == "byname")
+//                    tmpk += "_" + colName;
 
-                if(tmpMap.contains(tmpk))
-                    e1 = tmpMap.value(tmpk);
-                else
-                    e1 = tmpMap.value(tmpkDefault, "?"+ tmpk +"?");
-            }
-            else
-                e1 = tmp;
+//                if(tmpMap.contains(tmpk))
+//                    e1 = tmpMap.value(tmpk);
+//                else
+//                    e1 = tmpMap.value(tmpkDefault, "?"+ tmpk +"?");
+//            }
+//            else
+//                e1 = tmp;
+
+            e1=tmp;
 
             tokenize(&e1, &map, whsp, dbname);
 
@@ -421,11 +439,11 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
 QString zTokenizer::getEntityAttrList(QMap<QString, QVariant> *map, int w) {
     QStringList attrList;
     if(table->tablename.isEmpty())
-        AttrListAdd(attrList, "[NotMapped]", w);
+        attrList<< "[NotMapped]";
     if(table->tablename!=table->classname)
-        AttrListAdd(attrList, "[Table(\""+table->tablename+"\")]", w);
+        attrList<< QStringLiteral("[Table(\"%1\")]").arg(table->tablename);
     if(!table->comment.isEmpty())
-        AttrListAdd(attrList, "[Description(\""+table->tablename+"\")]", w);
+        attrList<<QStringLiteral("[Description(\"%1\")]").arg(table->tablename);
 
     return AttrListJoin(attrList, w);
 }
@@ -439,45 +457,86 @@ QString zTokenizer::getEntityPropAttrList(QMap<QString, QVariant> *map, int w) {
     if(!r->comment.isEmpty())
 
     if(!r->isNullable)
-        AttrListAdd(attrList, "[Reqiured]", w);
+       attrList<< "[Reqiured]";
     if(table->pkname == r->colName)
-        AttrListAdd(attrList, "[Key]", w);
+        attrList<< "[Key]";
     if(r->dlen>0){
         if(r->colType.contains("char")){
-            AttrListAdd(attrList, QString("[StringLength(%0)]").arg(r->dlen), w);
+            attrList<< QStringLiteral("[StringLength(%0)]").arg(r->dlen);
         }else{
-            AttrListAdd(attrList, QString("[MaxLength(%0)]").arg(r->dlen), w);
+            attrList<<QStringLiteral("[MaxLength(%0)]").arg(r->dlen);
         }
     }   
 
-    return AttrListJoin(attrList, w);
+    auto al = AttrListJoin(attrList, w);
+    return al;
 }
 
-void zTokenizer::AttrListAdd(QStringList& e, const QString& str, int whsp){
-    e.append(str);
-}
+//void zTokenizer::AttrListAdd(QStringList& e, const QString& str, int whsp){
+//    e.append(str);
+//}
 
 QString zTokenizer::AttrListJoin(QStringList& e, int w){
 
     if(e.length()>1) {
         QString s = e[0];
         for(int i=1;i<e.length();i++){
-            s+=("\n"+QString(w, ' ')+e[i]);//+QString(w, ' ');
+            s+=("\n"+QString(w, ' ')+e[i]);
         }
-        return s;
+        return s+"\n"+QString(w, ' ');
     } else if(e.length()==1){
-        return e[0];//+"\n"+QString(w, ' ');//+QString(w, ' ');
+        return e[0]+"\n"+QString(w, ' ');//+QString(w, ' ');
     }
     else return "";
 }
 
-
+// Ha a zTablesnek van fk-ja
+// ha van rfk-ja
 QString zTokenizer::getEntityNavPropList(QString tmp, QString param, int whsp, QString dbname){
-    return "EntityNavPropList";
+    if(tmp.isEmpty()) return "";
+
+    auto fkList = table->getFKClassName();
+
+    QStringList propList;
+    zforeach(fk, fkList){
+        QString propName = *fk;
+        QString propType = *fk;
+
+        propList << getProp(propType, propName, tmp, whsp, dbname);
+    }
+
+    auto rfkList = table->getRFKClassNamePlural();
+    zforeach(rfk, rfkList){
+        auto r = (*rfk).split(';');
+        QString propType = QStringLiteral("ICollection<%1>").arg(r[0]);
+        QString propName = r[1];
+
+        propList << getProp(propType, propName, tmp, whsp, dbname);
+    }
+
+    auto al = AttrListJoin(propList, whsp);
+    return al;
 }
 
+QString zTokenizer::getProp(QString propType, QString propName, QString tmp, int whsp, QString dbname){
+    QMap<QString, QVariant> map;
+    map.insert("propname", propName);
+    map.insert("proptype", propType);
 
+    QString e1 = tmp;
+
+    tokenize(&e1, &map, whsp, dbname);
+
+    return e1;
+}
+
+// ha a ztable sql típusú, de ha txt típusú, nem kell keresni, mert ugyanaz
 QString zTokenizer::getPropType(QString tipusnev, bool isnullable) {
+    if(!typeMap.contains(tipusnev)){
+        zlog.log(QString("Nem található típus: %1").arg(tipusnev));
+        return "";
+    }
+
     QString pt = typeMap.value(tipusnev);//.toString();
     if (isnullable && !tipusnev.endsWith("char")) pt += '?';
     return pt;
@@ -494,20 +553,20 @@ QString zTokenizer::getePropType(QString tipusnev, int length) {
 
 
 
-QString zTokenizer::getOsztalynevLower(QString tnev) {
-    return tnev;
-}
+//QString zTokenizer::getOsztalynevLower(QString tnev) {
+//    return tnev;
+//}
 
-QString zTokenizer::getContextNev(void) {
-    return "context1";
-}
+//QString zTokenizer::getContextNev(void) {
+//    return data
+//}
 
-QString zTokenizer::get_liNev(QString O) {
-    auto o = O.toLower();
+//QString zTokenizer::get_liNev(QString O) {
+//    auto o = O.toLower();
 
-    if (o.endsWith("_id"))
-        return o.left(o.length() - 3);
-    else if (o.endsWith("id"))
-        return o.left(o.length() - 2);
-    return o;
-}
+//    if (o.endsWith("_id"))
+//        return o.left(o.length() - 3);
+//    else if (o.endsWith("id"))
+//        return o.left(o.length() - 2);
+//    return o;
+//}

@@ -60,6 +60,8 @@ public:
     void toXML(QXmlStreamWriter*);
     //static zTable fromXML(QString);
     static zTable fromXML(QXmlStreamReader* xml);
+    QStringList getFKClassName();
+    QStringList getRFKClassNamePlural();
 };
 
 #endif // ZTABLE_H
