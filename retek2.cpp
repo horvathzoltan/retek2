@@ -375,17 +375,17 @@ void retek2::GenerateAll() {
         zTextFileHelper::save(txtAdatlap, beallitasok.getModelFilename(classname + "ViewAdatlapDX" + ".cshtml", "Views"));
     }
 
-	if (ui.checkBox_ViewIndex->isChecked()) {
-        zlog.trace("Index");
-		auto txt = generateTmp("MVC_Index.cshtml");
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "ViewIndex" + ".cshtml", "Views"));
-	}
+//	if (ui.checkBox_ViewIndex->isChecked()) {
+//        zlog.trace("Index");
+//		auto txt = generateTmp("MVC_Index.cshtml");
+//        zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "ViewIndex" + ".cshtml", "Views"));
+//	}
 
-	if (ui.checkBox_ViewEdit->isChecked()) {
-        zlog.trace("Edit");
-        auto txt = generateTmp("MVC_Edit.cshtml");
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "ViewEdit" + ".cshtml", "Views"));
-	}
+//	if (ui.checkBox_ViewEdit->isChecked()) {
+//        zlog.trace("Edit");
+//        auto txt = generateTmp("MVC_Edit.cshtml");
+//        zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "ViewEdit" + ".cshtml", "Views"));
+//	}
 /*
 	if (ui.checkBox_ViewCreate->isChecked()) {
 		qDebug("Create");
