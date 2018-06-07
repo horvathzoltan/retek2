@@ -45,6 +45,7 @@ public:
     static QList<zTable> createTableByText(QString txt);    
     static QList<zTable> createTableByText_2(QString txt);
     static QList<zTable> createTableByXML(const QString& txt);
+    static QList<zTable> createTableByText_3(QString txt);
 
     static QString getPkByName(QList<zTable> *tables, QString rn);
     static zTable* getByName(QList<zTable> *tables, QString rn);
@@ -62,6 +63,7 @@ public:
     static zTable fromXML(QXmlStreamReader* xml);
     QStringList getFKClassName();
     QStringList getRFKClassNamePlural();
+
 };
 
 #endif // ZTABLE_H

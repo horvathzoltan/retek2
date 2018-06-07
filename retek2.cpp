@@ -558,7 +558,7 @@ void retek2::on_pushButton_4_clicked()
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText_2(txt);
 
-    if(tl.length()==0) { zlog.log("nincs egyezés, nincs vizsgálat"); return;}
+    if(tl.length()==0) { zlog.log("nem jött létre adat"); return;}
 
     zforeach(t,tl){
         ztables.append(*t);
@@ -575,8 +575,8 @@ void retek2::on_pushButton_5_clicked()
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByXML(txt);
 
-   /* if(tl.length()==0) { zlog.log("nincs egyezés, nincs vizsgálat"); return;}
-*/
+   if(tl.length()==0) { zlog.log("nem jött létre adat"); return;}
+
     zforeach(t,tl){
         ztables.append(*t);
         tablaAdatokBejegyez(t->tablename);
@@ -664,3 +664,18 @@ void retek2::on_lineEdit_tablename_editingFinished()
 }
 
 
+
+void retek2::on_pushButton_6_clicked()
+{
+    zlog.trace("Entitások beolvasása");
+
+    auto txt = ui.textEdit->toPlainText();
+    auto tl = zTable::createTableByText_3(txt);
+
+    if(tl.length()==0) { zlog.log("nem jött létre adat"); return;}
+
+    zforeach(t,tl){
+        ztables.append(*t);
+        tablaAdatokBejegyez(t->tablename);
+        }
+}

@@ -427,7 +427,26 @@ QStringList zTable::getRFKClassNamePlural(){
 //        }
 //    }
 //}
+/*
+#Adm
+DateCre,DateTime
+DateMod,datetime
 
+
+Inventory
+Id,int,key,Identity
+Name,String,30
+OperationTypeId,int
+InventoryStatusId,int
+StorageId,int
+DateStart,DateTime,nullable
+DateEnd,datetime,nullable
+Adm
+RecountRequired,bool
+UserId,guid
+Comments,string,200
+
+*/
 QList<zTable> zTable::createTableByText(QString txt)
 {
 //    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -675,6 +694,16 @@ QList<zTable> zTable::createTableByText_2(QString txt){
         }
     }
 
+    return tl;
+}
+
+// egy osztály: class\s+(\w+)\s*{([\S\s]*)}
+// egy attr: (\[[\w\.\(\)]+\])
+
+QList<zTable> zTable::createTableByText_3(QString txt)
+{
+     QList<zTable> tl;
+     zlog.log("GenerateByText3: ");
     return tl;
 }
 
