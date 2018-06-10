@@ -697,9 +697,13 @@ QList<zTable> zTable::createTableByText_2(QString txt){
     return tl;
 }
 
-// egy osztály: class\s+(\w+)\s*{([\S\s]*)}
-// egy attr: (\[[\w\.\(\)]+\])
+// attributumok és az osztály
+// (?:\[[(.\w)]*\])|class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\})
+// 1:név, 2:definíció
 
+// attributumok és
+// \[[(.\w)]*\]|public\s+(\w+)\s+(\w+)(?:\s*{.*})
+// 1: típus, 2: név
 QList<zTable> zTable::createTableByText_3(QString txt)
 {
      QList<zTable> tl;
