@@ -701,13 +701,74 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 // (?:\[[(.\w)]*\])|class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\})
 // 1:név, 2:definíció
 
-// attributumok és
+// attributumok és propertyk
 // \[[(.\w)]*\]|public\s+(\w+)\s+(\w+)(?:\s*{.*})
 // 1: típus, 2: név
+
+// attributum és az argumentumlista
+// \[\s*(\w+)(\((?>[^)(]+|(?2))*\))\s*\]
+// 1: argName, 2: argumentumok
+// (\"?\b[\p{L}0-9. ]+\b\"?(\([\w(), "]*\))*)
+// 1: paraméter, 2: paraméterargumentum
+// az egyes argumentumok
+
+// a project Entity könyvtárának fáljai - felolvasás
+// attributumok a => Entity konverziónak megfelelően
 QList<zTable> zTable::createTableByText_3(QString txt)
 {
-     QList<zTable> tl;
-     zlog.log("GenerateByText3: ");
+    QList<zTable> tl;
+    zlog.log("GenerateByText3: ");
+    // attributumok és az osztály
+    // 1:név, 2:definíció
+    auto re = QRegularExpression(R"((?:\[[(.\w)]*\])|class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\}))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
+    // attributumok és propertyk
+    // 1: típus, 2: név
+    auto r2 = QRegularExpression(R"(\[[(.\w)]*\]|public\s+(\w+)\s+(\w+)(?:\s*{.*}))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
+    auto i = re.globalMatch(txt);
+    //if(i.hasNext()){
+        while(i.hasNext()){
+            QRegularExpressionMatch m = i.next();
+
+            QString g=m.captured(0);
+            if(g[0]=='['){
+                zlog.log("attr: "+g);
+            }
+            else if(g[0]=='c'){
+                QString className = m.captured(1);
+                QString class_txt = m.captured(2);
+                zlog.log("class: " + className);
+
+                auto i2 = r2.globalMatch(class_txt);
+                //if(i2.hasNext()){
+                    while(i2.hasNext()){
+                        QRegularExpressionMatch m2 = i2.next();
+
+                        QString g2=m2.captured(0);
+                        if(g2[0]=='['){
+                            zlog.log("attr: "+g2);
+                        }
+                        else if(g2[0]=='p'){
+                            QString propType = m2.captured(1);
+                            QString propName = m2.captured(2);
+
+                            zlog.log("prop: "+propType + " " +propName);
+                        }
+                        else{
+                            zlog.log("undefined: "+g2);
+                        }
+
+                    }
+                //}
+            }
+            else{
+                zlog.log("undefined: "+g);
+            }
+
+            // attributumok és az osztály
+        }
+    //}
     return tl;
 }
 
