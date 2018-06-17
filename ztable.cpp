@@ -705,12 +705,9 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 // \[[(.\w)]*\]|public\s+(\w+)\s+(\w+)(?:\s*{.*})
 // 1: típus, 2: név
 
-// attributum és az argumentumlista
-// \[\s*(\w+)(\((?>[^)(]+|(?2))*\))\s*\]
-// 1: argName, 2: argumentumok
-// (\"?\b[\p{L}0-9. ]+\b\"?(\([\w(), "]*\))*)
-// 1: paraméter, 2: paraméterargumentum
-// az egyes argumentumok
+// string vagy osztály utolsó tagja
+//\"([\p{L}]+)\"|(?:[\p{L}0-9.]+)\.([^.][\w]+)
+// 1:string 2:osztály
 
 // a project Entity könyvtárának fáljai - felolvasás
 // attributumok a => Entity konverziónak megfelelően
@@ -724,53 +721,148 @@ QList<zTable> zTable::createTableByText_3(QString txt)
 
     // attributumok és propertyk
     // 1: típus, 2: név
-    auto r2 = QRegularExpression(R"(\[[(.\w)]*\]|public\s+(\w+)\s+(\w+)(?:\s*{.*}))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto r_attrOrProp = QRegularExpression(R"(\[[(.\w)]*\]|public\s+(\w+)\s+(\w+)(?:\s*{.*}))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
+    auto r_tablanev = QRegularExpression(R"(\"([\p{L}]+)\"|(?:[\p{L}0-9.]+)\.([^.][\w]+))");
+
+
+    QStringList classAttrs;
 
     auto i = re.globalMatch(txt);
-    //if(i.hasNext()){
         while(i.hasNext()){
+
             QRegularExpressionMatch m = i.next();
 
             QString g=m.captured(0);
             if(g[0]=='['){
-                zlog.log("attr: "+g);
-            }
+
+                classAttrs.append(g);
+                }
             else if(g[0]=='c'){
+                QString tableName;
+                QStringList propAttrs;
+
+                if(!classAttrs.isEmpty()){
+                    zforeach(a, classAttrs){
+                        //zlog.log("classAttr: "+(*a));
+                        auto attrParams = getAttrAndParams((*a));
+                        QString attrname = attrParams[0];
+                        if(attrname=="Table"){
+                            QString paramtxt = attrParams[1];
+                            if(!paramtxt.isEmpty()){
+                                QRegularExpressionMatch m_tablanev = r_tablanev.match(paramtxt);
+                                tableName= getFirstNotNull(m_tablanev, 2);
+                                }
+                            }
+                        }
+                    classAttrs.clear();
+                    }
+
+
                 QString className = m.captured(1);
                 QString class_txt = m.captured(2);
                 zlog.log("class: " + className);
 
-                auto i2 = r2.globalMatch(class_txt);
+                auto i_attrOrProp = r_attrOrProp.globalMatch(class_txt);
                 //if(i2.hasNext()){
-                    while(i2.hasNext()){
-                        QRegularExpressionMatch m2 = i2.next();
+                    while(i_attrOrProp.hasNext()){
+                        QRegularExpressionMatch m_attrOrProp = i_attrOrProp.next();
 
-                        QString g2=m2.captured(0);
-                        if(g2[0]=='['){
-                            zlog.log("attr: "+g2);
+                        QString attrOrProp=m_attrOrProp.captured(0);
+                        if(attrOrProp[0]=='['){
+                            propAttrs.append(attrOrProp);
+                            //zlog.log("attr: "+attrOrProp);
                         }
-                        else if(g2[0]=='p'){
-                            QString propType = m2.captured(1);
-                            QString propName = m2.captured(2);
+                        else if(attrOrProp[0]=='p'){
+                            bool isPk = false;
+                            bool isRequired = false;
+                            QString MaxLength;
+
+                            if(!propAttrs.isEmpty()){
+                                zforeach(a, propAttrs){
+                                    //zlog.log("propAttr: "+(*a));
+                                    auto attrParams = getAttrAndParams((*a));
+                                    QString attrname = attrParams[0];
+                                    if(attrname=="Key"){
+                                        isPk = true;
+                                    }
+                                    else if(attrname=="Required") {
+                                        isRequired = true;
+                                    }
+                                    else if(attrname=="MaxLength"){
+                                        QString paramtxt = attrParams[1];
+                                        if(!paramtxt.isEmpty()){
+                                            QRegularExpressionMatch m_tablanev = r_tablanev.match(paramtxt);
+
+                                             MaxLength = getFirstNotNull(m_tablanev, 2);
+                                            }
+                                        }
+                                    }
+                                propAttrs.clear();
+                                }
+
+
+                            QString propType = m_attrOrProp.captured(1);
+                            QString propName = m_attrOrProp.captured(2);
 
                             zlog.log("prop: "+propType + " " +propName);
+                            zlog.log("isPK: "+((isPk)?QString("true"):QString("false")));
+                            zlog.log("isRequired: "+((isRequired)?QString("true"):QString("false")));
+                            zlog.log("MaxLength: "+MaxLength);
                         }
                         else{
-                            zlog.log("undefined: "+g2);
+                            zlog.log("undefined: "+attrOrProp);
                         }
 
                     }
-                //}
+                //}                   
+                   zlog.log("tablename="+tableName);
             }
             else{
                 zlog.log("undefined: "+g);
             }
 
             // attributumok és az osztály
-        }
-    //}
+        }   
     return tl;
 }
 
+// attributum és az argumentumlista
+// \[\s*(\w+)(\((?>[^)(]+|(?2))*\))\s*\]
+// 1: argName, 2: argumentumok
+// (\"?\b[\p{L}0-9. ]+\b\"?(\([\w(), "]*\))*)
+// 1: paraméter, 2: paraméterargumentum
+// az egyes argumentumok
 
+QStringList zTable::getAttrAndParams(QString str){
+    //attributum és az argumentumlista
+    auto r= QRegularExpression(R"(\[\s*(\w+)(\((?>[^)(]+|(?2))*\))?\s*\])");
+    auto r2= QRegularExpression(R"((\"?\b[\p{L}0-9. ]+\b\"?(\([\w(), "]*\))*))");
+
+    QStringList e;
+
+    auto i = r.globalMatch(str);
+    if(i.hasNext()){
+        QRegularExpressionMatch m = i.next();
+        e.append(m.captured(1));
+        QString paramstr = m.captured(2);
+        if(!paramstr.isEmpty()){
+            auto i2 = r2.globalMatch(paramstr);
+            while(i2.hasNext()){
+                QRegularExpressionMatch m2 = i2.next();
+                e.append(m2.captured(1));
+            }
+        }        
+    }
+    return e;
+}
+
+QString zTable::getFirstNotNull(QRegularExpressionMatch m, int max){
+    for(int j=1;j<=max;j++){
+        if(!m.captured(j).isEmpty()){
+            return m.captured(j);
+        }
+    }
+    return "";
+}
 

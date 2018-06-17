@@ -64,6 +64,8 @@ public:
     QStringList getFKClassName();
     QStringList getRFKClassNamePlural();
 
+    static QStringList getAttrAndParams(QString str);
+    static QString getFirstNotNull(QRegularExpressionMatch m,  int);
 };
 
 #endif // ZTABLE_H
