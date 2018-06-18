@@ -12,7 +12,7 @@ enum zTableSourceTypes:int { SQL=0, TXT=1 };
 class zTable
 {
 public:
-    zTable(QString tablanev, QString pkn, QList<zTablerow>, QList<zTablerow>, int type);    
+    zTable(QString tablanev, QString pkn, QList<zTablerow>, int type);
 
     zTable();
     ~zTable();
@@ -28,7 +28,7 @@ public:
     QString pkname; // rowix
 
     QList<zTablerow> rows;
-    QList<zTablerow> props;
+    //QList<zTablerow> props;
     QString name_formatstring;
 
     QDateTime updateTime;
@@ -51,7 +51,7 @@ public:
     static zTable* getByName(QList<zTable> *tables, QString rn);
     //void getType(auto re_dlen1, QString dtype, auto re_dlen2, QString ezt1, bool isDtype, int dlen);
 
-    static bool getType(QString ezt1,  QString *dtype, int *dlen);
+    static bool getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable);
 
     QStringList getFK();
     QStringList getRFK();

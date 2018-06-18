@@ -18,10 +18,10 @@ zTable::zTable(){};
 
 zTable::~zTable(){};
 
-zTable::zTable(QString n, QString pkn, QList<zTablerow> tr, QList<zTablerow> pl, int type){
+zTable::zTable(QString n, QString pkn, QList<zTablerow> tr, int type){
 
     this->rows = tr;
-    this->props = pl;
+    //this->props = pl;
     this->pkname = pkn;
     this->sourcetype = type;
 
@@ -157,11 +157,11 @@ QString zTable::toString(){
         rs+=r->toString();
     }
 
-    zforeach(p, this->props){
-        if(!rs.isEmpty()) ps+=",";
-        //if(p->colName==this->pkname) ps+="PK:";
-        ps+=p->toString();
-    }
+//    zforeach(p, this->props){
+//        if(!rs.isEmpty()) ps+=",";
+//        //if(p->colName==this->pkname) ps+="PK:";
+//        ps+=p->toString();
+//    }
 
     return  this->tablename+"("+rs+")"+(!ps.isEmpty()?ps:"");
 }
@@ -221,32 +221,51 @@ OperationTypeId,int
 
 /*
 A sorból kiszerzi a típust - mérettel/hosszal együtt
+ezt1: típus név/leíró
+
+ha ?-re végződik, vagy szerepel benne, hogy nullable, akkor nullable lesz - függetlenül attól, hogy required-e
+ezt külön kell vizsgálni
+
 */
-bool zTable::getType(QString ezt1,  QString *dtype, int *dlen)
+bool zTable::getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable)
 {
     auto re_dlen1 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen2 = QRegularExpression(R"(([\d]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
+    auto re_isnullable = QRegularExpression(R"(Nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?\s+)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    //
+    auto m_isNullable = re_isnullable.match(ezt1);
+    QString typeName;
+
+    if(m_isNullable.hasMatch()){
+        *nullable = true;
+        typeName = getFirstNotNull(m_isNullable, 2);
+    } else{
+        *nullable = false;
+        typeName = ezt1;
+    }
+
     bool isDtype = false;
 
-    if(zStringMapHelper::contains(&typeMap, ezt1)){
-        QString k = zStringMapHelper::getKey(&typeMap, ezt1);
+    if(zStringMapHelper::contains(&typeMap, typeName)){
+        QString k = zStringMapHelper::getKey(&typeMap, typeName);
         *dtype =  typeMap.value(k);;
         isDtype = true;
     }
-    else if(zStringMapHelper::contains(&typeMapR, ezt1)){
-        QString k = zStringMapHelper::getKey(&typeMapR, ezt1);
+    else if(zStringMapHelper::contains(&typeMapR, typeName)){
+        QString k = zStringMapHelper::getKey(&typeMapR, typeName);
         *dtype =  typeMapR.value(k);;
         isDtype = true;
     }
     else {//
-        auto i2 = re_dlen1.match(ezt1);
+        auto i2 = re_dlen1.match(typeName);
         if(i2.hasMatch()){
             bool isOK;
             int n = i2.captured(1).toInt(&isOK);
             if(isOK) *dlen = n;
             }
         else{
-             i2 = re_dlen2.match(ezt1);
+             i2 = re_dlen2.match(typeName);
              if(i2.hasMatch()){
                  bool isOK;
                  int n = i2.captured(1).toInt(&isOK);
@@ -377,7 +396,7 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
             xml->readNextStartElement();
         }
 
-    t.props = QList<zTablerow>();
+    //t.props = QList<zTablerow>();
     //tl.append(t);
     zlog.log("XML beolvasva: "+ t.tablename +xml->errorString());
     return t;
@@ -527,7 +546,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                                ezt1 = *fn3;
                            }
                            //típus vizsgálat
-                           isDtype = zTable::getType(ezt1, &dtype, &dlen);
+                           isDtype = zTable::getType(ezt1, &dtype, &dlen, &isNullable);
                            }
                        if(isDtype==false){
                             auto i2 = re_caption.match(*fn2);
@@ -572,7 +591,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                    rl.append(r);
                    }
             }
-            auto t = zTable(tn, pkn, rl, pl, TXT);
+            auto t = zTable(tn, pkn, rl,  TXT);
             tl.append(t);
             zlog.log("GenerateByText: "+t.toString());
         }
@@ -629,7 +648,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
             QString pkn = "id";
             auto fns=m.captured(2).split(QRegularExpression(R"([\n|\r\n|\r])"), QString::SkipEmptyParts);
             QList<zTablerow> rl;
-            QList<zTablerow> pl;
+            //QList<zTablerow> pl;
 
             zforeach(fn, fns){ // sorok
                if(fn->isEmpty()) continue;
@@ -637,7 +656,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
                QString dtype="";
                int dlen = 0;
-              // bool isNullable = true;
+               bool isNullable = true;
               // QString caption = "";
 
                auto fns = fn->split(' ', QString::SkipEmptyParts);
@@ -653,17 +672,20 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                         // todo vizsgálni, típus-e, ha igen, megvan. (string - hossz)
                         // amúgy mezőnév lesz
                         // ezért megy a mezőnév listába
-                        isDtype = zTable::getType(*fn2, &dtype, &dlen);
-                        if (!isDtype){
-                            //dtype = "property";
-                            //dlen = 0;
-
-                            auto r = zTablerow(*fn2, "property", 0, false, "");
-                            pls.append(r);
-                        }
-                        else{
+                        isDtype = zTable::getType(*fn2, &dtype, &dlen, &isNullable);
+                        if (isDtype){
                             zlog.trace("sortípus:"+*fn2);
                         }
+//                        if (!isDtype){
+//                            //dtype = "property";
+//                            //dlen = 0;
+
+//                            auto r = zTablerow(*fn2, "property", 0, false, "");
+//                            pls.append(r);
+//                        }
+//                        else{
+//                            zlog.trace("sortípus:"+*fn2);
+//                        }
                     }
 
                     zforeach(p, pls){
@@ -673,7 +695,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                             rl.append(*p);
                             }
                         else{
-                            pl.append(*p);
+                           // pl.append(*p);
                         }
 
                     }
@@ -688,7 +710,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
 
             }
-            auto t = zTable(tn, pkn, rl, pl, TXT);
+            auto t = zTable(tn, pkn, rl,  TXT);
             tl.append(t);
             zlog.log("GenerateByText2: "+t.toString());
         }
@@ -721,10 +743,11 @@ QList<zTable> zTable::createTableByText_3(QString txt)
 
     // attributumok és propertyk
     // 1: típus, 2: név
-    auto r_attrOrProp = QRegularExpression(R"(\[[(.\w)]*\]|public\s+(\w+)\s+(\w+)(?:\s*{.*}))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto r_attrOrProp = QRegularExpression(R"(\[[(.\w)]*\]|public\s+(\S+)\s+(\w+)(?:\s*{.*}))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
-    auto r_tablanev = QRegularExpression(R"(\"([\p{L}]+)\"|(?:[\p{L}0-9.]+)\.([^.][\w]+))");
-
+   // auto r_tablanev = QRegularExpression(R"(\"([\p{L}]+)\"|(?:[\p{L}0-9.]+)\.([^.][\w]+))");
+//\[[(.\w)]*\]|public\s+(\p{L}[\p{L}0-9_\-]+)\s+(\w+)(?:\s*{.*})
+    auto r_tablanev2 = QRegularExpression(R"(\"([\p{L}]+)\"|(?:[\p{L}0-9.]+))");
 
     QStringList classAttrs;
 
@@ -748,11 +771,12 @@ QList<zTable> zTable::createTableByText_3(QString txt)
                         auto attrParams = getAttrAndParams((*a));
                         QString attrname = attrParams[0];
                         if(attrname=="Table"){
-                            QString paramtxt = attrParams[1];
+                            tableName = attrParams[1];
+                            /*QString paramtxt = attrParams[1];
                             if(!paramtxt.isEmpty()){
-                                QRegularExpressionMatch m_tablanev = r_tablanev.match(paramtxt);
+                                QRegularExpressionMatch m_tablanev = r_tablanev2.match(paramtxt);
                                 tableName= getFirstNotNull(m_tablanev, 2);
-                                }
+                                }*/
                             }
                         }
                     classAttrs.clear();
@@ -761,7 +785,9 @@ QList<zTable> zTable::createTableByText_3(QString txt)
 
                 QString className = m.captured(1);
                 QString class_txt = m.captured(2);
+                QString pkName = "";
                 zlog.log("class: " + className);
+                QList<zTablerow> rl;
 
                 auto i_attrOrProp = r_attrOrProp.globalMatch(class_txt);
                 //if(i2.hasNext()){
@@ -777,6 +803,9 @@ QList<zTable> zTable::createTableByText_3(QString txt)
                             bool isPk = false;
                             bool isRequired = false;
                             QString MaxLength;
+                            QString Caption  = "";
+                            QString propType = m_attrOrProp.captured(1);
+                            QString propName = m_attrOrProp.captured(2);
 
                             if(!propAttrs.isEmpty()){
                                 zforeach(a, propAttrs){
@@ -785,30 +814,41 @@ QList<zTable> zTable::createTableByText_3(QString txt)
                                     QString attrname = attrParams[0];
                                     if(attrname=="Key"){
                                         isPk = true;
+                                        pkName = propName;
                                     }
                                     else if(attrname=="Required") {
                                         isRequired = true;
                                     }
                                     else if(attrname=="MaxLength"){
-                                        QString paramtxt = attrParams[1];
+                                        MaxLength = attrParams[1];
+                                        /*QString paramtxt = attrParams[1];
                                         if(!paramtxt.isEmpty()){
-                                            QRegularExpressionMatch m_tablanev = r_tablanev.match(paramtxt);
+                                            QRegularExpressionMatch m_tablanev = r_tablanev2.match(paramtxt);
 
                                              MaxLength = getFirstNotNull(m_tablanev, 2);
-                                            }
+                                            }*/
                                         }
                                     }
                                 propAttrs.clear();
                                 }
 
+                            QString dtype="";
+                            int dlen = 0;
+                            bool isNullable;
+                            //QString row = m_attrOrProp.captured(0);
+                            bool isDtype = zTable::getType(propType, &dtype, &dlen, &isNullable);
+                            if (isDtype){
+                                zlog.trace("sortípus:"+dtype);
+                            }
 
-                            QString propType = m_attrOrProp.captured(1);
-                            QString propName = m_attrOrProp.captured(2);
 
-                            zlog.log("prop: "+propType + " " +propName);
-                            zlog.log("isPK: "+((isPk)?QString("true"):QString("false")));
-                            zlog.log("isRequired: "+((isRequired)?QString("true"):QString("false")));
-                            zlog.log("MaxLength: "+MaxLength);
+//                            zlog.log("prop: "+propType + " " +propName);
+//                            zlog.log("   isPK: "+((isPk)?QString("true"):QString("false")));
+//                            zlog.log("   isRequired: "+((isRequired)?QString("true"):QString("false")));
+//                            zlog.log("   MaxLength: "+MaxLength);
+
+                            auto r = zTablerow(propName, dtype, dlen, isNullable, Caption);
+                            rl.append(r);
                         }
                         else{
                             zlog.log("undefined: "+attrOrProp);
@@ -816,7 +856,9 @@ QList<zTable> zTable::createTableByText_3(QString txt)
 
                     }
                 //}                   
-                   zlog.log("tablename="+tableName);
+                   auto t = zTable(tableName, "id", rl,  TXT);
+                   tl.append(t);
+                   zlog.log("GenerateByEntity: "+t.toString());
             }
             else{
                 zlog.log("undefined: "+g);
