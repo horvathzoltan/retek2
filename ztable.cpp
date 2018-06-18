@@ -232,7 +232,7 @@ bool zTable::getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable)
     auto re_dlen1 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen2 = QRegularExpression(R"(([\d]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
-    auto re_isnullable = QRegularExpression(R"(Nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?\s+)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_isnullable = QRegularExpression(R"(Nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     //
     auto m_isNullable = re_isnullable.match(ezt1);
     QString typeName;
@@ -771,12 +771,7 @@ QList<zTable> zTable::createTableByText_3(QString txt)
                         auto attrParams = getAttrAndParams((*a));
                         QString attrname = attrParams[0];
                         if(attrname=="Table"){
-                            tableName = attrParams[1];
-                            /*QString paramtxt = attrParams[1];
-                            if(!paramtxt.isEmpty()){
-                                QRegularExpressionMatch m_tablanev = r_tablanev2.match(paramtxt);
-                                tableName= getFirstNotNull(m_tablanev, 2);
-                                }*/
+                            tableName = attrParams[1];                            
                             }
                         }
                     classAttrs.clear();
@@ -820,13 +815,7 @@ QList<zTable> zTable::createTableByText_3(QString txt)
                                         isRequired = true;
                                     }
                                     else if(attrname=="MaxLength"){
-                                        MaxLength = attrParams[1];
-                                        /*QString paramtxt = attrParams[1];
-                                        if(!paramtxt.isEmpty()){
-                                            QRegularExpressionMatch m_tablanev = r_tablanev2.match(paramtxt);
-
-                                             MaxLength = getFirstNotNull(m_tablanev, 2);
-                                            }*/
+                                        MaxLength = attrParams[1];                                       
                                         }
                                     }
                                 propAttrs.clear();
@@ -837,9 +826,13 @@ QList<zTable> zTable::createTableByText_3(QString txt)
                             bool isNullable;
                             //QString row = m_attrOrProp.captured(0);
                             bool isDtype = zTable::getType(propType, &dtype, &dlen, &isNullable);
-                            if (isDtype){
-                                zlog.trace("sortípus:"+dtype);
+
+                            if(isRequired){
+                                isNullable = false;
                             }
+//                            if (isDtype){
+//                                zlog.trace("sortípus:"+dtype);
+//                            }
 
 
 //                            zlog.log("prop: "+propType + " " +propName);
