@@ -719,6 +719,13 @@ QList<zTable> zTable::createTableByText_2(QString txt){
     return tl;
 }
 
+QString zTable::p_class = QString(R"(class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\}))");
+QString zTable::p_attr = QString(R"((?:\[[(.\w)]*\]))");
+
+QRegularExpression zTable::r_class_or_attr = QRegularExpression(p_attr+"|"+p_class, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+QRegularExpression zTable::r_class = QRegularExpression(p_class, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+QRegularExpression zTable::r_attr = QRegularExpression(p_attr, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
 // attributumok és az osztály
 // (?:\[[(.\w)]*\])|class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\})
 // 1:név, 2:definíció
@@ -903,7 +910,29 @@ QString zTable::getFirstNotNull(QRegularExpressionMatch m, int max){
     return "";
 }
 
+/*
+  (\w+)\s*=\s*(\"?[^\"][\p{L} \S]*\"?)\;
+ */
+
 QString zTable::getConstFromArgument(QString str){
+    if(str.startsWith('\"')||str.endsWith('\"')){
+        return str.mid(1, str.length()-2);
+    } else{
+        QString classname = str.section('.', 0);
+
+        QStringList constlist;
+        /**/
+
+
+        auto i_class = r_class.globalMatch(str);
+        while(i_class.hasNext()){
+           QRegularExpressionMatch m_class = i_class.next();
+
+        }
+
+    }
     return str;
 }
+
+
 
