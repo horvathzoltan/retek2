@@ -66,6 +66,7 @@ public:
 
     static QStringList getAttrAndParams(QString str);
     static QString getFirstNotNull(QRegularExpressionMatch m,  int);
+    static QString getConstFromArgument(QString str);
 };
 
 #endif // ZTABLE_H

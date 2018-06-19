@@ -771,7 +771,9 @@ QList<zTable> zTable::createTableByText_3(QString txt)
                         auto attrParams = getAttrAndParams((*a));
                         QString attrname = attrParams[0];
                         if(attrname=="Table"){
-                            tableName = attrParams[1];                            
+
+                            // ha szöveg konstans, az, ha nem, akkor osztály.
+                            tableName = getConstFromArgument(attrParams[1]);
                             }
                         }
                     classAttrs.clear();
@@ -899,5 +901,9 @@ QString zTable::getFirstNotNull(QRegularExpressionMatch m, int max){
         }
     }
     return "";
+}
+
+QString zTable::getConstFromArgument(QString str){
+    return str;
 }
 
