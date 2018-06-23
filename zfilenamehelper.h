@@ -10,6 +10,8 @@ public:
 //    static QString getContextFilename(QString munkadir, QString tfname);
 //    static QString getCClassFilename(QString munkadir, QString adatbazisNev, QString tfname);
     static QString append(QString h, QString p0, QString = NULL, QString = NULL);
+
+    static QStringList FindFileNameInDir(QString, QString, QStringList);
 };
 
 #endif // ZFILENAMEHELPER_H

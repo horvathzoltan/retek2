@@ -674,8 +674,17 @@ void retek2::on_pushButton_6_clicked()
 
     if(tl.length()==0) { zlog.log("nem jött létre adat"); return;}
 
+    auto db = beallitasok.getSelected();
+    if(db==nullptr) return;
+
+    // konstanstábla beolvasása
+    auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,db->adatbazisNev);
+
+    QStringList files = zFileNameHelper::FindFileNameInDir(path, "Data");
+
     zforeach(t,tl){
         ztables.append(*t);
         tablaAdatokBejegyez(t->tablename);
         }
 }
+
