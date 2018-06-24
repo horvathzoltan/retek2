@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "zfilenamehelper.h"
+#include "ztextfilehelper.h"
 #include <QDir>
 #include <QDirIterator>
 
@@ -39,10 +40,14 @@ QString zFileNameHelper::append(QString h, QString p0, QString p1, QString p2){
     return e;
 }
 
-//https://stackoverflow.com/questions/8052460/recursively-iterate-over-all-the-files-in-a-directory-and-its-subdirectories-in
-QStringList zFileNameHelper::FindFileNameInDir(QString dirName, QString filename, QStringList consts){
 
-    QString fn = "*."+filename;
+//zTable::r_class 
+//  class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\})
+
+//https://stackoverflow.com/questions/8052460/recursively-iterate-over-all-the-files-in-a-directory-and-its-subdirectories-in
+QStringList zFileNameHelper::FindFileNameInDir(QString dirName, QString fn_pattern, QStringList nameFilters ){
+
+    QString fn = "*."+fn_pattern;
     QStringList ql;
 
     //zlog.log("dirName: "+dirName + ","+ fn);
@@ -55,12 +60,23 @@ QStringList zFileNameHelper::FindFileNameInDir(QString dirName, QString filename
     //zlog.log("datadir: "+datadirs.first());
 
     d.cd(datadirs.first());
-    d.setNameFilters(QStringList()<<"*.c"<<"*.cs");
+    d.setNameFilters(nameFilters);//QStringList()<<"*.c"<<"*.cs");
 
+    //QRegularExpression r_regexp(r_pattern);
+    
     QDirIterator it(d, QDirIterator::Subdirectories);
     while (it.hasNext()){
         auto n =  it.next();
-
+        
+//        iregexpf(!r_.pattern().isEmpty()){
+//            QString txt = zTextFileHelper::load(n);
+//            if(!txt.isEmpty()){
+//            auto i_regexp = r_regexp.globalMatch(txt);
+//            if(i_regexp.hasNext()){
+                
+//                }
+//            }
+//        }
 
         ql << n;
         zlog.log("file: "+n);

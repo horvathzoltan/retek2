@@ -740,7 +740,7 @@ QRegularExpression zTable::r_attr = QRegularExpression(p_attr, QRegularExpressio
 
 // a project Entity könyvtárának fáljai - felolvasás
 // attributumok a => Entity konverziónak megfelelően
-QList<zTable> zTable::createTableByText_3(QString txt)
+QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* constMap)
 {
     QList<zTable> tl;
     zlog.log("GenerateByText3: ");
@@ -771,6 +771,10 @@ QList<zTable> zTable::createTableByText_3(QString txt)
             else if(g[0]=='c'){
                 QString tableName;
                 QStringList propAttrs;
+                QString className = m.captured(1);
+                QString class_txt = m.captured(2);
+                QString pkName = "";
+                zlog.log("class: " + className);
 
                 if(!classAttrs.isEmpty()){
                     zforeach(a, classAttrs){
@@ -778,19 +782,20 @@ QList<zTable> zTable::createTableByText_3(QString txt)
                         auto attrParams = getAttrAndParams((*a));
                         QString attrname = attrParams[0];
                         if(attrname=="Table"){
-
                             // ha szöveg konstans, az, ha nem, akkor osztály.
-                            tableName = getConstFromArgument(attrParams[1]);
+                            //tableName = getConstFromArgument(attrParams[1]);
+                            tableName = attrParams[1];
+                            if(zStringHelper::isClassName(tableName)){
+                                constMap->insert(className+','+attrname, tableName);
+                                }
+                            else{
+                                tableName = getConstFromArgument(tableName);
                             }
+                        }
                         }
                     classAttrs.clear();
                     }
 
-
-                QString className = m.captured(1);
-                QString class_txt = m.captured(2);
-                QString pkName = "";
-                zlog.log("class: " + className);
                 QList<zTablerow> rl;
 
                 auto i_attrOrProp = r_attrOrProp.globalMatch(class_txt);
@@ -824,7 +829,10 @@ QList<zTable> zTable::createTableByText_3(QString txt)
                                         isRequired = true;
                                     }
                                     else if(attrname=="MaxLength"){
-                                        MaxLength = attrParams[1];                                       
+                                        MaxLength = attrParams[1];
+                                        if(zStringHelper::isClassName(MaxLength)){
+                                            constMap->insert(className+'.'+propName+','+attrname, MaxLength);
+                                            }
                                         }
                                     }
                                 propAttrs.clear();

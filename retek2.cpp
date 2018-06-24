@@ -670,7 +670,10 @@ void retek2::on_pushButton_6_clicked()
     zlog.trace("Entitások beolvasása");
 
     auto txt = ui.textEdit->toPlainText();
-    auto tl = zTable::createTableByText_3(txt);
+
+    QMap<QString, QString> map;
+
+    auto tl = zTable::createTableByText_3(txt, &map);
 
     if(tl.length()==0) { zlog.log("nem jött létre adat"); return;}
 
@@ -680,7 +683,12 @@ void retek2::on_pushButton_6_clicked()
     // konstanstábla beolvasása
     auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,db->adatbazisNev);
 
-    QStringList files = zFileNameHelper::FindFileNameInDir(path, "Data");
+    //zTable::r_class
+    QStringList files = zFileNameHelper::FindFileNameInDir(path, "Data", QStringList()<<"*.c"<<"*.cs");
+// keressük azokat a fájlokat, amik névegyezést mutatnak a map kulcsaival - legalábbis azok első tagjával
+// egymásba ágyazott osztályok esetén a legkülső egyezést mutat a tartalmazó fájokkal
+// vesszük az összes első tagot
+// map: kulcs az első tag, érték a teljes definíció
 
     zforeach(t,tl){
         ztables.append(*t);

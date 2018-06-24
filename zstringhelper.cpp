@@ -1,6 +1,8 @@
 #include "zlog.h"
 #include "zstringhelper.h"
 
+#include <QRegularExpression>
+
 /*
 zStringHelper::zStringHelper()
 {
@@ -53,6 +55,15 @@ QString zStringHelper::getClassNameCamelCase(QString tnev) {
 
 QStringList zStringHelper::toStringList(QString s){
     return s.split(QRegExp("(\\r\\n)|(\\n\\r)|\\r|\\n"), QString::SkipEmptyParts);
+}
+
+// (?:\".*\")|(?:[\d.]+)
+QRegularExpression zStringHelper::r_string_or_number = QRegularExpression(R"((?:\".*\")|(?:[^\p{L}][\d.]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
+bool zStringHelper::isClassName(QString str){
+    auto m = r_string_or_number.match(str);
+    auto i = !m.hasMatch();    // ha nincs egyezés, nem konstans
+    return i;
 }
 
 //QString zStringHelper::singularize(QString s)
