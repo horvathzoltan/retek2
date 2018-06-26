@@ -70,7 +70,7 @@ QString Beallitasok::getCaptionFileName(const QString& tablanev){
 }
 
 QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
-     auto b = getSelected();
+     auto b = getSelectedDbConnection();
 
      if(b!=nullptr){
         //auto e = QString(munkadir+R"(\%2\%1)").arg(dirname).arg(adatbazisNev);
@@ -89,7 +89,7 @@ QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
  * a beállítások alapján a template névhez tartozó fájl nevét adja
 */
 QString Beallitasok::getTemplateFilename(QString tfname) {
-    auto b = getSelected();
+    auto b = getSelectedDbConnection();
 
     if(b!=nullptr){
     bool isVal = true;
@@ -126,7 +126,7 @@ QString Beallitasok::getTemplateFilename(QString tfname) {
     return NULL;
 }
 
-dbConnection* Beallitasok::getSelected(){
+dbConnection* Beallitasok::getSelectedDbConnection(){
     if(dbConnections.isEmpty())
         return nullptr;
     return

@@ -10,6 +10,7 @@
 #include "zstringmaphelper.h"
 #include "zpluralize.h"
 #include "zxmlhelper.h"
+#include "zsourcehelper.h"
 
 #include <QRegularExpression>
 #include <QXmlStreamWriter>
@@ -719,7 +720,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
     return tl;
 }
 
-QString zTable::p_class = QString(R"(class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\}))");
+QString zTable::p_class = zSourceHelper::p_class.arg(R"(\w+)");//QString(R"(class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\}))");
 QString zTable::p_attr = QString(R"((?:\[[(.\w)]*\]))");
 
 QRegularExpression zTable::r_class_or_attr = QRegularExpression(p_attr+"|"+p_class, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -753,7 +754,8 @@ QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* c
     auto r_attrOrProp = QRegularExpression(R"(\[[(.\w)]*\]|public\s+(\S+)\s+(\w+)(?:\s*{.*}))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
    // auto r_tablanev = QRegularExpression(R"(\"([\p{L}]+)\"|(?:[\p{L}0-9.]+)\.([^.][\w]+))");
-//\[[(.\w)]*\]|public\s+(\p{L}[\p{L}0-9_\-]+)\s+(\w+)(?:\s*{.*})
+   //\[[(.\w)]*\]|public\s+(\p{L}[\p{L}0-9_\-]+)\s+(\w+)(?:\s*{.*})
+
     auto r_tablanev2 = QRegularExpression(R"(\"([\p{L}]+)\"|(?:[\p{L}0-9.]+))");
 
     QStringList classAttrs;

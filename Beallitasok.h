@@ -49,7 +49,7 @@ public:
 
     QList<dbConnection> dbConnections;
 
-    dbConnection* getSelected();
+    dbConnection* getSelectedDbConnection();
 
 
 /*

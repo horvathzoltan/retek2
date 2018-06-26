@@ -3,9 +3,9 @@
 #include "zfilenamehelper.h"
 #include "zstringhelper.h"
 #include "zstringmaphelper.h"
+#include "zsourcehelper.h"
 #include "ztablerow.h"
 #include "ztextfilehelper.h"
-
 
 #include <QRegularExpression>
 #include <QTableWidgetItem>
@@ -86,7 +86,7 @@ void retek2::initBy(dbConnection* c){
 }
 
 void retek2::saveCaptionTabla(const QString& tablanev) {
-    auto b = beallitasok.getSelected();
+    auto b = beallitasok.getSelectedDbConnection();
     if(b==nullptr) return;    
 
     QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev, "caption_" + tablanev + ".txt");
@@ -109,7 +109,7 @@ void retek2::saveCaptionTabla(const QString& tablanev) {
 
 void retek2::tablaListaFeltolt() {
     zSQL zsql;
-    auto c = beallitasok.getSelected();
+    auto c = beallitasok.getSelectedDbConnection();
     zsql.init(*c);
 
     QList<QString> tns = zsql.getTableNames();
@@ -268,7 +268,7 @@ void retek2::GenerateAll() {
 
     auto classname = zStringHelper::getClassNameCamelCase(table->tablename);
 
-    auto b = beallitasok.getSelected();
+    auto b = beallitasok.getSelectedDbConnection();
     if(b==nullptr) return;
 
     saveCaptionTabla(table->tablename);
@@ -433,7 +433,7 @@ QString retek2::generateTmp(const QString& tmp_file) {
     QString tmp = zTextFileHelper::load(tmp_fn);
 
    // auto aaa = QString.is
-    auto b = beallitasok.getSelected();
+    auto b = beallitasok.getSelectedDbConnection();
     if(b != nullptr){
         ztokenizer.tokenize(&tmp, nullptr, 0, b->adatbazisNev);
         }
@@ -644,7 +644,7 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
 void retek2::on_comboBox_connections_currentIndexChanged(int index)
 {
     beallitasok.setSelected(index);
-    initBy(beallitasok.getSelected());
+    initBy(beallitasok.getSelectedDbConnection());
 }
 
 
@@ -671,20 +671,46 @@ void retek2::on_pushButton_6_clicked()
 
     auto txt = ui.textEdit->toPlainText();
 
-    QMap<QString, QString> map;
+    QMap<QString, QString> constNameMap;
 
-    auto tl = zTable::createTableByText_3(txt, &map);
+    auto tl = zTable::createTableByText_3(txt, &constNameMap);
 
     if(tl.length()==0) { zlog.log("nem jött létre adat"); return;}
 
-    auto db = beallitasok.getSelected();
-    if(db==nullptr) return;
+    auto db = beallitasok.getSelectedDbConnection();
+    if(db==nullptr){
+        // szükség van adatbázisra, a project könyvtár meghatározásához - a project könyvtár neve az adatbáziséval egyezik meg
+        return;
+    }
 
     // konstanstábla beolvasása
     auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,db->adatbazisNev);
 
-    //zTable::r_class
-    QStringList files = zFileNameHelper::FindFileNameInDir(path, "Data", QStringList()<<"*.c"<<"*.cs");
+    // key az attrName, value a constName
+    QStringList classNameFilter;
+
+    QStringList constNameList;// = constNameMap.values();
+
+    zforeach(m, constNameMap){
+        auto className = m.value().split('.').first();
+        auto clf = className+".c?";
+        if(!classNameFilter.contains(clf))
+            classNameFilter.append(clf);
+
+        if(!constNameList.contains(m.value()))
+            constNameList.append(m.value());
+    }
+
+    QStringList files = zFileNameHelper::FindFileNameInDir(path, "Data", classNameFilter);
+
+    QMap<QString, QString> constValueMap;
+
+    if(files.count()>0){
+        zforeach(f, files){
+            zSourceHelper::getConstValuesFromFile(*f, constNameList, &constValueMap);
+        }
+    }
+
 // keressük azokat a fájlokat, amik névegyezést mutatnak a map kulcsaival - legalábbis azok első tagjával
 // egymásba ágyazott osztályok esetén a legkülső egyezést mutat a tartalmazó fájokkal
 // vesszük az összes első tagot

@@ -23,7 +23,8 @@ HEADERS += Beallitasok.h \
     dbconnection.h \
     ztextfilehelper.h \
     zpluralize.h \
-    zxmlhelper.h
+    zxmlhelper.h \
+    zsourcehelper.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \
@@ -41,7 +42,8 @@ SOURCES += Beallitasok.cpp \
     dbconnection.cpp \
     ztextfilehelper.cpp \
     zpluralize.cpp \
-    zxmlhelper.cpp
+    zxmlhelper.cpp \
+    zsourcehelper.cpp
 FORMS += retek2.ui
 RESOURCES += retek2.qrc
 
