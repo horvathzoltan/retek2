@@ -720,7 +720,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
     return tl;
 }
 
-QString zTable::p_class = zSourceHelper::p_class.arg(R"(\w+)");//QString(R"(class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\}))");
+//QString zTable::p_class = zSourceHelper::p_class.arg(R"(\w+)");//QString(R"(class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\}))");
 QString zTable::p_attr = QString(R"((?:\[[(.\w)]*\]))");
 
 QRegularExpression zTable::r_class_or_attr = QRegularExpression(p_attr+"|"+p_class, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);

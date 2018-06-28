@@ -7,12 +7,11 @@
 
 class zSourceHelper
 {
-public:
-    static QString p_class;
-    static QString p_const;
-
-    static QRegularExpression r_const;
-
+private:
+    static const QString p_class;
+    static const QString p_const;
+    static const QRegularExpression r_const;
+public:    
     static void getConstValuesFromFile(QString fileName, QStringList constNameList, QMap<QString, QString>* constValueMap);
 };
 
