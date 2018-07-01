@@ -85,4 +85,17 @@ QStringList zFileNameHelper::FindFileNameInDir(QString dirName, QString fn_patte
 
 }
 
+///
+/// \brief zFileNameHelper::getfileName
+/// A fájl kiterjesztés nélküli-első . előtti nevét adja
+/// \param fullPath
+/// \return
+///
+QString zFileNameHelper::getfileName(QString fullPath){
+    QFileInfo fi(fullPath);
+    QString fileName = fi.baseName();
+    return fileName;
+}
+
+
 

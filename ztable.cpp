@@ -721,11 +721,11 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 }
 
 //QString zTable::p_class = zSourceHelper::p_class.arg(R"(\w+)");//QString(R"(class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\}))");
-QString zTable::p_attr = QString(R"((?:\[[(.\w)]*\]))");
+//QString zTable::p_attr = QString(R"((?:\[[(.\w)]*\]))");
 
-QRegularExpression zTable::r_class_or_attr = QRegularExpression(p_attr+"|"+p_class, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-QRegularExpression zTable::r_class = QRegularExpression(p_class, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-QRegularExpression zTable::r_attr = QRegularExpression(p_attr, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+//QRegularExpression zTable::r_class_or_attr = QRegularExpression(p_attr+"|"+p_class, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+//QRegularExpression zTable::r_class = QRegularExpression(p_class, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+//QRegularExpression zTable::r_attr = QRegularExpression(p_attr, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
 // attributumok és az osztály
 // (?:\[[(.\w)]*\])|class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\})
@@ -925,6 +925,8 @@ QString zTable::getFirstNotNull(QRegularExpressionMatch m, int max){
  */
 
 QString zTable::getConstFromArgument(QString str){
+    auto r_class = zSourceHelper::getRegex_r_class();
+
     if(str.startsWith('\"')||str.endsWith('\"')){
         return str.mid(1, str.length()-2);
     } else{

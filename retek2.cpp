@@ -691,6 +691,7 @@ void retek2::on_pushButton_6_clicked()
 
     QStringList constNameList;// = constNameMap.values();
 
+
     zforeach(m, constNameMap){
         auto className = m.value().split('.').first();
         auto clf = className+".c?";
@@ -711,10 +712,9 @@ void retek2::on_pushButton_6_clicked()
         }
     }
 
-// keressük azokat a fájlokat, amik névegyezést mutatnak a map kulcsaival - legalábbis azok első tagjával
-// egymásba ágyazott osztályok esetén a legkülső egyezést mutat a tartalmazó fájokkal
-// vesszük az összes első tagot
-// map: kulcs az első tag, érték a teljes definíció
+    // constNameMap.value mint constValueMap.key ad egy értéket, ez alapján kell rendezni a
+    // tl constNameMap.key propertyket, attribútumokat
+    // createTableByText_3 - az attributum értékadást függvénybe ki kell emelni, így utólag is hívható lesz
 
     zforeach(t,tl){
         ztables.append(*t);

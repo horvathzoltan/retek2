@@ -12,6 +12,7 @@ public:
     static QString append(QString h, QString p0, QString = NULL, QString = NULL);
 
     static QStringList FindFileNameInDir(QString, QString, QStringList);
+    static QString getfileName(QString fullPath);
 };
 
 #endif // ZFILENAMEHELPER_H
