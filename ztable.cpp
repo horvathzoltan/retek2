@@ -227,8 +227,10 @@ ezt1: típus név/leíró
 ha ?-re végződik, vagy szerepel benne, hogy nullable, akkor nullable lesz - függetlenül attól, hogy required-e
 ezt külön kell vizsgálni
 
+ha isRequired, akkor nem lehet nullable
+egyébként akkor nullable, ha az elő van írva
 */
-bool zTable::getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable)
+bool zTable::getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
 {
     auto re_dlen1 = QRegularExpression(R"((?:\(([\d]+)\)))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen2 = QRegularExpression(R"(([\d]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -238,12 +240,17 @@ bool zTable::getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable)
     auto m_isNullable = re_isnullable.match(ezt1);
     QString typeName;
 
-    if(m_isNullable.hasMatch()){
-        *nullable = true;
-        typeName = getFirstNotNull(m_isNullable, 2);
-    } else{
+    if(isRequired){
         *nullable = false;
-        typeName = ezt1;
+    }
+    else{
+        if(m_isNullable.hasMatch()){
+            *nullable = true;
+            typeName = getFirstNotNull(m_isNullable, 2);
+        } else{
+            *nullable = false;
+            typeName = ezt1;
+        }
     }
 
     bool isDtype = false;
@@ -277,6 +284,9 @@ bool zTable::getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable)
 //    else {
 //        *dtype="";*dlen =0;
 //    }
+
+
+
     return isDtype;
 }
 
@@ -547,7 +557,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                                ezt1 = *fn3;
                            }
                            //típus vizsgálat
-                           isDtype = zTable::getType(ezt1, &dtype, &dlen, &isNullable);
+                           isDtype = zTable::getType(ezt1, &dtype, &dlen, &isNullable, false);
                            }
                        if(isDtype==false){
                             auto i2 = re_caption.match(*fn2);
@@ -673,7 +683,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                         // todo vizsgálni, típus-e, ha igen, megvan. (string - hossz)
                         // amúgy mezőnév lesz
                         // ezért megy a mezőnév listába
-                        isDtype = zTable::getType(*fn2, &dtype, &dlen, &isNullable);
+                        isDtype = zTable::getType(*fn2, &dtype, &dlen, &isNullable, false);
                         if (isDtype){
                             zlog.trace("sortípus:"+*fn2);
                         }
@@ -741,6 +751,22 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
 // a project Entity könyvtárának fáljai - felolvasás
 // attributumok a => Entity konverziónak megfelelően
+
+// ha egy attribútum értéke osztálynév literális helyett, akkor mégegy menetre lesz szükség,
+// az elsőben kiértékelünk és begyűjtjük a (feloldatlan) konstansokat
+// persze ha vannak konstansok, el kell dobjuk a kiértékelés eredményét
+// begyűjtjük a konstans értékeket a kiértékeléshoz gyűjtött kulcsokhoz
+// így azok a továbbiakban kulcs-érték párt alkotva
+// egy második menetben  - teljesen újrafeldolgozva az adatokat
+// már olyan feldolgozási eredményt kapunk, ami teljes, így nem kell már eldobnunk
+// ugyanaz a feldolgozó - ugyanaz az implementáció fut kétszer, tehát nem szükséges
+// egy feldolgozatlan string - attribútumérték és egy már feldolgozott (pl dlen esetén int) konstansfeldolgozó
+// bár arra garanciát nem ad, hogy egy int attribútum argumentum helyére nem-e rakunk be string konstanst
+// azzal a számvetéssel, hogy a forrás rendszerben ez hibás kódot eredményez
+//
+// illetve az első - attribútum argumentum vizsgálat, azaz konstans kulcsok legyűjtése
+// kiszervezhető önálló függvényként is, így az első menet szerepét a továbbiakban az átveheti
+
 QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* constMap)
 {
     QList<zTable> tl;
@@ -813,8 +839,12 @@ QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* c
                         else if(attrOrProp[0]=='p'){
                             bool isPk = false;
                             bool isRequired = false;
-                            QString MaxLength;
+                           // QString MaxLength;
                             QString Caption  = "";
+                            QString dtype="";
+                            int dlen = 0;
+                            bool isNullable= false;
+
                             QString propType = m_attrOrProp.captured(1);
                             QString propName = m_attrOrProp.captured(2);
 
@@ -831,24 +861,25 @@ QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* c
                                         isRequired = true;
                                     }
                                     else if(attrname=="MaxLength"){
-                                        MaxLength = attrParams[1];
+                                        QString MaxLength = attrParams[1];
                                         if(zStringHelper::isClassName(MaxLength)){
                                             constMap->insert(className+'.'+propName+','+attrname, MaxLength);
+                                            }
+                                        else{
+                                            dlen = MaxLength.toInt();
                                             }
                                         }
                                     }
                                 propAttrs.clear();
                                 }
 
-                            QString dtype="";
-                            int dlen = 0;
-                            bool isNullable;
-                            //QString row = m_attrOrProp.captured(0);
-                            bool isDtype = zTable::getType(propType, &dtype, &dlen, &isNullable);
 
-                            if(isRequired){
-                                isNullable = false;
-                            }
+                            //QString row = m_attrOrProp.captured(0);
+                            bool isDtype = zTable::getType(propType, &dtype, &dlen, &isNullable, isRequired);
+
+//                            if(isRequired){
+//                                isNullable = false;
+//                            }
 //                            if (isDtype){
 //                                zlog.trace("sortípus:"+dtype);
 //                            }

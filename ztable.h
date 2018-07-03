@@ -52,7 +52,7 @@ public:
     static zTable* getByName(QList<zTable> *tables, QString rn);
     //void getType(auto re_dlen1, QString dtype, auto re_dlen2, QString ezt1, bool isDtype, int dlen);
 
-    static bool getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable);
+    static bool getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
 
     QStringList getFK();
     QStringList getRFK();
