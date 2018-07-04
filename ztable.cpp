@@ -19,32 +19,54 @@ zTable::zTable(){};
 
 zTable::~zTable(){};
 
-zTable::zTable(QString n, QString pkn, QList<zTablerow> tr, int type){
+zTable::zTable(QString _classname, QString pkn, QList<zTablerow> tr, int type, QString _tablename){
 
     this->rows = tr;
-    //this->props = pl;
     this->pkname = pkn;
-    this->sourcetype = type;
+    this->sourcetype = type; 
+
+    if(_classname.isEmpty()&&_tablename.isEmpty()){
+        int n = ztables.count();
+        _classname = QString("class_%1").arg(n);
+        _tablename = QString("table_%1").arg(n);
+    }
+    else if(_classname.isEmpty()){
+        _classname = _tablename;//zPluralizer::Singularize(_tablename);
+    }
+//    else if(_tablename.isEmpty()){
+//        _tablename = _classname;//zPluralizer::Pluralize(_classname);
+//    }
+
+    bool isSingular = zPluralizer::IsSingular(_classname);
 
     switch (type) {
-        case SQL:{ // n táblanév
-            this->tablename = n;
-            QString sn = zPluralizer::Singularize(n);
-
-            this->classname = zStringHelper::getClassNameCamelCase(sn);
-            this->classname_plural = zPluralizer::Pluralize(classname);
+        case SQL:{ // n táblanév        
+            if(isSingular){
+                this->classname = zStringHelper::getClassNameCamelCase(_classname);
+                this->classname_plural = zPluralizer::Pluralize(classname);
+                }
+            else{
+                QString sn = zPluralizer::Singularize(_classname);
+                this->classname = zStringHelper::getClassNameCamelCase(sn);
+                this->classname_plural = zPluralizer::Pluralize(classname);
+                }
             }
             break;
-        case TXT:
-            {
-            this->classname = n;
-            QString pn = zPluralizer::Pluralize(n);
-
-            this->tablename = pn;
-            this->classname_plural = pn;
+        case TXT:{
+            if(isSingular){
+                this->classname = _classname;
+                this->classname_plural = zPluralizer::Pluralize(_classname);
+            }else{
+                this->classname = zPluralizer::Singularize(_classname);
+                this->classname_plural = _classname;
+            }
             }
             break;
     }
+    if(!_tablename.isEmpty())
+        this->tablename = _tablename;
+    else
+        this->tablename = classname_plural;
 }
 
 
@@ -767,7 +789,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 // illetve az első - attribútum argumentum vizsgálat, azaz konstans kulcsok legyűjtése
 // kiszervezhető önálló függvényként is, így az első menet szerepét a továbbiakban az átveheti
 
-QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* constMap)
+QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* constMap, QMap<QString, QString>* valueMap)
 {
     QList<zTable> tl;
     zlog.log("GenerateByText3: ");
@@ -814,11 +836,18 @@ QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* c
                             //tableName = getConstFromArgument(attrParams[1]);
                             tableName = attrParams[1];
                             if(zStringHelper::isClassName(tableName)){
-                                constMap->insert(className+','+attrname, tableName);
+                                QString key = className+','+attrname;
+                                if(constMap->contains(key)){
+                                    QString key2 = constMap->value(key);
+                                    tableName = valueMap->value(key2);
+                                }else{
+                                    constMap->insert(key, tableName);
+                                    tableName="";
+                                    }
                                 }
-                            else{
+                            if(!tableName.isEmpty())
                                 tableName = getConstFromArgument(tableName);
-                            }
+
                         }
                         }
                     classAttrs.clear();
@@ -863,11 +892,18 @@ QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* c
                                     else if(attrname=="MaxLength"){
                                         QString MaxLength = attrParams[1];
                                         if(zStringHelper::isClassName(MaxLength)){
-                                            constMap->insert(className+'.'+propName+','+attrname, MaxLength);
+                                            QString key = propName+','+attrname;
+                                            if(constMap->contains(key)){
+                                                QString key2 = constMap->value(key);
+                                                MaxLength = valueMap->value(key2);
+                                            }else{
+                                                constMap->insert(key, MaxLength);
+                                                MaxLength="";
+                                                }
                                             }
-                                        else{
+                                        if(!MaxLength.isEmpty())
                                             dlen = MaxLength.toInt();
-                                            }
+
                                         }
                                     }
                                 propAttrs.clear();

@@ -716,6 +716,10 @@ void retek2::on_pushButton_6_clicked()
     // tl constNameMap.key propertyket, attribútumokat
     // createTableByText_3 - az attributum értékadást függvénybe ki kell emelni, így utólag is hívható lesz
 
+    //
+    if(!constNameMap.isEmpty())
+        tl = zTable::createTableByText_3(txt, &constNameMap, &constValueMap);
+
     zforeach(t,tl){
         ztables.append(*t);
         tablaAdatokBejegyez(t->tablename);

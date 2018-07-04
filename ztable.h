@@ -12,7 +12,7 @@ enum zTableSourceTypes:int { SQL=0, TXT=1 };
 class zTable
 {
 public:
-    zTable(QString tablanev, QString pkn, QList<zTablerow>, int type);
+    zTable(QString tablanev, QString pkn, QList<zTablerow>, int type, QString tablename = "");
 
     zTable();
     ~zTable();
@@ -46,7 +46,7 @@ public:
     static QList<zTable> createTableByText_2(QString txt);
     static QList<zTable> createTableByXML(const QString& txt);
 
-    static QList<zTable> createTableByText_3(QString txt, QMap<QString, QString>*);
+    static QList<zTable> createTableByText_3(QString txt, QMap<QString, QString>*, QMap<QString, QString>* = nullptr);
 
     static QString getPkByName(QList<zTable> *tables, QString rn);
     static zTable* getByName(QList<zTable> *tables, QString rn);

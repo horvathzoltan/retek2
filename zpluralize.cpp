@@ -282,8 +282,11 @@ bool zPluralizer::IsUninflective(QString word)
             }
         }
 
-bool zPluralizer::IsPlural(QString word)
+bool zPluralizer::IsPlural(QString _word)
         {
+            if(_word.isEmpty()) return false;
+
+            QString word = _word.toLower();
             //EDesignUtil.CheckArgumentNull<string>(word, "word");
 
             if (_userDictionary.values().contains(word)){
@@ -308,8 +311,11 @@ bool zPluralizer::IsPlural(QString word)
             }
         }
 
-bool zPluralizer::IsSingular(QString word)
+bool zPluralizer::IsSingular(QString _word)
         {
+            if(_word.isEmpty()) return false;
+
+            QString word = _word.toLower();
             //EDesignUtil.CheckArgumentNull<string>(word, "word");
 
             if (_userDictionary.contains(word))
@@ -321,11 +327,15 @@ bool zPluralizer::IsSingular(QString word)
                 return false;
             }
 
+            auto sw = Singularize(word);
+            //auto ow = IsNoOpWord(word);
+
             if (IsUninflective(word) || _knownSingluarWords.contains(word.toLower()))
             {
                 return true;
             }
-            else if (!IsNoOpWord(word) && Singularize(word) == word)
+            //else if (!ow && sw == word)
+            else if (sw == word)
             {
                 return true;
             }
@@ -363,7 +373,10 @@ bool zPluralizer::TryInflectOnSuffixInWord(QString word, QStringList suffixes,  
 /*
  * https://referencesource.microsoft.com/#System.Data.Entity.Design/System/Data/Entity/Design/PluralizationService/EnglishPluralizationService.cs,9f7905f058826204,references
 */
-QString zPluralizer::Pluralize(QString word){
+QString zPluralizer::Pluralize(QString _word){
+
+    if(_word.isEmpty()) return "";
+    QString word = _word.toLower();
 
     // ha felvettük sajátba, akkor úgy konvertáljuk
     if (_userDictionary.contains(word)){
@@ -506,8 +519,11 @@ QString zPluralizer::Pluralize(QString word){
 }
 
 
-QString zPluralizer::Singularize(QString word){
+QString zPluralizer::Singularize(QString _word){
 
+    if(_word.isEmpty()) return "";
+
+    QString word = _word.toLower();
     // words that we know of
     if (_userDictionary.values().contains(word)){
         return _userDictionary.key(word);
