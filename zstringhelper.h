@@ -18,8 +18,9 @@ public:
 //    static QString singularizeAll(QString s);
 
     static QString getClassNameCamelCase(QString tablanev);
-    static bool isClassName(QString str);
+    static bool isClassName(QString str);    
     static QRegularExpression r_string_or_number;
+    static QString caseFixer(QString, QString);
 };
 
 #endif // ZSTRINGHELPER_H

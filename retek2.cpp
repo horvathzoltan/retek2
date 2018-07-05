@@ -73,6 +73,13 @@ void retek2::init()
     //zlog.trace(QString("ztables: %1").arg(ztables.count()));
 
     //ui.lineEdit_ContextName->setText(getAdatbazisnev()+"Context2");
+
+    QString a1 = "littleMoUsE";
+    QString a2 = "littlemice";
+
+    QString a3 = zStringHelper::caseFixer(a1, a2);
+
+    zlog.log(QString("caseFixer(%1 %2) = %3").arg(a1, a2, a3));
 }
 
 void retek2::initBy(dbConnection* c){

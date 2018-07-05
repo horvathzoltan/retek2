@@ -97,3 +97,23 @@ bool zStringHelper::isClassName(QString str){
 //    return o.join(".");
 //}
 
+//littleM|oUsE littleM|iCe
+QString zStringHelper::caseFixer(QString minta, QString ezt){
+    int l = (minta.length()<ezt.length())?minta.length():ezt.length();
+    for(int i=0;i<l;i++){
+        QChar c = minta[i];
+        QChar cl= c.toLower();
+        if(cl==ezt[i].toLower()){
+            if(c.isUpper()){
+                ezt[i]=c;
+            }
+            else{
+                ezt[i]=cl;
+            }
+        }
+        else
+            break;
+    }
+
+    return ezt;
+}

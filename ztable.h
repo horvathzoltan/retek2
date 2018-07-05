@@ -12,7 +12,7 @@ enum zTableSourceTypes:int { SQL=0, TXT=1 };
 class zTable
 {
 public:
-    zTable(QString tablanev, QString pkn, QList<zTablerow>, int type, QString tablename = "");
+    zTable(QString className, QString pkn, QList<zTablerow>, int type, QString tablename = "");
 
     zTable();
     ~zTable();

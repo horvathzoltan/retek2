@@ -1,4 +1,5 @@
 #include "zpluralize.h"
+#include "zstringhelper.h"
 
 #include <QRegularExpression>
 #include "globals.h"
@@ -259,8 +260,10 @@ QString zPluralizer::GetSuffixWord(QString word, QString *prefixWord)
 
 bool zPluralizer::DoesWordContainSuffix(QString word, QStringList suffixes)
         {
+        QString word_low = word.toLower();
+
         zforeach(s, suffixes){
-            if(word.endsWith(*(s)))
+            if(word_low.endsWith(*(s)))
                     return true;
                 };
         return false;
@@ -285,8 +288,8 @@ bool zPluralizer::IsUninflective(QString word)
 bool zPluralizer::IsPlural(QString _word)
         {
             if(_word.isEmpty()) return false;
-
             QString word = _word.toLower();
+
             //EDesignUtil.CheckArgumentNull<string>(word, "word");
 
             if (_userDictionary.values().contains(word)){
@@ -297,7 +300,7 @@ bool zPluralizer::IsPlural(QString _word)
                 return false;
             }
 
-            if (IsUninflective(word) || _knownPluralWords.contains(word.toLower()))
+            if (IsUninflective(word) || _knownPluralWords.contains(word))
             {
                 return true;
             }
@@ -314,8 +317,8 @@ bool zPluralizer::IsPlural(QString _word)
 bool zPluralizer::IsSingular(QString _word)
         {
             if(_word.isEmpty()) return false;
-
             QString word = _word.toLower();
+
             //EDesignUtil.CheckArgumentNull<string>(word, "word");
 
             if (_userDictionary.contains(word))
@@ -330,7 +333,7 @@ bool zPluralizer::IsSingular(QString _word)
             auto sw = Singularize(word);
             //auto ow = IsNoOpWord(word);
 
-            if (IsUninflective(word) || _knownSingluarWords.contains(word.toLower()))
+            if (IsUninflective(word) || _knownSingluarWords.contains(word))
             {
                 return true;
             }
@@ -344,7 +347,7 @@ bool zPluralizer::IsSingular(QString _word)
                 return false;
             }
         }
-
+// mouse 4 length = 5
 // https://referencesource.microsoft.com/#System.Data.Entity.Design/System/Data/Entity/Design/PluralizationService/PluralizationServiceUtil.cs,a56c9a76ca325fc3
 bool zPluralizer::TryInflectOnSuffixInWord(QString word, QStringList suffixes,  int l, QString newWord, QString *outWord)
         {
@@ -352,10 +355,11 @@ bool zPluralizer::TryInflectOnSuffixInWord(QString word, QStringList suffixes,  
 
             if (DoesWordContainSuffix(word, suffixes))
             {
+                bool isUpper = (word[word.length()-l]).isUpper();
                 if(l>0)
-                    *outWord =  word.left(word.length()-l) + newWord;
+                    *outWord =  word.left(word.length()-l) + (isUpper?newWord.toUpper():newWord);
                 else
-                    *outWord = word+ newWord;
+                    *outWord = word+ (isUpper?newWord.toUpper():newWord);
 
                 return true;
             }
@@ -384,12 +388,12 @@ QString zPluralizer::Pluralize(QString _word){
             }
 
     // ha tartalom alapján nem lehet átalakítani
-    if (IsNoOpWord(word)){
-                return word;
-            }
+    if (IsNoOpWord(word)){ return word; }
 
     QString prefixWord;
-    QString suffixWord = GetSuffixWord(word, &prefixWord);
+    QString suffixWord = GetSuffixWord(_word, &prefixWord);
+    QString suffixWord_low = suffixWord.toLower();
+    QString newSuffixWord;
 
     // ha  a suffix tartalom alapján nem lehet átalakítani
     // by me -> by me
@@ -403,18 +407,20 @@ QString zPluralizer::Pluralize(QString _word){
     }
 
     // if word is one of the known plural forms, then just return
-    if (_knownPluralWords.contains(suffixWord.toLower()) || IsPlural(suffixWord)){
+    if (_knownPluralWords.contains(suffixWord_low) || IsPlural(suffixWord)){
         return prefixWord + suffixWord;
     }
 
     // handle irregular plurals, e.g. "ox" -> "oxen"
-    if (_irregularPluralsDictionary.contains(suffixWord))
+    if (_irregularPluralsDictionary.contains(suffixWord_low))
     {
-        return prefixWord + _irregularPluralsDictionary.value(suffixWord);
+        newSuffixWord =_irregularPluralsDictionary.key(suffixWord_low);
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
     //
 
-    QString newSuffixWord  ;
+
     if (TryInflectOnSuffixInWord(suffixWord, QStringList { "man" }, 2, "en", &newSuffixWord)){
         return prefixWord + newSuffixWord;
     }
@@ -442,15 +448,20 @@ QString zPluralizer::Pluralize(QString _word){
         return prefixWord + newSuffixWord;
     }
 
+    //littleM|oUsE littleM|iCe
     // handle assimilated classical inflections, e.g. vertebra -> vertebrae
-    if (_assimilatedClassicalInflectionDictionary.contains(suffixWord)){
-        return prefixWord + _assimilatedClassicalInflectionDictionary.values().contains(suffixWord);
+    if (_assimilatedClassicalInflectionDictionary.contains(suffixWord_low)){
+        newSuffixWord=_assimilatedClassicalInflectionDictionary[suffixWord_low];
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
 // Handle the classical variants of modern inflections
     //
-    if (_classicalInflectionDictionary.contains(suffixWord)){
-        return prefixWord + _classicalInflectionDictionary.values().contains(suffixWord);
+    if (_classicalInflectionDictionary.contains(suffixWord_low)){
+        newSuffixWord=_classicalInflectionDictionary[suffixWord_low];
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
     if (TryInflectOnSuffixInWord(suffixWord, QStringList { "trix" }, 1, "ces", &newSuffixWord)){
@@ -462,8 +473,10 @@ QString zPluralizer::Pluralize(QString _word){
     }
 
 
-    if (_wordsEndingWithInxAnxYnxPluralizationDictionary.contains(suffixWord)){
-        return prefixWord + _wordsEndingWithInxAnxYnxPluralizationDictionary.values().contains(suffixWord);
+    if (_wordsEndingWithInxAnxYnxPluralizationDictionary.contains(suffixWord_low)){
+        newSuffixWord=_wordsEndingWithInxAnxYnxPluralizationDictionary[suffixWord_low];
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
     // [cs]h and ss that take es as plural form
@@ -496,8 +509,10 @@ QString zPluralizer::Pluralize(QString _word){
     }
 
     // handle some of the words o -> os, and [vowel]o -> os, and the rest are o->oes
-    if (_oSuffixPluralizationDictionary.contains(suffixWord)){
-        return prefixWord + _oSuffixPluralizationDictionary.values().contains(suffixWord);
+    if (_oSuffixPluralizationDictionary.contains(suffixWord_low)){
+        newSuffixWord=_oSuffixPluralizationDictionary[suffixWord_low];
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
     if (TryInflectOnSuffixInWord(suffixWord, QStringList { "ao", "eo", "io", "oo", "uo" },0,  "s", &newSuffixWord)){
@@ -534,7 +549,9 @@ QString zPluralizer::Singularize(QString _word){
     }
 
     QString prefixWord;
-    QString suffixWord = GetSuffixWord(word, &prefixWord);
+    QString suffixWord = GetSuffixWord(_word, &prefixWord);
+    QString suffixWord_low = suffixWord.toLower();
+    QString newSuffixWord;
 
     if (IsNoOpWord(suffixWord)){
         return prefixWord + suffixWord;
@@ -546,38 +563,47 @@ QString zPluralizer::Singularize(QString _word){
     }
 
     // if word is one of the known singular words, then just return
-    if (_knownSingluarWords.contains(suffixWord.toLower()))
+    if (_knownSingluarWords.contains(suffixWord_low))
     {
         return prefixWord + suffixWord;
     }
 
     // handle simple irregular verbs, e.g. was -> were
-    if (_irregularVerbList.values().contains(suffixWord)){
-        return prefixWord + _irregularVerbList.key(suffixWord);
+    if (_irregularVerbList.values().contains(suffixWord_low)){
+        newSuffixWord =_irregularVerbList.key(suffixWord_low);
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
     // handle irregular plurals, e.g. "ox" -> "oxen"
-    if (_irregularPluralsDictionary.values().contains(suffixWord)){
-        return prefixWord + _irregularPluralsDictionary.key(suffixWord);
+    if (_irregularPluralsDictionary.values().contains(suffixWord_low)){
+        newSuffixWord =_irregularPluralsDictionary.key(suffixWord_low);
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
     // handle singluarization for words ending with sis and pluralized to ses,
     // e.g. "ses" -> "sis"
-    if (_wordsEndingWithSisDictionary.values().contains(suffixWord)){
-        return prefixWord + _wordsEndingWithSisDictionary.key(suffixWord);
+    if (_wordsEndingWithSisDictionary.values().contains(suffixWord_low)){
+        newSuffixWord =_wordsEndingWithSisDictionary.key(suffixWord_low);
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
     // handle words ending with se, e.g. "ses" -> "se"
-    if (_wordsEndingWithSeDictionary.values().contains(suffixWord)){
-        return prefixWord + _wordsEndingWithSeDictionary.key(suffixWord);
+    if (_wordsEndingWithSeDictionary.values().contains(suffixWord_low)){
+        newSuffixWord =_wordsEndingWithSeDictionary.key(suffixWord_low);
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
     // handle words ending with sus, e.g. "suses" -> "sus"
-    if (_wordsEndingWithSusDictionary.values().contains(suffixWord)){
-        return prefixWord + _wordsEndingWithSusDictionary.key(suffixWord);
+    if (_wordsEndingWithSusDictionary.values().contains(suffixWord_low)){
+        newSuffixWord =_wordsEndingWithSusDictionary.key(suffixWord_low);
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
-    QString newSuffixWord;
     if (TryInflectOnSuffixInWord(suffixWord, QStringList { "men" },2, "an", &newSuffixWord)){
         return prefixWord + newSuffixWord;
     }
@@ -609,14 +635,18 @@ QString zPluralizer::Singularize(QString _word){
 
 
     // handle assimilated classical inflections, e.g. vertebra -> vertebrae
-    if (_assimilatedClassicalInflectionDictionary.values().contains(suffixWord)){
-        return prefixWord + _assimilatedClassicalInflectionDictionary.key(suffixWord);
+    if (_assimilatedClassicalInflectionDictionary.values().contains(suffixWord_low)){
+        newSuffixWord =_assimilatedClassicalInflectionDictionary.key(suffixWord_low);
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
     // Handle the classical variants of modern inflections
     //
-    if (_classicalInflectionDictionary.values().contains(suffixWord)){
-        return prefixWord + _classicalInflectionDictionary.key(suffixWord);
+    if (_classicalInflectionDictionary.values().contains(suffixWord_low)){
+        newSuffixWord =_classicalInflectionDictionary.key(suffixWord_low);
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
         }
 
     if (TryInflectOnSuffixInWord(suffixWord, QStringList { "trices" },3,  "x", &newSuffixWord)){
@@ -627,8 +657,10 @@ QString zPluralizer::Singularize(QString _word){
         return prefixWord + newSuffixWord;
     }
 
-    if (_wordsEndingWithInxAnxYnxPluralizationDictionary.values().contains(suffixWord)){
-        return prefixWord + _wordsEndingWithInxAnxYnxPluralizationDictionary.key(suffixWord);
+    if (_wordsEndingWithInxAnxYnxPluralizationDictionary.values().contains(suffixWord_low)){
+        newSuffixWord =_wordsEndingWithInxAnxYnxPluralizationDictionary.key(suffixWord_low);
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
     // f, fe that take ves as plural form
@@ -652,8 +684,10 @@ QString zPluralizer::Singularize(QString _word){
     }
 
     // handle some of the words o -> os, and [vowel]o -> os, and the rest are o->oes
-    if (_oSuffixPluralizationDictionary.values().contains(suffixWord)){
-        return prefixWord + _oSuffixPluralizationDictionary.key(suffixWord);
+    if (_oSuffixPluralizationDictionary.values().contains(suffixWord_low)){
+        newSuffixWord =_oSuffixPluralizationDictionary.key(suffixWord_low);
+        newSuffixWord = zStringHelper::caseFixer(newSuffixWord, suffixWord);
+        return prefixWord + newSuffixWord;
     }
 
     if (TryInflectOnSuffixInWord(suffixWord, QStringList { "aos", "eos", "ios", "oos", "uos" },1, "", &newSuffixWord)){
