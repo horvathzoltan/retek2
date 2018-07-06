@@ -35,7 +35,7 @@ QString zStringHelper::toCamelCase(QString s)
 
 //ClassnameCamelCase
 QString zStringHelper::getClassNameCamelCase(QString tnev) {
-    QString t2 = tnev.toLower();
+    QString t2 = tnev;//.toLower();
     //QString sep = TXT+'.';
 
     //if(t2.startsWith(sep))
