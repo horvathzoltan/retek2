@@ -2,6 +2,7 @@
 #define ZSTRINGHELPER_H
 
 #include <QString>
+#include <QRegularExpression>
 
 class zStringHelper
 {
@@ -21,6 +22,9 @@ public:
     static bool isClassName(QString str);    
     static QRegularExpression r_string_or_number;
     static QString caseFixer(QString, QString);
+    static const QString p_filename;
+    static const QRegularExpression r_filename;
+    static QStringList getFilePaths(QString, QStringList);
 };
 
 #endif // ZSTRINGHELPER_H

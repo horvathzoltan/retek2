@@ -1,6 +1,10 @@
+#include "globals.h"
+#include "zfilenamehelper.h"
 #include "zlog.h"
 #include "zstringhelper.h"
+#include "ztextfilehelper.h"
 
+#include <QDir>
 #include <QRegularExpression>
 
 /*
@@ -66,37 +70,6 @@ bool zStringHelper::isClassName(QString str){
     return i;
 }
 
-//QString zStringHelper::singularize(QString s)
-//{
-//    if(s.endsWith('s')){
-//        return s.left(s.length()-1);
-//    }
-//    else{
-//        return s;
-//    }
-//}
-
-//QString zStringHelper::pluralize(QString s)
-//{
-//    if(s.endsWith('s')){
-//        return s+"es";
-//    }
-//    else{
-//        return s+"s";
-//    }
-//}
-
-
-//QString zStringHelper::singularizeAll(QString s)
-//{
-//    auto o = s.split('.');
-
-//    for (int i = 0; i < o.length(); i++)
-//        o[i] = singularize(o[i]);
-
-//    return o.join(".");
-//}
-
 //littleM|oUsE littleM|iCe
 QString zStringHelper::caseFixer(QString minta, QString ezt){
     int l = (minta.length()<ezt.length())?minta.length():ezt.length();
@@ -116,4 +89,46 @@ QString zStringHelper::caseFixer(QString minta, QString ezt){
     }
 
     return ezt;
+}
+
+const QString zStringHelper::p_filename = QString(R"((?:file:\/{2})?((?:[a-zA-Z]\:)?(?:[\\\/][\w._]+)+))");
+const QRegularExpression zStringHelper::r_filename = QRegularExpression(p_filename, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+// ha fájlnévvel kezdődik, 
+QStringList zStringHelper::getFilePaths(QString txt, QStringList fileExtFilter){
+    auto i_filename = r_filename.globalMatch(txt);
+    
+    QStringList txtlist;
+    QStringList fileNameFilter;
+    zforeach(f, fileExtFilter){
+        fileNameFilter << "*."+(*f);
+    }
+
+    while(i_filename.hasNext()){
+        QRegularExpressionMatch m_filename = i_filename.next();
+
+        QString filePath = m_filename.captured(1);
+
+        auto filePathInfo = QFileInfo(filePath);
+
+
+        if(filePathInfo.isFile()){
+           txtlist << filePath;
+        }
+        else if(filePathInfo.isDir()){
+            QStringList files = zFileNameHelper::FindFileNameInDir(filePath, "", fileNameFilter);
+            if(!files.isEmpty()){
+                txtlist << files;
+                }
+            //auto list2 = getTextFromFiles(m_filename.captured(0), fileNameFilter);
+        }
+        else{
+
+        }
+
+//        / QStringList files = zFileNameHelper::FindFileNameInDir(path, "Data", classNameFilter);
+
+
+    }
+
+    return txtlist;
 }

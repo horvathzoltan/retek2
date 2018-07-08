@@ -12,7 +12,7 @@ enum zTableSourceTypes:int { SQL=0, TXT=1 };
 class zTable
 {
 public:
-    zTable(QString className, QString pkn, QList<zTablerow>, int type, QString tablename = "");
+    zTable(QString className, QString pkn, QList<zTablerow>, int type, QString tablename, QString _sourcepath);
 
     zTable();
     ~zTable();
@@ -28,11 +28,11 @@ public:
     QString pkname; // rowix
 
     QList<zTablerow> rows;
-    //QList<zTablerow> props;
+
+    // a megnevezés képzésének szabálya, leírója
     QString name_formatstring;
 
     QDateTime updateTime;
-
 
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );
@@ -68,6 +68,8 @@ public:
     static QStringList getAttrAndParams(QString str);
     static QString getFirstNotNull(QRegularExpressionMatch m,  int);
     static QString getConstFromArgument(QString str);
+
+    static QList<zTable> createTableByClassTxt(QString txt);
 
 //    static QRegularExpression r_class;
 //    static QRegularExpression r_attr;

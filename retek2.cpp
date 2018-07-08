@@ -74,12 +74,12 @@ void retek2::init()
 
     //ui.lineEdit_ContextName->setText(getAdatbazisnev()+"Context2");
 
-    QString a1 = "littleMoUsE";
-    QString a2 = "littlemice";
+//    QString a1 = "littleMoUsE";
+//    QString a2 = "littlemice";
 
-    QString a3 = zStringHelper::caseFixer(a1, a2);
+//    QString a3 = zStringHelper::caseFixer(a1, a2);
 
-    zlog.log(QString("caseFixer(%1 %2) = %3").arg(a1, a2, a3));
+//    zlog.log(QString("caseFixer(%1 %2) = %3").arg(a1, a2, a3));
 }
 
 void retek2::initBy(dbConnection* c){
@@ -92,26 +92,26 @@ void retek2::initBy(dbConnection* c){
     zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, c->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
 }
 
+
+
+/*
+lementi a  táblát - nem caption, hanem teljes xml, így ez később átnevezendő
+*/
 void retek2::saveCaptionTabla(const QString& tablanev) {
     auto b = beallitasok.getSelectedDbConnection();
-    if(b==nullptr) return;    
+    if(b==nullptr) return;
 
-    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev, "caption_" + tablanev + ".txt");
+    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev, tablanev + ".xml");
 
-    QMap<QString, QString> tablaCaptionMap;
-    //tablaCaptionMap.clear();
+    QString e;
+    QXmlStreamWriter s(&e);
+    s.setAutoFormatting(true);
+    s.writeStartDocument();
 
-	int rows = ui.tableWidget_MezoLista->rowCount();
-	for (int i = 0; i < rows; i++) {
-		QTableWidgetItem *item_colName = ui.tableWidget_MezoLista->item(i, C_ix_colName);
-		QTableWidgetItem *item_Caption = ui.tableWidget_MezoLista->item(i, C_ix_Caption);
-		//QString colName = item_Caption->text();
+    table->toXML(&s);
+    s.writeEndDocument();
 
-		tablaCaptionMap.insert(item_colName->text(), item_Caption->text());
-	}
-    if(tablaCaptionMap.count()>0){
-        zStringMapHelper::StringMapSave(fn, &tablaCaptionMap);
-    }
+    zTextFileHelper::save(e, fn);
 }
 
 void retek2::tablaListaFeltolt() {
@@ -139,7 +139,14 @@ void retek2::tablaAdatokBejegyez(const QString& tn){
 }
 
 
-
+/*
+Egy tábla listából való kiválasztása esetén
+a régi táblát, annak módosításait mentjük,
+az új táblát beolvassuk
+- nem csak caption vonatkozásában, hiszen bármely adata változhat
+- ez eltérést okozhat az adatbázis és a forrás vonatkozásában is
+- attól függően, hogy az adat honnan származik
+*/
 void retek2::TableSelect(QListWidgetItem* i) {   
     if(table != nullptr){
         saveCaptionTabla(table->tablename);
@@ -673,59 +680,26 @@ void retek2::on_lineEdit_tablename_editingFinished()
 
 
 void retek2::on_pushButton_6_clicked()
-{
+{    
     zlog.trace("Entitások beolvasása");
 
     auto txt = ui.textEdit->toPlainText();
 
-    QMap<QString, QString> constNameMap;
+    auto sourceFileFilter = QStringList()<<"*.c"<<"*.cs";
 
-    auto tl = zTable::createTableByText_3(txt, &constNameMap);
+    auto txtFileList = zStringHelper::getFilePaths(txt, sourceFileFilter);
 
-    if(tl.length()==0) { zlog.log("nem jött létre adat"); return;}
+    QList<zTable> tl;
 
-    auto db = beallitasok.getSelectedDbConnection();
-    if(db==nullptr){
-        // szükség van adatbázisra, a project könyvtár meghatározásához - a project könyvtár neve az adatbáziséval egyezik meg
-        return;
+    if(txtFileList.isEmpty()){
+        tl = zTable::createTableByClassTxt(txt);
     }
-
-    // konstanstábla beolvasása
-    auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,db->adatbazisNev);
-
-    // key az attrName, value a constName
-    QStringList classNameFilter;
-
-    QStringList constNameList;// = constNameMap.values();
-
-
-    zforeach(m, constNameMap){
-        auto className = m.value().split('.').first();
-        auto clf = className+".c?";
-        if(!classNameFilter.contains(clf))
-            classNameFilter.append(clf);
-
-        if(!constNameList.contains(m.value()))
-            constNameList.append(m.value());
-    }
-
-    QStringList files = zFileNameHelper::FindFileNameInDir(path, "Data", classNameFilter);
-
-    QMap<QString, QString> constValueMap;
-
-    if(files.count()>0){
-        zforeach(f, files){
-            zSourceHelper::getConstValuesFromFile(*f, constNameList, &constValueMap);
+    else{
+        zforeach(f, txtFileList){
+            QString f_txt = zTextFileHelper::load(*f);
+            tl << zTable::createTableByClassTxt(f_txt);
         }
     }
-
-    // constNameMap.value mint constValueMap.key ad egy értéket, ez alapján kell rendezni a
-    // tl constNameMap.key propertyket, attribútumokat
-    // createTableByText_3 - az attributum értékadást függvénybe ki kell emelni, így utólag is hívható lesz
-
-    //
-    if(!constNameMap.isEmpty())
-        tl = zTable::createTableByText_3(txt, &constNameMap, &constValueMap);
 
     zforeach(t,tl){
         ztables.append(*t);

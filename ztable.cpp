@@ -11,7 +11,9 @@
 #include "zpluralize.h"
 #include "zxmlhelper.h"
 #include "zsourcehelper.h"
+#include "zfilenamehelper.h"
 
+#include <QDir>
 #include <QRegularExpression>
 #include <QXmlStreamWriter>
 
@@ -19,11 +21,12 @@ zTable::zTable(){};
 
 zTable::~zTable(){};
 
-zTable::zTable(QString _classname, QString pkn, QList<zTablerow> tr, int type, QString _tablename){
+zTable::zTable(QString _classname, QString pkn, QList<zTablerow> tr, int type, QString _tablename, QString _sourcepath){
 
     this->rows = tr;
     this->pkname = pkn;
     this->sourcetype = type; 
+    this->sourcepath = _sourcepath;
 
     if(_classname.isEmpty()&&_tablename.isEmpty()){
         int n = ztables.count();
@@ -163,6 +166,7 @@ bool zTable::getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable, b
 
     if(isRequired){
         *nullable = false;
+        typeName = ezt1;
     }
     else{
         if(m_isNullable.hasMatch()){
@@ -202,11 +206,10 @@ bool zTable::getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable, b
                  }
              }
          }
-//    else {
-//        *dtype="";*dlen =0;
-//    }
 
-
+    if(typeName.isEmpty()){
+        zlog.log(QString("getType: Unknown type: %1").arg(ezt1), zlog.ERROR);
+    }
 
     return isDtype;
 }
@@ -253,6 +256,7 @@ void zTable::toXML(QXmlStreamWriter *s)
     s->writeAttribute(nameof(this->classname_plural), this->classname_plural);
     s->writeAttribute(nameof(this->pkname), this->pkname);
     s->writeAttribute(nameof(this->name_formatstring), this->name_formatstring);
+    s->writeAttribute(nameof(this->comment), this->comment);
     s->writeAttribute(nameof(this->updateTime), this->updateTime.toString());
 
     s->writeStartElement(nameof(this->rows));
@@ -523,7 +527,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                    rl.append(r);
                    }
             }
-            auto t = zTable("", pkn, rl,  TXT, tn);
+            auto t = zTable("", pkn, rl,  TXT, tn, "");
             tl.append(t);
             zlog.log("GenerateByText: "+t.toString());
         }
@@ -642,7 +646,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
 
             }
-            auto t = zTable("", pkn, rl,  TXT, tn);
+            auto t = zTable("", pkn, rl,  TXT, tn, "");
             tl.append(t);
             zlog.log("GenerateByText2: "+t.toString());
         }
@@ -748,6 +752,9 @@ QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* c
                                 tableName = getConstFromArgument(tableName);
 
                         }
+                        else{
+                            zlog.log(QString("Unknown TableAttr: %1").arg(*a), zlog.ERROR);
+                            }
                         }
                     classAttrs.clear();
                     }
@@ -804,6 +811,9 @@ QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* c
                                             dlen = MaxLength.toInt();
 
                                         }
+                                    else{
+                                        zlog.log(QString("Unknown PropertyAttr: %1").arg(*a), zlog.ERROR);
+                                        }
                                     }
                                 propAttrs.clear();
                                 }
@@ -834,7 +844,7 @@ QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* c
 
                     }
                 //}                   
-                   auto t = zTable(className, "id", rl,  TXT, tableName);
+                   auto t = zTable(className, "id", rl,  TXT, tableName, "");
                    tl.append(t);
                    zlog.log("GenerateByEntity: "+t.toString());
             }
@@ -912,6 +922,60 @@ QString zTable::getConstFromArgument(QString str){
     return str;
 }
 
+
+QList<zTable> zTable::createTableByClassTxt(QString txt){
+
+    QMap<QString, QString> constNameMap;
+
+    auto tl = zTable::createTableByText_3(txt, &constNameMap);
+
+    if(tl.length()==0) { zlog.log("nem jött létre adat"); return tl;}
+
+    auto db = beallitasok.getSelectedDbConnection();
+    if(db==nullptr){
+        // szükség van adatbázisra, a project könyvtár meghatározásához - a project könyvtár neve az adatbáziséval egyezik meg
+        return tl;
+    }
+
+    // konstanstábla beolvasása
+    auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,db->adatbazisNev);
+
+    // key az attrName, value a constName
+    QStringList classNameFilter;
+
+    QStringList constNameList;// = constNameMap.values();
+
+
+    zforeach(m, constNameMap){
+        auto className = m.value().split('.').first();
+        auto clf = className+".c?";
+        if(!classNameFilter.contains(clf))
+            classNameFilter.append(clf);
+
+        if(!constNameList.contains(m.value()))
+            constNameList.append(m.value());
+    }
+
+    QStringList files = zFileNameHelper::FindFileNameInDir(path, "Data", classNameFilter);
+
+    QMap<QString, QString> constValueMap;
+
+    if(files.count()>0){
+        zforeach(f, files){
+            zSourceHelper::getConstValuesFromFile(*f, constNameList, &constValueMap);
+        }
+    }
+
+    // constNameMap.value mint constValueMap.key ad egy értéket, ez alapján kell rendezni a
+    // tl constNameMap.key propertyket, attribútumokat
+    // createTableByText_3 - az attributum értékadást függvénybe ki kell emelni, így utólag is hívható lesz
+
+    //
+    if(!constNameMap.isEmpty())
+        tl = zTable::createTableByText_3(txt, &constNameMap, &constValueMap);
+
+    return tl;
+}
 
 
 
