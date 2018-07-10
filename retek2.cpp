@@ -148,9 +148,9 @@ az új táblát beolvassuk
 - attól függően, hogy az adat honnan származik
 */
 void retek2::TableSelect(QListWidgetItem* i) {   
-    if(table != nullptr){
-        saveCaptionTabla(table->tablename);
-    }
+//    if(table != nullptr){
+//        saveCaptionTabla(table->tablename);
+//    }
 
     auto tablanev = i->text();
     table = zTable::getByName(&ztables, tablanev);
@@ -233,6 +233,7 @@ void retek2::fejadatFeltolt(zTable t){
 
 void retek2::mezoListaFeltolt(zTable t){
     zlog.trace("feltoltMezoLista: "+t.toString());
+    ui.tableWidget_MezoLista->blockSignals(true);
     ui.tableWidget_MezoLista->setRowCount(0);
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
         auto r = t.rows[r_ix];
@@ -243,6 +244,7 @@ void retek2::mezoListaFeltolt(zTable t){
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, CreateTableItem(QVariant(r.Caption)));
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, CreateTableItem(QVariant(r.isNullable)));
     }    
+    ui.tableWidget_MezoLista->blockSignals(false);
 }
 
 void retek2::feltoltKulcsLista(zTable t) {
@@ -707,3 +709,16 @@ void retek2::on_pushButton_6_clicked()
         }
 }
 
+/*
+a táblanév nem átírható, illetve a mezőnév sem, ezek rendszerszintű azonosítók
+*/
+
+void retek2::on_tableWidget_MezoLista_cellChanged(int row, int column)
+{
+    //zlog.log(QString("changed: %1, %2").arg(row).arg(column));
+
+    auto i = ui.tableWidget_MezoLista->item(row, column);
+    auto d = i->data(Qt::EditRole);
+
+    zlog.log(QString("changed: %1, %2 = %3").arg(row).arg(column).arg(d.toString()));
+}
