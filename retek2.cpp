@@ -715,10 +715,30 @@ a táblanév nem átírható, illetve a mezőnév sem, ezek rendszerszintű azon
 
 void retek2::on_tableWidget_MezoLista_cellChanged(int row, int column)
 {
-    //zlog.log(QString("changed: %1, %2").arg(row).arg(column));
+    auto i_rowname = ui.tableWidget_MezoLista->item(row, C_ix_colName)->data(Qt::EditRole).toString();
+    auto i_data = ui.tableWidget_MezoLista->item(row, column);
 
-    auto i = ui.tableWidget_MezoLista->item(row, column);
-    auto d = i->data(Qt::EditRole);
+    auto d = i_data->data(Qt::EditRole);
+    auto r = zTablerow::getByName(&(table->rows), i_rowname);
 
-    zlog.log(QString("changed: %1, %2 = %3").arg(row).arg(column).arg(d.toString()));
+    switch(column){
+        case C_ix_Caption:
+            r->Caption = d.toString();
+            break;
+        case C_ix_colType:
+            r->colType = d.toString();
+            break;
+        case C_ix_dlen:
+            r->dlen = d.toInt();
+            break;
+        case C_ix_nullable:
+            r->isNullable = d.toBool();
+            break;
+    //case C_ix_comment:
+        default:
+            auto mn = ui.tableWidget_MezoLista->horizontalHeaderItem(column)->text();
+            zlog.log(QString("Nem módosítható oszlop: %1").arg(mn));
+            break;
+
+    }
 }

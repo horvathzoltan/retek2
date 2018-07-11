@@ -18,8 +18,8 @@ QList<zTable> ztables;
 
 zTable *table = nullptr;
 
-const int C_ix_Caption = 0;
-const int C_ix_colName = 1;
-const int C_ix_colType = 2;
-const int C_ix_dlen = 3;
-const int C_ix_nullable = 4;
+//extern const int C_ix_Caption = 0;
+//extern const int C_ix_colName = 1;
+//extern const int C_ix_colType = 2;
+//extern const int C_ix_dlen = 3;
+//extern const int C_ix_nullable = 4;

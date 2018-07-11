@@ -31,11 +31,12 @@ extern QList<zTable> ztables;
 
 extern zTable *table;
 
-extern const int C_ix_Caption;
-extern const int C_ix_colName;
-extern const int C_ix_colType;
-extern const int C_ix_dlen;
-extern const int C_ix_nullable;
+static constexpr int C_ix_Caption = 0;
+static constexpr int C_ix_colName=1;
+static constexpr int C_ix_colType=2;
+static constexpr int C_ix_dlen=3;
+static constexpr int C_ix_nullable=4;
+
 #endif // GLOBALS_H
 
 #define nameof(x) bravikov::_nameof<0>(#x, sizeof(x))
