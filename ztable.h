@@ -75,7 +75,8 @@ public:
 //    static QRegularExpression r_attr;
 //    static QRegularExpression r_class_or_attr;
 //    static QString p_class;
-//    static QString p_attr;
+    //    static QString p_attr;
+    void saveTablaToXML();
 };
 
 #endif // ZTABLE_H

@@ -53,7 +53,7 @@ private:
 
 	QSqlDatabase db;
 
-    void saveCaptionTabla(const QString&);
+    void saveTablaToXML(const QString&);
 
     void tablaListaFeltolt();
     void feltoltTmpMap();
@@ -75,7 +75,7 @@ private:
     zEnumizer::EnumSource GetEnumData(zSQL *zsql);
 
     void initBy(dbConnection* b);
-
+    void closeEvent(QCloseEvent *event);
 };
 
 //#endif // RETEK2_H

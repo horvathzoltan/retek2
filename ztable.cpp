@@ -12,6 +12,7 @@
 #include "zxmlhelper.h"
 #include "zsourcehelper.h"
 #include "zfilenamehelper.h"
+#include "ztextfilehelper.h"
 
 #include <QDir>
 #include <QRegularExpression>
@@ -977,5 +978,24 @@ QList<zTable> zTable::createTableByClassTxt(QString txt){
     return tl;
 }
 
+/*
+lementi a  táblát - nem caption, hanem teljes xml, így ez később átnevezendő
+*/
+void zTable::saveTablaToXML() {
+    auto b = beallitasok.getSelectedDbConnection();
+    if(b==nullptr) return;
+
+    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev, this->tablename + ".xml");
+
+    QString e;
+    QXmlStreamWriter s(&e);
+    s.setAutoFormatting(true);
+    s.writeStartDocument();
+
+    this->toXML(&s);
+    s.writeEndDocument();
+
+    zTextFileHelper::save(e, fn);
+}
 
 

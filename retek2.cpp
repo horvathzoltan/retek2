@@ -36,6 +36,7 @@ retek2::retek2(QWidget *parent):QMainWindow(parent){
 
 retek2::~retek2()= default;
 
+
 void retek2::init()
 {	
     zlog.init(ui.textBrowser);
@@ -67,19 +68,18 @@ void retek2::init()
 
     beallitasok.load();    
 
-    //initBy(beallitasok.getSelected());
-
     zlog.trace("retek2 init OK");
-    //zlog.trace(QString("ztables: %1").arg(ztables.count()));
-
-    //ui.lineEdit_ContextName->setText(getAdatbazisnev()+"Context2");
-
-//    QString a1 = "littleMoUsE";
-//    QString a2 = "littlemice";
-
-//    QString a3 = zStringHelper::caseFixer(a1, a2);
-
-//    zlog.log(QString("caseFixer(%1 %2) = %3").arg(a1, a2, a3));
+    auto b = beallitasok.getSelectedDbConnection();
+    auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev);
+    QStringList xmlFilter("*.xml");
+    QStringList files = zFileNameHelper::FindFileNameInDir(path, "", xmlFilter);
+    zforeach(f, files){
+        auto txt = zTextFileHelper::load(*f);
+        //QXmlStreamReader xml(txt);
+        //auto t = zTable::fromXML(&xml);
+        auto t = zTable::createTableByXML(txt);
+        zlog.log("t:"+t.first().classname);
+    }
 }
 
 void retek2::initBy(dbConnection* c){
@@ -90,28 +90,6 @@ void retek2::initBy(dbConnection* c){
     tablaListaFeltolt(); // bal tábla panel feltöltése
 
     zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, c->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
-}
-
-
-
-/*
-lementi a  táblát - nem caption, hanem teljes xml, így ez később átnevezendő
-*/
-void retek2::saveCaptionTabla(const QString& tablanev) {
-    auto b = beallitasok.getSelectedDbConnection();
-    if(b==nullptr) return;
-
-    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev, tablanev + ".xml");
-
-    QString e;
-    QXmlStreamWriter s(&e);
-    s.setAutoFormatting(true);
-    s.writeStartDocument();
-
-    table->toXML(&s);
-    s.writeEndDocument();
-
-    zTextFileHelper::save(e, fn);
 }
 
 void retek2::tablaListaFeltolt() {
@@ -287,7 +265,7 @@ void retek2::GenerateAll() {
     auto b = beallitasok.getSelectedDbConnection();
     if(b==nullptr) return;
 
-    saveCaptionTabla(table->tablename);
+    //saveTablaToXML(table->tablename);
 
     if (ui.checkBox_XML->isChecked()) {
         zlog.trace("XML");
@@ -740,5 +718,13 @@ void retek2::on_tableWidget_MezoLista_cellChanged(int row, int column)
             zlog.log(QString("Nem módosítható oszlop: %1").arg(mn));
             break;
 
+    }
+}
+
+
+void retek2::closeEvent (QCloseEvent *event)
+{
+    zforeach(t, ztables){
+        t->saveTablaToXML();
     }
 }

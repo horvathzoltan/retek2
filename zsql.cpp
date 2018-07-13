@@ -180,13 +180,13 @@ QString zSQL::getTable_MYSQL_CMD(QString tn){ return getTable_MYSQL_CMDTMP.arg(t
 zTable zSQL::getTable(const QString& tablanev){
 
     if(db.isValid() && db.isOpen()){
-        QString fn = beallitasok.getCaptionFileName(tablanev);
+        //QString fn = beallitasok.getCaptionFileName(tablanev);
 
         if(driverName == QODBC){
-            return getTable_SQL(tablanev, fn, getTable_MSSQL_CMD(tablanev));
+            return getTable_SQL(tablanev, "", getTable_MSSQL_CMD(tablanev));
         }
         else if(driverName == QMYSQL){
-            return getTable_SQL(tablanev, fn, getTable_MYSQL_CMD(tablanev));
+            return getTable_SQL(tablanev, "", getTable_MYSQL_CMD(tablanev));
         }
         else{
             zlog.log("getTable: unknown driver:" + driverName);
@@ -205,8 +205,8 @@ zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
 
     QList<zTablerow> tr;
 
-    QMap<QString, QString> tablaCaptionMap;
-    zStringMapHelper::StringMapFeltolt(fn, &tablaCaptionMap);
+    // QMap<QString, QString> tablaCaptionMap;
+    //zStringMapHelper::StringMapFeltolt(fn, &tablaCaptionMap);
 
     while (query.next()) {
         QString colName = query.value("COLUMN_NAME").toString();
@@ -214,10 +214,10 @@ zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
         int dlen = query.value("CHARACTER_MAXIMUM_LENGTH").toInt();
 
         bool nullable = zStringHelper::toBool(query.value("IS_NULLABLE").toString());
-        QString cn = colName.toLower();
 
-        QString caption = tablaCaptionMap.contains(cn)?tablaCaptionMap[cn]:globalCaptionMap.contains(cn)?globalCaptionMap[cn]:cn;
-
+        //QString cn = colName.toLower();
+        //QString caption = tablaCaptionMap.contains(cn)?tablaCaptionMap[cn]:globalCaptionMap.contains(cn)?globalCaptionMap[cn]:cn;
+        QString caption = "";
         tr.append(zTablerow(colName, dtype, dlen, nullable, caption));
         }
 
