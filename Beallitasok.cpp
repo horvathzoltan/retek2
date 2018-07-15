@@ -142,6 +142,8 @@ fel kell olvasni a kapcsolatokat
 template_dir/connections.csv
 fel kell olvasni a kapcsolat fájlt
 
+beállítások csv visszaolvasása
+
 */
 void Beallitasok::load(){
 
@@ -178,6 +180,8 @@ void Beallitasok::addConnection(dbConnection b){
 
 void Beallitasok::addDbConnection(dbConnection b){
     beallitasok.dbConnections.append(b);
+    // itt történik a ztables beolvasása sql-ből
+    // ezen a ponton ezt nek feltétlenül kellene
     widget_connections->addItem(b.Getname());
 }
 

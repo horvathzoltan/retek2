@@ -21,6 +21,8 @@ public:
     void init();
 
     void tablaAdatokBejegyez(const QString& tn);
+    void zTablaToList(QList<zTable> t);
+    void zTablaToList(zTable t);
     //void feltoltRPk(zTable t);
 private slots:
 	void GenerateAll();
@@ -47,6 +49,8 @@ private slots:
     void on_pushButton_6_clicked();
 
     void on_tableWidget_MezoLista_cellChanged(int row, int column);
+
+    void on_listWidget_ztables_itemClicked(QListWidgetItem *item);
 
 private:
     Ui::retek2Class ui;

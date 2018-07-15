@@ -17,6 +17,7 @@
 #include <QSqlError>
 
 #include <QDir>
+#include <QIcon>
 
 //#include <QDebug>
 //#include <QString>
@@ -66,9 +67,12 @@ void retek2::init()
     typeMapR.insert("bool","bit");
     typeMapR.insert("decimal", "decimal");
 
+    // ztables feltöltése
+    // - itt valójában csak a beállításokat kellene betölteni
+    // ellenben itt a beállításokban szereplő adatbázis táblák is feljönnek
+
     beallitasok.load();    
 
-    zlog.trace("retek2 init OK");
     auto b = beallitasok.getSelectedDbConnection();
     auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev);
     QStringList xmlFilter("*.xml");
@@ -78,8 +82,10 @@ void retek2::init()
         //QXmlStreamReader xml(txt);
         //auto t = zTable::fromXML(&xml);
         auto t = zTable::createTableByXML(txt);
-        zlog.log("t:"+t.first().classname);
+        ztables << t;
+        zTablaToList(t);
     }
+    zlog.trace("retek2 init OK");
 }
 
 void retek2::initBy(dbConnection* c){
@@ -87,7 +93,7 @@ void retek2::initBy(dbConnection* c){
 
     beallitasok.setUI(*c);
     ztokenizer.init(ui.tableWidget_MezoLista);
-    tablaListaFeltolt(); // bal tábla panel feltöltése
+    //tablaListaFeltolt(); // bal tábla panel feltöltése
 
     zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, c->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
 }
@@ -98,13 +104,13 @@ void retek2::tablaListaFeltolt() {
     zsql.init(*c);
 
     QList<QString> tns = zsql.getTableNames();
-    ui.listWidget_tabla->clear();
+    ui.listWidget_ztables->clear();
     zTable t;
     zforeach(tn,tns){
         t = zsql.getTable(*(tn));
         if(t.rows.length()>0){
-            ztables.append(t);
-            tablaAdatokBejegyez(*(tn));
+            ztables << t;
+            zTablaToList(t);
         }
     }
 }
@@ -112,33 +118,36 @@ void retek2::tablaListaFeltolt() {
 /*
  *
 */
-void retek2::tablaAdatokBejegyez(const QString& tn){
-    new QListWidgetItem(tn, ui.listWidget_tabla); 
+//void retek2::tablaAdatokBejegyez(const QString& tn){
+//    new QListWidgetItem(tn, ui.listWidget_ztables);
+//}
+
+void retek2::zTablaToList(QList<zTable> ts){
+    zforeach(t, ts){
+        zTablaToList(*t);
+    }
+}
+
+void retek2::zTablaToList(zTable t){
+    QString tn = t.tablename;
+    int ty = t.sourcetype;
+    QIcon icon;
+
+    switch(t.sourcetype){
+        case zTableSourceTypes::SQL:
+            icon=QIcon::fromTheme("office-database");
+            break;
+        case zTableSourceTypes::ENTITY:
+            icon=QIcon::fromTheme("text-x-c++");
+            break;
+        case zTableSourceTypes::TXT:
+            icon=QIcon::fromTheme("text");
+            break;
+    }   
+    new QListWidgetItem(icon, tn, ui.listWidget_ztables, ty);
 }
 
 
-/*
-Egy tábla listából való kiválasztása esetén
-a régi táblát, annak módosításait mentjük,
-az új táblát beolvassuk
-- nem csak caption vonatkozásában, hiszen bármely adata változhat
-- ez eltérést okozhat az adatbázis és a forrás vonatkozásában is
-- attól függően, hogy az adat honnan származik
-*/
-void retek2::TableSelect(QListWidgetItem* i) {   
-//    if(table != nullptr){
-//        saveCaptionTabla(table->tablename);
-//    }
-
-    auto tablanev = i->text();
-    table = zTable::getByName(&ztables, tablanev);
-
-    if(table != nullptr){
-        fejadatFeltolt(*table);
-        mezoListaFeltolt(*table);
-        feltoltKulcsLista(*table);
-        }
-}
 
 //void retek2::feltoltEljaras(QString tablanev) {
 //    zlog.trace("feltoltEljaras " + tablanev);
@@ -530,7 +539,7 @@ void retek2::on_pushButton_3_clicked()
 
     zforeach(t,tl){
         ztables.append(*t);
-        tablaAdatokBejegyez(t->tablename);
+        zTablaToList(*t);
         }       
 }
 
@@ -556,7 +565,7 @@ void retek2::on_pushButton_4_clicked()
 
     zforeach(t,tl){
         ztables.append(*t);
-        tablaAdatokBejegyez(t->tablename);
+        zTablaToList(*t);
         }
 }
 
@@ -573,7 +582,7 @@ void retek2::on_pushButton_5_clicked()
 
     zforeach(t,tl){
         ztables.append(*t);
-        tablaAdatokBejegyez(t->tablename);
+        zTablaToList(*t);
         }
 }
 
@@ -639,6 +648,7 @@ void retek2::on_comboBox_connections_currentIndexChanged(int index)
 {
     beallitasok.setSelected(index);
     initBy(beallitasok.getSelectedDbConnection());
+
 }
 
 
@@ -683,7 +693,7 @@ void retek2::on_pushButton_6_clicked()
 
     zforeach(t,tl){
         ztables.append(*t);
-        tablaAdatokBejegyez(t->tablename);
+        zTablaToList(*t);
         }
 }
 
@@ -727,4 +737,37 @@ void retek2::closeEvent (QCloseEvent *event)
     zforeach(t, ztables){
         t->saveTablaToXML();
     }
+}
+
+
+/*
+Egy tábla listából való kiválasztása esetén
+a régi táblát, annak módosításait mentjük,
+az új táblát beolvassuk
+- nem csak caption vonatkozásában, hiszen bármely adata változhat
+- ez eltérést okozhat az adatbázis és a forrás vonatkozásában is
+- attól függően, hogy az adat honnan származik
+*/
+void retek2::TableSelect(QListWidgetItem* i) {
+    auto tablanev = i->text();
+    table = zTable::getByName(&ztables, tablanev);
+
+    if(table != nullptr){
+        fejadatFeltolt(*table);
+        mezoListaFeltolt(*table);
+        feltoltKulcsLista(*table);
+        }
+}
+
+
+void retek2::on_listWidget_ztables_itemClicked(QListWidgetItem *item)
+{
+    auto tablanev = item->text();
+    table = zTable::getByName(&ztables, tablanev);
+
+    if(table != nullptr){
+        fejadatFeltolt(*table);
+        mezoListaFeltolt(*table);
+        feltoltKulcsLista(*table);
+        }
 }

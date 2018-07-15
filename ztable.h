@@ -7,7 +7,7 @@
 
 #include "ztablerow.h"
 
-enum zTableSourceTypes:int { SQL=0, TXT=1 };
+enum zTableSourceTypes:int { SQL=0, TXT=1, ENTITY=2 };
 
 class zTable
 {
