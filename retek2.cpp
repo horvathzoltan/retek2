@@ -78,9 +78,7 @@ void retek2::init()
     QStringList xmlFilter("*.xml");
     QStringList files = zFileNameHelper::FindFileNameInDir(path, "", xmlFilter);
     zforeach(f, files){
-        auto txt = zTextFileHelper::load(*f);
-        //QXmlStreamReader xml(txt);
-        //auto t = zTable::fromXML(&xml);
+        auto txt = zTextFileHelper::load(*f);      
         auto t = zTable::createTableByXML(txt);
         ztables << t;
         zTablaToList(t);
@@ -93,7 +91,6 @@ void retek2::initBy(dbConnection* c){
 
     beallitasok.setUI(*c);
     ztokenizer.init(ui.tableWidget_MezoLista);
-    //tablaListaFeltolt(); // bal tábla panel feltöltése
 
     zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, c->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
 }
@@ -114,13 +111,6 @@ void retek2::tablaListaFeltolt() {
         }
     }
 }
-
-/*
- *
-*/
-//void retek2::tablaAdatokBejegyez(const QString& tn){
-//    new QListWidgetItem(tn, ui.listWidget_ztables);
-//}
 
 void retek2::zTablaToList(QList<zTable> ts){
     zforeach(t, ts){
@@ -148,20 +138,6 @@ void retek2::zTablaToList(zTable t){
 }
 
 
-
-//void retek2::feltoltEljaras(QString tablanev) {
-//    zlog.trace("feltoltEljaras " + tablanev);
-//}
-
-
-//void retek2::feltoltIdegenkulcs(QString tablanev) {
-//    zlog.trace("feltoltIdegenkulcs " + tablanev);
-
-//	ui.listWidget_IdegenKulcs->clear();
-
-//    //QString str("***");
-
-//    //ui.listWidget_IdegenKulcs->addItem(str);
 
 ////	QString commandTextTemplate = "SELECT  obj.name AS FK_NAME, "
 ////		"sch.name AS[schema_name], "
