@@ -402,7 +402,11 @@ RecountRequired,bool
 UserId,guid
 Comments,string,200
 
+osztálynév
+mezőnév,további leírók(típus, hossz, nullable, végsősoron a típust írják le), a legutolsó a caption?
 */
+
+// TODO globális caption tábla, ha ezáltal feloldható a mezőnév, és nincs egyéb caption,  akkor ez lesz
 QList<zTable> zTable::createTableByText(QString txt)
 {
 //    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -462,6 +466,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                int dlen = 0;
                bool isNullable = true;
                QString caption = "";
+               QString ezt1;
 
                auto fns = fn->split(',', QString::SkipEmptyParts);
                QString fname = fns[0].trimmed();
@@ -471,7 +476,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                        auto fn3s= fn2->split(' ', QString::SkipEmptyParts);
                        bool isDtype = false;
                        zforeach(fn3, fn3s){
-                           QString ezt1;
+
                            auto i3 = re_dlen3.match(*fn3);
                            if(i3.hasMatch()){
                                ezt1 = i3.captured(1);
@@ -485,6 +490,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                            //típus vizsgálat
                            isDtype = zTable::getType(ezt1, &dtype, &dlen, &isNullable, false);
                            }
+                       // TODO bonyolult típusmeghatározás
                        if(isDtype==false){
                             auto i2 = re_caption.match(*fn2);
                             if(i2.hasMatch())
@@ -520,8 +526,9 @@ QList<zTable> zTable::createTableByText(QString txt)
                         }
                     }
                if(dtype.isEmpty()){
-                   auto p = zTablerow(fname, "property", dlen, isNullable, caption);
-                   pl.append(p);
+                   // auto p = zTablerow(fname, "property", dlen, isNullable, caption);
+                   // pl.append(p);
+                   zlog.log(QString("nem meghatárizható típus: %1").arg(ezt1));
                    }
                else{
                    auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
@@ -546,6 +553,8 @@ mezo1 mezo2 mezo3 string
 mezo4 mezo5 int
 int mezo6 mezo7
 Adm
+
+// TODO globális caption táblát kell használni
 */
 QList<zTable> zTable::createTableByText_2(QString txt){
     auto re = QRegularExpression(R"(^\s*(?:(^\w*)\s+)((?:^[\w, ()\"'<>\.]+\n?)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);

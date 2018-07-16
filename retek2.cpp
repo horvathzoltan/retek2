@@ -43,6 +43,14 @@ void retek2::init()
     zlog.init(ui.textBrowser);
     beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox);
 
+    // TODO egy belső típust kell létrehozni, ami a perzisztens és kód közti kötést írja le, mindkét irányban
+    // amennyiben ez lehetséges - figyelembevéve, hogy
+    // csak az sql szintet vizsgálva nem lehet eldönteni, hogy az a kódban mivé alakul
+    // illetve a kód irányából, pl. a string konkrétan melyik szöveges típusra alakul
+    // amíg erre nincsen megoldás, nem lehet egybe hozni ezeket a táblákat,
+    // így ezek konverziója kód szintű marad, illetve- kell legyen
+
+
     //sql->c# irány
 	typeMap.insert("uniqueidentifier", "Guid");
 	typeMap.insert("int", "int");
@@ -69,8 +77,7 @@ void retek2::init()
 
     // ztables feltöltése
     // - itt valójában csak a beállításokat kellene betölteni
-    // ellenben itt a beállításokban szereplő adatbázis táblák is feljönnek
-
+    // 
     beallitasok.load();    
 
     auto b = beallitasok.getSelectedDbConnection();
@@ -83,6 +90,26 @@ void retek2::init()
         ztables << t;
         zTablaToList(t);
     }
+
+    // TODO - xml beolvasás után a forrást ellenőrízni -
+    // - ha az sql tábla frissebb, akkor frissíteni - illetve detektálni és a listában piros háttérrel jelezni
+    // illetve, ha ez a változás érdemi - ekkro be lehet olvasni -  és van tábla validáció, ami összeveti
+    // - ha az entitás fájl frissebb, akkor hasonlóképpen - lehet validálni
+    //
+    // azt kellene inkább vizsgálni: hogy ha a leíró sql vagy kód kötése megvan
+    // forrás típus alapján az sql illetve entity - egyértelmű, hiszen származik belőle
+    // és ha az sql vagy forrás módosult, míg a leíró nem, azaz a leíró keletkezése óta újabb az sql
+    // ezt detektálni és jelezni kell, illetve kérdés, hogy felszedjük-e a változásokat
+    // továbbá
+    // hogy a leíró honnan származik, és az érvényes-e még a származás miatt egyértelmű, hogy annak kell előbb lennie
+    //
+    // egy általánosabb probléma, hogy
+    // ha van forrás (az nem txt) fedi-e a leírót
+    // ez nem függ dátumtól, bár származás esetén nem irreleváns, de
+    // egymást nem fedő esetet lejet jóra hozni javítás által, mindkét oldalon -
+    // ha a leíró módosult, míg a forrás nem, bár ez em egyértelmű mert az sql simán lehet régebbi, mint a leíró
+    // elvileg ezt is jelezni kellene,
+
     zlog.trace("retek2 init OK");
 }
 
@@ -499,6 +526,7 @@ Storage,Storage
 User,User
 InventoryItem[]
 */
+
 /*
 on_pushButton_3_clicked
 Macro def: Adm
@@ -644,7 +672,7 @@ void retek2::on_lineEdit_tablename_editingFinished()
 }
 
 
-
+// TODO globális caption tábla használatát beépíteni
 void retek2::on_pushButton_6_clicked()
 {    
     zlog.trace("Entitások beolvasása");
