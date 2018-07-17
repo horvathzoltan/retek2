@@ -17,8 +17,9 @@ public:
     zTable();
     ~zTable();
 
-    int sourcetype;
-    QString sourcepath;
+    //int sourcetype;
+    QString sql_conn;
+    QString source_conn;
 
     QString tablename;
     QString classname; // osztálynév - singular, ezt a zTables példány létrehozásakor létre lehet már hozni, és validálni egy szabály szerint

@@ -36,7 +36,7 @@
          <x>0</x>
          <y>0</y>
          <width>1340</width>
-         <height>589</height>
+         <height>596</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -313,7 +313,7 @@
                 </property>
                 <widget class="QWidget" name="tab_4">
                  <attribute name="title">
-                  <string>Page</string>
+                  <string>Global settings</string>
                  </attribute>
                  <widget class="QGroupBox" name="groupBox_3">
                   <property name="geometry">
@@ -530,10 +530,82 @@
                    </property>
                   </widget>
                  </widget>
+                 <widget class="QGroupBox" name="groupBox_9">
+                  <property name="geometry">
+                   <rect>
+                    <x>240</x>
+                    <y>10</y>
+                    <width>241</width>
+                    <height>361</height>
+                   </rect>
+                  </property>
+                  <property name="title">
+                   <string>Source paths</string>
+                  </property>
+                  <widget class="QListWidget" name="listWidget">
+                   <property name="geometry">
+                    <rect>
+                     <x>10</x>
+                     <y>50</y>
+                     <width>211</width>
+                     <height>301</height>
+                    </rect>
+                   </property>
+                  </widget>
+                  <widget class="QPushButton" name="pushButton_createSourcePath">
+                   <property name="geometry">
+                    <rect>
+                     <x>10</x>
+                     <y>20</y>
+                     <width>75</width>
+                     <height>23</height>
+                    </rect>
+                   </property>
+                   <property name="text">
+                    <string>New</string>
+                   </property>
+                  </widget>
+                 </widget>
+                 <widget class="QGroupBox" name="groupBox_10">
+                  <property name="geometry">
+                   <rect>
+                    <x>490</x>
+                    <y>10</y>
+                    <width>211</width>
+                    <height>361</height>
+                   </rect>
+                  </property>
+                  <property name="title">
+                   <string>Projects</string>
+                  </property>
+                  <widget class="QListView" name="listView">
+                   <property name="geometry">
+                    <rect>
+                     <x>10</x>
+                     <y>50</y>
+                     <width>191</width>
+                     <height>301</height>
+                    </rect>
+                   </property>
+                  </widget>
+                  <widget class="QPushButton" name="pushButton_createProject">
+                   <property name="geometry">
+                    <rect>
+                     <x>10</x>
+                     <y>20</y>
+                     <width>75</width>
+                     <height>23</height>
+                    </rect>
+                   </property>
+                   <property name="text">
+                    <string>New</string>
+                   </property>
+                  </widget>
+                 </widget>
                 </widget>
                 <widget class="QWidget" name="tab_5">
                  <attribute name="title">
-                  <string>Page</string>
+                  <string>Table settings</string>
                  </attribute>
                  <widget class="QGroupBox" name="groupBox_7">
                   <property name="geometry">
@@ -545,7 +617,7 @@
                    </rect>
                   </property>
                   <property name="title">
-                   <string>GroupBox</string>
+                   <string>DB connections</string>
                   </property>
                   <widget class="QFrame" name="frame_5">
                    <property name="geometry">
@@ -617,7 +689,7 @@
                 </widget>
                 <widget class="QWidget" name="tab">
                  <attribute name="title">
-                  <string>Tab 1</string>
+                  <string>Table</string>
                  </attribute>
                  <layout class="QGridLayout" name="gridLayout_5">
                   <item row="0" column="0">
@@ -668,7 +740,7 @@
                 </widget>
                 <widget class="QWidget" name="tab_2">
                  <attribute name="title">
-                  <string>Tab 2</string>
+                  <string>Text input</string>
                  </attribute>
                  <layout class="QGridLayout" name="gridLayout_6">
                   <item row="0" column="0">
@@ -758,7 +830,7 @@
                 </widget>
                 <widget class="QWidget" name="tab_3">
                  <attribute name="title">
-                  <string>Page</string>
+                  <string>Text output</string>
                  </attribute>
                  <layout class="QGridLayout" name="gridLayout_7">
                   <item row="0" column="0">

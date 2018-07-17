@@ -26,8 +26,17 @@ zTable::zTable(QString _classname, QString pkn, QList<zTablerow> tr, int type, Q
 
     this->rows = tr;
     this->pkname = pkn;
-    this->sourcetype = type; 
-    this->sourcepath = _sourcepath;
+    //this->sourcetype = type;
+
+    //this->sourcepath = _sourcepath;
+    switch(type){
+        case zTableSourceTypes::SQL:
+            this->sql_conn = _sourcepath;
+            break;
+        case zTableSourceTypes::ENTITY:
+            this->source_conn = _sourcepath;
+            break;
+    }
 
     if(_classname.isEmpty()&&_tablename.isEmpty()){
         int n = ztables.count();
@@ -249,8 +258,9 @@ void zTable::toXML(QXmlStreamWriter *s)
 {  
 
     s->writeStartElement(nameof(zTable));
-    s->writeAttribute(nameof(this->sourcetype), QString::number(this->sourcetype));
-    s->writeAttribute(nameof(this->sourcepath), this->sourcepath);
+    //s->writeAttribute(nameof(this->sourcetype), QString::number(this->sourcetype));
+    s->writeAttribute(nameof(this->sql_conn), this->sql_conn);
+    s->writeAttribute(nameof(this->source_conn), this->source_conn);
 
     s->writeAttribute(nameof(this->tablename), this->tablename);
     s->writeAttribute(nameof(this->classname), this->classname);
@@ -308,8 +318,10 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
     auto a = xml->attributes();
 
     zXmlHelper::putXmlAttr(a, nameof(tablename), &(t.tablename));
-    zXmlHelper::putXmlAttr(a, nameof(sourcetype), &(t.sourcetype));
-    zXmlHelper::putXmlAttr(a, nameof(sourcepath), &(t.sourcepath));
+    //zXmlHelper::putXmlAttr(a, nameof(sourcetype), &(t.sourcetype));
+    zXmlHelper::putXmlAttr(a, nameof(sql_conn), &(t.sql_conn));
+    zXmlHelper::putXmlAttr(a, nameof(source_conn), &(t.source_conn));
+
     zXmlHelper::putXmlAttr(a, nameof(classname), &(t.classname));
     zXmlHelper::putXmlAttr(a, nameof(classname_plural), &(t.classname_plural));
     zXmlHelper::putXmlAttr(a, nameof(pkname), &(t.pkname));

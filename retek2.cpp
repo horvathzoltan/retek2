@@ -81,14 +81,25 @@ void retek2::init()
     beallitasok.load();    
 
     auto b = beallitasok.getSelectedDbConnection();
-    auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev);
-    QStringList xmlFilter("*.xml");
-    QStringList files = zFileNameHelper::FindFileNameInDir(path, "", xmlFilter);
-    zforeach(f, files){
-        auto txt = zTextFileHelper::load(*f);      
-        auto t = zTable::createTableByXML(txt);
-        ztables << t;
-        zTablaToList(t);
+
+    // TODO b->adatbazisNev helyett projectnek legyen saját neve
+    if(b != nullptr){
+        QString path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev);
+
+        QStringList xmlFilter("*.xml");
+        QStringList files = zFileNameHelper::FindFileNameInDir(path, "", xmlFilter);
+        zforeach(f, files){
+            auto txt = zTextFileHelper::load(*f);
+            auto t = zTable::createTableByXML(txt);
+            ztables << t;
+            zTablaToList(t);
+        }
+    }
+    else{
+        // a projet neve az adatbázis nevével egyezik meg
+
+        //
+        zlog.log("A project nem rendelkezik adatbázis kapcsolattal");
     }
 
     // TODO - xml beolvasás után a forrást ellenőrízni -
@@ -147,10 +158,15 @@ void retek2::zTablaToList(QList<zTable> ts){
 
 void retek2::zTablaToList(zTable t){
     QString tn = t.tablename;
-    int ty = t.sourcetype;
+    int sourcetype;
     QIcon icon;
+    if(!t.sql_conn.isEmpty())
+        sourcetype = zTableSourceTypes::SQL;
+    else if(!t.source_conn.isEmpty())
+        sourcetype = zTableSourceTypes::ENTITY;
 
-    switch(t.sourcetype){
+
+    switch(sourcetype){
         case zTableSourceTypes::SQL:
             icon=QIcon::fromTheme("office-database");
             break;
@@ -161,7 +177,7 @@ void retek2::zTablaToList(zTable t){
             icon=QIcon::fromTheme("text");
             break;
     }   
-    new QListWidgetItem(icon, tn, ui.listWidget_ztables, ty);
+    new QListWidgetItem(icon, tn, ui.listWidget_ztables, sourcetype);
 }
 
 
@@ -216,8 +232,8 @@ void retek2::fejadatFeltolt(zTable t){
     ui.lineEdit_classname->setText(t.classname);
     ui.lineEdit_classname_plural->setText(t.classname_plural);
 
-    ui.lineEdit_tablename->setDisabled(t.sourcetype==SQL);
-    ui.lineEdit_classname->setDisabled(t.sourcetype==TXT);
+    //ui.lineEdit_tablename->setDisabled(t.sourcetype==SQL);
+    //ui.lineEdit_classname->setDisabled(t.sourcetype==TXT);
 
 }
 
@@ -303,7 +319,8 @@ void retek2::GenerateAll() {
 	}
 
     if (ui.checkBox_Enum->isChecked()) {
-        if( table->sourcetype==SQL){
+
+        if(!table->sql_conn.isEmpty()){
         zlog.trace("Enum");
 
         auto dbconn = beallitasok.getUI();

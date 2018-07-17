@@ -114,7 +114,11 @@ abrachadabra
 */
 
     //QString connectionString = connectionTemplate.arg(server).arg(adatbazisNev);
+
+    // ez a templatedir
     QString tmpDir = R"(retek2/template_dir)";
+
+    // ez a projectek elérési útja
     QString munkadir = R"(retek2/munka_dir)";
     QString settingsdir = R"(retek2/settings)";
 
