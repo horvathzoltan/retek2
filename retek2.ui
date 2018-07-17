@@ -36,7 +36,7 @@
          <x>0</x>
          <y>0</y>
          <width>1340</width>
-         <height>596</height>
+         <height>589</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -309,297 +309,325 @@
               <item>
                <widget class="QTabWidget" name="tabWidget">
                 <property name="currentIndex">
-                 <number>2</number>
+                 <number>0</number>
                 </property>
                 <widget class="QWidget" name="tab_4">
                  <attribute name="title">
                   <string>Global settings</string>
                  </attribute>
-                 <widget class="QGroupBox" name="groupBox_3">
+                 <widget class="QTabWidget" name="tabWidget_2">
                   <property name="geometry">
                    <rect>
                     <x>0</x>
-                    <y>10</y>
-                    <width>231</width>
-                    <height>361</height>
+                    <y>0</y>
+                    <width>451</width>
+                    <height>441</height>
                    </rect>
                   </property>
-                  <property name="title">
-                   <string>Connections</string>
+                  <property name="currentIndex">
+                   <number>2</number>
                   </property>
-                  <widget class="QComboBox" name="comboBox_connections">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>30</y>
-                     <width>211</width>
-                     <height>25</height>
-                    </rect>
-                   </property>
-                  </widget>
-                  <widget class="QFrame" name="frame_3">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>60</y>
-                     <width>212</width>
-                     <height>80</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>80</height>
-                    </size>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                   <layout class="QFormLayout" name="formLayout_4">
-                    <item row="0" column="1">
-                     <widget class="QComboBox" name="comboBox">
-                      <item>
-                       <property name="text">
-                        <string>QMYSQL</string>
-                       </property>
+                  <widget class="QWidget" name="tab_6">
+                   <attribute name="title">
+                    <string>Connections</string>
+                   </attribute>
+                   <widget class="QGroupBox" name="groupBox_3">
+                    <property name="geometry">
+                     <rect>
+                      <x>0</x>
+                      <y>0</y>
+                      <width>271</width>
+                      <height>361</height>
+                     </rect>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <widget class="QComboBox" name="comboBox_connections">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>30</y>
+                       <width>251</width>
+                       <height>25</height>
+                      </rect>
+                     </property>
+                    </widget>
+                    <widget class="QFrame" name="frame_3">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>60</y>
+                       <width>251</width>
+                       <height>80</height>
+                      </rect>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>80</height>
+                      </size>
+                     </property>
+                     <property name="frameShape">
+                      <enum>QFrame::StyledPanel</enum>
+                     </property>
+                     <property name="frameShadow">
+                      <enum>QFrame::Raised</enum>
+                     </property>
+                     <layout class="QFormLayout" name="formLayout_4">
+                      <item row="0" column="1">
+                       <widget class="QComboBox" name="comboBox">
+                        <item>
+                         <property name="text">
+                          <string>QMYSQL</string>
+                         </property>
+                        </item>
+                        <item>
+                         <property name="text">
+                          <string>QODBC</string>
+                         </property>
+                        </item>
+                       </widget>
                       </item>
-                      <item>
-                       <property name="text">
-                        <string>QODBC</string>
-                       </property>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="labelConnstring">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>Server</string>
+                        </property>
+                       </widget>
                       </item>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="labelConnstring">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="text">
-                       <string>Server</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLineEdit" name="lineEdit_Server">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="label_3">
-                      <property name="minimumSize">
-                       <size>
-                        <width>0</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>driver</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
+                      <item row="1" column="1">
+                       <widget class="QLineEdit" name="lineEdit_Server">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="label_3">
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>driver</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                    <widget class="QFrame" name="frame_2">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>150</y>
+                       <width>251</width>
+                       <height>80</height>
+                      </rect>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>80</height>
+                      </size>
+                     </property>
+                     <property name="frameShape">
+                      <enum>QFrame::StyledPanel</enum>
+                     </property>
+                     <property name="frameShadow">
+                      <enum>QFrame::Raised</enum>
+                     </property>
+                     <layout class="QFormLayout" name="formLayout_2">
+                      <item row="0" column="0">
+                       <widget class="QLabel" name="labelUser">
+                        <property name="text">
+                         <string>User</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="label_2">
+                        <property name="text">
+                         <string>Passwd</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="1">
+                       <widget class="QLineEdit" name="lineEdit_User">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="1">
+                       <widget class="QLineEdit" name="lineEdit_Password">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                    <widget class="QFrame" name="frame">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>240</y>
+                       <width>251</width>
+                       <height>80</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>80</height>
+                      </size>
+                     </property>
+                     <property name="frameShape">
+                      <enum>QFrame::StyledPanel</enum>
+                     </property>
+                     <property name="frameShadow">
+                      <enum>QFrame::Raised</enum>
+                     </property>
+                     <layout class="QFormLayout" name="formLayout">
+                      <item row="1" column="1">
+                       <widget class="QLineEdit" name="lineEdit_Catalog">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="label">
+                        <property name="text">
+                         <string>Catalog</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                    <widget class="QPushButton" name="pushButton">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>330</y>
+                       <width>80</width>
+                       <height>25</height>
+                      </rect>
+                     </property>
+                     <property name="text">
+                      <string>Connect</string>
+                     </property>
+                    </widget>
+                   </widget>
                   </widget>
-                  <widget class="QFrame" name="frame_2">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>150</y>
-                     <width>211</width>
-                     <height>80</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>80</height>
-                    </size>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                   <layout class="QFormLayout" name="formLayout_2">
-                    <item row="0" column="0">
-                     <widget class="QLabel" name="labelUser">
-                      <property name="text">
-                       <string>User</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label_2">
-                      <property name="text">
-                       <string>Passwd</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QLineEdit" name="lineEdit_User">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="1">
-                     <widget class="QLineEdit" name="lineEdit_Password">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
+                  <widget class="QWidget" name="tab_7">
+                   <attribute name="title">
+                    <string>Source paths</string>
+                   </attribute>
+                   <widget class="QGroupBox" name="groupBox_9">
+                    <property name="geometry">
+                     <rect>
+                      <x>0</x>
+                      <y>0</y>
+                      <width>271</width>
+                      <height>361</height>
+                     </rect>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <widget class="QListWidget" name="listWidget">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>50</y>
+                       <width>251</width>
+                       <height>301</height>
+                      </rect>
+                     </property>
+                    </widget>
+                    <widget class="QPushButton" name="pushButton_createSourcePath">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>20</y>
+                       <width>75</width>
+                       <height>23</height>
+                      </rect>
+                     </property>
+                     <property name="text">
+                      <string>New</string>
+                     </property>
+                    </widget>
+                   </widget>
                   </widget>
-                  <widget class="QFrame" name="frame">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>240</y>
-                     <width>211</width>
-                     <height>80</height>
-                    </rect>
-                   </property>
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>80</height>
-                    </size>
-                   </property>
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                   <layout class="QFormLayout" name="formLayout">
-                    <item row="1" column="1">
-                     <widget class="QLineEdit" name="lineEdit_Catalog">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0">
-                     <widget class="QLabel" name="label">
-                      <property name="text">
-                       <string>Catalog</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                  <widget class="QPushButton" name="pushButton">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>330</y>
-                     <width>80</width>
-                     <height>25</height>
-                    </rect>
-                   </property>
-                   <property name="text">
-                    <string>Connect</string>
-                   </property>
-                  </widget>
-                 </widget>
-                 <widget class="QGroupBox" name="groupBox_9">
-                  <property name="geometry">
-                   <rect>
-                    <x>240</x>
-                    <y>10</y>
-                    <width>241</width>
-                    <height>361</height>
-                   </rect>
-                  </property>
-                  <property name="title">
-                   <string>Source paths</string>
-                  </property>
-                  <widget class="QListWidget" name="listWidget">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>50</y>
-                     <width>211</width>
-                     <height>301</height>
-                    </rect>
-                   </property>
-                  </widget>
-                  <widget class="QPushButton" name="pushButton_createSourcePath">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>20</y>
-                     <width>75</width>
-                     <height>23</height>
-                    </rect>
-                   </property>
-                   <property name="text">
-                    <string>New</string>
-                   </property>
-                  </widget>
-                 </widget>
-                 <widget class="QGroupBox" name="groupBox_10">
-                  <property name="geometry">
-                   <rect>
-                    <x>490</x>
-                    <y>10</y>
-                    <width>211</width>
-                    <height>361</height>
-                   </rect>
-                  </property>
-                  <property name="title">
-                   <string>Projects</string>
-                  </property>
-                  <widget class="QListView" name="listView">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>50</y>
-                     <width>191</width>
-                     <height>301</height>
-                    </rect>
-                   </property>
-                  </widget>
-                  <widget class="QPushButton" name="pushButton_createProject">
-                   <property name="geometry">
-                    <rect>
-                     <x>10</x>
-                     <y>20</y>
-                     <width>75</width>
-                     <height>23</height>
-                    </rect>
-                   </property>
-                   <property name="text">
-                    <string>New</string>
-                   </property>
+                  <widget class="QWidget" name="tab_8">
+                   <attribute name="title">
+                    <string>Projects</string>
+                   </attribute>
+                   <widget class="QGroupBox" name="groupBox_10">
+                    <property name="geometry">
+                     <rect>
+                      <x>0</x>
+                      <y>0</y>
+                      <width>271</width>
+                      <height>391</height>
+                     </rect>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <widget class="QListView" name="listView">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>50</y>
+                       <width>251</width>
+                       <height>301</height>
+                      </rect>
+                     </property>
+                    </widget>
+                    <widget class="QPushButton" name="pushButton_createProject">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>20</y>
+                       <width>75</width>
+                       <height>23</height>
+                      </rect>
+                     </property>
+                     <property name="text">
+                      <string>New</string>
+                     </property>
+                    </widget>
+                   </widget>
                   </widget>
                  </widget>
                 </widget>
@@ -617,7 +645,7 @@
                    </rect>
                   </property>
                   <property name="title">
-                   <string>DB connections</string>
+                   <string>Table</string>
                   </property>
                   <widget class="QFrame" name="frame_5">
                    <property name="geometry">
