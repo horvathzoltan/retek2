@@ -168,16 +168,11 @@ void Beallitasok::load(){
 
     fn = zFileNameHelper::append(sdirPath, settings_filename);
     txt = zTextFileHelper::load(fn);
-    if(txt.isEmpty()){
-        zlog.log(QStringLiteral("A fájl üres: %1 ERROR").arg(settings_filename));
-    }else{
+    if(!txt.isEmpty()){
         QStringList csvl = zStringHelper::toStringList(txt);
-
         Beallitasok::FromCSV(csvl.first());
-    }    
-
-    return;
-}
+        }
+    }
 
 void Beallitasok::FromCSV(QString i){
     QStringList a = i.split(zStringHelper::SEP);

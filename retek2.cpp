@@ -84,23 +84,20 @@ void retek2::init()
     auto projectdirs = zFileNameHelper::GetSubdirs(projectdir);
     ui.listWidget_projects->addItems(projectdirs);
 
-    if(!beallitasok.currentProjectName.isEmpty()){
-        auto items = ui.listWidget_projects->findItems(beallitasok.currentProjectName, Qt::MatchExactly);
-        if(items.isEmpty())
-            zlog.log(QStringLiteral("Az aktuális project nem található: %1 ERROR").arg(beallitasok.currentProjectName));
-        else
-            ui.listWidget_projects->setCurrentItem(items[0]);
+    if(beallitasok.currentProjectName.isEmpty()){
+        zlog.log(QStringLiteral("Nincs elmentett aktuális project. ERROR").arg(beallitasok.currentProjectName));
     }
+    else{
+        auto items = ui.listWidget_projects->findItems(beallitasok.currentProjectName, Qt::MatchExactly);
+        if(items.isEmpty()){
+            zlog.log(QStringLiteral("Az aktuális project nem található: %1 ERROR").arg(beallitasok.currentProjectName));
+        }
+        else{
+            ui.listWidget_projects->setCurrentItem(items[0]);
+        }
 
+        QString path = zFileNameHelper::append(projectdir,beallitasok.currentProjectName);
 
-    auto b = beallitasok.getSelectedDbConnection();
-
-    // TODO b->adatbazisNev helyett projectnek legyen saját neve
-    if(b != nullptr){
-        //QString path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev);
-        QString path = zFileNameHelper::append(projectdir,b->adatbazisNev);
-
-        //QStringList xmlFilter(QStringLiteral("*.xml"));
         QStringList files = zFileNameHelper::FindFileNameInDir(path, QString(), zFileNameHelper::xmlFilter);
         zforeach(f, files){
             auto txt = zTextFileHelper::load(*f);
@@ -108,15 +105,10 @@ void retek2::init()
             ztables << t;
             zTablaToList(t);
         }
-    }
-    else{
-        // a projet neve az adatbázis nevével egyezik meg
 
-        //
-        zlog.log("A project nem rendelkezik adatbázis kapcsolattal");
-    }
+    }      
 
-    // TODO - xml beolvasás után a forrást ellenőrízni -
+    // TODO - xml beolvasás után a forrást ellenőrízni
     // - ha az sql tábla frissebb, akkor frissíteni - illetve detektálni és a listában piros háttérrel jelezni
     // illetve, ha ez a változás érdemi - ekkro be lehet olvasni -  és van tábla validáció, ami összeveti
     // - ha az entitás fájl frissebb, akkor hasonlóképpen - lehet validálni
@@ -135,7 +127,11 @@ void retek2::init()
     // ha a leíró módosult, míg a forrás nem, bár ez em egyértelmű mert az sql simán lehet régebbi, mint a leíró
     // elvileg ezt is jelezni kellene,
 
-    zlog.trace("retek2 init OK");
+    //TODO a project lista váltásra projectet kellene váltani, míg az adatbázislista váltásra pedig nem
+    // ennek már nem kell hatása legyen, az adatbázis lista informális, szerepét átveszi részben a project lista,
+    // részben az egyes táblák saját adatbázis és és táblanév adatai
+
+    zlog.trace(QStringLiteral("retek2 init OK"));
 }
 
 void retek2::initBy(dbConnection* c){
@@ -144,6 +140,7 @@ void retek2::initBy(dbConnection* c){
     beallitasok.setUI(*c);
     ztokenizer.init(ui.tableWidget_MezoLista);
 
+    // global caption tábla beolvasása
     zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, c->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
 }
 

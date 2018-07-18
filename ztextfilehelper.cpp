@@ -5,16 +5,17 @@
 
 #include <QFileInfo>
 
-QString zTextFileHelper::load(QString filename) {
+QString zTextFileHelper::load(const QString& filename) {
     QFile f(filename);
+    QString e;
     if (f.open(QFile::ReadOnly | QFile::Text))  {
-        return QTextStream(&f).readAll();
+        e =  QTextStream(&f).readAll();
     }
     else{
         zlog.log(QStringLiteral("A fájl nem található: %1 ERROR").arg(filename));
-        return zStringHelper::Empty;
+        e= zStringHelper::Empty;
     }
-
+    return e;
 }
 
 void zTextFileHelper::save(QString txt, QString fn, bool isAppend) {

@@ -1,4 +1,4 @@
-#include "zstringHelper.h"
+#include "zstringhelper.h"
 #include "dbconnection.h"
 #include <QStringList>
 
