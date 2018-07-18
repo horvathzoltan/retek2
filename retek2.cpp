@@ -77,7 +77,7 @@ void retek2::init()
 
     // ztables feltöltése
     // - itt valójában csak a beállításokat kellene betölteni
-    //  aaa
+    //  bbb
     beallitasok.load();    
 
     auto b = beallitasok.getSelectedDbConnection();
