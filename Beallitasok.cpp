@@ -94,18 +94,18 @@ QString Beallitasok::getTemplateFilename(QString tfname) {
     if(b!=nullptr){
     bool isVal = true;
     if(tmpDir.isEmpty())
-        {zlog.log("A template könyvtár a beállításokban nincs megadva");isVal=false;}
+        {zlog.log(QStringLiteral("A template könyvtár a beállításokban nincs megadva"));isVal=false;}
     if(tfname.isEmpty())
-        {zlog.log("A template fájlnév nincs megadva");isVal=false;}
+        {zlog.log(QStringLiteral("A template fájlnév nincs megadva"));isVal=false;}
     if(b->adatbazisNev.isEmpty())
-        {zlog.log("Az adatbázisnév nincs megadva");isVal=false;}
+        {zlog.log(QStringLiteral("Az adatbázisnév nincs megadva"));isVal=false;}
     if(isVal == false)
-        {zLog::ShowDialog("A template fájlnév nem meghatározható");return NULL;}
+        {zLog::ShowDialog(QStringLiteral("A template fájlnév nem meghatározható"));return nullptr;}
 
     auto fn = zFileNameHelper::append(QDir::homePath(),tmpDir, b->adatbazisNev, tfname);
 
     //zlog.log("project template keresese:"+ fn);
-    if(QFileInfo(fn).exists())
+    if(QFileInfo::exists(fn))
         return fn;
     else{
         zlog.log("nincs project template:" +fn);
@@ -113,7 +113,7 @@ QString Beallitasok::getTemplateFilename(QString tfname) {
         fn = zFileNameHelper::append(QDir::homePath(),tmpDir, tfname);
         //fn = QString(beallitasok.tmpDir+R"(\%1)").arg(tfname);
 
-        if(QFileInfo(fn).exists())
+        if(QFileInfo::exists(fn))
             return fn;
         else{
             zlog.log("nincs default template:"+ fn);
@@ -121,9 +121,9 @@ QString Beallitasok::getTemplateFilename(QString tfname) {
         }
 }
     else
-        zlog.log("nincs kiválasztott dbconnection:");
+        zlog.log(QStringLiteral("nincs kiválasztott dbconnection:"));
 
-    return NULL;
+    return nullptr;
 }
 
 dbConnection* Beallitasok::getSelectedDbConnection(){
@@ -146,8 +146,9 @@ beállítások csv visszaolvasása
 
 */
 void Beallitasok::load(){
+    QString sdirPath = zFileNameHelper::append(QDir::homePath(),settingsdir);
 
-    QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, "");       
+    QString fn = zFileNameHelper::append(sdirPath, dbconnections_filename);
 
     QString txt = zTextFileHelper::load(fn);
     widget_connections->clear();
@@ -164,15 +165,34 @@ void Beallitasok::load(){
 
         selected_ix = 0;
     }
+
+    fn = zFileNameHelper::append(sdirPath, settings_filename);
+    txt = zTextFileHelper::load(fn);
+    if(txt.isEmpty()){
+        zlog.log(QStringLiteral("A fájl üres: %1 ERROR").arg(settings_filename));
+    }else{
+        QStringList csvl = zStringHelper::toStringList(txt);
+
+        Beallitasok::FromCSV(csvl.first());
+    }    
+
     return;
 }
 
+void Beallitasok::FromCSV(QString i){
+    QStringList a = i.split(zStringHelper::SEP);
+    if(a.count()>0){
+        currentProjectName= a[0];
+    }
+}
+
+
 void Beallitasok::addConnection(dbConnection b){  
 
-    QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, "");
+    QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, QString());
     QString csvr= b.ToCSV();
 
-    zlog.log(QString("dbconnection append %1 %2").arg(fn).arg(csvr));
+    zlog.log(QStringLiteral("dbconnection append %1 %2").arg(fn, csvr));
     zTextFileHelper::append(fn, csvr);  
 
     addDbConnection(b);

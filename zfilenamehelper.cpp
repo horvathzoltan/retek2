@@ -1,13 +1,11 @@
 #include "globals.h"
 #include "zfilenamehelper.h"
 #include "ztextfilehelper.h"
+
 #include <QDir>
 #include <QDirIterator>
 
-zFileNameHelper::zFileNameHelper()
-{
 
-}
 
 
 //QString zFileNameHelper::getContextFilename(QString munkadir ,QString tfname) {
@@ -20,6 +18,8 @@ zFileNameHelper::zFileNameHelper()
 //QString zFileNameHelper::getCClassFilename(QString munkadir, QString adatbazisNev, QString tfname) {
 //    //return QString(munkadir+R"(\%1\%2)").arg(adatbazisNev).arg(tfname);
 //}
+
+const QStringList zFileNameHelper::xmlFilter = QStringList(QStringLiteral("*.xml"));
 
 QString zFileNameHelper::append(QString h, QString p0, QString p1, QString p2){
     auto s = QDir::separator();
@@ -41,43 +41,30 @@ QString zFileNameHelper::append(QString h, QString p0, QString p1, QString p2){
 }
 
 
+QStringList zFileNameHelper::GetSubdirs(QString& dirName){
+    QDir d = QDir(dirName);
+    QStringList datadirs  = d.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    return datadirs;
+}
 //zTable::r_class 
 //  class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\})
 
 //https://stackoverflow.com/questions/8052460/recursively-iterate-over-all-the-files-in-a-directory-and-its-subdirectories-in
 QStringList zFileNameHelper::FindFileNameInDir(QString dirName, QString fn_pattern, QStringList nameFilters ){
-
     QString fn = "*."+fn_pattern;
-    QStringList ql;
-
-    //zlog.log("dirName: "+dirName + ","+ fn);
+    QStringList ql;    
 
     QDir d = QDir(dirName);
     QStringList datadirs  = d.entryList(QStringList() << fn, QDir::Dirs);
 
     if(datadirs.isEmpty()) return ql;
 
-    //zlog.log("datadir: "+datadirs.first());
-
     d.cd(datadirs.first());
     d.setNameFilters(nameFilters);//QStringList()<<"*.c"<<"*.cs");
-
-    //QRegularExpression r_regexp(r_pattern);
     
     QDirIterator it(d, QDirIterator::Subdirectories);
     while (it.hasNext()){
         auto n =  it.next();
-        
-//        iregexpf(!r_.pattern().isEmpty()){
-//            QString txt = zTextFileHelper::load(n);
-//            if(!txt.isEmpty()){
-//            auto i_regexp = r_regexp.globalMatch(txt);
-//            if(i_regexp.hasNext()){
-                
-//                }
-//            }
-//        }
-
         ql << n;
         zlog.log("file: "+n);
     }

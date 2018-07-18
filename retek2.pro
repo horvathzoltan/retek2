@@ -82,3 +82,4 @@ CONFIG += warn_on
 # INCLUDEPATH += C:\Program Files\MySQL\MySQL Connector C++ 1.1.9\lib\opt
 # DEPENDPATH += C:\Program Files\MySQL\MySQL Connector C++ 1.1.9\lib\opt
 
+win32 { QMAKE_CXXFLAGS += /FS /source-charset:utf-8 }

@@ -1,12 +1,20 @@
+#include "globals.h"
 #include "zlog.h"
 #include "ztextfilehelper.h"
+#include "zstringhelper.h"
 
 #include <QFileInfo>
 
 QString zTextFileHelper::load(QString filename) {
     QFile f(filename);
-    if (!f.open(QFile::ReadOnly | QFile::Text)) return "";
-    return QTextStream(&f).readAll();
+    if (f.open(QFile::ReadOnly | QFile::Text))  {
+        return QTextStream(&f).readAll();
+    }
+    else{
+        zlog.log(QStringLiteral("A fájl nem található: %1 ERROR").arg(filename));
+        return zStringHelper::Empty;
+    }
+
 }
 
 void zTextFileHelper::save(QString txt, QString fn, bool isAppend) {

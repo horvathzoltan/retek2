@@ -1,3 +1,4 @@
+#include "zstringHelper.h"
 #include "dbconnection.h"
 #include <QStringList>
 
@@ -9,7 +10,7 @@ user;
 password;
 */
 
-const QChar dbConnection::SEP = ';';
+
 
 dbConnection::dbConnection(QString driver, QString adatbazisNev, QString server, QString user, QString password){
     this->driver = driver;
@@ -22,11 +23,11 @@ dbConnection::dbConnection(QString driver, QString adatbazisNev, QString server,
 
 QString dbConnection::ToCSV(){
     QStringList o {driver, adatbazisNev, server, user, password};
-    return o.join(SEP);
+    return o.join(zStringHelper::SEP);
 }
 
 dbConnection dbConnection::FromCSV(QString i){
-    QStringList a = i.split(SEP);
+    QStringList a = i.split(zStringHelper::SEP);
     if(a.count()==5){
         return dbConnection(a[0],a[1],a[2],a[3],a[4]);
     }
@@ -37,11 +38,11 @@ dbConnection dbConnection::FromCSV(QString i){
 
 bool dbConnection::isValid(){
     return !(
-            (adatbazisNev.isEmpty() || adatbazisNev.contains(SEP)) ||
-            (server.isEmpty() || server.contains(SEP))||
-            (driver.isEmpty() || driver.contains(SEP))||
-            (password.isEmpty() || password.contains(SEP))||
-            (user.isEmpty() || user.contains(SEP))
+            (adatbazisNev.isEmpty() || adatbazisNev.contains(zStringHelper::SEP)) ||
+            (server.isEmpty() || server.contains(zStringHelper::SEP))||
+            (driver.isEmpty() || driver.contains(zStringHelper::SEP))||
+            (password.isEmpty() || password.contains(zStringHelper::SEP))||
+            (user.isEmpty() || user.contains(zStringHelper::SEP))
         );
 }
 

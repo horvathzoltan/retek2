@@ -6,8 +6,10 @@ zLog::zLog(){};
 
 zLog::~zLog(){};
 
-void zLog::init(QTextBrowser* b){
+void zLog::init(QTextBrowser* b, QTabWidget* tw, int tix){
     this->widget = b;
+    this->tabwidget = tw;
+    this->tabindex = tix;
 }
 
 void zLog::ShowDialog(QString str) {
@@ -48,7 +50,8 @@ void zLog::log(QString m, int errlevel){
         this->widget->setTextColor(QColor(Qt::green));
         break;
     case ERROR:
-        this->widget->setTextColor(QColor(Qt::red));
+        this->widget->setTextColor(QColor(Qt::red));        
+        tabwidget->setCurrentIndex(tabindex);
         break;
     case TRACE:
         this->widget->setTextColor(QColor(Qt::gray));

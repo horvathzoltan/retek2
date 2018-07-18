@@ -5,10 +5,10 @@
 class dbConnection
 {
 private:
-    static const QChar SEP;
+
 public:    
     QString driver;
-    QString adatbazisNev;
+    QString adatbazisNev;    
     QString server;
     QString user;
     QString password;

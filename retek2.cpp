@@ -29,7 +29,7 @@
 //#include "ztable.h"
 //#include "zsql.h"
 //#include "zenumizer.h"
-
+#include <QWidget>
 
 retek2::retek2(QWidget *parent):QMainWindow(parent){
 	ui.setupUi(this);
@@ -40,7 +40,7 @@ retek2::~retek2()= default;
 
 void retek2::init()
 {	
-    zlog.init(ui.textBrowser);
+    zlog.init(ui.textBrowser, ui.tabWidget, 4);
     beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox);
 
     // TODO egy belső típust kell létrehozni, ami a perzisztens és kód közti kötést írja le, mindkét irányban
@@ -80,14 +80,28 @@ void retek2::init()
     //  bbb
     beallitasok.load();    
 
+    auto projectdir  = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir);
+    auto projectdirs = zFileNameHelper::GetSubdirs(projectdir);
+    ui.listWidget_projects->addItems(projectdirs);
+
+    if(!beallitasok.currentProjectName.isEmpty()){
+        auto items = ui.listWidget_projects->findItems(beallitasok.currentProjectName, Qt::MatchExactly);
+        if(items.isEmpty())
+            zlog.log(QStringLiteral("Az aktuális project nem található: %1 ERROR").arg(beallitasok.currentProjectName));
+        else
+            ui.listWidget_projects->setCurrentItem(items[0]);
+    }
+
+
     auto b = beallitasok.getSelectedDbConnection();
 
     // TODO b->adatbazisNev helyett projectnek legyen saját neve
     if(b != nullptr){
-        QString path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev);
+        //QString path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev);
+        QString path = zFileNameHelper::append(projectdir,b->adatbazisNev);
 
-        QStringList xmlFilter("*.xml");
-        QStringList files = zFileNameHelper::FindFileNameInDir(path, "", xmlFilter);
+        //QStringList xmlFilter(QStringLiteral("*.xml"));
+        QStringList files = zFileNameHelper::FindFileNameInDir(path, QString(), zFileNameHelper::xmlFilter);
         zforeach(f, files){
             auto txt = zTextFileHelper::load(*f);
             auto t = zTable::createTableByXML(txt);

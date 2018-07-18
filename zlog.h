@@ -3,11 +3,14 @@
 
 #include <QString>
 #include <QTextBrowser>
+#include <QTabWidget>
 
 class zLog
 {
 private:
     QTextBrowser *widget;
+    QTabWidget *tabwidget;
+    int tabindex;
 
 public:    
     zLog();
@@ -15,7 +18,7 @@ public:
 
     enum ErrLevels:int {OK, ERROR, TRACE };
 
-    void init(QTextBrowser*);
+    void init(QTextBrowser*, QTabWidget*, int);
 
     static void ShowDialog(QString str);
     void trace(QString);

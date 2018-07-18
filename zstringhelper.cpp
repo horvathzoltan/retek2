@@ -13,6 +13,8 @@ zStringHelper::zStringHelper()
 
 }
 */
+const QChar zStringHelper::SEP = ';';
+const QString zStringHelper::Empty = QString();
 
 bool zStringHelper::toBool(QString ezt){
     if(ezt.isEmpty()) return false;

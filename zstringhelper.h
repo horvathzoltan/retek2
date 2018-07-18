@@ -5,8 +5,11 @@
 #include <QRegularExpression>
 
 class zStringHelper
-{
+{    
 public:
+    static const QChar SEP;
+    static const QString Empty;
+
     zStringHelper();
     static bool toBool(QString);  
 

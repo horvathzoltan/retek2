@@ -36,6 +36,7 @@ public:
     void load();
     void addConnection(dbConnection);
 
+    QString currentProjectName;
 
     QString getTemplateFilename(QString tfname);
 
@@ -123,6 +124,7 @@ abrachadabra
     QString settingsdir = R"(retek2/settings)";
 
     QString dbconnections_filename = R"(dbconnections.csv)";
+    QString settings_filename = R"(settings.csv)";
     /*
 #if defined(Q_OS_WIN)
 	QString tmpDir = R"(C:\retek2\template_dir)";
@@ -138,6 +140,8 @@ abrachadabra
     void setSelected(int i);
 
     void addDbConnection(dbConnection b);
+
+    void FromCSV(QString i);
 };
 
 #endif
