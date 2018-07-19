@@ -23,7 +23,8 @@ public:
     void tablaAdatokBejegyez(const QString& tn);
     void zTablaToList(QList<zTable> t);
     void zTablaToList(const zTable& t);
-    //void feltoltRPk(zTable t);
+    void loadCurrentProject();
+    
 private slots:
 	void GenerateAll();
     //void ValidateByText();
@@ -52,6 +53,9 @@ private slots:
 
     void on_listWidget_ztables_itemClicked(QListWidgetItem *item);
 
+
+    void on_pushButton_projects_apply_clicked();
+
 private:
     Ui::retek2Class ui;
 
@@ -79,7 +83,7 @@ private:
     zEnumizer::EnumSource GetEnumData(zSQL *zsql);
 
     // void initBy(dbConnection* b);
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event) override;
 };
 
 //#endif // RETEK2_H

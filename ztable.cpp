@@ -960,7 +960,7 @@ QList<zTable> zTable::createTableByClassTxt(QString txt){
     }
 
     // konstanstábla beolvasása
-    auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,db->adatbazisNev);
+    auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,db->adatbazisNev);
 
     // key az attrName, value a constName
     QStringList classNameFilter;
@@ -1006,7 +1006,7 @@ void zTable::saveTablaToXML() {
     auto b = beallitasok.getSelectedDbConnection();
     if(b==nullptr) return;
 
-    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev, this->tablename + ".xml");
+    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,b->adatbazisNev, this->tablename + ".xml");
 
     QString e;
     QXmlStreamWriter s(&e);

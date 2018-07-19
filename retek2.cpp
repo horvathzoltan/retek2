@@ -37,12 +37,20 @@ retek2::retek2(QWidget *parent):QMainWindow(parent){
 
 retek2::~retek2()= default;
 
+/**
+    // Ha van elmentett projectnév
+    // beállítjuk a listában aktuálisnak
+    // majd a project név alapján elérési utat képzünk
+    // és az ott található táblákat beolvassuk
+    // az ott tárolt xml leírójuk alapján
+*/
+
 
 void retek2::init()
 {	
     zlog.init(ui.textBrowser, ui.tabWidget, 4);
     beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
-
+    beallitasok.initPaths();
     // TODO egy belső típust kell létrehozni, ami a perzisztens és kód közti kötést írja le, mindkét irányban
     // amennyiben ez lehetséges - figyelembevéve, hogy
     // csak az sql szintet vizsgálva nem lehet eldönteni, hogy az a kódban mivé alakul
@@ -77,32 +85,11 @@ void retek2::init()
 
     beallitasok.load();    
 
-    auto projectdir  = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir);
-    auto projectdirs = zFileNameHelper::GetSubdirs(projectdir);
-
+    auto projectdirs = zFileNameHelper::GetSubdirs(beallitasok.projectPath);
     beallitasok.fillProjectList(projectdirs);
 
-    // Ha van elmentett projectnév
-    // beállítjuk a listában aktuálisnak
-    // majd a project név alapján elérési utat képzünk
-    // és az ott található táblákat beolvassuk
-    // az ott tárolt xml leírójuk alapján
-    if(beallitasok.currentProjectName.isEmpty()){
-        zlog.log(QStringLiteral("Nincs elmentett aktuális project. ERROR").arg(beallitasok.currentProjectName));
-    }
-    else{       
+    loadCurrentProject();
 
-        QString path = zFileNameHelper::append(projectdir,beallitasok.currentProjectName);
-
-        QStringList files = zFileNameHelper::FindFileNameInDir(path, QString(), zFileNameHelper::xmlFilter);
-        zforeach(f, files){
-            auto txt = zTextFileHelper::load(*f);
-            auto t = zTable::createTableByXML(txt);
-            ztables << t;
-            zTablaToList(t);
-        }
-
-    }      
 
     // TODO - xml beolvasás után a forrást ellenőrízni
     // - ha az sql tábla frissebb, akkor frissíteni - illetve detektálni és a listában piros háttérrel jelezni
@@ -139,6 +126,26 @@ void retek2::init()
 //    // global caption tábla beolvasása
 //    zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, c->adatbazisNev, Beallitasok::filename), &globalCaptionMap); // globális elnevezéstábla
 //}
+
+void retek2::loadCurrentProject()
+{
+    if(beallitasok.currentProjectName.isEmpty()){
+            zlog.log(QStringLiteral("Nincs aktuális project. ERROR").arg(beallitasok.currentProjectName));
+        }
+    else{
+        ztables.clear();
+        ui.listWidget_ztables->clear();
+
+        QString currentProjectPath = zFileNameHelper::append(beallitasok.projectPath,beallitasok.currentProjectName);
+        QStringList files = zFileNameHelper::FindFileNameInDir(currentProjectPath, QString(), zFileNameHelper::xmlFilter);
+        zforeach(f, files){
+            auto txt = zTextFileHelper::load(*f);
+            auto t = zTable::createTableByXML(txt);
+            ztables << t;
+            zTablaToList(t);
+            }
+        }
+}
 
 void retek2::tablaListaFeltolt() {
     zSQL zsql;
@@ -321,7 +328,7 @@ void retek2::GenerateAll() {
 
         auto txt = generateTmp("MVC_CClass.cs");
         zlog.log(txt);
-        auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev,table->tablename + ".cs");
+        auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,b->adatbazisNev,table->tablename + ".cs");
         zTextFileHelper::save(txt, fn);
 	}
 
@@ -338,7 +345,7 @@ void retek2::GenerateAll() {
                 QString txt = zEnumizer::GenerateEnum(ed);
 
                 zlog.log(txt);
-                auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir,b->adatbazisNev,table->tablename + "_enum.cs");
+                auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,b->adatbazisNev,table->tablename + "_enum.cs");
                 zTextFileHelper::save(txt, fn);
             }
             else{
@@ -798,4 +805,18 @@ void retek2::on_listWidget_ztables_itemClicked(QListWidgetItem *item)
         mezoListaFeltolt(*table);
         feltoltKulcsLista(*table);
         }
+}
+
+
+
+void retek2::on_pushButton_projects_apply_clicked()
+{    
+    auto ci = ui.listWidget_projects->currentItem();
+
+    if(ci){
+        beallitasok.currentProjectName = ci->text();
+        loadCurrentProject();
+    }else{
+        zLog::ShowDialog(QStringLiteral("Nincs elem kiválasztva"));
+    }
 }

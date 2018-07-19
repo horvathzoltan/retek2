@@ -27,9 +27,11 @@ private:
     QComboBox *widget_driver;
     QListWidget *listWidget_projects;
 
-    int selected_ix;    
+    int selected_ix;        
 public:
     static const QString filename;
+    QString currentProjectName;
+    QList<dbConnection> dbConnections;
 
     Beallitasok();
     ~Beallitasok();
@@ -39,7 +41,7 @@ public:
     void load();
     void addConnection(dbConnection);
 
-    QString currentProjectName;
+
 
     QString getTemplateFilename(const QString& tfname);
 
@@ -51,7 +53,7 @@ public:
     dbConnection getUI();
     void setUI(const dbConnection&);
 
-    QList<dbConnection> dbConnections;
+
 
     dbConnection* getSelectedDbConnection();
 
@@ -123,8 +125,11 @@ abrachadabra
     QString tmpDir = QStringLiteral(R"(retek2/template_dir)");
 
     // ez a projectek elérési útja
-    QString munkadir = QStringLiteral(R"(retek2/munka_dir)");
+    QString projectdir = QStringLiteral(R"(retek2/munka_dir)");
     QString settingsdir = QStringLiteral(R"(retek2/settings)");
+
+    QString settingsPath;
+    QString projectPath;
 
     QString dbconnections_filename = QStringLiteral(R"(dbconnections.csv)");
     QString settings_filename = QStringLiteral(R"(settings.csv)");
@@ -147,6 +152,10 @@ abrachadabra
     void FromCSV(QString& i);
 
     void fillProjectList(const QStringList&);
+
+    void initPaths();
+
+    //void setCurrentProjectName(const QString& v);
 };
 
 #endif

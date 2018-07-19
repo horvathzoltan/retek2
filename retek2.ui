@@ -36,7 +36,7 @@
          <x>0</x>
          <y>0</y>
          <width>1340</width>
-         <height>596</height>
+         <height>589</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -331,41 +331,31 @@
                    <attribute name="title">
                     <string>Projects</string>
                    </attribute>
-                   <widget class="QGroupBox" name="groupBox_10">
+                   <widget class="QListWidget" name="listWidget_projects">
                     <property name="geometry">
                      <rect>
-                      <x>0</x>
-                      <y>0</y>
-                      <width>271</width>
-                      <height>391</height>
+                      <x>10</x>
+                      <y>40</y>
+                      <width>261</width>
+                      <height>361</height>
                      </rect>
                     </property>
-                    <property name="title">
-                     <string/>
+                    <property name="selectionBehavior">
+                     <enum>QAbstractItemView::SelectItems</enum>
                     </property>
-                    <widget class="QPushButton" name="pushButton_createProject">
-                     <property name="geometry">
-                      <rect>
-                       <x>10</x>
-                       <y>20</y>
-                       <width>75</width>
-                       <height>23</height>
-                      </rect>
-                     </property>
-                     <property name="text">
-                      <string>New</string>
-                     </property>
-                    </widget>
-                    <widget class="QListWidget" name="listWidget_projects">
-                     <property name="geometry">
-                      <rect>
-                       <x>10</x>
-                       <y>50</y>
-                       <width>256</width>
-                       <height>331</height>
-                      </rect>
-                     </property>
-                    </widget>
+                   </widget>
+                   <widget class="QPushButton" name="pushButton_projects_apply">
+                    <property name="geometry">
+                     <rect>
+                      <x>10</x>
+                      <y>10</y>
+                      <width>80</width>
+                      <height>24</height>
+                     </rect>
+                    </property>
+                    <property name="text">
+                     <string>Apply</string>
+                    </property>
                    </widget>
                   </widget>
                   <widget class="QWidget" name="tab_6">

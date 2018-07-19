@@ -12,13 +12,13 @@ void zLog::init(QTextBrowser* b, QTabWidget* tw, int tix){
     this->tabindex = tix;
 }
 
-void zLog::ShowDialog(QString str) {
+void zLog::ShowDialog(const QString& str) {
     QMessageBox messageBox;
-    messageBox.critical(0, "Error", str);
+    QMessageBox::critical(nullptr, QStringLiteral("Error"), str);
     messageBox.setFixedSize(500, 200);
 }
 
-void zLog::trace(QString msg){
+void zLog::trace(const QString& msg){
 //    auto c = this->widget->textColor();
 //    this->widget->setTextColor(QColor(Qt::gray));
 //    this->widget->append(msg);
@@ -26,21 +26,25 @@ void zLog::trace(QString msg){
     log(msg, TRACE);
 }
 
-void zLog::log(QString m){
+void zLog::log(const QString& m){
     #ifdef QT_DEBUG
 
-    if(m.endsWith("OK"))
+    if(m.endsWith("OK")){
         log(m.left(m.length()-2), OK);
-    else if(m.endsWith("ERROR"))
+    }
+    else if(m.endsWith("ERROR")){
         log(m.left(m.length()-5), ERROR);    
-    else if(m.endsWith("TRACE"))
+    }
+    else if(m.endsWith("TRACE")){
         log(m.left(m.length()-5), TRACE);
-    else
+    }
+    else{
         log(m, -1);
+    }
     #endif
 }
 
-void zLog::log(QString m, int errlevel){
+void zLog::log(const QString& m, int errlevel){
     #ifdef QT_DEBUG
 
     auto c = this->widget->textColor();
@@ -66,7 +70,7 @@ void zLog::log(QString m, int errlevel){
     #endif
 }
 
-void zLog::log(QList<QString>ml){
+void zLog::log(const QList<QString>& ml){
     zforeach(m, ml){
         this->log(*m);
         }

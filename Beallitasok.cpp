@@ -68,7 +68,7 @@ void Beallitasok::setUI(const dbConnection& b)
 QString Beallitasok::getCaptionFileName(const QString& tablanev){
     auto b = dbConnections[selected_ix];
 
-    QString fn = zFileNameHelper::append(QDir::homePath(), munkadir, b.adatbazisNev, "caption_"+tablanev+".txt");
+    QString fn = zFileNameHelper::append(QDir::homePath(), projectdir, b.adatbazisNev, "caption_"+tablanev+".txt");
     return fn;
 }
 
@@ -77,7 +77,7 @@ QString Beallitasok::getModelFilename(const QString& tfname, const QString& dirn
 
      if(b!=nullptr){
         //auto e = QString(munkadir+R"(\%2\%1)").arg(dirname).arg(adatbazisNev);
-        QString  e = zFileNameHelper::append(QDir::homePath(),munkadir, b->adatbazisNev, dirname);
+        QString  e = zFileNameHelper::append(QDir::homePath(),projectdir, b->adatbazisNev, dirname);
         QDir d(e);if(!d.exists()){d.mkpath(d.absolutePath());}
 
         e += QDir::separator()+tfname;
@@ -140,6 +140,11 @@ void Beallitasok::setSelected(int i){
    selected_ix = i;
 }
 
+void Beallitasok::initPaths(){
+    settingsPath = zFileNameHelper::append(QDir::homePath(),settingsdir);
+    projectPath  = zFileNameHelper::append(QDir::homePath(),projectdir);
+
+}
 /*
 fel kell olvasni a kapcsolatokat
 template_dir/connections.csv
@@ -149,9 +154,8 @@ beállítások csv visszaolvasása
 
 */
 void Beallitasok::load(){
-    QString sdirPath = zFileNameHelper::append(QDir::homePath(),settingsdir);
 
-    QString fn = zFileNameHelper::append(sdirPath, dbconnections_filename);
+    QString fn = zFileNameHelper::append(settingsPath, dbconnections_filename);
 
     QString txt = zTextFileHelper::load(fn);
     widget_connections->clear();
@@ -169,7 +173,7 @@ void Beallitasok::load(){
         selected_ix = 0;
     }
 
-    fn = zFileNameHelper::append(sdirPath, settings_filename);
+    fn = zFileNameHelper::append(settingsPath, settings_filename);
     txt = zTextFileHelper::load(fn);
     if(!txt.isEmpty()){
         QStringList csvl = zStringHelper::toStringList(txt);
@@ -180,7 +184,7 @@ void Beallitasok::load(){
 void Beallitasok::FromCSV(QString& i){
     QStringList a = i.split(zStringHelper::SEP);
     if(a.count()>0){
-        currentProjectName= a[0];
+        currentProjectName = a[0];
     }
 }
 
@@ -199,7 +203,7 @@ void Beallitasok::fillProjectList(const QStringList& projectdirs)
     if(!currentProjectName.isEmpty()){
         auto items = listWidget_projects->findItems(currentProjectName, Qt::MatchExactly);
         if(items.isEmpty()){
-            zlog.log(QStringLiteral("Az aktuális project nem található: %1 ERROR").arg(beallitasok.currentProjectName));
+            zlog.log(QStringLiteral("Az aktuális project nem található: %1 ERROR").arg(currentProjectName));
         }
         else{
             listWidget_projects->setCurrentItem(items[0]);
@@ -225,5 +229,7 @@ void Beallitasok::addDbConnection(dbConnection b){
     // ezen a ponton ezt nek feltétlenül kellene
     widget_connections->addItem(b.Getname());
 }
+
+
 
 
