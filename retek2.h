@@ -22,7 +22,7 @@ public:
 
     void tablaAdatokBejegyez(const QString& tn);
     void zTablaToList(QList<zTable> t);
-    void zTablaToList(zTable t);
+    void zTablaToList(const zTable& t);
     //void feltoltRPk(zTable t);
 private slots:
 	void GenerateAll();
@@ -36,7 +36,7 @@ private slots:
 
     void on_pushButton_2_clicked();
 
-    void on_comboBox_connections_currentIndexChanged(int index);   
+    // void on_comboBox_connections_currentIndexChanged(int index);
 
     void on_lineEdit_classname_plural_editingFinished();
 
@@ -66,7 +66,7 @@ private:
     //void feltoltIdegenkulcs(QString tablanev);
     //void mezoListaFeltolt(QString tablanev);
 
-    void fejadatFeltolt(zTable t);
+    void fejadatFeltolt(const zTable& t);
     void mezoListaFeltolt(zTable t);
     void feltoltKulcsLista(zTable t);
     //void feltoltFk(zTable t);
@@ -78,7 +78,7 @@ private:
 
     zEnumizer::EnumSource GetEnumData(zSQL *zsql);
 
-    void initBy(dbConnection* b);
+    // void initBy(dbConnection* b);
     void closeEvent(QCloseEvent *event);
 };
 

@@ -10,6 +10,8 @@
 #include <QDir>
 #include <QFileInfo>
 
+const QString Beallitasok::filename =  QStringLiteral("caption_global.txt");
+
 Beallitasok::Beallitasok(){
     //"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"
     //dbConnections.append(dbConnection{"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"});
@@ -19,7 +21,7 @@ Beallitasok::Beallitasok(){
 
 Beallitasok::~Beallitasok()= default;;
 
-void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEdit* wcatalog, QComboBox *qc, QComboBox *dc)
+void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEdit* wcatalog, QComboBox *qc, QComboBox *dc, QListWidget* lv)
 {
     this->widget_user = wu;
     this->widget_password = wp;
@@ -27,6 +29,7 @@ void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEd
     this->widget_adatbazisNev = wcatalog;
     this->widget_connections = qc;
     this->widget_driver = dc;
+    this->listWidget_projects = lv;
 }
 
 /*
@@ -51,7 +54,7 @@ dbConnection Beallitasok::getUI()
     return dbConnection{ driver, adatbazisNev, server, user, password};
 }
 
-void Beallitasok::setUI(dbConnection b)
+void Beallitasok::setUI(const dbConnection& b)
 {
     widget_driver->setCurrentText(b.driver);
     widget_user->setText(b.user);
@@ -69,7 +72,7 @@ QString Beallitasok::getCaptionFileName(const QString& tablanev){
     return fn;
 }
 
-QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
+QString Beallitasok::getModelFilename(const QString& tfname, const QString& dirname) {
      auto b = getSelectedDbConnection();
 
      if(b!=nullptr){
@@ -88,7 +91,7 @@ QString Beallitasok::getModelFilename(QString tfname, QString dirname) {
 /*
  * a beállítások alapján a template névhez tartozó fájl nevét adja
 */
-QString Beallitasok::getTemplateFilename(QString tfname) {
+QString Beallitasok::getTemplateFilename(const QString& tfname) {
     auto b = getSelectedDbConnection();
 
     if(b!=nullptr){
@@ -174,10 +177,33 @@ void Beallitasok::load(){
         }
     }
 
-void Beallitasok::FromCSV(QString i){
+void Beallitasok::FromCSV(QString& i){
     QStringList a = i.split(zStringHelper::SEP);
     if(a.count()>0){
         currentProjectName= a[0];
+    }
+}
+
+/**
+    a projectlista csak a project könyvtár tartalmából származhat
+    az aktuális project pedig csak a beállításból származhat
+    - futás közben hozhat létre új könyvtárat, elvileg azt fel lehetne venni
+    - aktuális könyvtár csak a listából választásra változhat meg
+ * @brief Beallitasok::fillProjectList
+ * @param projectdirs
+ */
+void Beallitasok::fillProjectList(const QStringList& projectdirs)
+{
+    listWidget_projects->addItems(projectdirs);
+
+    if(!currentProjectName.isEmpty()){
+        auto items = listWidget_projects->findItems(currentProjectName, Qt::MatchExactly);
+        if(items.isEmpty()){
+            zlog.log(QStringLiteral("Az aktuális project nem található: %1 ERROR").arg(beallitasok.currentProjectName));
+        }
+        else{
+            listWidget_projects->setCurrentItem(items[0]);
+        }
     }
 }
 

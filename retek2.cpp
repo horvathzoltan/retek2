@@ -41,7 +41,7 @@ retek2::~retek2()= default;
 void retek2::init()
 {	
     zlog.init(ui.textBrowser, ui.tabWidget, 4);
-    beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox);
+    beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
 
     // TODO egy belső típust kell létrehozni, ami a perzisztens és kód közti kötést írja le, mindkét irányban
     // amennyiben ez lehetséges - figyelembevéve, hogy
@@ -75,26 +75,22 @@ void retek2::init()
     typeMapR.insert("bool","bit");
     typeMapR.insert("decimal", "decimal");
 
-    // ztables feltöltése
-    // - itt valójában csak a beállításokat kellene betölteni
-    //  bbb
     beallitasok.load();    
 
     auto projectdir  = zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir);
     auto projectdirs = zFileNameHelper::GetSubdirs(projectdir);
-    ui.listWidget_projects->addItems(projectdirs);
 
+    beallitasok.fillProjectList(projectdirs);
+
+    // Ha van elmentett projectnév
+    // beállítjuk a listában aktuálisnak
+    // majd a project név alapján elérési utat képzünk
+    // és az ott található táblákat beolvassuk
+    // az ott tárolt xml leírójuk alapján
     if(beallitasok.currentProjectName.isEmpty()){
         zlog.log(QStringLiteral("Nincs elmentett aktuális project. ERROR").arg(beallitasok.currentProjectName));
     }
-    else{
-        auto items = ui.listWidget_projects->findItems(beallitasok.currentProjectName, Qt::MatchExactly);
-        if(items.isEmpty()){
-            zlog.log(QStringLiteral("Az aktuális project nem található: %1 ERROR").arg(beallitasok.currentProjectName));
-        }
-        else{
-            ui.listWidget_projects->setCurrentItem(items[0]);
-        }
+    else{       
 
         QString path = zFileNameHelper::append(projectdir,beallitasok.currentProjectName);
 
@@ -134,15 +130,15 @@ void retek2::init()
     zlog.trace(QStringLiteral("retek2 init OK"));
 }
 
-void retek2::initBy(dbConnection* c){
-    if(c==nullptr) return;
+//void retek2::initBy(dbConnection* c){
+//    if(c==nullptr) return;
 
-    beallitasok.setUI(*c);
-    ztokenizer.init(ui.tableWidget_MezoLista);
+//    beallitasok.setUI(*c);
+//    ztokenizer.init(ui.tableWidget_MezoLista);
 
-    // global caption tábla beolvasása
-    zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, c->adatbazisNev, "caption_global.txt"), &globalCaptionMap); // globális elnevezéstábla
-}
+//    // global caption tábla beolvasása
+//    zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, c->adatbazisNev, Beallitasok::filename), &globalCaptionMap); // globális elnevezéstábla
+//}
 
 void retek2::tablaListaFeltolt() {
     zSQL zsql;
@@ -167,9 +163,9 @@ void retek2::zTablaToList(QList<zTable> ts){
     }
 }
 
-void retek2::zTablaToList(zTable t){
+void retek2::zTablaToList(const zTable& t){
     QString tn = t.tablename;
-    int sourcetype;
+    int sourcetype = -1;
     QIcon icon;
     if(!t.sql_conn.isEmpty())
         sourcetype = zTableSourceTypes::SQL;
@@ -179,13 +175,13 @@ void retek2::zTablaToList(zTable t){
 
     switch(sourcetype){
         case zTableSourceTypes::SQL:
-            icon=QIcon::fromTheme("office-database");
+            icon=QIcon::fromTheme(QStringLiteral("office-database"));
             break;
         case zTableSourceTypes::ENTITY:
-            icon=QIcon::fromTheme("text-x-c++");
+            icon=QIcon::fromTheme(QStringLiteral("text-x-c++"));
             break;
         case zTableSourceTypes::TXT:
-            icon=QIcon::fromTheme("text");
+            icon=QIcon::fromTheme(QStringLiteral("text"));
             break;
     }   
     new QListWidgetItem(icon, tn, ui.listWidget_ztables, sourcetype);
@@ -238,7 +234,7 @@ void retek2::zTablaToList(zTable t){
 
 
 
-void retek2::fejadatFeltolt(zTable t){
+void retek2::fejadatFeltolt(const zTable& t){
     ui.lineEdit_tablename->setText(t.tablename);
     ui.lineEdit_classname->setText(t.classname);
     ui.lineEdit_classname_plural->setText(t.classname_plural);
@@ -676,12 +672,12 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
 }
 
 
-void retek2::on_comboBox_connections_currentIndexChanged(int index)
-{
-    beallitasok.setSelected(index);
-    initBy(beallitasok.getSelectedDbConnection());
+//void retek2::on_comboBox_connections_currentIndexChanged(int index)
+//{
+//    beallitasok.setSelected(index);
+//    initBy(beallitasok.getSelectedDbConnection());
 
-}
+//}
 
 
 void retek2::on_lineEdit_classname_plural_editingFinished()

@@ -11,6 +11,7 @@
 #include <QString>
 
 #include <QComboBox>
+#include <QListWidget>
 
 
 
@@ -24,29 +25,31 @@ private:
     QLineEdit *widget_adatbazisNev;
     QComboBox *widget_connections;
     QComboBox *widget_driver;
+    QListWidget *listWidget_projects;
 
-    int selected_ix;
+    int selected_ix;    
 public:
+    static const QString filename;
 
     Beallitasok();
     ~Beallitasok();
 
-    void init(QLineEdit*, QLineEdit*, QLineEdit*, QLineEdit*, QComboBox *qc, QComboBox *dc);
+    void init(QLineEdit*, QLineEdit*, QLineEdit*, QLineEdit*, QComboBox *qc, QComboBox *dc, QListWidget *lw);
 
     void load();
     void addConnection(dbConnection);
 
     QString currentProjectName;
 
-    QString getTemplateFilename(QString tfname);
+    QString getTemplateFilename(const QString& tfname);
 
-    QString getModelFilename(QString tfname, QString dirname);
+    QString getModelFilename(const QString& tfname, const QString& dirname);
 
 
 //zSQL("QMYSQL", "127.0.0.1", "wiki1", "root","Aladar123", "w1"),
 
     dbConnection getUI();
-    void setUI(dbConnection);
+    void setUI(const dbConnection&);
 
     QList<dbConnection> dbConnections;
 
@@ -117,14 +120,14 @@ abrachadabra
     //QString connectionString = connectionTemplate.arg(server).arg(adatbazisNev);
 
     // ez a templatedir
-    QString tmpDir = R"(retek2/template_dir)";
+    QString tmpDir = QStringLiteral(R"(retek2/template_dir)");
 
     // ez a projectek elérési útja
-    QString munkadir = R"(retek2/munka_dir)";
-    QString settingsdir = R"(retek2/settings)";
+    QString munkadir = QStringLiteral(R"(retek2/munka_dir)");
+    QString settingsdir = QStringLiteral(R"(retek2/settings)");
 
-    QString dbconnections_filename = R"(dbconnections.csv)";
-    QString settings_filename = R"(settings.csv)";
+    QString dbconnections_filename = QStringLiteral(R"(dbconnections.csv)");
+    QString settings_filename = QStringLiteral(R"(settings.csv)");
     /*
 #if defined(Q_OS_WIN)
 	QString tmpDir = R"(C:\retek2\template_dir)";
@@ -134,14 +137,16 @@ abrachadabra
     QString munkadir = R"(retek2/munka_dir)";
 #endif
 */
-	QString globalCaptionsFileName = "global_captions"; 
+    QString globalCaptionsFileName = QStringLiteral("global_captions");
 
     QString getCaptionFileName(const QString& tablanev);
     void setSelected(int i);
 
     void addDbConnection(dbConnection b);
 
-    void FromCSV(QString i);
+    void FromCSV(QString& i);
+
+    void fillProjectList(const QStringList&);
 };
 
 #endif
