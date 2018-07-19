@@ -30,7 +30,7 @@ void zTextFileHelper::save(QString txt, QString fn, bool isAppend) {
     if(isAppend) om |= QIODevice::Append;
 
     if (!f.open(om)){
-        zLog::ShowDialog("nem menthető: "+fn);
+        zLog::errorDialog("nem menthető: "+fn);
         return;
         }
 //    else{

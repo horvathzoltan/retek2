@@ -45,7 +45,7 @@ void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
 
     QFile file(fn);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
-        zLog::ShowDialog("nem menthet: " + fn);
+        zLog::errorDialog("nem menthet: " + fn);
         return;
     }
 

@@ -20,13 +20,19 @@ public:
 
     void init(QTextBrowser*, QTabWidget*, int);
 
-    static void ShowDialog(const QString& str);
-    void trace(const QString&);
+
+    void trace(const QString&);       
+
+    [[deprecated]]
     void log(const QString&);
 
     void log(const QString&, int);
 
+    [[deprecated]]
     void log(const QList<QString>&);
+
+    /**/
+    static void errorDialog(const QString& str);
 };
 
 #endif // ZERROR_H

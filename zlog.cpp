@@ -12,12 +12,6 @@ void zLog::init(QTextBrowser* b, QTabWidget* tw, int tix){
     this->tabindex = tix;
 }
 
-void zLog::ShowDialog(const QString& str) {
-    QMessageBox messageBox;
-    QMessageBox::critical(nullptr, QStringLiteral("Error"), str);
-    messageBox.setFixedSize(500, 200);
-}
-
 void zLog::trace(const QString& msg){
 //    auto c = this->widget->textColor();
 //    this->widget->setTextColor(QColor(Qt::gray));
@@ -25,6 +19,7 @@ void zLog::trace(const QString& msg){
 //    this->widget->setTextColor(c);
     log(msg, TRACE);
 }
+
 
 void zLog::log(const QString& m){
     #ifdef QT_DEBUG
@@ -75,3 +70,13 @@ void zLog::log(const QList<QString>& ml){
         this->log(*m);
         }
 }
+
+/**/
+
+void zLog::errorDialog(const QString& str) {
+    QMessageBox messageBox;
+    QMessageBox::critical(nullptr, QStringLiteral("Error"), str);
+    messageBox.setFixedSize(500, 200);
+}
+
+

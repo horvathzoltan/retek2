@@ -103,7 +103,7 @@ QString Beallitasok::getTemplateFilename(const QString& tfname) {
     if(b->adatbazisNev.isEmpty())
         {zlog.log(QStringLiteral("Az adatbázisnév nincs megadva"));isVal=false;}
     if(isVal == false)
-        {zLog::ShowDialog(QStringLiteral("A template fájlnév nem meghatározható"));return nullptr;}
+        {zLog::errorDialog(QStringLiteral("A template fájlnév nem meghatározható"));return nullptr;}
 
     auto fn = zFileNameHelper::append(QDir::homePath(),tmpDir, b->adatbazisNev, tfname);
 

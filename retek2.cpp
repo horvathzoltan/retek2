@@ -461,11 +461,11 @@ tmp file tartalmának feldolgozása
 QString retek2::generateTmp(const QString& tmp_file) {
     //qDebug() << tmp_file;
     if(tmp_file.isEmpty())
-        {zLog::ShowDialog("Nincs sablon fájl");return "";}
+        {zLog::errorDialog("Nincs sablon fájl");return "";}
 
     auto tmp_fn = beallitasok.getTemplateFilename(tmp_file);
 
-    if(tmp_fn == nullptr) {zLog::ShowDialog("A sablon fájl nem található: "+ tmp_file);return "";}
+    if(tmp_fn == nullptr) {zLog::errorDialog("A sablon fájl nem található: "+ tmp_file);return "";}
 
     QString tmp = zTextFileHelper::load(tmp_fn);
 
@@ -492,7 +492,7 @@ void retek2::on_pushButton_clicked()
         tablaListaFeltolt();
         }
     else{
-       zlog.log(QString("Az adatbáziskapcsolat adatai hibásak: %1 driver: %2").arg(dbconn.Getname(),dbconn.driver), zLog::ERROR);
+       zlog.log(QString(QStringLiteral("Az adatbáziskapcsolat adatai hibásak: %1 driver: %2")).arg(dbconn.Getname(),dbconn.driver), zLog::ERROR);
     }
     //zsql.createConnection();
 
@@ -817,6 +817,6 @@ void retek2::on_pushButton_projects_apply_clicked()
         beallitasok.currentProjectName = ci->text();
         loadCurrentProject();
     }else{
-        zLog::ShowDialog(QStringLiteral("Nincs elem kiválasztva"));
+        zLog::errorDialog(QStringLiteral("Nincs elem kiválasztva"));
     }
 }
