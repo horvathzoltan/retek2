@@ -26,13 +26,16 @@ void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEd
     this->widget_user = wu;
     this->widget_password = wp;
     this->widget_server = wserver;
-    this->widget_adatbazisNev = wcatalog;
+    //this->widget_adatbazisNev = wcatalog;
     this->widget_connections = qc;
     this->widget_driver = dc;
     this->listWidget_projects = lv;
 }
 
-/*
+/**
+        * @brief feltölti
+        *
+
         QString driver;
         QString adatbazisNev;
         QString server;
@@ -49,7 +52,7 @@ dbConnection Beallitasok::getUI()
     QString user = widget_user->text();
     QString password = widget_password->text();
     QString server = widget_server->text();
-    QString adatbazisNev = widget_adatbazisNev->text();
+    QString adatbazisNev = ""; //widget_adatbazisNev->text();
 
     return dbConnection{ driver, adatbazisNev, server, user, password};
 }
@@ -60,7 +63,7 @@ void Beallitasok::setUI(const dbConnection& b)
     widget_user->setText(b.user);
     widget_password->setText(b.password);
     widget_server->setText(b.server);
-    widget_adatbazisNev->setText(b.adatbazisNev);
+    //widget_adatbazisNev->setText(b.adatbazisNev);
     //b.driver
 }
 

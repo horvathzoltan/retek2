@@ -22,7 +22,7 @@ private:
     QLineEdit *widget_user;
     QLineEdit *widget_password;
     QLineEdit *widget_server;
-    QLineEdit *widget_adatbazisNev;
+    //QLineEdit *widget_adatbazisNev;
     QComboBox *widget_connections;
     QComboBox *widget_driver;
     QListWidget *listWidget_projects;

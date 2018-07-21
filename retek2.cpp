@@ -49,7 +49,8 @@ retek2::~retek2()= default;
 void retek2::init()
 {	
     zlog.init(ui.textBrowser, ui.tabWidget, 4);
-    beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
+    //beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
+    beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, nullptr, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
     beallitasok.initPaths();
     // TODO egy belső típust kell létrehozni, ami a perzisztens és kód közti kötést írja le, mindkét irányban
     // amennyiben ez lehetséges - figyelembevéve, hogy
