@@ -953,14 +953,12 @@ QList<zTable> zTable::createTableByClassTxt(QString txt){
 
     if(tl.length()==0) { zlog.log("nem jött létre adat"); return tl;}
 
-    auto db = beallitasok.getSelectedDbConnection();
-    if(db==nullptr){
-        // szükség van adatbázisra, a project könyvtár meghatározásához - a project könyvtár neve az adatbáziséval egyezik meg
+    if(!beallitasok.currentProjectName.isEmpty()){
         return tl;
     }
 
     // konstanstábla beolvasása
-    auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,db->adatbazisNev);
+    auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName);
 
     // key az attrName, value a constName
     QStringList classNameFilter;
@@ -1003,10 +1001,9 @@ QList<zTable> zTable::createTableByClassTxt(QString txt){
 lementi a  táblát - nem caption, hanem teljes xml, így ez később átnevezendő
 */
 void zTable::saveTablaToXML() {
-    auto b = beallitasok.getSelectedDbConnection();
-    if(b==nullptr) return;
+    if(beallitasok.currentProjectName.isEmpty()) return;
 
-    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,b->adatbazisNev, this->tablename + ".xml");
+    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName, this->tablename + ".xml");
 
     QString e;
     QXmlStreamWriter s(&e);

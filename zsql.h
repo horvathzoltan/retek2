@@ -15,7 +15,7 @@ private:
     static const QString QMYSQL;
 
     static const QString getTableNames_MYSQL_CMDTMP;
-    static const QString getTableNames_MSSQL_CMDTMP;
+    static const QString getTableNames_MSSQL_CMDTMP;    
     /*
 A tábla PK mező nevének lekérdezése
 */
@@ -30,7 +30,7 @@ A tábla PK mező nevének lekérdezése
             user,
             password;
 
-    QString databaseName;
+    QString schemaName;
     QSqlDatabase db;
     QString connectionName;
 
@@ -79,6 +79,13 @@ public:
 
     QMap<int, QString> getTable_SQL_ENUM(QString tablanev, QString mezonev);
 
+    /*db elemeinek kezelése*/
+    QList<QString> getSchemaNames();
+    QList<QString> getSchemaNames_SQL(QString cmd);
+    static const QString getSchemaNames_MYSQL_CMDTMP;
+    static const QString getSchemaNames_MSSQL_CMDTMP;
+    QString getSchemaNames_MYSQL_CMD();
+    QString getSchemaNames_MSSQL_CMD();
 };
 
 #endif // ZSQL_H

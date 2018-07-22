@@ -16,7 +16,7 @@ Beallitasok::Beallitasok(){
     //"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"
     //dbConnections.append(dbConnection{"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"});
 
-     selected_ix = 0;
+     //selected_ix = 0;
 };
 
 Beallitasok::~Beallitasok()= default;;
@@ -68,47 +68,42 @@ void Beallitasok::setUI(const dbConnection& b)
 }
 
 
-QString Beallitasok::getCaptionFileName(const QString& tablanev){
-    auto b = dbConnections[selected_ix];
+//QString Beallitasok::getCaptionFileName(const QString& tablanev){
+//    auto b = dbConnections[selected_ix];
 
-    QString fn = zFileNameHelper::append(QDir::homePath(), projectdir, b.adatbazisNev, "caption_"+tablanev+".txt");
-    return fn;
-}
+//    QString fn = zFileNameHelper::append(QDir::homePath(), projectdir, b.adatbazisNev, "caption_"+tablanev+".txt");
+//    return fn;
+//}
 
+// megy a
 QString Beallitasok::getModelFilename(const QString& tfname, const QString& dirname) {
-     auto b = getSelectedDbConnection();
 
-     if(b!=nullptr){
-        //auto e = QString(munkadir+R"(\%2\%1)").arg(dirname).arg(adatbazisNev);
-        QString  e = zFileNameHelper::append(QDir::homePath(),projectdir, b->adatbazisNev, dirname);
+        QString  e = zFileNameHelper::append(QDir::homePath(),projectdir, beallitasok.currentProjectName, dirname);
         QDir d(e);if(!d.exists()){d.mkpath(d.absolutePath());}
 
         e += QDir::separator()+tfname;
         zlog.trace(e);
         return e;
-     }
-     else
-        return QString();
+
 }
 
 /*
  * a beállítások alapján a template névhez tartozó fájl nevét adja
+ * ezt az aktuális projectnév alapján kell megtenni
 */
-QString Beallitasok::getTemplateFilename(const QString& tfname) {
-    auto b = getSelectedDbConnection();
-
-    if(b!=nullptr){
+QString Beallitasok::getTemplateFilename(const QString& tfname) {   
     bool isVal = true;
     if(tmpDir.isEmpty())
         {zlog.log(QStringLiteral("A template könyvtár a beállításokban nincs megadva"));isVal=false;}
     if(tfname.isEmpty())
         {zlog.log(QStringLiteral("A template fájlnév nincs megadva"));isVal=false;}
-    if(b->adatbazisNev.isEmpty())
-        {zlog.log(QStringLiteral("Az adatbázisnév nincs megadva"));isVal=false;}
-    if(isVal == false)
+    if(beallitasok.currentProjectName.isEmpty())
+        {zlog.log(QStringLiteral("A projectnév nincs megadva"));isVal=false;}
+    if(!isVal)
         {zLog::errorDialog(QStringLiteral("A template fájlnév nem meghatározható"));return nullptr;}
 
-    auto fn = zFileNameHelper::append(QDir::homePath(),tmpDir, b->adatbazisNev, tfname);
+    auto fn = zFileNameHelper::append(QDir::homePath(),tmpDir, beallitasok.currentProjectName, tfname);
+    //auto fn = zFileNameHelper::append(beallitasok.projectPath, tfname);
 
     //zlog.log("project template keresese:"+ fn);
     if(QFileInfo::exists(fn))
@@ -125,22 +120,28 @@ QString Beallitasok::getTemplateFilename(const QString& tfname) {
             zlog.log("nincs default template:"+ fn);
             }
         }
-}
-    else
-        zlog.log(QStringLiteral("nincs kiválasztott dbconnection:"));
+//}
+//    else
+//        zlog.log(QStringLiteral("nincs kiválasztott dbconnection:"));
 
     return nullptr;
 }
 
-dbConnection* Beallitasok::getSelectedDbConnection(){
-    if(dbConnections.isEmpty())
-        return nullptr;
-    return
-        &(dbConnections[selected_ix]);
+
+// TODO kellene az adatbázisoknak egy egyedi kulcs,
+// jellemzően mindennek kellene
+dbConnection* Beallitasok::getDbConnectionByName(const QString& name){
+    zforeach(o, dbConnections){
+        if(o->Getname() == name) return &(*o);
+    }
+    return nullptr;
 }
 
-void Beallitasok::setSelected(int i){
-   selected_ix = i;
+dbConnection* Beallitasok::getDbConnectionBySchemaName(const QString& name){
+    zforeach(o, dbConnections){
+        if(o->schemaName == name) return &(*o);
+    }
+    return nullptr;
 }
 
 void Beallitasok::initPaths(){
@@ -173,7 +174,7 @@ void Beallitasok::load(){
             }
         }
 
-        selected_ix = 0;
+       // selected_ix = 0;
     }
 
     fn = zFileNameHelper::append(settingsPath, settings_filename);
@@ -226,10 +227,10 @@ void Beallitasok::addConnection(dbConnection b){
     addDbConnection(b);
 }
 
+
+
 void Beallitasok::addDbConnection(dbConnection b){
-    beallitasok.dbConnections.append(b);
-    // itt történik a ztables beolvasása sql-ből
-    // ezen a ponton ezt nek feltétlenül kellene
+    beallitasok.dbConnections.append(b);        
     widget_connections->addItem(b.Getname());
 }
 

@@ -8,7 +8,7 @@ private:
 
 public:    
     QString driver;
-    QString adatbazisNev;    
+    QString schemaName;
     QString server;
     QString user;
     QString password;

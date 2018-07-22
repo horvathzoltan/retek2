@@ -27,7 +27,7 @@ private:
     QComboBox *widget_driver;
     QListWidget *listWidget_projects;
 
-    int selected_ix;        
+    //int selected_ix;
 public:
     static const QString filename;
     QString currentProjectName;
@@ -53,9 +53,7 @@ public:
     dbConnection getUI();
     void setUI(const dbConnection&);
 
-
-
-    dbConnection* getSelectedDbConnection();
+    //dbConnection* getSelectedDbConnection();
 
 
 /*
@@ -144,7 +142,7 @@ abrachadabra
 */
     QString globalCaptionsFileName = QStringLiteral("global_captions");
 
-    QString getCaptionFileName(const QString& tablanev);
+    //QString getCaptionFileName(const QString& tablanev);
     void setSelected(int i);
 
     void addDbConnection(dbConnection b);
@@ -155,6 +153,8 @@ abrachadabra
 
     void initPaths();
 
+    dbConnection* getDbConnectionByName(const QString& name);
+    dbConnection* getDbConnectionBySchemaName(const QString& name);
     //void setCurrentProjectName(const QString& v);
 };
 

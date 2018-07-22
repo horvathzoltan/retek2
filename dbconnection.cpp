@@ -14,7 +14,7 @@ password;
 
 dbConnection::dbConnection(QString driver, QString adatbazisNev, QString server, QString user, QString password){
     this->driver = driver;
-    this->adatbazisNev = adatbazisNev;
+    this->schemaName = adatbazisNev;
     this->server = server;
     this->user = user;
     this->password = password;
@@ -22,7 +22,7 @@ dbConnection::dbConnection(QString driver, QString adatbazisNev, QString server,
 
 
 QString dbConnection::ToCSV(){
-    QStringList o {driver, adatbazisNev, server, user, password};
+    QStringList o {driver, schemaName, server, user, password};
     return o.join(zStringHelper::SEP);
 }
 
@@ -38,7 +38,7 @@ dbConnection dbConnection::FromCSV(QString i){
 
 bool dbConnection::isValid(){
     return !(
-            (adatbazisNev.isEmpty() || adatbazisNev.contains(zStringHelper::SEP)) ||
+            (schemaName.isEmpty() || schemaName.contains(zStringHelper::SEP)) ||
             (server.isEmpty() || server.contains(zStringHelper::SEP))||
             (driver.isEmpty() || driver.contains(zStringHelper::SEP))||
             (password.isEmpty() || password.contains(zStringHelper::SEP))||
@@ -48,7 +48,7 @@ bool dbConnection::isValid(){
 
 
 bool dbConnection::operator==(dbConnection const& b){
-    if(adatbazisNev==b.adatbazisNev)
+    if(schemaName==b.schemaName)
         return true;
     else
         return false;
@@ -56,5 +56,5 @@ bool dbConnection::operator==(dbConnection const& b){
 
 QString dbConnection::Getname()
 {
-    return this->server+"."+this->adatbazisNev;
+    return this->server+"."+this->schemaName;
 }

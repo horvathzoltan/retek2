@@ -148,28 +148,7 @@ void retek2::loadCurrentProject()
         }
 }
 
-void retek2::tablaListaFeltolt() {
-    zSQL zsql;
-    auto c = beallitasok.getSelectedDbConnection();
-    zsql.init(*c);
 
-    QList<QString> tns = zsql.getTableNames();
-    ui.listWidget_ztables->clear();
-    zTable t;
-    zforeach(tn,tns){
-        t = zsql.getTable(*(tn));
-        if(t.rows.length()>0){
-            ztables << t;
-            zTablaToList(t);
-        }
-    }
-}
-
-void retek2::zTablaToList(QList<zTable> ts){
-    zforeach(t, ts){
-        zTablaToList(*t);
-    }
-}
 
 void retek2::zTablaToList(const zTable& t){
     QString tn = t.tablename;
@@ -305,9 +284,6 @@ void retek2::GenerateAll() {
 
     auto classname = zStringHelper::getClassNameCamelCase(table->tablename);
 
-    auto b = beallitasok.getSelectedDbConnection();
-    if(b==nullptr) return;
-
     //saveTablaToXML(table->tablename);
 
     if (ui.checkBox_XML->isChecked()) {
@@ -329,7 +305,7 @@ void retek2::GenerateAll() {
 
         auto txt = generateTmp("MVC_CClass.cs");
         zlog.log(txt);
-        auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,b->adatbazisNev,table->tablename + ".cs");
+        auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->tablename + ".cs");
         zTextFileHelper::save(txt, fn);
 	}
 
@@ -346,7 +322,7 @@ void retek2::GenerateAll() {
                 QString txt = zEnumizer::GenerateEnum(ed);
 
                 zlog.log(txt);
-                auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,b->adatbazisNev,table->tablename + "_enum.cs");
+                auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->tablename + "_enum.cs");
                 zTextFileHelper::save(txt, fn);
             }
             else{
@@ -463,41 +439,14 @@ QString retek2::generateTmp(const QString& tmp_file) {
     //qDebug() << tmp_file;
     if(tmp_file.isEmpty())
         {zLog::errorDialog("Nincs sablon fájl");return "";}
-
     auto tmp_fn = beallitasok.getTemplateFilename(tmp_file);
-
     if(tmp_fn == nullptr) {zLog::errorDialog("A sablon fájl nem található: "+ tmp_file);return "";}
-
-    QString tmp = zTextFileHelper::load(tmp_fn);
-
-   // auto aaa = QString.is
-    auto b = beallitasok.getSelectedDbConnection();
-    if(b != nullptr){
-        ztokenizer.tokenize(&tmp, nullptr, 0, b->adatbazisNev);
-        }
+    QString tmp = zTextFileHelper::load(tmp_fn);   
+    ztokenizer.tokenize(&tmp, nullptr, 0, beallitasok.currentProjectName);
 	return tmp;
 }
 
-//KSzallitolevelTetel.SzallitolevelId -> 
-// connect button
-void retek2::on_pushButton_clicked()
-{
-    zSQL zsql;
-    auto dbconn = beallitasok.getUI();   
-    if(dbconn.isValid()){
-        if(zsql.init(dbconn)){
-            if(!beallitasok.dbConnections.contains(dbconn)){
-                beallitasok.addConnection(dbconn);
-            }
-        }
-        tablaListaFeltolt();
-        }
-    else{
-       zlog.log(QString(QStringLiteral("Az adatbáziskapcsolat adatai hibásak: %1 driver: %2")).arg(dbconn.Getname(),dbconn.driver), zLog::ERROR);
-    }
-    //zsql.createConnection();
 
-}
 
 /*!
  * A 2-es tabon megadott szöveg alapján generál táblaszerkezetet
@@ -680,12 +629,7 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
 }
 
 
-//void retek2::on_comboBox_connections_currentIndexChanged(int index)
-//{
-//    beallitasok.setSelected(index);
-//    initBy(beallitasok.getSelectedDbConnection());
 
-//}
 
 
 void retek2::on_lineEdit_classname_plural_editingFinished()
@@ -821,3 +765,87 @@ void retek2::on_pushButton_projects_apply_clicked()
         zLog::errorDialog(QStringLiteral("Nincs elem kiválasztva"));
     }
 }
+
+/**
+A tábla lista kezelése
+
+*/
+void retek2::on_comboBox_connections_currentIndexChanged(const QString &arg1)
+{
+    ui.listWidget_schemas->clear();
+    ui.listWidget_tables->clear();
+    // a szerver conn kell - a neve alapján - tehát nem az adatbázis név, hanem a saját neve alapján
+    auto c = beallitasok.getDbConnectionByName(arg1);
+    if(c){
+
+        schemasFeltolt(*c);
+    }
+}
+
+void retek2::on_listWidget_schemas_currentTextChanged(const QString &currentText)
+{    
+    ui.listWidget_tables->clear();
+    auto c = beallitasok.getDbConnectionBySchemaName(currentText);
+    if(c){        
+        tablesFeltolt(*c);
+    }
+}
+
+
+
+//KSzallitolevelTetel.SzallitolevelId ->
+// connect button
+void retek2::on_pushButton_clicked()
+{
+    zSQL zsql;
+    auto dbconn = beallitasok.getUI();
+    if(dbconn.isValid()){
+        if(zsql.init(dbconn)){
+            if(!beallitasok.dbConnections.contains(dbconn)){
+                beallitasok.addConnection(dbconn);
+            }
+        }
+        //tablaListaFeltolt();
+        }
+    else{
+       zlog.log(QString(QStringLiteral("Az adatbáziskapcsolat adatai hibásak: %1 driver: %2")).arg(dbconn.Getname(),dbconn.driver), zLog::ERROR);
+    }
+    //zsql.createConnection();
+
+}
+
+//listWidget_tables
+void retek2::tablesFeltolt(const dbConnection& c) {
+    zSQL zsql;
+    zsql.init(c);
+
+    auto tableNames = zsql.getTableNames();
+    ui.listWidget_tables->addItems(tableNames);
+    //zTable t;
+    // importál - ez nem kell ide most
+    /*zforeach(tn,tns){
+        t = zsql.getTable(*(tn));
+        if(t.rows.length()>0){
+            ztables << t;
+            zTablaToList(t);
+        }
+    }*/
+}
+
+//listWidget_schemas
+void retek2::schemasFeltolt(const dbConnection& c) {
+    zSQL zsql;
+    zsql.init(c);
+
+    auto schemaNames = zsql.getSchemaNames();
+    ui.listWidget_schemas->addItems(schemaNames);
+}
+
+void retek2::zTablaToList(QList<zTable> ts){
+    zforeach(t, ts){
+        zTablaToList(*t);
+    }
+}
+
+
+

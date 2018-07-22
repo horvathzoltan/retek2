@@ -14,13 +14,13 @@ const QString zSQL::QODBC = "QODBC";
 const QString zSQL::QMYSQL ="QMYSQL";
 
 QString zSQL::getConnStr(){
-    return  connectionTemplate.arg(hostName).arg(databaseName);//.arg(driverName);
+    return  connectionTemplate.arg(hostName).arg(schemaName);//.arg(driverName);
 }
 
 zSQL::zSQL(){};
 
 bool zSQL::init(dbConnection c){
-    return init(c.driver, c.server, c.adatbazisNev, c.user, c.password);
+    return init(c.driver, c.server, c.schemaName, c.user, c.password);
 }
 
 bool zSQL::init(QString _driverName, QString _hostName, QString _databaseName, QString _user, QString _pass){
@@ -29,7 +29,7 @@ bool zSQL::init(QString _driverName, QString _hostName, QString _databaseName, Q
     password = _pass;
     driverName = _driverName;
     hostName = _hostName;
-    databaseName = _databaseName;    
+    schemaName = _databaseName;
     bool isok = this->createConnection();
     if(isok){
         zlog.log("init:"+this->toString());
@@ -66,7 +66,7 @@ bool zSQL::createConnection_MYSQL()
     }
     db = QSqlDatabase::addDatabase(driverName, connectionName);
     db.setHostName(hostName);
-    db.setDatabaseName(databaseName);
+    db.setDatabaseName(schemaName);
     db.setUserName(user);
     db.setPassword(password);
     db.setConnectOptions("MYSQL_OPT_CONNECT_TIMEOUT=10");    
@@ -109,7 +109,7 @@ const QString zSQL::getTableNames_MSSQL_CMDTMP = "SELECT "
                                                  "where tbl.table_name not like 'sys%' or tbl.table_name not like '__%'";
 
 QString zSQL::getTableNames_MSSQL_CMD(){ return getTableNames_MSSQL_CMDTMP; }
-QString zSQL::getTableNames_MYSQL_CMD(){ return getTableNames_MYSQL_CMDTMP.arg(this->databaseName); }
+QString zSQL::getTableNames_MYSQL_CMD(){ return getTableNames_MYSQL_CMDTMP.arg(this->schemaName); }
 
 QList<QString> zSQL::getTableNames(){
     if(db.isValid() && db.isOpen()){
@@ -145,7 +145,7 @@ QString zSQL::getLastErrorText(){
 
 QString zSQL::toString()
 {
-    return this->databaseName+":"+this->connectionName;
+    return this->schemaName+":"+this->connectionName;
 }
 
 const QString zSQL::getTable_MYSQL_CMDTMP ="SELECT "
@@ -174,7 +174,7 @@ const QString zSQL::getTable_MSSQL_CMDTMP = "Select "
                                             "Where C.TABLE_NAME = '%1'";
 
 QString zSQL::getTable_MSSQL_CMD(QString tn){ return getTable_MSSQL_CMDTMP.arg(tn); }
-QString zSQL::getTable_MYSQL_CMD(QString tn){ return getTable_MYSQL_CMDTMP.arg(this->databaseName).arg(tn); }
+QString zSQL::getTable_MYSQL_CMD(QString tn){ return getTable_MYSQL_CMDTMP.arg(this->schemaName).arg(tn); }
 
 
 zTable zSQL::getTable(const QString& tablanev){
@@ -303,3 +303,55 @@ QMap<int, QString> zSQL::getTable_SQL_ENUM(QString tablanev, QString mezonev)
     return e;
 }
 
+/*
+Adatbázi funkciók - Séma kezelésével kapcsolatban
+*/
+
+
+QList<QString> zSQL::getSchemaNames(){
+    if(db.isValid() && db.isOpen()){
+        if(driverName == QODBC){
+            return getSchemaNames_SQL(getSchemaNames_MSSQL_CMD());//.arg(beallitasok.adatbazisNev);
+        }
+        else if(driverName == QMYSQL){
+            return getSchemaNames_SQL(getSchemaNames_MYSQL_CMD());
+        }
+        else{
+            zlog.log("getDbNames: unknown driver:" + driverName);
+        }
+    }
+    else{
+        zlog.log("getDb: db closed" + driverName);
+    }
+    return QList<QString>();
+}
+
+QList<QString> zSQL::getSchemaNames_SQL(QString cmd) {
+    QList<QString> eredmeny;
+
+    QSqlQuery query(cmd, db);
+    query.setForwardOnly(true);
+
+    while (query.next())
+        eredmeny.append(query.value("schema_name").toString());
+    return eredmeny;
+}
+
+QString zSQL::getSchemaNames_MSSQL_CMD(){ return getSchemaNames_MSSQL_CMDTMP; }
+QString zSQL::getSchemaNames_MYSQL_CMD(){ return getSchemaNames_MYSQL_CMDTMP; }
+
+
+const QString zSQL::getSchemaNames_MYSQL_CMDTMP = "SELECT distinct TABLE_SCHEMA as schema_name FROM INFORMATION_SCHEMA.TABLES "
+                                              "WHERE TABLE_SCHEMA not in('mysql', 'performance_schema', 'information_schema','sys')";
+
+
+// TODO mssql select az adatbázsnevekhez
+const QString zSQL::getSchemaNames_MSSQL_CMDTMP = "SELECT "
+                                                 "TableName = tbl.table_name, "
+                                                 "TableDescription = tableProp.value "
+                                                 "FROM information_schema.tables tbl "
+                                                 "LEFT JOIN sys.extended_properties tableProp "
+                                                 "ON tableProp.major_id = object_id(tbl.table_schema + '.' + tbl.table_name) "
+                                                 "AND tableProp.minor_id = 0 "
+                                                 "AND tableProp.name = 'MS_Description' "
+                                                 "where tbl.table_name not like 'sys%' or tbl.table_name not like '__%'";

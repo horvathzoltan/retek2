@@ -56,6 +56,10 @@ private slots:
 
     void on_pushButton_projects_apply_clicked();
 
+    void on_comboBox_connections_currentIndexChanged(const QString &arg1);
+
+    void on_listWidget_schemas_currentTextChanged(const QString &currentText);
+
 private:
     Ui::retek2Class ui;
 
@@ -63,7 +67,7 @@ private:
 
     void saveTablaToXML(const QString&);
 
-    void tablaListaFeltolt();
+    void tablesFeltolt(const dbConnection& c);
     void feltoltTmpMap();
     //void feltoltEljaras(QString tablanev);
 
@@ -84,6 +88,8 @@ private:
 
     // void initBy(dbConnection* b);
     void closeEvent(QCloseEvent *event) override;
+
+    void schemasFeltolt(const dbConnection& c);
 };
 
 //#endif // RETEK2_H
