@@ -451,10 +451,14 @@ QString retek2::generateTmp(const QString& tmp_file) {
 /*!
  * A 2-es tabon megadott szöveg alapján generál táblaszerkezetet
  * ami alapján validálja az adatbázisban szereplő táblát.
+ *
+ * Ehez meg kell adni egy adatzbázis kapcsolatot - a validálandó ztabla connectionja az
  */
 
 void retek2::on_pushButton_2_clicked()
-{
+{    
+    // TODO a ztablesbe bele kell tenni az sql connectiont, sáma és tábla szinten
+    QString schemaName = "";//ui.comboBox_connections->currentText();
     zSQL zsql;
     auto dbconn = beallitasok.getUI();
     if(dbconn.isValid()){
@@ -466,7 +470,7 @@ void retek2::on_pushButton_2_clicked()
         auto tl = zTable::createTableByText(txt);
         if(tl.length()>0){
             zforeach(t,tl){
-                auto t_sql = zsql.getTable(t->tablename);
+                auto t_sql = zsql.getTable(schemaName, t->tablename);
                 auto vl = t_sql.Validate(*t);
                 zlog.log("--- "+t->tablename+" ---");
                 zlog.log(vl);
@@ -634,16 +638,19 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
 
 void retek2::on_lineEdit_classname_plural_editingFinished()
 {
+    if(!table) return;
     table->classname_plural =  ui.lineEdit_classname_plural->text();
 }
 
 void retek2::on_lineEdit_classname_editingFinished()
 {
-     table->classname =  ui.lineEdit_classname->text();
+    if(!table) return;
+    table->classname =  ui.lineEdit_classname->text();
 }
 
 void retek2::on_lineEdit_tablename_editingFinished()
 {
+    if(!table) return;
     table->tablename =  ui.lineEdit_tablename->text();
 }
 
@@ -766,8 +773,8 @@ void retek2::on_pushButton_projects_apply_clicked()
     }
 }
 
-/**
-A tábla lista kezelése
+/*
+Sémák feltöltése
 
 */
 void retek2::on_comboBox_connections_currentIndexChanged(const QString &arg1)
@@ -777,17 +784,20 @@ void retek2::on_comboBox_connections_currentIndexChanged(const QString &arg1)
     // a szerver conn kell - a neve alapján - tehát nem az adatbázis név, hanem a saját neve alapján
     auto c = beallitasok.getDbConnectionByName(arg1);
     if(c){
-
         schemasFeltolt(*c);
     }
 }
 
-void retek2::on_listWidget_schemas_currentTextChanged(const QString &currentText)
+/*
+A táblák feltöltése - egy konkrét séma tábláinak feltöltése
+*/
+void retek2::on_listWidget_schemas_currentTextChanged(const QString &schemaName)
 {    
     ui.listWidget_tables->clear();
-    auto c = beallitasok.getDbConnectionBySchemaName(currentText);
+    QString connName = ui.comboBox_connections->currentText();
+    auto c = beallitasok.getDbConnectionByName(connName);
     if(c){        
-        tablesFeltolt(*c);
+        tablesFeltolt(*c, schemaName);
     }
 }
 
@@ -808,18 +818,18 @@ void retek2::on_pushButton_clicked()
         //tablaListaFeltolt();
         }
     else{
-       zlog.log(QString(QStringLiteral("Az adatbáziskapcsolat adatai hibásak: %1 driver: %2")).arg(dbconn.Getname(),dbconn.driver), zLog::ERROR);
+       zlog.log(QString(QStringLiteral("Az adatbáziskapcsolat adatai hibásak: %1 driver: %2")).arg(dbconn.Name,dbconn.driver), zLog::ERROR);
     }
     //zsql.createConnection();
 
 }
 
 //listWidget_tables
-void retek2::tablesFeltolt(const dbConnection& c) {
+void retek2::tablesFeltolt(const dbConnection& c, const QString& schemaName) {
     zSQL zsql;
     zsql.init(c);
 
-    auto tableNames = zsql.getTableNames();
+    auto tableNames = zsql.getTableNames(schemaName);
     ui.listWidget_tables->addItems(tableNames);
     //zTable t;
     // importál - ez nem kell ide most

@@ -30,7 +30,7 @@ A tábla PK mező nevének lekérdezése
             user,
             password;
 
-    QString schemaName;
+    //QString schemaName;
     QSqlDatabase db;
     QString connectionName;
 
@@ -43,8 +43,8 @@ A tábla PK mező nevének lekérdezése
     zTable getTable_SQL(QString tablanev, QString fn, QString);
 
     QString getTable_MSSQL_CMD(QString tn);
-    QString getTable_MYSQL_CMD(QString tn);
-    QString getTableNames_MYSQL_CMD();
+    QString getTable_MYSQL_CMD(QString tn, QString);
+    QString getTableNames_MYSQL_CMD(QString);
     QString getTableNames_MSSQL_CMD();
 
     QString getTable_MSSQL_PK(QString tn);
@@ -70,8 +70,8 @@ public:
     bool createConnection(QString connectionName="default_conn");
 
     QString toString();
-    QList<QString> getTableNames();
-    zTable getTable(const QString& tablanev);
+    QList<QString> getTableNames(QString schemaName);
+    zTable getTable(const QString&, const QString&);
     QString getTablePKName(QString tablanev);
     QString getTable_SQL_PK(QString cmd);
 

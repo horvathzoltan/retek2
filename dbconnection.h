@@ -8,7 +8,7 @@ private:
 
 public:    
     QString driver;
-    QString schemaName;
+    QString Name;
     QString server;
     QString user;
     QString password;
@@ -22,7 +22,7 @@ public:
 
     bool operator==(dbConnection const& b);
 
-    QString Getname();
+    //QString Getname();
 };
 
 

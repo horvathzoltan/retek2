@@ -67,7 +67,7 @@ private:
 
     void saveTablaToXML(const QString&);
 
-    void tablesFeltolt(const dbConnection& c);
+    void tablesFeltolt(const dbConnection& c, const QString&);
     void feltoltTmpMap();
     //void feltoltEljaras(QString tablanev);
 

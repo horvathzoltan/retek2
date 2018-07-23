@@ -132,17 +132,17 @@ QString Beallitasok::getTemplateFilename(const QString& tfname) {
 // jellemzően mindennek kellene
 dbConnection* Beallitasok::getDbConnectionByName(const QString& name){
     zforeach(o, dbConnections){
-        if(o->Getname() == name) return &(*o);
+        if(o->Name == name) return &(*o);
     }
     return nullptr;
 }
 
-dbConnection* Beallitasok::getDbConnectionBySchemaName(const QString& name){
-    zforeach(o, dbConnections){
-        if(o->schemaName == name) return &(*o);
-    }
-    return nullptr;
-}
+//dbConnection* Beallitasok::getDbConnectionBySchemaName(const QString& name){
+//    zforeach(o, dbConnections){
+//        if(o->schemaName == name) return &(*o);
+//    }
+//    return nullptr;
+//}
 
 void Beallitasok::initPaths(){
     settingsPath = zFileNameHelper::append(QDir::homePath(),settingsdir);
@@ -231,7 +231,7 @@ void Beallitasok::addConnection(dbConnection b){
 
 void Beallitasok::addDbConnection(dbConnection b){
     beallitasok.dbConnections.append(b);        
-    widget_connections->addItem(b.Getname());
+    widget_connections->addItem(b.Name);
 }
 
 

@@ -9,27 +9,30 @@
 
 // szerver adatokat kitenni izébe, struktúrába
 // new zSQL("QMYSQL", "127.0.0.1", "wiki1", "root","Aladar123", "w1"),
-const QString zSQL::connectionTemplate = "DRIVER={SQL Server};SERVER=%1;DATABASE=%2;";
+//const QString zSQL::connectionTemplate = "DRIVER={SQL Server};SERVER=%1;DATABASE=%2;";
+const QString zSQL::connectionTemplate = "DRIVER={SQL Server};SERVER=%1;";
 const QString zSQL::QODBC = "QODBC";
 const QString zSQL::QMYSQL ="QMYSQL";
 
 QString zSQL::getConnStr(){
-    return  connectionTemplate.arg(hostName).arg(schemaName);//.arg(driverName);
+    //return  connectionTemplate.arg(hostName).arg(schemaName);//.arg(driverName);
+    return  connectionTemplate.arg(hostName);//.arg(driverName);
 }
 
 zSQL::zSQL(){};
 
 bool zSQL::init(dbConnection c){
-    return init(c.driver, c.server, c.schemaName, c.user, c.password);
+    return init(c.driver, c.server, c.Name, c.user, c.password);
 }
 
-bool zSQL::init(QString _driverName, QString _hostName, QString _databaseName, QString _user, QString _pass){
+bool zSQL::init(QString _driverName, QString _hostName, QString _connectionName, QString _user, QString _pass){
     connectionName = "conn1";
     user = _user;
     password = _pass;
     driverName = _driverName;
     hostName = _hostName;
-    schemaName = _databaseName;
+    //schemaName = _databaseName;
+    connectionName = _connectionName;
     bool isok = this->createConnection();
     if(isok){
         zlog.log("init:"+this->toString());
@@ -66,7 +69,7 @@ bool zSQL::createConnection_MYSQL()
     }
     db = QSqlDatabase::addDatabase(driverName, connectionName);
     db.setHostName(hostName);
-    db.setDatabaseName(schemaName);
+    //db.setDatabaseName(schemaName);
     db.setUserName(user);
     db.setPassword(password);
     db.setConnectOptions("MYSQL_OPT_CONNECT_TIMEOUT=10");    
@@ -109,14 +112,14 @@ const QString zSQL::getTableNames_MSSQL_CMDTMP = "SELECT "
                                                  "where tbl.table_name not like 'sys%' or tbl.table_name not like '__%'";
 
 QString zSQL::getTableNames_MSSQL_CMD(){ return getTableNames_MSSQL_CMDTMP; }
-QString zSQL::getTableNames_MYSQL_CMD(){ return getTableNames_MYSQL_CMDTMP.arg(this->schemaName); }
+QString zSQL::getTableNames_MYSQL_CMD(QString schemaName){ return getTableNames_MYSQL_CMDTMP.arg(schemaName); }
 
-QList<QString> zSQL::getTableNames(){
+QList<QString> zSQL::getTableNames(QString schemaName){
     if(db.isValid() && db.isOpen()){
         if(driverName == QODBC)
             return getTableNames_SQL(getTableNames_MSSQL_CMD());//.arg(beallitasok.adatbazisNev);
         else if(driverName == QMYSQL)
-            return getTableNames_SQL(getTableNames_MYSQL_CMD());
+            return getTableNames_SQL(getTableNames_MYSQL_CMD(schemaName));
         else{
             zlog.log("getTableNames: unknown driver:" + driverName);
         }
@@ -145,7 +148,8 @@ QString zSQL::getLastErrorText(){
 
 QString zSQL::toString()
 {
-    return this->schemaName+":"+this->connectionName;
+    //return this->schemaName+":"+this->connectionName;
+    return this->connectionName;
 }
 
 const QString zSQL::getTable_MYSQL_CMDTMP ="SELECT "
@@ -174,10 +178,10 @@ const QString zSQL::getTable_MSSQL_CMDTMP = "Select "
                                             "Where C.TABLE_NAME = '%1'";
 
 QString zSQL::getTable_MSSQL_CMD(QString tn){ return getTable_MSSQL_CMDTMP.arg(tn); }
-QString zSQL::getTable_MYSQL_CMD(QString tn){ return getTable_MYSQL_CMDTMP.arg(this->schemaName).arg(tn); }
+QString zSQL::getTable_MYSQL_CMD(QString schemaName, QString tn ){ return getTable_MYSQL_CMDTMP.arg(schemaName).arg(tn); }
 
 
-zTable zSQL::getTable(const QString& tablanev){
+zTable zSQL::getTable(const QString& schemaName, const QString& tablanev){
 
     if(db.isValid() && db.isOpen()){
         //QString fn = beallitasok.getCaptionFileName(tablanev);
@@ -186,7 +190,7 @@ zTable zSQL::getTable(const QString& tablanev){
             return getTable_SQL(tablanev, "", getTable_MSSQL_CMD(tablanev));
         }
         else if(driverName == QMYSQL){
-            return getTable_SQL(tablanev, "", getTable_MYSQL_CMD(tablanev));
+            return getTable_SQL(tablanev, "", getTable_MYSQL_CMD(schemaName, tablanev));
         }
         else{
             zlog.log("getTable: unknown driver:" + driverName);
