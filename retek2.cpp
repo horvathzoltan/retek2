@@ -871,9 +871,13 @@ void retek2::on_pushButton_table_import_clicked()
         // TODO ha már van ilyen néven tábla, jelezni kell - nem kell beimportáli
         // ettől függetlenül egy adatbázismodellből lehet több viewmodellt létrehozni,
         // ahol első körben egy szűkített nézetről beszélhetünk - sajár mezőkkel kiegészítvee - esetleg
+        // illetve - ha már van ilyen néven, akkor egy sorszámmal a névben -meg kell külömböztetni az eredetitől
+        // illetve nem lehet azonos az osztály neve,
+        // a táblaneve lehet-e azonos? - elvileg onnan származik
 
         zTable t = zsql.getTable(schemaName, tableName);
         if(t.rows.length()>0){
+            // TODO mielőtt hozzáadjuk, meg kell vizsgálni, van-e már ilyen néven
             ztables << t;
             zTablaToList(t);
         }
