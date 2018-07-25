@@ -831,15 +831,7 @@ void retek2::tablesFeltolt(const dbConnection& c, const QString& schemaName) {
 
     auto tableNames = zsql.getTableNames(schemaName);
     ui.listWidget_tables->addItems(tableNames);
-    //zTable t;
-    // importál - ez nem kell ide most
-    /*zforeach(tn,tns){
-        t = zsql.getTable(*(tn));
-        if(t.rows.length()>0){
-            ztables << t;
-            zTablaToList(t);
-        }
-    }*/
+
 }
 
 //listWidget_schemas
@@ -859,3 +851,31 @@ void retek2::zTablaToList(QList<zTable> ts){
 
 
 
+
+void retek2::on_pushButton_table_import_clicked()
+{
+    auto items = ui.listWidget_tables->selectedItems();
+    QString schemaName = ui.listWidget_schemas->currentItem()->text();
+    QString connName = ui.comboBox_connections->currentText();
+    auto c = beallitasok.getDbConnectionByName(connName);
+
+    zSQL zsql;
+    zsql.init(*c);
+
+    //zLog::errorDialog("clicked: "+ tableName);
+
+    //zTable t;
+    zforeach(i,items){
+        QString tableName = (*i)->text();
+
+        // TODO ha már van ilyen néven tábla, jelezni kell - nem kell beimportáli
+        // ettől függetlenül egy adatbázismodellből lehet több viewmodellt létrehozni,
+        // ahol első körben egy szűkített nézetről beszélhetünk - sajár mezőkkel kiegészítvee - esetleg
+
+        zTable t = zsql.getTable(schemaName, tableName);
+        if(t.rows.length()>0){
+            ztables << t;
+            zTablaToList(t);
+        }
+    }
+}

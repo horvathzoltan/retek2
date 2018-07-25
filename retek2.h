@@ -60,6 +60,8 @@ private slots:
 
     void on_listWidget_schemas_currentTextChanged(const QString &currentText);
 
+    void on_pushButton_table_import_clicked();
+
 private:
     Ui::retek2Class ui;
 
