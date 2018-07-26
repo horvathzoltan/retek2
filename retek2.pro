@@ -44,7 +44,8 @@ SOURCES += Beallitasok.cpp \
     zpluralize.cpp \
     zxmlhelper.cpp \
     zsourcehelper.cpp
-FORMS += retek2.ui
+FORMS += retek2.ui \
+    ztablenames.ui
 RESOURCES += retek2.qrc
 
 CONFIG += debug

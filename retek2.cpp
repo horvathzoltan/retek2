@@ -30,6 +30,7 @@
 //#include "zsql.h"
 //#include "zenumizer.h"
 #include <QWidget>
+// #include "ui_ztablenames.h"
 
 retek2::retek2(QWidget *parent):QMainWindow(parent){
 	ui.setupUi(this);
@@ -872,11 +873,38 @@ void retek2::on_pushButton_table_import_clicked()
         // - elvileg egy stringhez fűzött short guid is lehetne - de talán jobb, ha bekérünk egy nevet... ha az egyedi, mehetm, ha nem, akkor újra
         // TODO a táblanév táblanév legyen - az sqlből kell a szerver account, a séma név és a tábla név - ezek az sql forráshoz kötődnek
         // TODO kell a tábla lista mellé egy mező lista, az importhoz - hanincs egy mező sem kijelölve, mindegyik kell, ha van, csak a jelöltek
+        QString tx;
 
         zTable t = zsql.getTable(schemaName, tableName);
-        if(t.rows.length()>0 && !zTable::find(&ztables, tableName, zTableSearchBy::TableName)){
-            ztables << t;
-            zTablaToList(t);
+        if(t.rows.length()>0){
+            if(!zTable::find(&ztables, tableName, zTableSearchBy::TableName)){
+                ztables << t;
+                zTablaToList(t);
+            }
+            else{
+                //do {
+                QDialog dialog(this);
+                //Ui_Dialog_ztable_name uiDialog{};
+
+                zTableNameDialog.setupUi(&dialog);
+
+                zTableNameDialog.lineEdit_name->setText(tableName);
+                dialog.exec();
+
+                tx = zTableNameDialog.lineEdit_name->text();
+
+                //}while(!zTable::find(&ztables, tx, zTableSearchBy::TableName));
+            }
         }
     }
+}
+
+void retek2::on_pushButton_createSourcePath_clicked()
+{
+
+}
+
+void retek2::on_buttonBox_accepted()
+{
+
 }

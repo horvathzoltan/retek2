@@ -4,6 +4,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_retek2.h"
+#include "ui_ztablenames.h"
 #include <QSqlQuery>
 #include "ztable.h"
 #include "zenumizer.h"
@@ -62,8 +63,13 @@ private slots:
 
     void on_pushButton_table_import_clicked();
 
+    void on_pushButton_createSourcePath_clicked();
+
+    void on_buttonBox_accepted();
+
 private:
     Ui::retek2Class ui;
+    Ui::Dialog_ztable_name zTableNameDialog;
 
 	QSqlDatabase db;
 

@@ -14,7 +14,7 @@
    <string>retek2</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="retek2.qrc">
+   <iconset>
     <normaloff>:/retek.ico</normaloff>:/retek.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -349,7 +349,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab_8">
            <attribute name="title">
@@ -1086,9 +1086,7 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="retek2.qrc"/>
- </resources>
+ <resources/>
  <connections/>
  <slots>
   <slot>GenerateAll()</slot>
