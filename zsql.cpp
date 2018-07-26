@@ -344,18 +344,14 @@ QList<QString> zSQL::getSchemaNames_SQL(QString cmd) {
 QString zSQL::getSchemaNames_MSSQL_CMD(){ return getSchemaNames_MSSQL_CMDTMP; }
 QString zSQL::getSchemaNames_MYSQL_CMD(){ return getSchemaNames_MYSQL_CMDTMP; }
 
+/**
+  Adatbázisok nevét adó lekérdezések - select datatabase names from mysql server
 
-const QString zSQL::getSchemaNames_MYSQL_CMDTMP = "SELECT distinct TABLE_SCHEMA as schema_name FROM INFORMATION_SCHEMA.TABLES "
-                                              "WHERE TABLE_SCHEMA not in('mysql', 'performance_schema', 'information_schema','sys')";
+  https://stackoverflow.com/questions/147659/get-list-of-databases-from-sql-server
+  https://www.cyberciti.biz/faq/mysql-command-to-show-list-of-databases-on-server/
+ */
 
+const QString zSQL::getSchemaNames_MYSQL_CMDTMP = QStringLiteral("SELECT DISTINCT TABLE_SCHEMA as schema_name FROM INFORMATION_SCHEMA.TABLES "
+                                              "WHERE TABLE_SCHEMA not in('mysql', 'performance_schema', 'information_schema','sys')");
 
-// TODO mssql select az adatbázsnevekhez
-const QString zSQL::getSchemaNames_MSSQL_CMDTMP = "SELECT "
-                                                 "TableName = tbl.table_name, "
-                                                 "TableDescription = tableProp.value "
-                                                 "FROM information_schema.tables tbl "
-                                                 "LEFT JOIN sys.extended_properties tableProp "
-                                                 "ON tableProp.major_id = object_id(tbl.table_schema + '.' + tbl.table_name) "
-                                                 "AND tableProp.minor_id = 0 "
-                                                 "AND tableProp.name = 'MS_Description' "
-                                                 "where tbl.table_name not like 'sys%' or tbl.table_name not like '__%'";
+const QString zSQL::getSchemaNames_MSSQL_CMDTMP = QStringLiteral("SELECT name AS schema_name FROM sys.databases WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb')");

@@ -9,6 +9,8 @@
 
 enum zTableSourceTypes:int { SQL=0, TXT=1, ENTITY=2 };
 
+enum zTableSearchBy{ Name, TableName, ClassName, ClassNamePlural };
+
 class zTable
 {
 public:
@@ -21,6 +23,7 @@ public:
     QString sql_conn;
     QString source_conn;
 
+    QString name;
     QString tablename;
     QString classname; // osztálynév - singular, ezt a zTables példány létrehozásakor létre lehet már hozni, és validálni egy szabály szerint
     QString classname_plural;
@@ -50,7 +53,7 @@ public:
     static QList<zTable> createTableByText_3(QString txt, QMap<QString, QString>*, QMap<QString, QString>* = nullptr);
 
     static QString getPkByName(QList<zTable> *tables, QString rn);
-    static zTable* getByName(QList<zTable> *tables, QString rn);
+    static zTable* find(QList<zTable> *tables, QString rn, zTableSearchBy searchType = zTableSearchBy::TableName);
     //void getType(auto re_dlen1, QString dtype, auto re_dlen2, QString ezt1, bool isDtype, int dlen);
 
     static bool getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);

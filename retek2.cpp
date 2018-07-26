@@ -737,7 +737,7 @@ az új táblát beolvassuk
 */
 void retek2::TableSelect(QListWidgetItem* i) {
     auto tablanev = i->text();
-    table = zTable::getByName(&ztables, tablanev);
+    table = zTable::find(&ztables, tablanev);
 
     if(table != nullptr){
         fejadatFeltolt(*table);
@@ -750,7 +750,7 @@ void retek2::TableSelect(QListWidgetItem* i) {
 void retek2::on_listWidget_ztables_itemClicked(QListWidgetItem *item)
 {
     auto tablanev = item->text();
-    table = zTable::getByName(&ztables, tablanev);
+    table = zTable::find(&ztables, tablanev);
 
     if(table != nullptr){
         fejadatFeltolt(*table);
@@ -868,16 +868,13 @@ void retek2::on_pushButton_table_import_clicked()
     zforeach(i,items){
         QString tableName = (*i)->text();
 
-        // TODO ha már van ilyen néven tábla, jelezni kell - nem kell beimportáli
-        // ettől függetlenül egy adatbázismodellből lehet több viewmodellt létrehozni,
-        // ahol első körben egy szűkített nézetről beszélhetünk - sajár mezőkkel kiegészítvee - esetleg
-        // illetve - ha már van ilyen néven, akkor egy sorszámmal a névben -meg kell külömböztetni az eredetitől
-        // illetve nem lehet azonos az osztály neve,
-        // a táblaneve lehet-e azonos? - elvileg onnan származik
+        // TODO ha már van ilyen néven tábla - szükség van egy egyedi névre
+        // - elvileg egy stringhez fűzött short guid is lehetne - de talán jobb, ha bekérünk egy nevet... ha az egyedi, mehetm, ha nem, akkor újra
+        // TODO a táblanév táblanév legyen - az sqlből kell a szerver account, a séma név és a tábla név - ezek az sql forráshoz kötődnek
+        // TODO kell a tábla lista mellé egy mező lista, az importhoz - hanincs egy mező sem kijelölve, mindegyik kell, ha van, csak a jelöltek
 
         zTable t = zsql.getTable(schemaName, tableName);
-        if(t.rows.length()>0){
-            // TODO mielőtt hozzáadjuk, meg kell vizsgálni, van-e már ilyen néven
+        if(t.rows.length()>0 && !zTable::find(&ztables, tableName, zTableSearchBy::TableName)){
             ztables << t;
             zTablaToList(t);
         }

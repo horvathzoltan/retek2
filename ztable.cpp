@@ -120,15 +120,26 @@ QList<QString> zTable::Validate(zTable tv){
     return e;
 }
 
-zTable* zTable::getByName(QList<zTable> *tables, QString rn){
+// TODO ezeket a kereséseket talán lehetne egy függvénybe hozni, egy iterációba és egy flag mutatná, mit keresünk
+zTable* zTable::find(QList<zTable> *tables, QString rn, zTableSearchBy searchType){
     if(rn.isEmpty()) return nullptr;
     zforeach(r,*tables){
-        if(!r->tablename.isEmpty())
-            if(r->tablename == rn){
-                zTable *r2 = r.operator->();
-                return r2;
-            }
+        switch(searchType){
+            case zTableSearchBy::ClassName:
+                //if(!r->tablename.isEmpty() && r->tablename == rn){
+                if(rn == r->classname) return r.operator->();
+                break;
+            case zTableSearchBy::ClassNamePlural:
+                if(rn == r->classname_plural) return r.operator->();
+                break;
+            case zTableSearchBy::Name:
+                if(rn == r->name) return r.operator->();
+                break;
+            case zTableSearchBy::TableName:
+                if(rn == r->tablename) return r.operator->();
+                break;
         }
+    }
     return nullptr;
 }
 
