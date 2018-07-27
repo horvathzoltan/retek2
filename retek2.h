@@ -65,6 +65,10 @@ private slots:
 
     void on_pushButton_createSourcePath_clicked();    
 
+    void on_buttonBox_accepted();
+
+    void on_buttonBox_clicked(QAbstractButton *button);
+
 private:
     Ui::retek2Class ui;
     Ui::Dialog_ztable_name zTableNameDialog;

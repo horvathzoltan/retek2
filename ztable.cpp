@@ -274,6 +274,7 @@ void zTable::toXML(QXmlStreamWriter *s)
     s->writeAttribute(nameof(this->source_conn), this->source_conn);
 
     s->writeAttribute(nameof(this->name), this->name);
+    s->writeAttribute(nameof(this->tablename), this->tablename);
     s->writeAttribute(nameof(this->classname), this->classname);
     s->writeAttribute(nameof(this->classname_plural), this->classname_plural);
     s->writeAttribute(nameof(this->pkname), this->pkname);
@@ -302,6 +303,10 @@ QList<zTable> zTable::createTableByXML(const QString& txt){
             while(xml.readNextStartElement()) {
                 if(xml.name()==nameof(zTable)){
                     zTable t = fromXML(&xml);
+                    // TODO - //zTable::Validate(t); amely bármely szituációban konzisztensen ugyanazt adja - ?
+                    if(t.name.isEmpty()){
+                        zlog.log(QStringLiteral("Nincs név"), zLog::ERROR);
+                    }
                     tl.append(t);
                 }
                 else{
@@ -311,6 +316,10 @@ QList<zTable> zTable::createTableByXML(const QString& txt){
         }
         else if(xml.name() == "zTable"){
             zTable t = fromXML(&xml);
+            // TODO - //zTable::Validate(t); amely bármely szituációban konzisztensen ugyanazt adja - ?
+            if(t.name.isEmpty()){
+                zlog.log(QStringLiteral("Nincs név"), zLog::ERROR);
+            }
             tl.append(t);
         }
         else{
@@ -329,6 +338,7 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
     auto a = xml->attributes();
 
     zXmlHelper::putXmlAttr(a, nameof(name), &(t.name));
+    zXmlHelper::putXmlAttr(a, nameof(tablename), &(t.tablename));
     //zXmlHelper::putXmlAttr(a, nameof(sourcetype), &(t.sourcetype));
     zXmlHelper::putXmlAttr(a, nameof(sql_conn), &(t.sql_conn));
     zXmlHelper::putXmlAttr(a, nameof(source_conn), &(t.source_conn));
@@ -358,7 +368,7 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
 
     //t.props = QList<zTablerow>();
     //tl.append(t);
-    zlog.log("XML beolvasva: "+ t.name +xml->errorString());
+    //zlog.log("XML beolvasva: "+ t.name +xml->errorString());
     return t;
 }
 

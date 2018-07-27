@@ -93,6 +93,7 @@ void retek2::init()
     auto projectdirs = zFileNameHelper::GetSubdirs(beallitasok.projectPath);
     beallitasok.fillProjectList(projectdirs);
 
+
     loadCurrentProject();
 
 
@@ -163,31 +164,23 @@ void retek2::zTablaToList(const zTable& t){
     else if(!t.source_conn.isEmpty())
         sourcetype = zTableSourceTypes::ENTITY;
 
-    //QString tn= t.name;
     switch(sourcetype){
         case zTableSourceTypes::SQL:
-            icon=QIcon::fromTheme(QStringLiteral("office-database"));
-            if(tn.isEmpty()){
-                tn = t.tablename;
-                }
+            icon=QIcon::fromTheme(QStringLiteral("office-database"));            
             break;
         case zTableSourceTypes::ENTITY:
-            icon=QIcon::fromTheme(QStringLiteral("text-x-c++"));
-            if(tn.isEmpty()){
-                tn = t.classname;
-                }
+            icon=QIcon::fromTheme(QStringLiteral("text-x-c++"));            
             break;
         case zTableSourceTypes::TXT:
             icon=QIcon::fromTheme(QStringLiteral("text"));
         default:
-            if(tn.isEmpty()){
-                tn = (!t.tablename.isEmpty())?t.tablename:(!t.classname.isEmpty())?t.classname:zStringHelper::Empty;
-                }
             break;
     }   
+
     if(tn.isEmpty()){
-        // TODO nevet kellene adni
-        zlog.log("nincsen neki izéje");
+        zlog.log(QStringLiteral("Nincs megnevezés. table: %1 class: %2").arg(t.tablename, t.classname));
+        tn = "?";
+        //tn = (!t.tablename.isEmpty())?t.tablename:(!t.classname.isEmpty())?t.classname:zStringHelper::Empty;
     }
 
     new QListWidgetItem(icon, tn, ui.listWidget_ztables, sourcetype);
@@ -241,7 +234,8 @@ void retek2::zTablaToList(const zTable& t){
 
 
 void retek2::fejadatFeltolt(const zTable& t){
-    ui.lineEdit_tablename->setText(t.name);
+    ui.lineEdit_name->setText(t.name);
+    ui.lineEdit_tablename->setText(t.tablename);
     ui.lineEdit_classname->setText(t.classname);
     ui.lineEdit_classname_plural->setText(t.classname_plural);
 
@@ -667,9 +661,22 @@ void retek2::on_lineEdit_classname_editingFinished()
     table->classname =  ui.lineEdit_classname->text();
 }
 
+// TODO  -  átnevezés esetén az xml:
+// az új néven is lemezre íródik - ami mellett a régi is megmarad -
+// illetve az átnevezést lehetne úgy implementálni, hogy a régi xml töröl és lemezre megy az új
+
 void retek2::on_lineEdit_tablename_editingFinished()
 {
     if(!table) return;
+
+    //QString fileName = table->name;
+//    QString currentProjectPath = zFileNameHelper::append(beallitasok.projectPath,beallitasok.currentProjectName);
+//    QStringList files = zFileNameHelper::FindFileNameInDir(currentProjectPath, table->name, zFileNameHelper::xmlFilter);
+//    if(!files.isEmpty()){
+//        QFile file(files[0]);
+//        QString newFileName = zFileNameHelper::append(currentProjectPath, table->name + ".xml");
+//        file.rename(newFileName);
+//        }
     table->name =  ui.lineEdit_tablename->text();
 }
 
@@ -677,7 +684,7 @@ void retek2::on_lineEdit_tablename_editingFinished()
 // TODO globális caption tábla használatát beépíteni
 void retek2::on_pushButton_6_clicked()
 {    
-    zlog.trace("Entitások beolvasása");
+    zlog.trace(QStringLiteral("Entitások beolvasása"));
 
     auto txt = ui.textEdit->toPlainText();
 
@@ -768,8 +775,8 @@ void retek2::TableSelect(QListWidgetItem* i) {
 
 void retek2::on_listWidget_ztables_itemClicked(QListWidgetItem *item)
 {
-    auto tablanev = item->text();
-    table = zTable::find(&ztables, tablanev);
+    auto name = item->text();
+    table = zTable::find(&ztables, name, zTableSearchBy::Name);
 
     if(table != nullptr){
         fejadatFeltolt(*table);
@@ -888,7 +895,7 @@ void retek2::on_pushButton_table_import_clicked()
         QString tableName = (*i)->text();
 
         // TODO a táblanév táblanév legyen - az sqlből kell a szerver account, a séma név és a tábla név - ezek az sql forráshoz kötődnek
-        // TODO kell a tábla lista mellé egy mező lista, az importhoz - hanincs egy mező sem kijelölve, mindegyik kell, ha van, csak a jelöltek
+        // TODO kell a tábla lista mellé egy mező lista, az importhoz - ha nincs egy mező sem kijelölve, mindegyik kell, ha van, csak a jelöltek
         QString tx = tableName; // - elvileg egy stringhez fűzött short guid is lehetne
         QDialog dialog(this);
         zTableNameDialog.setupUi(&dialog);
@@ -931,3 +938,13 @@ void retek2::on_pushButton_createSourcePath_clicked()
 //    }
 //}
 
+
+void retek2::on_buttonBox_accepted()
+{
+    zLog::errorDialog("aaaa");
+}
+
+void retek2::on_buttonBox_clicked(QAbstractButton *button)
+{
+    zLog::errorDialog("bbb");
+}

@@ -46,14 +46,14 @@ void zLog::log(const QString& m, int errlevel){
 
     switch(errlevel){
     case OK:
-        this->widget->setTextColor(QColor(Qt::green));
+        this->widget->setTextColor(QColor(Qt::darkGreen));
         break;
     case ERROR:
-        this->widget->setTextColor(QColor(Qt::red));        
+        this->widget->setTextColor(QColor(Qt::darkRed));
         tabwidget->setCurrentIndex(tabindex);
         break;
     case TRACE:
-        this->widget->setTextColor(QColor(Qt::gray));
+        this->widget->setTextColor(QColor(Qt::darkGray));
         break;
     default:
         this->widget->setTextColor(QColor(Qt::black));

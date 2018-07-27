@@ -9,6 +9,7 @@ QString zTextFileHelper::load(const QString& filename) {
     QFile f(filename);
     QString e;
     if (f.open(QFile::ReadOnly | QFile::Text))  {
+        zlog.log(QStringLiteral("Beolvasva: %1").arg(filename), zLog::OK);
         e =  QTextStream(&f).readAll();
     }
     else{
