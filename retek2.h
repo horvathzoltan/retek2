@@ -63,9 +63,7 @@ private slots:
 
     void on_pushButton_table_import_clicked();
 
-    void on_pushButton_createSourcePath_clicked();
-
-    void on_buttonBox_accepted();
+    void on_pushButton_createSourcePath_clicked();    
 
 private:
     Ui::retek2Class ui;

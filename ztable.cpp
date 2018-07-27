@@ -75,9 +75,9 @@ zTable::zTable(QString _classname, QString pkn, QList<zTablerow> tr, int type, Q
             break;
     }
     if(!_tablename.isEmpty())
-        this->tablename = _tablename;
+        this->name = _tablename;
     else
-        this->tablename = classname_plural;
+        this->name = classname_plural;
 }
 
 
@@ -98,14 +98,14 @@ QString zTable::toString(){
 //        ps+=p->toString();
 //    }
 
-    return  this->tablename+"("+rs+")"+(!ps.isEmpty()?ps:"");
+    return  this->name+"("+rs+")"+(!ps.isEmpty()?ps:"");
 }
 
 
 QList<QString> zTable::Validate(zTable tv){
     QList<QString> e;
 
-    if(this->tablename!=tv.tablename)
+    if(this->name!=tv.name)
         e.append("Tablename: NOT_EQUALS ERROR");
     else
         e.append("Tablename: OK");
@@ -144,7 +144,7 @@ zTable* zTable::find(QList<zTable> *tables, QString rn, zTableSearchBy searchTyp
 }
 
 
-QString zTable::getPkByName(QList<zTable> *tables, QString rn){
+QString zTable::getPkByTableName(QList<zTable> *tables, QString rn){
     if(rn.isEmpty()) return nullptr;
 
     zforeach(r,*tables){
@@ -273,7 +273,7 @@ void zTable::toXML(QXmlStreamWriter *s)
     s->writeAttribute(nameof(this->sql_conn), this->sql_conn);
     s->writeAttribute(nameof(this->source_conn), this->source_conn);
 
-    s->writeAttribute(nameof(this->tablename), this->tablename);
+    s->writeAttribute(nameof(this->name), this->name);
     s->writeAttribute(nameof(this->classname), this->classname);
     s->writeAttribute(nameof(this->classname_plural), this->classname_plural);
     s->writeAttribute(nameof(this->pkname), this->pkname);
@@ -328,7 +328,7 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
 
     auto a = xml->attributes();
 
-    zXmlHelper::putXmlAttr(a, nameof(tablename), &(t.tablename));
+    zXmlHelper::putXmlAttr(a, nameof(name), &(t.name));
     //zXmlHelper::putXmlAttr(a, nameof(sourcetype), &(t.sourcetype));
     zXmlHelper::putXmlAttr(a, nameof(sql_conn), &(t.sql_conn));
     zXmlHelper::putXmlAttr(a, nameof(source_conn), &(t.source_conn));
@@ -358,7 +358,7 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
 
     //t.props = QList<zTablerow>();
     //tl.append(t);
-    zlog.log("XML beolvasva: "+ t.tablename +xml->errorString());
+    zlog.log("XML beolvasva: "+ t.name +xml->errorString());
     return t;
 }
 
@@ -1014,7 +1014,7 @@ lementi a  táblát - nem caption, hanem teljes xml, így ez később átnevezen
 void zTable::saveTablaToXML() {
     if(beallitasok.currentProjectName.isEmpty()) return;
 
-    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName, this->tablename + ".xml");
+    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName, this->name + ".xml");
 
     QString e;
     QXmlStreamWriter s(&e);

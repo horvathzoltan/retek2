@@ -60,6 +60,8 @@ void retek2::init()
     // amíg erre nincsen megoldás, nem lehet egybe hozni ezeket a táblákat,
     // így ezek konverziója kód szintű marad, illetve- kell legyen
 
+//#pragma GCC diagnostic push
+//#pragma GCC diagnostic ignored "-Wclazy-qstring-allocations"
 
     //sql->c# irány
 	typeMap.insert("uniqueidentifier", "Guid");
@@ -85,6 +87,7 @@ void retek2::init()
     typeMapR.insert("bool","bit");
     typeMapR.insert("decimal", "decimal");
 
+//#pragma GCC diagnostic pop
     beallitasok.load();    
 
     auto projectdirs = zFileNameHelper::GetSubdirs(beallitasok.projectPath);
@@ -152,7 +155,7 @@ void retek2::loadCurrentProject()
 
 
 void retek2::zTablaToList(const zTable& t){
-    QString tn = t.tablename;
+    QString tn = t.name;
     int sourcetype = -1;
     QIcon icon;
     if(!t.sql_conn.isEmpty())
@@ -160,18 +163,33 @@ void retek2::zTablaToList(const zTable& t){
     else if(!t.source_conn.isEmpty())
         sourcetype = zTableSourceTypes::ENTITY;
 
-
+    //QString tn= t.name;
     switch(sourcetype){
         case zTableSourceTypes::SQL:
             icon=QIcon::fromTheme(QStringLiteral("office-database"));
+            if(tn.isEmpty()){
+                tn = t.tablename;
+                }
             break;
         case zTableSourceTypes::ENTITY:
             icon=QIcon::fromTheme(QStringLiteral("text-x-c++"));
+            if(tn.isEmpty()){
+                tn = t.classname;
+                }
             break;
         case zTableSourceTypes::TXT:
             icon=QIcon::fromTheme(QStringLiteral("text"));
+        default:
+            if(tn.isEmpty()){
+                tn = (!t.tablename.isEmpty())?t.tablename:(!t.classname.isEmpty())?t.classname:zStringHelper::Empty;
+                }
             break;
     }   
+    if(tn.isEmpty()){
+        // TODO nevet kellene adni
+        zlog.log("nincsen neki izéje");
+    }
+
     new QListWidgetItem(icon, tn, ui.listWidget_ztables, sourcetype);
 }
 
@@ -223,7 +241,7 @@ void retek2::zTablaToList(const zTable& t){
 
 
 void retek2::fejadatFeltolt(const zTable& t){
-    ui.lineEdit_tablename->setText(t.tablename);
+    ui.lineEdit_tablename->setText(t.name);
     ui.lineEdit_classname->setText(t.classname);
     ui.lineEdit_classname_plural->setText(t.classname_plural);
 
@@ -249,7 +267,7 @@ void retek2::mezoListaFeltolt(zTable t){
 }
 
 void retek2::feltoltKulcsLista(zTable t) {
-    zlog.trace("feltoltKulcsLista: " + t.tablename);
+    zlog.trace("feltoltKulcsLista: " + t.name);
 
     ui.listWidget_IdegenKulcs->clear();
     if(!t.pkname.isEmpty()){
@@ -283,7 +301,7 @@ void retek2::GenerateAll() {
         return;
     }
 
-    auto classname = zStringHelper::getClassNameCamelCase(table->tablename);
+    auto classname = zStringHelper::getClassNameCamelCase(table->name);
 
     //saveTablaToXML(table->tablename);
 
@@ -306,7 +324,7 @@ void retek2::GenerateAll() {
 
         auto txt = generateTmp("MVC_CClass.cs");
         zlog.log(txt);
-        auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->tablename + ".cs");
+        auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + ".cs");
         zTextFileHelper::save(txt, fn);
 	}
 
@@ -323,7 +341,7 @@ void retek2::GenerateAll() {
                 QString txt = zEnumizer::GenerateEnum(ed);
 
                 zlog.log(txt);
-                auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->tablename + "_enum.cs");
+                auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + "_enum.cs");
                 zTextFileHelper::save(txt, fn);
             }
             else{
@@ -622,8 +640,8 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
             fn = ui.tableWidget_MezoLista->item(ix, C_ix_colName)->text();
         }
 
-        auto ms = (*zsql).getTable_SQL_ENUM(table->tablename, fn);
-        QString cn = zStringHelper::getClassNameCamelCase(table->tablename);
+        auto ms = (*zsql).getTable_SQL_ENUM(table->name, fn);
+        QString cn = zStringHelper::getClassNameCamelCase(table->name);
 
         return { cn, ft, ms };
         }
@@ -652,7 +670,7 @@ void retek2::on_lineEdit_classname_editingFinished()
 void retek2::on_lineEdit_tablename_editingFinished()
 {
     if(!table) return;
-    table->tablename =  ui.lineEdit_tablename->text();
+    table->name =  ui.lineEdit_tablename->text();
 }
 
 
@@ -869,31 +887,30 @@ void retek2::on_pushButton_table_import_clicked()
     zforeach(i,items){
         QString tableName = (*i)->text();
 
-        // TODO ha már van ilyen néven tábla - szükség van egy egyedi névre
-        // - elvileg egy stringhez fűzött short guid is lehetne - de talán jobb, ha bekérünk egy nevet... ha az egyedi, mehetm, ha nem, akkor újra
         // TODO a táblanév táblanév legyen - az sqlből kell a szerver account, a séma név és a tábla név - ezek az sql forráshoz kötődnek
         // TODO kell a tábla lista mellé egy mező lista, az importhoz - hanincs egy mező sem kijelölve, mindegyik kell, ha van, csak a jelöltek
-        QString tx;
-
+        QString tx = tableName; // - elvileg egy stringhez fűzött short guid is lehetne
+        QDialog dialog(this);
+        zTableNameDialog.setupUi(&dialog);
+        zTableNameDialog.lineEdit_name->setText(tableName);
+        dialog.setModal(true);
+        int isOK = true;
+        //dialog.setWindowTitle(QStringliteral("A névvel már létezik tábla"));
         zTable t = zsql.getTable(schemaName, tableName);
         if(t.rows.length()>0){
-            if(!zTable::find(&ztables, tableName, zTableSearchBy::TableName)){
-                ztables << t;
-                zTablaToList(t);
+            while(isOK && zTable::find(&ztables, tx, zTableSearchBy::TableName)) {
+                isOK = dialog.exec();
+                if(isOK){
+                    tx = zTableNameDialog.lineEdit_name->text();
+                    }
+                }
+            if(isOK){
+               t.name = tx;
+               ztables << t;
+               zTablaToList(t);
             }
             else{
-                //do {
-                QDialog dialog(this);
-                //Ui_Dialog_ztable_name uiDialog{};
-
-                zTableNameDialog.setupUi(&dialog);
-
-                zTableNameDialog.lineEdit_name->setText(tableName);
-                dialog.exec();
-
-                tx = zTableNameDialog.lineEdit_name->text();
-
-                //}while(!zTable::find(&ztables, tx, zTableSearchBy::TableName));
+                continue;
             }
         }
     }
@@ -904,7 +921,13 @@ void retek2::on_pushButton_createSourcePath_clicked()
 
 }
 
-void retek2::on_buttonBox_accepted()
-{
 
-}
+//void retek2::on_buttonBox_clicked(QAbstractButton *button)
+//{
+//    auto tx = zTableNameDialog.lineEdit_name->text();
+//    if(!zTable::find(&ztables, tx, zTableSearchBy::TableName)){
+//        //zTableNameDialog.
+//        zlog.log("létezik");
+//    }
+//}
+

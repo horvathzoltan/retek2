@@ -99,7 +99,7 @@ bool zSQL::createConnection(QString connectionName){
 
 const QString zSQL::getTableNames_MYSQL_CMDTMP = "SELECT table_name AS TableName, table_comment AS TableDescription "
                                                  "FROM INFORMATION_SCHEMA.TABLES "
-                                                 "WHERE table_schema='%1';";
+                                                 "WHERE table_schema='%1' ORDER BY TableName;";
 
 const QString zSQL::getTableNames_MSSQL_CMDTMP = "SELECT "
                                                  "TableName = tbl.table_name, "
@@ -109,7 +109,7 @@ const QString zSQL::getTableNames_MSSQL_CMDTMP = "SELECT "
                                                  "ON tableProp.major_id = object_id(tbl.table_schema + '.' + tbl.table_name) "
                                                  "AND tableProp.minor_id = 0 "
                                                  "AND tableProp.name = 'MS_Description' "
-                                                 "where tbl.table_name not like 'sys%' or tbl.table_name not like '__%'";
+                                                 "where tbl.table_name not like 'sys%' or tbl.table_name not like '__%' ORDER BY TableName";
 
 QString zSQL::getTableNames_MSSQL_CMD(){ return getTableNames_MSSQL_CMDTMP; }
 QString zSQL::getTableNames_MYSQL_CMD(QString schemaName){ return getTableNames_MYSQL_CMDTMP.arg(schemaName); }
@@ -352,6 +352,6 @@ QString zSQL::getSchemaNames_MYSQL_CMD(){ return getSchemaNames_MYSQL_CMDTMP; }
  */
 
 const QString zSQL::getSchemaNames_MYSQL_CMDTMP = QStringLiteral("SELECT DISTINCT TABLE_SCHEMA as schema_name FROM INFORMATION_SCHEMA.TABLES "
-                                              "WHERE TABLE_SCHEMA not in('mysql', 'performance_schema', 'information_schema','sys')");
+                                              "WHERE TABLE_SCHEMA not in('mysql', 'performance_schema', 'information_schema','sys') ORDER BY schema_name" );
 
-const QString zSQL::getSchemaNames_MSSQL_CMDTMP = QStringLiteral("SELECT name AS schema_name FROM sys.databases WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb')");
+const QString zSQL::getSchemaNames_MSSQL_CMDTMP = QStringLiteral("SELECT name AS schema_name FROM sys.databases WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb') ORDER BY schema_name");

@@ -23,15 +23,15 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEdit_name"/>
+      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_name">
         <property name="text">
          <string>Megnevezés:</string>
         </property>
        </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit_name"/>
       </item>
      </layout>
     </widget>

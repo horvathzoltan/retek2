@@ -185,7 +185,7 @@ QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant>
 
     // sql tokenek
     if (t1 == "dbname") return dbname;
-    else if (t1 == "tablename") return table->tablename;
+    else if (t1 == "tablename") return table->name;
     else if (t1 == "contextname") return dbname;
     // osztály tokenek
     else if (t1 == "classname") return table->classname;//zStringHelper::getClassNameCamelCase(table->tablename);
@@ -438,12 +438,12 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
 //Table,NotMapped
 QString zTokenizer::getEntityAttrList(QMap<QString, QVariant> *map, int w) {
     QStringList attrList;
-    if(table->tablename.isEmpty())
+    if(table->name.isEmpty())
         attrList<< "[NotMapped]";
-    if(table->tablename!=table->classname)
-        attrList<< QStringLiteral("[Table(\"%1\")]").arg(table->tablename);
+    if(table->name!=table->classname)
+        attrList<< QStringLiteral("[Table(\"%1\")]").arg(table->name);
     if(!table->comment.isEmpty())
-        attrList<<QStringLiteral("[Description(\"%1\")]").arg(table->tablename);
+        attrList<<QStringLiteral("[Description(\"%1\")]").arg(table->name);
 
     return AttrListJoin(attrList, w);
 }
