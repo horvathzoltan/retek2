@@ -6,6 +6,7 @@
 #include "zsourcehelper.h"
 #include "ztablerow.h"
 #include "ztextfilehelper.h"
+#include "zshortguid.h"
 
 #include <QRegularExpression>
 #include <QTableWidgetItem>
@@ -120,6 +121,7 @@ void retek2::init()
     // ennek már nem kell hatása legyen, az adatbázis lista informális, szerepét átveszi részben a project lista,
     // részben az egyes táblák saját adatbázis és és táblanév adatai
 
+
     zlog.trace(QStringLiteral("retek2 init OK"));
 }
 
@@ -147,6 +149,7 @@ void retek2::loadCurrentProject()
         zforeach(f, files){
             auto txt = zTextFileHelper::load(*f);
             auto t = zTable::createTableByXML(txt);
+            // TODO projectenkénti short id - ez lehet egy int, és ennek a base64-ét vesszük.
             ztables << t;
             zTablaToList(t);
             }
