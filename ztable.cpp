@@ -13,6 +13,7 @@
 #include "zsourcehelper.h"
 #include "zfilenamehelper.h"
 #include "ztextfilehelper.h"
+#include "zshortguid.h"
 
 #include <QDir>
 #include <QRegularExpression>
@@ -102,7 +103,10 @@ QString zTable::toString(){
 }
 
 
-QList<QString> zTable::Validate(zTable tv){
+/**
+  összehasonlítja a két táblát, és annak sorait
+*/
+QList<QString> zTable::Compare(zTable tv){
     QList<QString> e;
 
     if(this->name!=tv.name)
@@ -289,6 +293,10 @@ void zTable::toXML(QXmlStreamWriter *s)
     s->writeEndElement();
 }
 
+
+/**
+Szükséges, hogy egy fájl egy táblát tartalmazzon, külömben követhetetlenné és kezelhetetlenné válik
+*/
 QList<zTable> zTable::createTableByXML(const QString& txt){
    QList<zTable> tl;
 
@@ -303,10 +311,7 @@ QList<zTable> zTable::createTableByXML(const QString& txt){
             while(xml.readNextStartElement()) {
                 if(xml.name()==nameof(zTable)){
                     zTable t = fromXML(&xml);
-                    // TODO - //zTable::Validate(t); amely bármely szituációban konzisztensen ugyanazt adja - ?
-                    if(t.name.isEmpty()){
-                        zlog.log(QStringLiteral("Nincs név"), zLog::ERROR);
-                    }
+                    t.Validate(true);
                     tl.append(t);
                 }
                 else{
@@ -314,12 +319,10 @@ QList<zTable> zTable::createTableByXML(const QString& txt){
                 }
             }
         }
-        else if(xml.name() == "zTable"){
+      else
+        if(xml.name() == "zTable"){
             zTable t = fromXML(&xml);
-            // TODO - //zTable::Validate(t); amely bármely szituációban konzisztensen ugyanazt adja - ?
-            if(t.name.isEmpty()){
-                zlog.log(QStringLiteral("Nincs név"), zLog::ERROR);
-            }
+            //t.Validate(false);
             tl.append(t);
         }
         else{
@@ -1038,3 +1041,22 @@ void zTable::saveTablaToXML() {
 }
 
 
+/**
+  Az adott táblát validálja -
+*/
+
+bool zTable::Validate(bool r){
+    bool e = true;
+    if(this->name.isEmpty()){
+        zlog.log(QStringLiteral("Nincs név"), zLog::ERROR);
+//        e = false;
+//        if(r){
+//            this->name = zShortGuid::createNew().value;
+//            zlog.log(QStringLiteral("Új név: %1").arg(this->name), zLog::ERROR);
+//        } else{
+
+//            zlog.log(QStringLiteral("Nincs név"), zLog::ERROR);
+//        }
+    }
+    return e;
+}

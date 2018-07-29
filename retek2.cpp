@@ -149,9 +149,26 @@ void retek2::loadCurrentProject()
         zforeach(f, files){
             auto txt = zTextFileHelper::load(*f);
             auto t = zTable::createTableByXML(txt);
-            // TODO projectenkénti short id - ez lehet egy int, és ennek a base64-ét vesszük.
-            ztables << t;
-            zTablaToList(t);
+            if(t.isEmpty() ){
+                zlog.log(QStringLiteral("Nincs tábla: %1").arg(*f), zLog::ERROR);
+                }
+            else{
+                if(t.count()>1){
+                    zlog.log(QStringLiteral("Több tábla: %1").arg(*f), zLog::ERROR);
+                }
+                else{
+                    auto t0 = t[0];
+                    if(t0.name.isEmpty()){
+                        QString fn = zFileNameHelper::getfileName(*f);
+                        zlog.log(QStringLiteral("Nincs név: %1 (.xml)").arg(fn), zLog::ERROR);
+
+                        t0.name = fn;
+                    }
+                    // TODO projectenkénti short id - ez lehet egy int, és ennek a base64-ét vesszük.
+                    ztables << t0;
+                    zTablaToList(t0);
+                    }
+                }
             }
         }
 }
@@ -487,7 +504,7 @@ void retek2::on_pushButton_2_clicked()
         if(tl.length()>0){
             zforeach(t,tl){
                 auto t_sql = zsql.getTable(schemaName, t->tablename);
-                auto vl = t_sql.Validate(*t);
+                auto vl = t_sql.Compare(*t);
                 zlog.log("--- "+t->tablename+" ---");
                 zlog.log(vl);
                 }
@@ -899,16 +916,17 @@ void retek2::on_pushButton_table_import_clicked()
 
         // TODO a táblanév táblanév legyen - az sqlből kell a szerver account, a séma név és a tábla név - ezek az sql forráshoz kötődnek
         // TODO kell a tábla lista mellé egy mező lista, az importhoz - ha nincs egy mező sem kijelölve, mindegyik kell, ha van, csak a jelöltek
-        QString tx = tableName; // - elvileg egy stringhez fűzött short guid is lehetne
+        QString v = "_"+zShortGuid::createNew().value;
+        QString tx = tableName;
         QDialog dialog(this);
         zTableNameDialog.setupUi(&dialog);
-        zTableNameDialog.lineEdit_name->setText(tableName);
         dialog.setModal(true);
         int isOK = true;
         //dialog.setWindowTitle(QStringliteral("A névvel már létezik tábla"));
         zTable t = zsql.getTable(schemaName, tableName);
         if(t.rows.length()>0){
             while(isOK && zTable::find(&ztables, tx, zTableSearchBy::TableName)) {
+                zTableNameDialog.lineEdit_name->setText(tableName + v);
                 isOK = dialog.exec();
                 if(isOK){
                     tx = zTableNameDialog.lineEdit_name->text();

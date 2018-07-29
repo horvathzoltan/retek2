@@ -6,7 +6,7 @@
 class zShortGuid
 {
 public:
-    //zShortGuid();
+    zShortGuid();
     //zShortGuid(QString value);
     static const zShortGuid Empty;
 

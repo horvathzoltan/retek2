@@ -44,7 +44,7 @@ public:
 
     QString toString();
 
-    QList<QString> Validate(zTable);
+    QList<QString> Compare(zTable);
 
     static QList<zTable> createTableByText(QString txt);    
     static QList<zTable> createTableByText_2(QString txt);
@@ -81,6 +81,8 @@ public:
 //    static QString p_class;
     //    static QString p_attr;
     void saveTablaToXML();
+
+    bool Validate(bool = false);
 };
 
 #endif // ZTABLE_H

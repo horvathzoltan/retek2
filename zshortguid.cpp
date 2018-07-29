@@ -7,10 +7,17 @@ const zShortGuid zShortGuid::Empty = zShortGuid(QUuid());
 http://www.singular.co.nz/2007/12/shortguid-a-shorter-and-url-friendly-guid-in-c-sharp/
  */
 
+zShortGuid::zShortGuid(){
+ QUuid guid;
+ value = Encode(guid);
+ uuid = guid;
+}
+
 zShortGuid::zShortGuid(QUuid guid){
  value = Encode(guid);
  uuid = guid;
 }
+
 
 zShortGuid zShortGuid::createNew(){
     auto g = QUuid::createUuid();
