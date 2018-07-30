@@ -6,8 +6,6 @@ zLog zlog;
 //zSQL zsql;
 zTokenizer ztokenizer;
 
-//QMap<QString, QString> globalCaptionMap;
-
 QList<zCaptionMap> globalCaptionMaps;
 //QMap<QString, QVariant> typeMap;
 

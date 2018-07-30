@@ -80,7 +80,7 @@ void retek2::init()
     typeMapR.insert("bool","bit");
     typeMapR.insert("decimal", "decimal");
 
-    beallitasok.load();    
+    beallitasok.load(beallitasok.settingsPath);
 
     globalCaptionMaps = zCaptionMap::loadAll(beallitasok.settingsPath);
 
@@ -117,16 +117,6 @@ void retek2::init()
 
     zlog.trace(QStringLiteral("retek2 init OK"));
 }
-
-//void retek2::initBy(dbConnection* c){
-//    if(c==nullptr) return;
-
-//    beallitasok.setUI(*c);
-//    ztokenizer.init(ui.tableWidget_MezoLista);
-
-//    // global caption tábla beolvasása
-//    zStringMapHelper::StringMapFeltolt(zFileNameHelper::append(QDir::homePath(),beallitasok.munkadir, c->adatbazisNev, Beallitasok::filename), &globalCaptionMap); // globális elnevezéstábla
-//}
 
 void retek2::loadCurrentProject()
 {

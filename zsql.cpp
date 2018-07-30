@@ -222,6 +222,7 @@ zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
         bool nullable = zStringHelper::toBool(query.value("IS_NULLABLE").toString());
 
         //QString cn = colName.toLower();
+
         //QString caption = tablaCaptionMap.contains(cn)?tablaCaptionMap[cn]:globalCaptionMap.contains(cn)?globalCaptionMap[cn]:cn;
         QString caption = "";
         tr.append(zTablerow(colName, dtype, dlen, nullable, caption));

@@ -38,7 +38,7 @@ public:
 
     void init(QLineEdit*, QLineEdit*, QLineEdit*, QLineEdit*, QComboBox *qc, QComboBox *dc, QListWidget *lw);
 
-    void load();
+    void load(QString);
     void addConnection(dbConnection);
 
 

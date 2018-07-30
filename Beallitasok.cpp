@@ -156,9 +156,9 @@ fel kell olvasni a kapcsolat fájlt
 beállítások csv visszaolvasása
 
 */
-void Beallitasok::load(){
+void Beallitasok::load(QString path){
 
-    QString fn = zFileNameHelper::append(settingsPath, dbconnections_filename);
+    QString fn = zFileNameHelper::append(path, dbconnections_filename);
 
     QString txt = zTextFileHelper::load(fn);
     widget_connections->clear();
