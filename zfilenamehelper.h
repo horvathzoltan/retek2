@@ -16,6 +16,7 @@ public:
     static QStringList GetSubdirs(QString& dirName);
 
     static const QStringList xmlFilter;
+    static const QStringList captionFileFilter;
 };
 
 #endif // ZFILENAMEHELPER_H

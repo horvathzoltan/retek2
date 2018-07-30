@@ -10,7 +10,6 @@
 #include <QDir>
 #include <QFileInfo>
 
-const QString Beallitasok::filename =  QStringLiteral("caption_global.txt");
 
 Beallitasok::Beallitasok(){
     //"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"

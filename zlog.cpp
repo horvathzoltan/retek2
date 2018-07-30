@@ -6,10 +6,10 @@ zLog::zLog(){};
 
 zLog::~zLog(){};
 
-void zLog::init(QTextBrowser* b, QTabWidget* tw, int tix){
+void zLog::init(QTextBrowser* b, QTabWidget* tw, int tabindex){
     this->widget = b;
     this->tabwidget = tw;
-    this->tabindex = tix;
+    this->tabindex = tabindex;
 }
 
 void zLog::trace(const QString& msg){

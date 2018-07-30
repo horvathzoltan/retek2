@@ -29,7 +29,7 @@ private:
 
     //int selected_ix;
 public:
-    static const QString filename;
+    //static const QString filename;
     QString currentProjectName;
     QList<dbConnection> dbConnections;
 
@@ -142,7 +142,6 @@ abrachadabra
 */
     QString globalCaptionsFileName = QStringLiteral("global_captions");
 
-    //QString getCaptionFileName(const QString& tablanev);
     void setSelected(int i);
 
     void addDbConnection(dbConnection b);

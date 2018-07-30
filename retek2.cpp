@@ -31,7 +31,7 @@
 //#include "zsql.h"
 //#include "zenumizer.h"
 #include <QWidget>
-// #include "ui_ztablenames.h"
+#include "zcaptionmap.h"
 
 retek2::retek2(QWidget *parent):QMainWindow(parent){
 	ui.setupUi(this);
@@ -50,19 +50,11 @@ retek2::~retek2()= default;
 
 void retek2::init()
 {	
-    zlog.init(ui.textBrowser, ui.tabWidget, 4);
+    zlog.init(ui.textBrowser, ui.tabWidget, 4);// 4.tab-on van a log
     //beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
     beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, nullptr, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
-    beallitasok.initPaths();
-    // TODO egy belső típust kell létrehozni, ami a perzisztens és kód közti kötést írja le, mindkét irányban
-    // amennyiben ez lehetséges - figyelembevéve, hogy
-    // csak az sql szintet vizsgálva nem lehet eldönteni, hogy az a kódban mivé alakul
-    // illetve a kód irányából, pl. a string konkrétan melyik szöveges típusra alakul
-    // amíg erre nincsen megoldás, nem lehet egybe hozni ezeket a táblákat,
-    // így ezek konverziója kód szintű marad, illetve- kell legyen
+    beallitasok.initPaths();  
 
-//#pragma GCC diagnostic push
-//#pragma GCC diagnostic ignored "-Wclazy-qstring-allocations"
 
     //sql->c# irány
 	typeMap.insert("uniqueidentifier", "Guid");
@@ -88,8 +80,9 @@ void retek2::init()
     typeMapR.insert("bool","bit");
     typeMapR.insert("decimal", "decimal");
 
-//#pragma GCC diagnostic pop
     beallitasok.load();    
+
+    globalCaptionMaps = zCaptionMap::loadAll(beallitasok.settingsPath);
 
     auto projectdirs = zFileNameHelper::GetSubdirs(beallitasok.projectPath);
     beallitasok.fillProjectList(projectdirs);
@@ -163,8 +156,7 @@ void retek2::loadCurrentProject()
                         zlog.log(QStringLiteral("Nincs név: %1 (.xml)").arg(fn), zLog::ERROR);
 
                         t0.name = fn;
-                    }
-                    // TODO projectenkénti short id - ez lehet egy int, és ennek a base64-ét vesszük.
+                    }                    
                     ztables << t0;
                     zTablaToList(t0);
                     }

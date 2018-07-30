@@ -96,7 +96,6 @@ private:
 
     zEnumizer::EnumSource GetEnumData(zSQL *zsql);
 
-    // void initBy(dbConnection* b);
     void closeEvent(QCloseEvent *event) override;
 
     void schemasFeltolt(const dbConnection& c);

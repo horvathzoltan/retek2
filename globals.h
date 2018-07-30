@@ -8,6 +8,7 @@
 #include "ztokenizer.h"
 #include <QDebug>
 #include <QException>
+#include "zcaptionmap.h"
 
 #define zforeach(var, container) for(auto var = (container).begin(); var != (container).end(); ++var)
 #define zforeach_from(var, container, ix) for(auto var = (container).begin()+ix; var != (container).end(); ++var)
@@ -16,7 +17,8 @@ extern Beallitasok beallitasok;
 extern zLog zlog;
 //extern zSQL zsql;
 extern zTokenizer ztokenizer;
-extern QMap<QString, QString> globalCaptionMap;
+//extern QMap<QString, QString> globalCaptionMap;
+extern QList<zCaptionMap> globalCaptionMaps;
 //extern QMap<QString, QVariant> typeMap;
 //extern QMap<QString, QVariant> typeMapR;
 //valami 6

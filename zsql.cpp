@@ -209,6 +209,8 @@ zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
 
     QList<zTablerow> tr;
 
+    // TODO ha a globan caption mapokban megtaláljuk a captiont, akkor ok, ha nem, akkor kézzel kap captiont
+    // a tábla caption map megszűnik
     // QMap<QString, QString> tablaCaptionMap;
     //zStringMapHelper::StringMapFeltolt(fn, &tablaCaptionMap);
 

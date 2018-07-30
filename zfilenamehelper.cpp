@@ -20,6 +20,7 @@
 //}
 
 const QStringList zFileNameHelper::xmlFilter = QStringList(QStringLiteral("*.xml"));
+const QStringList zFileNameHelper::captionFileFilter = QStringList(QStringLiteral("caption_*.csv"));
 
 QString zFileNameHelper::append(QString h, QString p0, QString p1, QString p2){
     auto s = QDir::separator();

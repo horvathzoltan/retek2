@@ -1,11 +1,14 @@
 #include "globals.h"
+#include "zcaptionmap.h"
 
 Beallitasok beallitasok;
 zLog zlog;
 //zSQL zsql;
 zTokenizer ztokenizer;
 
-QMap<QString, QString> globalCaptionMap;
+//QMap<QString, QString> globalCaptionMap;
+
+QList<zCaptionMap> globalCaptionMaps;
 //QMap<QString, QVariant> typeMap;
 
 QMap<QString, QString> typeMap;

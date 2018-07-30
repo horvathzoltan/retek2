@@ -25,7 +25,7 @@ void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map)
         QString line = in.readLine();
         //QString line(bline);
 
-        int ix = line.indexOf(",");
+        int ix = line.indexOf(';');
         if (ix > 0) {
             QString k1 = line.left(ix).toLower();
             QString k2 = line.right(line.length() - (ix + 1));
