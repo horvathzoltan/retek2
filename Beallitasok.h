@@ -38,7 +38,7 @@ public:
 
     void init(QLineEdit*, QLineEdit*, QLineEdit*, QLineEdit*, QComboBox *qc, QComboBox *dc, QListWidget *lw);
 
-    void load(QString);
+    void load();
     void addConnection(dbConnection);
 
 
@@ -126,8 +126,8 @@ abrachadabra
     QString projectdir = QStringLiteral(R"(retek2/munka_dir)");
     QString settingsdir = QStringLiteral(R"(retek2/settings)");
 
-    QString settingsPath;
-    QString projectPath;
+   // QString settingsPath;
+   // QString projectPath;
 
     QString dbconnections_filename = QStringLiteral(R"(dbconnections.csv)");
     QString settings_filename = QStringLiteral(R"(settings.csv)");

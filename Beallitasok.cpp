@@ -77,12 +77,16 @@ void Beallitasok::setUI(const dbConnection& b)
 // megy a
 QString Beallitasok::getModelFilename(const QString& tfname, const QString& dirname) {
 
-        QString  e = zFileNameHelper::append(QDir::homePath(),projectdir, beallitasok.currentProjectName, dirname);
-        QDir d(e);if(!d.exists()){d.mkpath(d.absolutePath());}
+        QString e = zFileNameHelper::getCurrentProjectSubDir(dirname);
+        //QString  e = zFileNameHelper::append(QDir::homePath(),projectdir, beallitasok.currentProjectName, dirname);
+        QDir d(e);
 
-        e += QDir::separator()+tfname;
-        zlog.trace(e);
-        return e;
+        if(!d.exists()){d.mkpath(d.absolutePath());}
+
+        //e += QDir::separator()+tfname;
+        QString e2 = zFileNameHelper::getCurrentProjectFileName(tfname);
+        zlog.trace(e2);
+        return e2;
 
 }
 
@@ -101,7 +105,10 @@ QString Beallitasok::getTemplateFilename(const QString& tfname) {
     if(!isVal)
         {zLog::errorDialog(QStringLiteral("A template fájlnév nem meghatározható"));return nullptr;}
 
-    auto fn = zFileNameHelper::append(QDir::homePath(),tmpDir, beallitasok.currentProjectName, tfname);
+
+    // project template
+    auto fn = zFileNameHelper::getCurrentTmpSubDir(tfname);
+    //auto fn = zFileNameHelper::append(QDir::homePath(),tmpDir, beallitasok.currentProjectName, tfname);
     //auto fn = zFileNameHelper::append(beallitasok.projectPath, tfname);
 
     //zlog.log("project template keresese:"+ fn);
@@ -110,7 +117,7 @@ QString Beallitasok::getTemplateFilename(const QString& tfname) {
     else{
         zlog.log("nincs project template:" +fn);
 
-        fn = zFileNameHelper::append(QDir::homePath(),tmpDir, tfname);
+        fn = zFileNameHelper::getTmpSubDir(tfname);//append(QDir::homePath(),tmpDir, tfname);
         //fn = QString(beallitasok.tmpDir+R"(\%1)").arg(tfname);
 
         if(QFileInfo::exists(fn))
@@ -141,11 +148,13 @@ dbConnection* Beallitasok::getDbConnectionByName(const QString& name){
 //    return nullptr;
 //}
 
-void Beallitasok::initPaths(){
-    settingsPath = zFileNameHelper::append(QDir::homePath(),settingsdir);
-    projectPath  = zFileNameHelper::append(QDir::homePath(),projectdir);
+// valójában ezt egy helpernek kellene?
+//void Beallitasok::initPaths(){
+//    settingsPath = zFileNameHelper::getSettingsDir();//append(QDir::homePath(),settingsdir);
+//    projectPath  = zFileNameHelper::getProjectDir();//append(QDir::homePath(),projectdir);
+//}
 
-}
+
 /*
 fel kell olvasni a kapcsolatokat
 template_dir/connections.csv
@@ -154,9 +163,10 @@ fel kell olvasni a kapcsolat fájlt
 beállítások csv visszaolvasása
 
 */
-void Beallitasok::load(QString path){
+void Beallitasok::load(){
 
-    QString fn = zFileNameHelper::append(path, dbconnections_filename);
+    //QString path = beallitasok.settingsPath;
+    QString fn = zFileNameHelper::getDbconnFileName();//append(path, dbconnections_filename);
 
     QString txt = zTextFileHelper::load(fn);
     widget_connections->clear();
@@ -174,7 +184,7 @@ void Beallitasok::load(QString path){
        // selected_ix = 0;
     }
 
-    fn = zFileNameHelper::append(settingsPath, settings_filename);
+    fn = zFileNameHelper::getSettingsFileName();//append(settingsPath, settings_filename);
     txt = zTextFileHelper::load(fn);
     if(!txt.isEmpty()){
         QStringList csvl = zStringHelper::toStringList(txt);
@@ -215,7 +225,9 @@ void Beallitasok::fillProjectList(const QStringList& projectdirs)
 
 void Beallitasok::addConnection(dbConnection b){  
 
-    QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, QString());
+    QString fn = zFileNameHelper::getDbconnFileName();
+
+    //QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, QString());
     QString csvr= b.ToCSV();
 
     zlog.log(QStringLiteral("dbconnection append %1 %2").arg(fn, csvr));

@@ -984,7 +984,8 @@ QList<zTable> zTable::createTableByClassTxt(QString txt){
     }
 
     // konstanstábla beolvasása
-    auto path = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName);
+    auto path = zFileNameHelper::getCurrentProjectDir();
+            //append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName);
 
     // key az attrName, value a constName
     QStringList classNameFilter;
@@ -1029,7 +1030,8 @@ lementi a  táblát - nem caption, hanem teljes xml, így ez később átnevezen
 void zTable::saveTablaToXML() {
     if(beallitasok.currentProjectName.isEmpty()) return;
 
-    QString fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName, this->name + ".xml");
+    QString fn = zFileNameHelper::getCurrentProjectFileName(this->name + ".xml");
+            //append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName, this->name + ".xml");
 
     QString e;
     QXmlStreamWriter s(&e);

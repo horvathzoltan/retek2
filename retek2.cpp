@@ -7,6 +7,7 @@
 #include "ztablerow.h"
 #include "ztextfilehelper.h"
 #include "zshortguid.h"
+#include "zfilenamehelper.h"
 
 #include <QRegularExpression>
 #include <QTableWidgetItem>
@@ -53,7 +54,7 @@ void retek2::init()
     zlog.init(ui.textBrowser, ui.tabWidget, 4);// 4.tab-on van a log
     //beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
     beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, nullptr, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
-    beallitasok.initPaths();  
+//    beallitasok.initPaths();
 
 
     //sql->c# irány
@@ -80,16 +81,19 @@ void retek2::init()
     typeMapR.insert("bool","bit");
     typeMapR.insert("decimal", "decimal");
 
-    beallitasok.load(beallitasok.settingsPath);
+    beallitasok.load();
 
-    globalCaptionMaps = zCaptionMap::loadAll(beallitasok.settingsPath);
+    auto sp = zFileNameHelper::getSettingsDir();
+    auto pp = zFileNameHelper::getProjectDir();
 
-    auto projectdirs = zFileNameHelper::GetSubdirs(beallitasok.projectPath);
+    globalCaptionMaps = zCaptionMap::loadAll(sp);//beallitasok.settingsPath);
+
+    auto projectdirs = zFileNameHelper::GetSubdirs(pp);//beallitasok.projectPath);
     beallitasok.fillProjectList(projectdirs);
-
 
     loadCurrentProject();
 
+    ztokenizer.init(ui.tableWidget_MezoLista);
 
     // TODO - xml beolvasás után a forrást ellenőrízni
     // - ha az sql tábla frissebb, akkor frissíteni - illetve detektálni és a listában piros háttérrel jelezni
@@ -122,7 +126,8 @@ void retek2::loadCurrentProject()
         ztables.clear();
         ui.listWidget_ztables->clear();
 
-        QString currentProjectPath = zFileNameHelper::append(beallitasok.projectPath,beallitasok.currentProjectName);
+
+        QString currentProjectPath = zFileNameHelper::getCurrentProjectDir();
         QStringList files = zFileNameHelper::FindFileNameInDir(currentProjectPath, QString(), zFileNameHelper::xmlFilter);
         zforeach(f, files){
             auto txt = zTextFileHelper::load(*f);
@@ -286,9 +291,9 @@ QTableWidgetItem* retek2::CreateTableItem(const QVariant& v){
 
  generate files by selected templates
 */
-void retek2::GenerateAll() {
+void retek2::GenerateAll() {        
     if (table == nullptr){
-        zlog.log("nincs tábla kiválasztva", zLog::ERROR);
+        zlog.log(QStringLiteral("nincs tábla kiválasztva"), zLog::ERROR);
         return;
     }
 
@@ -297,7 +302,7 @@ void retek2::GenerateAll() {
     //saveTablaToXML(table->tablename);
 
     if (ui.checkBox_XML->isChecked()) {
-        zlog.trace("XML");
+        zlog.trace(QStringLiteral("XML"));
 
         QString e;
         QXmlStreamWriter s(&e);
@@ -311,11 +316,12 @@ void retek2::GenerateAll() {
     }
 
 	if (ui.checkBox_CClass->isChecked()) {
-        zlog.trace("C# Class");
+        zlog.trace(QStringLiteral("C# Class"));
 
-        auto txt = generateTmp("MVC_CClass.cs");
+        auto txt = generateTmp(QStringLiteral("MVC_CClass.cs"));
         zlog.log(txt);
-        auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + ".cs");
+        //auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + ".cs");
+        auto fn = zFileNameHelper::getCurrentProjectFileName(table->name + ".cs");
         zTextFileHelper::save(txt, fn);
 	}
 
@@ -332,15 +338,16 @@ void retek2::GenerateAll() {
                 QString txt = zEnumizer::GenerateEnum(ed);
 
                 zlog.log(txt);
-                auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + "_enum.cs");
+                auto fn = zFileNameHelper::getCurrentProjectFileName(table->name + "_enum.cs");
+                        //append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + "_enum.cs");
                 zTextFileHelper::save(txt, fn);
             }
             else{
-                zlog.trace("nincs sqlinit");
+                zlog.trace(QStringLiteral("nincs sqlinit"));
             }
         }
         else{
-            zlog.trace("nincs dbconn");
+            zlog.trace(QStringLiteral("nincs dbconn"));
         }
     }
     else{
@@ -350,9 +357,9 @@ void retek2::GenerateAll() {
 
 
     if (ui.checkBox_Entity->isChecked()) {
-        zlog.trace("C# Entity");
+        zlog.trace(QStringLiteral("C# Entity"));
 
-        auto txt = generateTmp("DAL_Entity.cs");
+        auto txt = generateTmp(QStringLiteral("DAL_Entity.cs"));
         zlog.log(txt);
         auto fn = beallitasok.getModelFilename(classname + ".cs", "Entities");
         zTextFileHelper::save(txt, fn);
@@ -366,36 +373,36 @@ void retek2::GenerateAll() {
 	}*/
 
 	if (ui.checkBox_Model->isChecked()) {
-        zlog.trace("Model");
-		auto txt = generateTmp("MVC_Model.cs");
+        zlog.trace(QStringLiteral("Model"));
+        auto txt = generateTmp(QStringLiteral("MVC_Model.cs"));
         //zlog.trace(txt);        
         zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + ".cs", "Models"));
 	}
 
 	if (ui.checkBox_Meta->isChecked()) {
-        zlog.trace("ModelMeta");
-		auto txt = generateTmp("MVC_ModelMeta.cs");        
+        zlog.trace(QStringLiteral("ModelMeta"));
+        auto txt = generateTmp(QStringLiteral("MVC_ModelMeta.cs"));
         zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "Meta" + ".cs", "Models"));
 	}
 
 	if (ui.checkBox_Controller->isChecked()) {
-        zlog.trace("Controller");
-		auto txt = generateTmp("MVC_Controller.cs");
+        zlog.trace(QStringLiteral("Controller"));
+        auto txt = generateTmp(QStringLiteral("MVC_Controller.cs"));
         zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "Controller" + ".cs", "Controllers"));
 	}
 
     if (ui.checkBox_DataProvider->isChecked()) {
-        zlog.trace("DataProvider");
-        auto txt = generateTmp("MVC_DataProvider.cs");
+        zlog.trace(QStringLiteral("DataProvider"));
+        auto txt = generateTmp(QStringLiteral("MVC_DataProvider.cs"));
         zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "DataProvider" + ".cs", "DataProviders"));
     }
 
     if (ui.checkBox_View->isChecked()) {
-        zlog.trace("View");
-        auto txtIndex = generateTmp("MVC_ViewIndex.cshtml");
+        zlog.trace(QStringLiteral("View"));
+        auto txtIndex = generateTmp(QStringLiteral("MVC_ViewIndex.cshtml"));
         zTextFileHelper::save(txtIndex, beallitasok.getModelFilename(classname + "ViewIndex" + ".cshtml", "Views"));
 
-        auto txtAdatlap = generateTmp("MVC_ViewAdatlapDX.cshtml");
+        auto txtAdatlap = generateTmp(QStringLiteral("MVC_ViewAdatlapDX.cshtml"));
         zTextFileHelper::save(txtAdatlap, beallitasok.getModelFilename(classname + "ViewAdatlapDX" + ".cshtml", "Views"));
     }
 
@@ -943,4 +950,9 @@ void retek2::on_buttonBox_accepted()
 void retek2::on_buttonBox_clicked(QAbstractButton *button)
 {
     zLog::errorDialog("bbb");
+}
+
+void retek2::on_pushButton_GenerateAll_clicked()
+{
+    GenerateAll();
 }

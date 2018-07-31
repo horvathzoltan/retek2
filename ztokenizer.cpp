@@ -5,7 +5,9 @@
 #include "ztokenizer.h"
 #include "zstringhelper.h"
 #include "zstringmaphelper.h"
+#include "zfilenamehelper.h"
 #include "ztextfilehelper.h"
+#include "zfilenamehelper.h"
 
 zTokenizer::zTokenizer()
 {
@@ -14,34 +16,18 @@ zTokenizer::zTokenizer()
 
 void zTokenizer::init(QTableWidget *w){
     this->MezoLista = w;
-    //this->dxMap = dm;
 
-
-    //TODO typeUCMap - a típust és az őt szerkesztő controlt írja le
-    // - beállításfájlból felolvasás, ahol már nincs c#-ra korlátozva, illetve a két táblát lehet egy mapból építeni
-    // - projectfüggő, hogy mivé alakítjujk -?
-
-
-//    dxMap.insert("uniqueidentifier", "dxTextBox");
-//    dxMap.insert("int", "dxNumberBox");
-//    dxMap.insert("datetime", "DateTime");
-//    dxMap.insert("date", "dxDateBox");
-//    dxMap.insert("nchar", "dxDateBox");
-//    dxMap.insert("nvarchar", "dxTextBox");
-//    dxMap.insert("char", "dxTextBox");
-//    dxMap.insert("varchar", "dxTextBox");
-//    dxMap.insert("float", "dxNumberBox");
-//    dxMap.insert("bit", "dxCheckBox");
-//    dxMap.insert("decimal", "dxNumberBox");
-//    dxMap.insert("xml", "dxTextBox");
-
-    //feltoltTmpMap();
-
-    //zStringMaphelper::
+    QString currentProjectPath = zFileNameHelper::getDxMap();
+    zStringMapHelper::StringMapFeltolt(currentProjectPath, &dxMap);
+    zlog.log(QStringLiteral("zTokenizer init ok"));
 }
 
 
-
+/*
+    QString currentProjectPath = zFileNameHelper::append(beallitasok.projectPath,beallitasok.currentProjectName);
+    zStringMapHelper::StringMapFeltolt(currentProjectPath, &this->dxMap);
+    zlog.log("a");
+*/
 //void zTokenizer::feltoltTmpMap(void){
 //    QString tn = "View";
 //    QString viewTemplateDirName = beallitasok.getTemplateFilename(tn);
@@ -335,9 +321,10 @@ QString zTokenizer::getAttrList(QMap<QString, QVariant> *map, int whsp) {
 
 
 QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString dbname) {
+    //if(MezoLista)
     int rows = MezoLista->rowCount();
 
-    QString proplist = "";
+    QString proplist = zStringHelper::Empty;
     QStringList exPropsBynameList;
     if (!param.isEmpty() && param.startsWith('-')) {
         exPropsBynameList = param.right(param.length() - 1).toLower().split(',', QString::SplitBehavior::SkipEmptyParts);
