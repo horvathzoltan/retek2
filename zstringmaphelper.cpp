@@ -1,10 +1,11 @@
-#include "zstringmaphelper.h"
 #include <QFile>
 #include <QTextStream>
 #include <QTextCodec>
 #include <QDir>
 
 #include "globals.h"
+#include "zstringhelper.h"
+#include "zstringmaphelper.h"
 
 zStringMapHelper::zStringMapHelper()
 {
@@ -23,20 +24,18 @@ void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map)
 
     while (!in.atEnd()) {
         QString line = in.readLine();
-        //QString line(bline);
 
-        int ix = line.indexOf(';');
+        int ix = line.indexOf(zStringHelper::SEP);
         if (ix > 0) {
             QString k1 = line.left(ix).toLower();
             QString k2 = line.right(line.length() - (ix + 1));
 
             map->insert(k1, k2);
-            //map->insert("id","b");
         }
     }
     file.close();
 
-    zlog.trace(QString("Beolvasva: %1").arg(fn));
+    zlog.trace(QStringLiteral("Beolvasva: %1").arg(fn));
 }
 
 void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
@@ -63,7 +62,7 @@ void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
 
     file.close();
 
-    zlog.log(QString("Kiírva: %1").arg(fn), zLog::OK);
+    zlog.log(QStringLiteral("Kiírva: %1").arg(fn), zLog::OK);
 }
 
 bool zStringMapHelper::contains(QMap<QString, QString> *map, QString k){

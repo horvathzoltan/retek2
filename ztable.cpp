@@ -442,7 +442,6 @@ osztálynév
 mezőnév,további leírók(típus, hossz, nullable, végsősoron a típust írják le), a legutolsó a caption?
 */
 
-// TODO globális caption tábla, ha ezáltal feloldható a mezőnév, és nincs egyéb caption,  akkor ez lesz
 QList<zTable> zTable::createTableByText(QString txt)
 {
 //    auto re = QRegularExpression(R"((?:^\s+)?(^(?:\s+)?\w*\s+)((?:^[\w\,\ \(\)\"\']*(?:\s+)?)+)(?:$|^\s+)?)", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -489,19 +488,19 @@ QList<zTable> zTable::createTableByText(QString txt)
         while(i.hasNext()){
             QRegularExpressionMatch m = i.next();
             QString tn=m.captured(1).trimmed();
-            QString pkn = "id";
+            QString pkn = QStringLiteral("id");
             auto fns=m.captured(2).split(QRegularExpression(R"([\n|\r\n|\r])"), QString::SkipEmptyParts);
             QList<zTablerow> rl;
             QList<zTablerow> pl;
 
             zforeach(fn, fns){
                if(fn->isEmpty()) continue;
-               if(*fn=="_") continue;
+               if(*fn==QStringLiteral("_")) continue;
 
-               QString dtype="";
+               QString dtype=zStringHelper::Empty;
                int dlen = 0;
                bool isNullable = true;
-               QString caption = "";
+               QString caption = zStringHelper::Empty;
                QString ezt1;
 
                auto fns = fn->split(',', QString::SkipEmptyParts);
@@ -527,11 +526,11 @@ QList<zTable> zTable::createTableByText(QString txt)
                            isDtype = zTable::getType(ezt1, &dtype, &dlen, &isNullable, false);
                            }
                        // TODO bonyolult típusmeghatározás
-                       if(isDtype==false){
+                       if(!isDtype){
                             auto i2 = re_caption.match(*fn2);
                             if(i2.hasMatch())
                                caption = i2.captured(1);
-                            else{
+                            else{                                
                                 auto i2 = re_dlen2.match(*fn2);
                                 if(i2.hasMatch()){
                                     bool isOK;
@@ -541,17 +540,18 @@ QList<zTable> zTable::createTableByText(QString txt)
                                 else{
                                     auto i2 = re_nullable.match(*fn2);
                                     if(i2.hasMatch()){
-                                        auto n_str = i2.captured(1);
-                                        if(n_str.toLower().contains("not"))
-                                            isNullable = false;
-                                        else
-                                            isNullable = true;
+                                        //auto n_str = i2.captured(1);
+                                        isNullable = !i2.captured(1).toLower().contains(QStringLiteral("not"));
+//                                        if(n_str.toLower().contains(QStringLiteral("not")))
+//                                            isNullable = false;
+//                                        else
+//                                            isNullable = true;
                                         }
                                     else{
-                                        if((*fn2).toLower()=="key"){
+                                        if(fn2->toLower()==QStringLiteral("key")){
                                             pkn = fname;
                                             }
-                                        else if((*fn2).toLower()=="required"){
+                                        else if(fn2->toLower()==QStringLiteral("required")){
                                             isNullable = false;
                                             }
                                         }
@@ -561,17 +561,17 @@ QList<zTable> zTable::createTableByText(QString txt)
                             }
                         }
                     }
-               if(dtype.isEmpty()){
-                   // auto p = zTablerow(fname, "property", dlen, isNullable, caption);
-                   // pl.append(p);
-                   zlog.log(QString("nem meghatárizható típus: %1").arg(ezt1));
+               if(dtype.isEmpty()){                
+                   zlog.log(QStringLiteral("nem meghatározható típus: %1").arg(ezt1));
                    }
                else{
+                   if(caption.isEmpty())
+                        caption = zCaptionMap::value(globalCaptionMaps, fname);
                    auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
                    rl.append(r);
                    }
             }
-            auto t = zTable("", pkn, rl,  TXT, tn, "");
+            auto t = zTable(zStringHelper::Empty, pkn, rl,  TXT, tn, zStringHelper::Empty);
             tl.append(t);
             zlog.log("GenerateByText: "+t.toString());
         }
@@ -590,13 +590,12 @@ mezo4 mezo5 int
 int mezo6 mezo7
 Adm
 
-// TODO globális caption táblát kell használni
 */
 QList<zTable> zTable::createTableByText_2(QString txt){
-    auto re = QRegularExpression(R"(^\s*(?:(^\w*)\s+)((?:^[\w, ()\"'<>\.]+\n?)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re = QRegularExpression(QStringLiteral(R"(^\s*(?:(^\w*)\s+)((?:^[\w, ()\"'<>\.]+\n?)+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
-    auto re_macro_def = QRegularExpression(R"(^\s*(?:^#(\w*)\s+)((?:[\w, ()\"'<>\.]+\s)+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    auto re_macro_use_tmp = QString(R"((?:^(%1)\s*$))");
+    auto re_macro_def = QRegularExpression(QStringLiteral(R"(^\s*(?:^#(\w*)\s+)((?:[\w, ()\"'<>\.]+\s)+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_macro_use_tmp = QStringLiteral(R"((?:^(%1)\s*$))");
 
     auto j = re_macro_def.globalMatch(txt);
 
@@ -607,7 +606,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
         if(!macroMap.contains(m_name)){
             macroMap.insert(m_name, m_txt);
-            zlog.trace(QString("Macro def: %1").arg(m_name));
+            zlog.trace(QStringLiteral("Macro def: %1").arg(m_name));
             }
         }
 
@@ -627,16 +626,16 @@ QList<zTable> zTable::createTableByText_2(QString txt){
         while(i.hasNext()){
             QRegularExpressionMatch m = i.next();
             QString tn=m.captured(1).trimmed();
-            QString pkn = "id";
+            QString pkn = QStringLiteral("id");
             auto fns=m.captured(2).split(QRegularExpression(R"([\n|\r\n|\r])"), QString::SkipEmptyParts);
             QList<zTablerow> rl;
             //QList<zTablerow> pl;
 
             zforeach(fn, fns){ // sorok
                if(fn->isEmpty()) continue;
-               if(*fn=="_") continue;
+               if(*fn==QStringLiteral("_")) continue;
 
-               QString dtype="";
+               QString dtype= zStringHelper::Empty;
                int dlen = 0;
                bool isNullable = true;
               // QString caption = "";
@@ -672,6 +671,8 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
                     zforeach(p, pls){
                         if(!dtype.isEmpty()){
+                            if(p->Caption.isEmpty())
+                                p->Caption = zCaptionMap::value(globalCaptionMaps, p->colName);
                             p->colType = dtype;
                             p->dlen = dlen;
                             rl.append(*p);
@@ -692,7 +693,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
 
             }
-            auto t = zTable("", pkn, rl,  TXT, tn, "");
+            auto t = zTable(zStringHelper::Empty, pkn, rl,  TXT, tn, zStringHelper::Empty);
             tl.append(t);
             zlog.log("GenerateByText2: "+t.toString());
         }
@@ -850,7 +851,7 @@ QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* c
                                                 MaxLength = valueMap->value(key2);
                                             }else{
                                                 constMap->insert(key, MaxLength);
-                                                MaxLength="";
+                                                MaxLength=zStringHelper::Empty;
                                                 }
                                             }
                                         if(!MaxLength.isEmpty())
@@ -880,7 +881,8 @@ QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* c
 //                            zlog.log("   isPK: "+((isPk)?QString("true"):QString("false")));
 //                            zlog.log("   isRequired: "+((isRequired)?QString("true"):QString("false")));
 //                            zlog.log("   MaxLength: "+MaxLength);
-
+                            if(Caption.isEmpty())
+                                Caption = zCaptionMap::value(globalCaptionMaps, propName);
                             auto r = zTablerow(propName, dtype, dlen, isNullable, Caption);
                             rl.append(r);
                         }
@@ -890,7 +892,7 @@ QList<zTable> zTable::createTableByText_3(QString txt, QMap<QString, QString>* c
 
                     }
                 //}                   
-                   auto t = zTable(className, "id", rl,  TXT, tableName, "");
+                   auto t = zTable(className, QStringLiteral("id"), rl,  TXT, tableName, zStringHelper::Empty);
                    tl.append(t);
                    zlog.log("GenerateByEntity: "+t.toString());
             }

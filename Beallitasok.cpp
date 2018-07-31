@@ -127,8 +127,6 @@ QString Beallitasok::getTemplateFilename(const QString& tfname) {
 }
 
 
-// TODO kellene az adatbázisoknak egy egyedi kulcs,
-// jellemzően mindennek kellene
 dbConnection* Beallitasok::getDbConnectionByName(const QString& name){
     zforeach(o, dbConnections){
         if(o->Name == name) return &(*o);

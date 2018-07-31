@@ -14,7 +14,7 @@ zTablerow::zTablerow(QString colName, QString dtype, int dlen, bool nullable, QS
     this->colType=dtype;
     this->dlen = dlen;
     this->isNullable = nullable;
-    this->Caption=caption;
+    this->Caption=caption;    
 }
 
 QString zTablerow::toString(){

@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "ztokenizer.h"
 #include "zstringhelper.h"
+#include "zstringmaphelper.h"
 #include "ztextfilehelper.h"
 
 zTokenizer::zTokenizer()
@@ -15,22 +16,28 @@ void zTokenizer::init(QTableWidget *w){
     this->MezoLista = w;
     //this->dxMap = dm;
 
-    //TODO beállításfájlból felolvasás, ahol már nincs c#-ra korlátozva, illetve a két táblát lehet egy mapból építeni
 
-    dxMap.insert("uniqueidentifier", "dxTextBox");
-    dxMap.insert("int", "dxNumberBox");
-    dxMap.insert("datetime", "DateTime");
-    dxMap.insert("date", "dxDateBox");
-    dxMap.insert("nchar", "dxDateBox");
-    dxMap.insert("nvarchar", "dxTextBox");
-    dxMap.insert("char", "dxTextBox");
-    dxMap.insert("varchar", "dxTextBox");
-    dxMap.insert("float", "dxNumberBox");
-    dxMap.insert("bit", "dxCheckBox");
-    dxMap.insert("decimal", "dxNumberBox");
-    dxMap.insert("xml", "dxTextBox");
+    //TODO typeUCMap - a típust és az őt szerkesztő controlt írja le
+    // - beállításfájlból felolvasás, ahol már nincs c#-ra korlátozva, illetve a két táblát lehet egy mapból építeni
+    // - projectfüggő, hogy mivé alakítjujk -?
+
+
+//    dxMap.insert("uniqueidentifier", "dxTextBox");
+//    dxMap.insert("int", "dxNumberBox");
+//    dxMap.insert("datetime", "DateTime");
+//    dxMap.insert("date", "dxDateBox");
+//    dxMap.insert("nchar", "dxDateBox");
+//    dxMap.insert("nvarchar", "dxTextBox");
+//    dxMap.insert("char", "dxTextBox");
+//    dxMap.insert("varchar", "dxTextBox");
+//    dxMap.insert("float", "dxNumberBox");
+//    dxMap.insert("bit", "dxCheckBox");
+//    dxMap.insert("decimal", "dxNumberBox");
+//    dxMap.insert("xml", "dxTextBox");
 
     //feltoltTmpMap();
+
+    //zStringMaphelper::
 }
 
 

@@ -209,11 +209,6 @@ zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
 
     QList<zTablerow> tr;
 
-    // TODO ha a globan caption mapokban megtaláljuk a captiont, akkor ok, ha nem, akkor kézzel kap captiont
-    // a tábla caption map megszűnik
-    // QMap<QString, QString> tablaCaptionMap;
-    //zStringMapHelper::StringMapFeltolt(fn, &tablaCaptionMap);
-
     while (query.next()) {
         QString colName = query.value("COLUMN_NAME").toString();
         QString dtype = query.value("DATA_TYPE").toString();
@@ -221,10 +216,8 @@ zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
 
         bool nullable = zStringHelper::toBool(query.value("IS_NULLABLE").toString());
 
-        //QString cn = colName.toLower();
-
-        //QString caption = tablaCaptionMap.contains(cn)?tablaCaptionMap[cn]:globalCaptionMap.contains(cn)?globalCaptionMap[cn]:cn;
-        QString caption = "";
+        QString caption = zCaptionMap::value(globalCaptionMaps, colName);
+        //if(caption.isEmpty()) caption = colName;
         tr.append(zTablerow(colName, dtype, dlen, nullable, caption));
         }
 
@@ -232,7 +225,7 @@ zTable zSQL::getTable_SQL(QString tablanev, QString fn, QString cmd)
 
     //QList<zTablerow> pr;
 
-    auto e = zTable(nullptr, (pkn.isEmpty()?"zId":pkn), tr, SQL, tablanev, "");
+    auto e = zTable(nullptr, (pkn.isEmpty()?"zId":pkn), tr, SQL, tablanev, zStringHelper::Empty);
     return e;
 }
 

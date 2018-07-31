@@ -51,3 +51,27 @@ zCaptionMap zCaptionMap::load(const QString& fileFullName){
 
     return e;
 }
+
+/**
+ha az lenne a cél, hogy tovább keres, és  felülírja, akkor kellene egy sorrend,
+amit leginkább egy fa ábrázolna, és annak az ágnak, ami a keresett kulcsot tartalmazza,
+kellene kiszedni az értékét
+*/
+
+QString zCaptionMap::value(const QList<zCaptionMap>& maps, const QString& c){
+    if(c.isEmpty()) return zStringHelper::Empty;
+    QString e;
+    zforeach(m, maps){
+        e = m->value2(c);
+        return e;
+        }
+    return e;
+}
+
+QString zCaptionMap::value2(const QString& c) const {
+    QString cn = c.toLower();
+    QString e;
+    if(this->map.contains(cn))
+        e = this->map[cn];
+    return e;
+}

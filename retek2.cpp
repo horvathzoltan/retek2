@@ -110,11 +110,6 @@ void retek2::init()
     // ha a leíró módosult, míg a forrás nem, bár ez em egyértelmű mert az sql simán lehet régebbi, mint a leíró
     // elvileg ezt is jelezni kellene,
 
-    //TODO a project lista váltásra projectet kellene váltani, míg az adatbázislista váltásra pedig nem
-    // ennek már nem kell hatása legyen, az adatbázis lista informális, szerepét átveszi részben a project lista,
-    // részben az egyes táblák saját adatbázis és és táblanév adatai
-
-
     zlog.trace(QStringLiteral("retek2 init OK"));
 }
 
@@ -181,7 +176,7 @@ void retek2::zTablaToList(const zTable& t){
 
     if(tn.isEmpty()){
         zlog.log(QStringLiteral("Nincs megnevezés. table: %1 class: %2").arg(t.tablename, t.classname));
-        tn = "?";
+        tn = QStringLiteral("?");
         //tn = (!t.tablename.isEmpty())?t.tablename:(!t.classname.isEmpty())?t.classname:zStringHelper::Empty;
     }
 
@@ -528,18 +523,17 @@ InventoryItem[]
 */
 
 /*
-on_pushButton_3_clicked
 Macro def: Adm
 GenerateByText: Inventory(PK:Id,Name,OperationTypeId,InventoryStatusId,StorageId,DateStart,DateEnd,DateCre,DateMod,RecountRequired,UserId,Comments),OperationType,InventoryStatus,Storage,User,InventoryItem
 */
 void retek2::on_pushButton_3_clicked()
 {
-    zlog.trace("on_pushButton_3_clicked");
+    zlog.trace(QStringLiteral("on_pushButton_3_clicked"));
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText(txt);
 
-    if(tl.length()==0) { zlog.log("nincs egyezés, nincs vizsgálat"); return;}
+    if(tl.length()==0) { zlog.log(QStringLiteral("nincs egyezés, nincs vizsgálat")); return;}
 
     zforeach(t,tl){
         ztables.append(*t);
@@ -683,7 +677,6 @@ void retek2::on_lineEdit_tablename_editingFinished()
 }
 
 
-// TODO globális caption tábla használatát beépíteni
 void retek2::on_pushButton_6_clicked()
 {    
     zlog.trace(QStringLiteral("Entitások beolvasása"));
