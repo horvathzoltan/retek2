@@ -40,12 +40,12 @@ zCaptionMap zCaptionMap::load(const QString& fileFullName){
             e.name = c.right(c.length()-1);
         }
         else{
-            zlog.log(QStringLiteral("Hibás caption file név: %1").arg(fileName), zLog::ERROR);
+            zlog.error(QStringLiteral("Hibás caption file név: %1").arg(fileName));
         }
     }
 
     if(!e.name.isEmpty()){
-        zlog.log("load captions: " + e.name);
+        zlog.error("load captions: " + e.name);
         zStringMapHelper::StringMapFeltolt(fileFullName, &e.map);
     }
 

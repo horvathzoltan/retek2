@@ -167,7 +167,7 @@ QStringList zFileNameHelper::FindFileNameInDir(QString dirName, QString fn_patte
     while (it.hasNext()){
         auto n =  it.next();
         ql << n;
-        zlog.log("file: "+n);
+        zlog.error("file: "+n);
     }
     return ql;
 

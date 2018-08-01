@@ -6,21 +6,21 @@
 #include <QString>
 #include <QStringList>
 #include <QRegularExpression>
-#include <signal.h>
+//#include <signal.h>
 #include <QMap>
 
-const QString zSourceHelper::p_class_full = QString(R"((?:\b(?:public|private|protected|internal|protected internal|private protected|)\s+)?(?:\bstatic\s+)?class\s+(%1)\s+(\{(?>[^{}]+|(?2))*\}))");
-const QString zSourceHelper::p_class_short = QString(R"(class\s+(%1)\s+(\{(?>[^{}]+|(?2))*\}))");
+const QString zSourceHelper::p_class_full = QStringLiteral(R"((?:\b(?:public|private|protected|internal|protected internal|private protected|)\s+)?(?:\bstatic\s+)?class\s+(%1)\s+(\{(?>[^{}]+|(?2))*\}))");
+const QString zSourceHelper::p_class_short = QStringLiteral(R"(class\s+(%1)\s+(\{(?>[^{}]+|(?2))*\}))");
 
-const QString zSourceHelper::p_word = QString(R"(\w+)");
+const QString zSourceHelper::p_word = QStringLiteral(R"(\w+)");
 
-const QString zSourceHelper::p_const = QString(R"(public\s+const\s+(?:\w+)\s+(\w+)\s+=\s+(.*)\s*;)");
+const QString zSourceHelper::p_const = QStringLiteral(R"(public\s+const\s+(?:\w+)\s+(\w+)\s+=\s+(.*)\s*;)");
 
-const QString zSourceHelper::p_attr = QString(R"((?:\[[(.\w)]*\]))");
+const QString zSourceHelper::p_attr = QStringLiteral(R"((?:\[[(.\w)]*\]))");
 
 const QRegularExpression zSourceHelper::r_const = QRegularExpression(p_const, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
-void zSourceHelper::getConstValuesFromFile(QString fullPath, QStringList constNameList, QMap<QString, QString>* constValueMap){
+void zSourceHelper::getConstValuesFromFile(const QString& fullPath, const QStringList&  /*constNameList*/, QMap<QString, QString>* constValueMap){
     auto rootClassName = zFileNameHelper::getfileName(fullPath);
     QString txt = zTextFileHelper::load(fullPath);
 
@@ -41,7 +41,7 @@ void zSourceHelper::getConstValuesFromFile(QString fullPath, QStringList constNa
     //raise(SIGTRAP);
 }
 
-void zSourceHelper::getConstMembers(QString txt, QString parentClassName, QMap<QString, QString> *map){
+void zSourceHelper::getConstMembers(const QString& txt, const QString& parentClassName, QMap<QString, QString> *map){
     auto r_const = QRegularExpression(p_const, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
     auto i_const = r_const.globalMatch(txt);
@@ -56,7 +56,7 @@ void zSourceHelper::getConstMembers(QString txt, QString parentClassName, QMap<Q
 /*
 elkezdjük kiszedni az osztályokat
 */
-void zSourceHelper::getChildClasses(QString txt, QString parentClassName, QMap<QString, QString> *map){
+void zSourceHelper::getChildClasses(QString txt, const QString& parentClassName, QMap<QString, QString> *map){
    // QMap<QString, QString> e;
     auto r_class = getRegex_r_fullClass();
 
@@ -76,7 +76,7 @@ void zSourceHelper::getChildClasses(QString txt, QString parentClassName, QMap<Q
 
 
 
-QString zSourceHelper::getClass(QString str, QString className){
+QString zSourceHelper::getClass(const QString& str, const QString& className){
     auto r_class = getRegex_r_fullClass(className);
 
     QPair<QString, QString> p;
@@ -94,7 +94,7 @@ QRegularExpression zSourceHelper::getRegex_r_class_or_attr() {
     return  QRegularExpression(p_attr+"|"+p_class_short, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 }
 
-QRegularExpression zSourceHelper::getRegex_r_fullClass(QString className){
+QRegularExpression zSourceHelper::getRegex_r_fullClass(const QString &className){
     QString p = p_class_full.arg((className.isEmpty())?p_word:className);
     return  QRegularExpression(p, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 }

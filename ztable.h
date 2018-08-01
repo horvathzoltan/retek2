@@ -14,7 +14,7 @@ enum zTableSearchBy{ Name, TableName, ClassName, ClassNamePlural };
 class zTable
 {
 public:
-    zTable(QString className, QString pkn, QList<zTablerow>, int type, QString name, QString _sourcepath);
+    zTable(QString className, const QString& , const QList<zTablerow>&, int type, QString name, QString _sourcepath);
 
     zTable();
     ~zTable();
@@ -27,9 +27,9 @@ public:
     // sql tábla név (pl: atricles)
     QString sql_conn;
     QString sql_schema;
-    QString tablename;//sql_table;
+    QString sql_table;//sql_table;
 
-    QString source_conn;//class_path // ez pedig az az entitás, ami a forráskódban osztályként írja le az adatot - elvileg ez egy adott osztályt tartalmazó file teljes neve
+    QString class_path;//class_path // ez pedig az az entitás, ami a forráskódban osztályként írja le az adatot - elvileg ez egy adott osztályt tartalmazó file teljes neve
     QString classname; // osztálynév - singular, ezt a zTables példány létrehozásakor létre lehet már hozni, és validálni egy szabály szerint
     QString classname_plural; // killekció - osztálynév
 
@@ -53,18 +53,18 @@ public:
     static QList<zTable> createTableByText_2(QString txt);
     static QList<zTable> createTableByXML(const QString& txt);
 
-    static QList<zTable> createTableByText_3(QString txt, QMap<QString, QString>*, QMap<QString, QString>* = nullptr);
+    static QList<zTable> createTableByText_3(const QString& txt, QMap<QString, QString>*, QMap<QString, QString>* = nullptr);
 
-    static QString getPkByTableName(QList<zTable> *tables, QString rn);
-    static zTable* find(QList<zTable> *tables, QString rn, zTableSearchBy searchType = zTableSearchBy::TableName);
+    static QString getPkByTableName(QList<zTable> *tables, const QString& rn);
+    static zTable* find(QList<zTable> *tables, const QString& rn, zTableSearchBy searchType = zTableSearchBy::TableName);
     //void getType(auto re_dlen1, QString dtype, auto re_dlen2, QString ezt1, bool isDtype, int dlen);
 
-    static bool getType(QString ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
+    static bool getType(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
 
     QStringList getFK();
     QStringList getRFK();
 
-    bool containsRow(QString n);
+    bool containsRow(const QString& n);
 
     void toXML(QXmlStreamWriter*);
     //static zTable fromXML(QString);
@@ -72,11 +72,11 @@ public:
     QStringList getFKClassName();
     QStringList getRFKClassNamePlural();
 
-    static QStringList getAttrAndParams(QString str);
-    static QString getFirstNotNull(QRegularExpressionMatch m,  int);
-    static QString getConstFromArgument(QString str);
+    static QStringList getAttrAndParams(const QString& str);
+    static QString getFirstNotNull(const QRegularExpressionMatch& m,  int);
+    static QString getConstFromArgument(const QString& str);
 
-    static QList<zTable> createTableByClassTxt(QString txt);
+    static QList<zTable> createTableByClassTxt(const QString& txt);
 
 //    static QRegularExpression r_class;
 //    static QRegularExpression r_attr;

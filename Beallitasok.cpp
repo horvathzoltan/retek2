@@ -20,12 +20,11 @@ Beallitasok::Beallitasok(){
 
 Beallitasok::~Beallitasok()= default;;
 
-void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver, QLineEdit* wcatalog, QComboBox *qc, QComboBox *dc, QListWidget* lv)
+void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver,  QComboBox *qc, QComboBox *dc, QListWidget* lv)
 {
     this->widget_user = wu;
     this->widget_password = wp;
     this->widget_server = wserver;
-    //this->widget_adatbazisNev = wcatalog;
     this->widget_connections = qc;
     this->widget_driver = dc;
     this->listWidget_projects = lv;
@@ -97,13 +96,13 @@ QString Beallitasok::getModelFilename(const QString& tfname, const QString& dirn
 QString Beallitasok::getTemplateFilename(const QString& tfname) {   
     bool isVal = true;
     if(tmpDir.isEmpty())
-        {zlog.log(QStringLiteral("A template könyvtár a beállításokban nincs megadva"));isVal=false;}
+        {zlog.error("A template könyvtár a beállításokban nincs megadva");isVal=false;}
     if(tfname.isEmpty())
-        {zlog.log(QStringLiteral("A template fájlnév nincs megadva"));isVal=false;}
+        {zlog.error(QStringLiteral("A template fájlnév nincs megadva"));isVal=false;}
     if(beallitasok.currentProjectName.isEmpty())
-        {zlog.log(QStringLiteral("A projectnév nincs megadva"));isVal=false;}
+        {zlog.error(QStringLiteral("A projectnév nincs megadva"));isVal=false;}
     if(!isVal)
-        {zLog::errorDialog(QStringLiteral("A template fájlnév nem meghatározható"));return nullptr;}
+        {zLog::dialogError(QStringLiteral("A template fájlnév nem meghatározható"));return nullptr;}
 
 
     // project template
@@ -115,7 +114,7 @@ QString Beallitasok::getTemplateFilename(const QString& tfname) {
     if(QFileInfo::exists(fn))
         return fn;
     else{
-        zlog.log("nincs project template:" +fn);
+        zlog.error("nincs project template:" +fn);
 
         fn = zFileNameHelper::getTmpSubDir(tfname);//append(QDir::homePath(),tmpDir, tfname);
         //fn = QString(beallitasok.tmpDir+R"(\%1)").arg(tfname);
@@ -123,7 +122,7 @@ QString Beallitasok::getTemplateFilename(const QString& tfname) {
         if(QFileInfo::exists(fn))
             return fn;
         else{
-            zlog.log("nincs default template:"+ fn);
+            zlog.error("nincs default template:"+ fn);
             }
         }
 //}
@@ -214,7 +213,7 @@ void Beallitasok::fillProjectList(const QStringList& projectdirs)
     if(!currentProjectName.isEmpty()){
         auto items = listWidget_projects->findItems(currentProjectName, Qt::MatchExactly);
         if(items.isEmpty()){
-            zlog.log(QStringLiteral("Az aktuális project nem található: %1 ERROR").arg(currentProjectName));
+            zlog.error(QStringLiteral("Az aktuális project nem található: %1 ERROR").arg(currentProjectName));
         }
         else{
             listWidget_projects->setCurrentItem(items[0]);
@@ -230,7 +229,7 @@ void Beallitasok::addConnection(dbConnection b){
     //QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, QString());
     QString csvr= b.ToCSV();
 
-    zlog.log(QStringLiteral("dbconnection append %1 %2").arg(fn, csvr));
+    zlog.error(QStringLiteral("dbconnection append %1 %2").arg(fn, csvr));
     zTextFileHelper::append(fn, csvr);  
 
     addDbConnection(b);

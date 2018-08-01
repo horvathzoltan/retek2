@@ -9,17 +9,14 @@
 #include "ztextfilehelper.h"
 #include "zfilenamehelper.h"
 
-zTokenizer::zTokenizer()
-{
-
-}
+zTokenizer::zTokenizer() = default;
 
 void zTokenizer::init(QTableWidget *w){
     this->MezoLista = w;
 
     QString currentProjectPath = zFileNameHelper::getDxMap();
     zStringMapHelper::StringMapFeltolt(currentProjectPath, &dxMap);
-    zlog.log(QStringLiteral("zTokenizer init ok"));
+    zlog.error(QStringLiteral("zTokenizer init ok"));
 }
 
 
@@ -60,12 +57,12 @@ ha for ciklust hasznlunk, akkor elkerlhet a vgtelen ciklus, s maximalizlhat a te
 for(int i = 10 ... ha elrtk a 10-et, akkor a template too complex
 */
 
-void zTokenizer::tokenize(QString *tmp, QMap<QString, QVariant>*map, int whsp, QString dbname) {
+void zTokenizer::tokenize(QString *tmp, QMap<QString, QVariant>*map, int whsp, const QString& dbname) {
     int szint = 0;
     tokenizeR(tmp, 0, &szint, map, whsp, dbname);
 }
 
-int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVariant> *map, int whsp, QString dbname) {
+int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVariant> *map, int whsp, const QString& dbname) {
     int ix1 = 0;
     //int ix2 = ix;
     int spc = 0;
@@ -73,22 +70,30 @@ int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVaria
         if (i == -1) continue;
 
         if((*tmp)[i] == ' ')
+        {
             spc++;
+        }
         else if ((*tmp)[i] == '\t')
+        {
             spc+=8;
-
-        if ((*tmp)[i] == '<' && (*tmp)[i + 1] == '%' && (*tmp)[i + 2] == '=') {
+        }
+        if ((*tmp)[i] == '<' && (*tmp)[i + 1] == '%' && (*tmp)[i + 2] == '=')
+        {
             (*szint)++;
             i = tokenizeR(tmp, i + 3, szint, map, whsp+spc, dbname);
-            }
-        else if ((*tmp)[i] == '%' && (*tmp)[i + 1] == '>') {
+        }
+        else if ((*tmp)[i] == '%' && (*tmp)[i + 1] == '>')
+        {
             ix1 = i;
             (*szint)--;
             break;
-        } else
+        }
+        else
         {
             if((*tmp)[i] != ' ')
+            {
                 spc=0;
+            }
         }
 
 
@@ -113,16 +118,18 @@ int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVaria
         //QString eredmeny2 = eredmeny;
         QString parameter;
 
-        int ix_p1 = eredmeny.indexOf("(\"");
+        int ix_p1 = eredmeny.indexOf(QStringLiteral("(\""));
         if (ix_p1 > -1) {
-            int ix_p2 = eredmeny.indexOf("\")", ix_p1+2);
+            int ix_p2 = eredmeny.indexOf(QStringLiteral("\")"), ix_p1+2);
             if (ix_p2 > -1) {
                 parameter = eredmeny.mid(ix_p1 + 2, ix_p2 - ix_p1 -2).trimmed();
                 }
             eredmeny = eredmeny.left(ix_p1).trimmed();
             }
         else
+        {
             eredmeny = eredmeny.trimmed();
+        }
 
         eredmeny = getToken(eredmeny, parameter, map, whsp, dbname);
         if (eredmeny.isEmpty()) {
@@ -171,33 +178,62 @@ nav_proptype -
 nav_propname -
 */
 
-QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant> *map, int whsp, QString dbname) {
+QString zTokenizer::getToken(const QString& token1, const QString& t2, QMap<QString, QVariant> *map, int whsp, QString dbname) {
     auto t1List = token1.split(' ', QString::SplitBehavior::SkipEmptyParts);
     QString t1 = t1List[0];
     QString t3 = (t1List.length()>1) ? t1List[1] : nullptr;
+    QString eredmeny;
 
     // sql tokenek
-    if (t1 == "dbname") return dbname;
-    else if (t1 == "tablename") return table->name;
-    else if (t1 == "contextname") return dbname;
-    // osztály tokenek
-    else if (t1 == "classname") return table->classname;//zStringHelper::getClassNameCamelCase(table->tablename);
-    else if (t1 == "proplist") return getPropList2(t2, t3, whsp, dbname);
-    else if (t1 == "propline") return getPropList2(nullptr, t3, whsp, dbname);
-    // MVC - viewmodel adatannotációs attribútumok
-    else if (t1 == "attrlist") {
-        auto a = getAttrList(map, whsp);
-        return a;}
-    // entitás tokenek
-    else if (t1 == "entity_attrlist") {
-        auto a =  getEntityAttrList(map, whsp);
-        return a;
+    if (t1 == QStringLiteral("dbname"))
+    {
+        eredmeny = dbname;
     }
-    else if (t1 == "prop_attrlist") return getEntityPropAttrList(map, whsp);
-    else if (t1 == "nav_proplist") return getEntityNavPropList(t2, t3, whsp, dbname);
+    else if (t1 == QStringLiteral("tablename"))
+    {
+        eredmeny= table->name;
+    }
+    else if (t1 == QStringLiteral("contextname"))
+    {
+        eredmeny= dbname;
+    }
+    // osztály tokenek
+    else if (t1 == QStringLiteral("classname"))
+    {
+        eredmeny= table->classname;//zStringHelper::getClassNameCamelCase(table->tablename);
+    }
+    else if (t1 == QStringLiteral("proplist"))
+    {
+        eredmeny= getPropList2(t2, t3, whsp, dbname);
+    }
+    else if (t1 == QStringLiteral("propline"))
+    {
+        eredmeny= getPropList2(nullptr, t3, whsp, dbname);
+    }
+    // MVC - viewmodel adatannotációs attribútumok
+    else if (t1 == QStringLiteral("attrlist"))
+    {
+        auto a = getAttrList(map, whsp);
+        eredmeny= a;}
+    // entitás tokenek
+    else if (t1 == QStringLiteral("entity_attrlist")) {
+        auto a =  getEntityAttrList(map, whsp);
+        eredmeny= a;
+    }
+    else if (t1 == QStringLiteral("prop_attrlist"))
+    {
+        eredmeny= getEntityPropAttrList(map, whsp);
+    }
+    else if (t1 == QStringLiteral("nav_proplist"))
+    {
+        eredmeny= getEntityNavPropList(t2, t3, whsp, dbname);
+    }
     //else if (t1 == "proplist") return getPropListForEntity(t2, t3, whsp, dbname);
 
-    else if (t1 == "newline") return "\n";
+    else if (t1 == QStringLiteral("newline"))
+    {
+        eredmeny= QStringLiteral("\n");
+    }
 
 
 /*
@@ -210,20 +246,24 @@ QString zTokenizer::getToken(QString token1, QString t2, QMap<QString, QVariant>
     //dispforprop
     else if (map) {
         auto a = map->value(t1).toString();
-        if (!a.isEmpty()){
-            return a;
-        }else{
-            auto colname = map->value("colname").toString();
-            zlog.log(QString("A tokenhez nincs érték párosítva: %1 => %2").arg(t1, colname));
-            return "?1" + t1 + "?";
+        if (!a.isEmpty())
+        {
+            eredmeny= a;
+        }
+        else
+        {
+            auto colname = map->value(QStringLiteral("colname")).toString();
+            zlog.error(QStringLiteral("A tokenhez nincs érték párosítva: %1 => %2").arg(t1, colname));
+            eredmeny= "?1" + t1 + "?";
         }
     } else{
-        zlog.log(QString("Token nem oldható fel: %1").arg(t1));
-        return "?2" + t1 + "?";
+        zlog.error(QStringLiteral("Token nem oldható fel: %1").arg(t1));
+        eredmeny= "?2" + t1 + "?";
     }
 
 //    zlog.log(QString("Ismeretlen token: %1").arg(t1));
 //    return "?3" + t1 + "?";
+    return eredmeny;
 }
 
 /*
@@ -282,36 +322,38 @@ InverseProperty
 QString zTokenizer::getAttrList(QMap<QString, QVariant> *map, int whsp) {
     QString  e;
     QString spacer = QString(whsp, ' ');
-    if (!map) return "";
+    if (!map) return zStringHelper::Empty;
 
-    QString ca = map->value("caption").toString();
+    QString ca = map->value(QStringLiteral("caption")).toString();
 
     if(ca.isEmpty())
-        ca = map->value("propname").toString();
+    {
+        ca = map->value(QStringLiteral("propname")).toString();
+    }
 
 
     if(!e.isEmpty()) e+= spacer;
 
-    e += QString("[Display(Name = \"%1\")]\n").arg(ca);
+    e += QStringLiteral("[Display(Name = \"%1\")]\n").arg(ca);
 
-    bool isNullable = map->value("isnullable").toBool();
+    bool isNullable = map->value(QStringLiteral("isnullable")).toBool();
 
-    if(!isNullable && ca.toLower() != "id"){
+    if(!isNullable && ca.toLower() != QStringLiteral("id")){
         if(!e.isEmpty()) e+= spacer;
         e += QStringLiteral("[Required(ErrorMessage = \"%1 ktk\")]\n").arg(ca);
     }
 
-    QString tyo = map->value("proptypeoriginal").toString();
-    QString len = map->value("proplen").toString();
+    QString tyo = map->value(QStringLiteral("proptypeoriginal")).toString();
+    QString len = map->value(QStringLiteral("proplen")).toString();
 
     if (!tyo.isEmpty()) {
-        if (tyo == "datetime") {
+        if (tyo == QStringLiteral("datetime")) {
             if(!e.isEmpty()) e+= spacer;
-            e += QString("[DataType(DataType.DateTime)]\n[DisplayFormat(DataFormatString = \"{0:yyyy.MM.dd}\", ApplyFormatInEditMode = true)]\n");
+            e += QStringLiteral("[DataType(DataType.DateTime)]\n[DisplayFormat(DataFormatString = \"{0:yyyy.MM.dd}\", ApplyFormatInEditMode = true)]\n");
         }
-        else if( tyo.endsWith("char") && len != "-1") {
+        else if( tyo.endsWith(QStringLiteral("char")) && len != QStringLiteral("-1")) {
             if(!e.isEmpty()) e+= spacer;
-            e += QString("[StringLength(%1)]\n").arg(len);
+            e += QStringLiteral("[StringLength(%1)]\n").arg(len);
         }
     }
 
@@ -320,7 +362,7 @@ QString zTokenizer::getAttrList(QMap<QString, QVariant> *map, int whsp) {
 
 
 
-QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString dbname) {
+QString zTokenizer::getPropList2(const QString& tmp, const QString& param, int whsp, const QString& dbname) {
     //if(MezoLista)
     int rows = MezoLista->rowCount();
 
@@ -358,24 +400,24 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
 //                propType = colType;
 //            }
             //auto propName = getOsztalynev(colName);
-            QString caption = (item_Caption) ? item_Caption->text() : "";
+            QString caption = (item_Caption) ? item_Caption->text() : zStringHelper::Empty;
             QString coltypeName = item_colType->text();
 
             QMap<QString, QVariant> map;
-            map.insert("proptype", propType);
-            map.insert("propname_", propName.replace('.','_'));
-            map.insert("propname", propName);
-            map.insert("isnullable", isnullable);
-            map.insert("proplen", len);
-            map.insert("colname", colName);
+            map.insert(QStringLiteral("proptype"), propType);
+            map.insert(QStringLiteral("propname_"), propName.replace('.','_'));
+            map.insert(QStringLiteral("propname"), propName);
+            map.insert(QStringLiteral("isnullable"), isnullable);
+            map.insert(QStringLiteral("proplen"), len);
+            map.insert(QStringLiteral("colname"), colName);
 
 //            if (dxMap.contains(colType)) {
 //                map.insert("dxWidget", dxMap.value(colType) );
 //            }
 
             //if (!caption.isEmpty())
-                map.insert("caption", caption);
-            map.insert("proptypeoriginal", coltypeName);
+            map.insert(QStringLiteral("caption"), caption);
+            map.insert(QStringLiteral("proptypeoriginal"), coltypeName);
 
             /*
             ha a tmp !-al kezddik, akkor fájlból jön a template
@@ -417,11 +459,17 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
             tokenize(&e1, &map, whsp, dbname);
 
             proplist += QString(j++==0?0:whsp, ' ') + e1;// +"// " + item_colName->text();
-            if (i < rows - 1) proplist += "\n";
+            if (i < rows - 1)
+            {
+                proplist += QStringLiteral("\n");
+            }
         }
         else {
             //auto propName = getOsztalynev(colName);
-            if (!proplist.isEmpty()) proplist += ",";
+            if (!proplist.isEmpty())
+            {
+                proplist += ',';
+            }
             proplist += propName;
         }
     }
@@ -430,32 +478,42 @@ QString zTokenizer::getPropList2(QString tmp, QString param, int whsp, QString d
 }
 
 //Table,NotMapped
-QString zTokenizer::getEntityAttrList(QMap<QString, QVariant> *map, int w) {
+QString zTokenizer::getEntityAttrList(QMap<QString, QVariant> * /*map*/, int w) {
     QStringList attrList;
     if(table->name.isEmpty())
-        attrList<< "[NotMapped]";
+    {
+        attrList<< QStringLiteral("[NotMapped]");
+    }
     if(table->name!=table->classname)
+    {
         attrList<< QStringLiteral("[Table(\"%1\")]").arg(table->name);
+    }
     if(!table->comment.isEmpty())
+    {
         attrList<<QStringLiteral("[Description(\"%1\")]").arg(table->name);
-
+    }
     return AttrListJoin(attrList, w);
 }
 
 QString zTokenizer::getEntityPropAttrList(QMap<QString, QVariant> *map, int w) {
     QStringList attrList;
 
-    QString colname = map->value("colname").toString();
+    QString colname = map->value(QStringLiteral("colname")).toString();
 
     auto r = zTablerow::getByName(&(table->rows), colname);
-    if(!r->comment.isEmpty())
+    //if(!r->comment.isEmpty())
 
     if(!r->isNullable)
-       attrList<< "[Reqiured]";
+    {
+       attrList<< QStringLiteral("[Reqiured]");
+    }
     if(table->pkname == r->colName)
-        attrList<< "[Key]";
+    {
+        attrList<< QStringLiteral("[Key]");
+    }
     if(r->dlen>0){
-        if(r->colType.contains("char")){
+        if(r->colType.contains(QStringLiteral("char")))
+        {
             attrList<< QStringLiteral("[StringLength(%0)]").arg(r->dlen);
         }else{
             attrList<<QStringLiteral("[MaxLength(%0)]").arg(r->dlen);
@@ -470,24 +528,32 @@ QString zTokenizer::getEntityPropAttrList(QMap<QString, QVariant> *map, int w) {
 //    e.append(str);
 //}
 
-QString zTokenizer::AttrListJoin(QStringList& e, int w){
+QString zTokenizer::AttrListJoin(const QStringList& e, int w){
+    QString eredmeny;
 
     if(e.length()>1) {
         QString s = e[0];
         for(int i=1;i<e.length();i++){
             s+=("\n"+QString(w, ' ')+e[i]);
         }
-        return s+"\n"+QString(w, ' ');
-    } else if(e.length()==1){
-        return e[0]+"\n"+QString(w, ' ');//+QString(w, ' ');
+        eredmeny =  s+"\n"+QString(w, ' ');
     }
-    else return "";
+    else if(e.length()==1)
+    {
+        eredmeny =  e[0]+"\n"+QString(w, ' ');//+QString(w, ' ');
+    }
+    else
+    {
+        eredmeny = zStringHelper::Empty;
+    }
+
+    return eredmeny;
 }
 
 // Ha a zTablesnek van fk-ja
 // ha van rfk-ja
-QString zTokenizer::getEntityNavPropList(QString tmp, QString param, int whsp, QString dbname){
-    if(tmp.isEmpty()) return "";
+QString zTokenizer::getEntityNavPropList(const QString& tmp, const QString&  /*param*/, int whsp, const QString& dbname){
+    if(tmp.isEmpty()) return zStringHelper::Empty;
 
     auto fkList = table->getFKClassName();
 
@@ -512,10 +578,10 @@ QString zTokenizer::getEntityNavPropList(QString tmp, QString param, int whsp, Q
     return al;
 }
 
-QString zTokenizer::getProp(QString propType, QString propName, QString tmp, int whsp, QString dbname){
+QString zTokenizer::getProp(const QString& propType, const QString& propName, const QString& tmp, int whsp, const QString& dbname){
     QMap<QString, QVariant> map;
-    map.insert("propname", propName);
-    map.insert("proptype", propType);
+    map.insert(QStringLiteral("propname"), propName);
+    map.insert(QStringLiteral("proptype"), propType);
 
     QString e1 = tmp;
 
@@ -525,20 +591,20 @@ QString zTokenizer::getProp(QString propType, QString propName, QString tmp, int
 }
 
 // ha a ztable sql típusú, de ha txt típusú, nem kell keresni, mert ugyanaz
-QString zTokenizer::getPropType(QString tipusnev, bool isnullable) {
+QString zTokenizer::getPropType(const QString& tipusnev, bool isnullable) {
     if(!typeMap.contains(tipusnev)){
-        zlog.log(QString("Nem található típus: %1").arg(tipusnev));
-        return "";
+        zlog.error(QStringLiteral("Nem található típus: %1").arg(tipusnev));
+        return zStringHelper::Empty;
     }
 
     QString pt = typeMap.value(tipusnev);//.toString();
-    if (isnullable && !tipusnev.endsWith("char")) pt += '?';
+    if (isnullable && !tipusnev.endsWith(QStringLiteral("char"))) pt += '?';
     return pt;
 }
 
-QString zTokenizer::getePropType(QString tipusnev, int length) {
+QString zTokenizer::getePropType(const QString& tipusnev, int length) {
     QString pt = tipusnev;
-    if (length > 0 && tipusnev.endsWith("char")) pt += QString("(%1)").arg(length);
+    if (length > 0 && tipusnev.endsWith(QStringLiteral("char"))) pt += QStringLiteral("(%1)").arg(length);
     return pt;
 }
 

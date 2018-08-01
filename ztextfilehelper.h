@@ -12,7 +12,7 @@ class zTextFileHelper
 {
 public:
     static QString load(const QString& filename);
-    static void save(QString txt, QString fileName, bool isAppend = false);
+    static void save(const QString& txt, const QString& fileName, bool isAppend = false);
     static void append(QString line, QString fileName);       
 };
 

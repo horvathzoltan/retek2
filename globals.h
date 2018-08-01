@@ -10,8 +10,8 @@
 #include <QException>
 #include "zcaptionmap.h"
 
-#define zforeach(var, container) for(auto var = (container).begin(); var != (container).end(); ++var)
-#define zforeach_from(var, container, ix) for(auto var = (container).begin()+ix; var != (container).end(); ++var)
+#define zforeach(var, container) for(auto (var) = (container).begin(); (var) != (container).end(); ++(var))
+#define zforeach_from(var, container, ix) for(auto (var) = (container).begin()+(ix); (var) != (container).end(); ++(var))
 
 extern Beallitasok beallitasok;
 extern zLog zlog;
@@ -45,20 +45,20 @@ static constexpr int C_ix_nullable=4;
 class zLogicException: public QException
 {
 public:
-    zLogicException(QString const& _msg){ qDebug() << _msg; this->msg = _msg;}
+    explicit zLogicException(QString const& _msg){ qDebug() << _msg; this->msg = _msg;}
 
-    void raise() const { throw *this; }
-    zLogicException *clone() const { return new zLogicException(*this); }
+    void raise() const override { throw *this; }
+    zLogicException *clone() const override { return new zLogicException(*this); }
 private:
     QString msg;
 };
 
 namespace bravikov {
     template<int a>
-    QString _nameof(const QString x, std::size_t)
+    QString _nameof(const QString& x, std::size_t)
     {
         //QRegularExpression re("^&?([_a-zA-Z]\\w*(->|\\.|::))*([_a-zA-Z]\\w*)$");
-        QRegularExpression re(R"(^&?([_a-zA-Z]\w*)\s*(->|\.|::)?\s*([_a-zA-Z]\w*)?$)");
+        QRegularExpression re(QStringLiteral(R"(^&?([_a-zA-Z]\w*)\s*(->|\.|::)?\s*([_a-zA-Z]\w*)?$)"));
         QRegularExpressionMatch m = re.match(x);
 
         if (m.hasMatch()) {
@@ -66,4 +66,4 @@ namespace bravikov {
         }
         throw zLogicException("A bad expression x in nameof(x). The expression is \"" + x + "\".");
     }
-}
+}  // namespace bravikov

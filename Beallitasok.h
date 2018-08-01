@@ -36,7 +36,7 @@ public:
     Beallitasok();
     ~Beallitasok();
 
-    void init(QLineEdit*, QLineEdit*, QLineEdit*, QLineEdit*, QComboBox *qc, QComboBox *dc, QListWidget *lw);
+    void init(QLineEdit*, QLineEdit*, QLineEdit*,  QComboBox *qc, QComboBox *dc, QListWidget *lw);
 
     void load();
     void addConnection(dbConnection);

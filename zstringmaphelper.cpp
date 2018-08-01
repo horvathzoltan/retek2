@@ -44,7 +44,7 @@ void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
 
     QFile file(fn);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
-        zLog::errorDialog("nem menthet: " + fn);
+        zLog::dialogError("nem menthet: " + fn);
         return;
     }
 
@@ -62,7 +62,7 @@ void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
 
     file.close();
 
-    zlog.log(QStringLiteral("Kiírva: %1").arg(fn), zLog::OK);
+    zlog.ok(QStringLiteral("Kiírva: %1").arg(fn));
 }
 
 bool zStringMapHelper::contains(QMap<QString, QString> *map, QString k){
@@ -78,6 +78,6 @@ QString zStringMapHelper::getKey(QMap<QString, QString> *map, QString k){
     zforeach(e, ks){
        if(e->toLower()==k.toLower()) return *e;
     }
-    return "";
+    return zStringHelper::Empty;
 }
 
