@@ -19,23 +19,26 @@ public:
     zTable();
     ~zTable();
 
-    //int sourcetype;
-    QString sql_conn;
-    QString source_conn;
-
-    QString tablename;
     QString name;
+
+    // kettő féle conn van - egy az sql felé, egy a forrás felé - ha ezek teljesülnek, a tábla teljesen be van kötve
+    // sql conn: conn_név + driver + server + user + pass (pl: deathstar)
+    // sql adatbázis_név (pl: gloster)
+    // sql tábla név (pl: atricles)
+    QString sql_conn;
+    QString sql_schema;
+    QString tablename;//sql_table;
+
+    QString source_conn;//class_path // ez pedig az az entitás, ami a forráskódban osztályként írja le az adatot - elvileg ez egy adott osztályt tartalmazó file teljes neve
     QString classname; // osztálynév - singular, ezt a zTables példány létrehozásakor létre lehet már hozni, és validálni egy szabály szerint
-    QString classname_plural;
+    QString classname_plural; // killekció - osztálynév
+
     QString comment;
-
     QString pkname; // rowix
-
     QList<zTablerow> rows;
 
     // a megnevezés képzésének szabálya, leírója
     QString name_formatstring;
-
     QDateTime updateTime;
 
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );

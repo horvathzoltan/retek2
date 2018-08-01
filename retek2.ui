@@ -922,7 +922,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QDialogButtonBox" name="buttonBox">
+            <widget class="QDialogButtonBox" name="buttonBox_tableNames">
              <property name="standardButtons">
               <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel</set>
              </property>

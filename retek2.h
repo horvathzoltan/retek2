@@ -28,8 +28,7 @@ public:
     
 private slots:
 	void GenerateAll();
-    //void ValidateByText();
-	void TableSelect(QListWidgetItem*);
+
     void on_pushButton_clicked();
 
     void on_pushButton_3_clicked();
@@ -38,14 +37,6 @@ private slots:
 
     void on_pushButton_2_clicked();
 
-    // void on_comboBox_connections_currentIndexChanged(int index);
-
-    void on_lineEdit_classname_plural_editingFinished();
-
-    void on_lineEdit_classname_editingFinished();
-
-    void on_lineEdit_tablename_editingFinished();
-
     void on_pushButton_5_clicked();
 
     void on_pushButton_6_clicked();
@@ -53,7 +44,6 @@ private slots:
     void on_tableWidget_MezoLista_cellChanged(int row, int column);
 
     void on_listWidget_ztables_itemClicked(QListWidgetItem *item);
-
 
     void on_pushButton_projects_apply_clicked();
 
@@ -65,12 +55,9 @@ private slots:
 
     void on_pushButton_createSourcePath_clicked();    
 
-    void on_buttonBox_accepted();
-
-    void on_buttonBox_clicked(QAbstractButton *button);
-
-
     void on_pushButton_GenerateAll_clicked();
+
+    void on_buttonBox_tableNames_clicked(QAbstractButton *button);
 
 private:
     Ui::retek2Class ui;
@@ -87,7 +74,9 @@ private:
     //void feltoltIdegenkulcs(QString tablanev);
     //void mezoListaFeltolt(QString tablanev);
 
-    void fejadatFeltolt(const zTable& t);
+    void zTableNamesToUi(const zTable& t);
+    void zTableNamesFromUi(zTable& t);
+
     void mezoListaFeltolt(zTable t);
     void feltoltKulcsLista(zTable t);
     //void feltoltFk(zTable t);

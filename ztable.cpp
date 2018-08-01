@@ -124,7 +124,6 @@ QList<QString> zTable::Compare(zTable tv){
     return e;
 }
 
-// TODO ezeket a kereséseket talán lehetne egy függvénybe hozni, egy iterációba és egy flag mutatná, mit keresünk
 zTable* zTable::find(QList<zTable> *tables, QString rn, zTableSearchBy searchType){
     if(rn.isEmpty()) return nullptr;
     zforeach(r,*tables){
