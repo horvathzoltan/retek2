@@ -234,7 +234,7 @@ zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd)
 
         bool nullable = zStringHelper::toBool(query.value(QStringLiteral("IS_NULLABLE")).toString());
 
-        QString caption = zCaptionMap::value(globalCaptionMaps, colName);
+        QString caption = zConversionMap::value(globalCaptionMaps, colName);
         //if(caption.isEmpty()) caption = colName;
         tr.append(zTablerow(colName, dtype, dlen, nullable, caption));
         }

@@ -13,7 +13,7 @@ private:
     int tabindex;
     static void dialog(const QString&, int);
     void log(const QString&, int);
-    enum ErrLevels:int {OK, ERROR, TRACE };
+    enum ErrLevels:int {OK, ERROR, TRACE, MESSAGE};
 
 public:    
     zLog();
@@ -28,6 +28,12 @@ public:
 
 //    [[deprecated]]
 //    void log(const QList<QString>&);
+
+    /*message*/
+    static void dialogMessage(const QString& str);
+    void message(const char*);
+    void message(const QString&);
+    void message(const QList<QString>&);
 
     /*ok*/
     static void dialogOk(const QString& str);

@@ -4,17 +4,15 @@
 #include "zstringhelper.h"
 #include "zstringmaphelper.h"
 
-zCaptionMap::zCaptionMap()
-{
+zConversionMap::zConversionMap() = default;
 
-}
 
-const QString zCaptionMap::Empty = QStringLiteral("?");
+const QString zConversionMap::Empty = QStringLiteral("?");
 
-QList<zCaptionMap> zCaptionMap::loadAll(const QString& filePath){
-    QList<zCaptionMap> e;
+QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QStringList& fileNameFilters){
+    QList<zConversionMap> e;
 
-    QStringList files = zFileNameHelper::FindFileNameInDir(filePath, zStringHelper::Empty, zFileNameHelper::captionFileFilter);
+    QStringList files = zFileNameHelper::FindFileNameInDir(filePath, zStringHelper::Empty, fileNameFilters);
 
     zforeach(f, files){
        auto m = load(*f);
@@ -26,8 +24,8 @@ QList<zCaptionMap> zCaptionMap::loadAll(const QString& filePath){
     return e;
 }
 
-zCaptionMap zCaptionMap::load(const QString& fileFullName){
-    zCaptionMap e;
+zConversionMap zConversionMap::load(const QString& fileFullName){
+    zConversionMap e;
 
     QString fileName = zFileNameHelper::getfileName(fileFullName);
 
@@ -58,7 +56,7 @@ amit leginkább egy fa ábrázolna, és annak az ágnak, ami a keresett kulcsot 
 kellene kiszedni az értékét
 */
 
-QString zCaptionMap::value(const QList<zCaptionMap>& maps, const QString& c){
+QString zConversionMap::value(const QList<zConversionMap>& maps, const QString& c){
     if(c.isEmpty()) return zStringHelper::Empty;
     QString e;
     zforeach(m, maps){
@@ -68,7 +66,7 @@ QString zCaptionMap::value(const QList<zCaptionMap>& maps, const QString& c){
     return e;
 }
 
-QString zCaptionMap::value2(const QString& c) const {
+QString zConversionMap::value2(const QString& c) const {
     QString cn = c.toLower();
     QString e;
     if(this->map.contains(cn))

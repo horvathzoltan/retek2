@@ -56,6 +56,18 @@ void retek2::init()
     beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server,  ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
 //    beallitasok.initPaths();
 
+// TODO kell egy belső típus,
+// átjárhatóvá kell tenni - sql és osztály irányban
+// sql-> osztály irány: Money -> decimal_money -> decimal
+// osztály-> sql irány: decimal -> decimal??? -> Money
+// itt a probléma az, hogy látjuk, hogy definíció szerint decimal, és tudhatjuk, hogy sql irányban money - de    - honnan tudjuk, hogy ez az adattípus pont money, ha nem ismerjük az sql-t?
+// illetve kell egy belső típus, ami többet tud az adatról, mint amennyi triviális
+// itt a neve utal rá, vagy ismerem az sql-t és együtt tudom vizsgálni
+// illetve - ez beolvasáskor kiderül, hogy decimal
+//
+// az sql típusától is függ, hogy milyen beolvasás táblát használunk
+//
+// ennek szerepe van a perzisztens tárolás kialakításakor, illetve     az ui-n nyilván az altípsutól függő controlt kell feltenni, validációt alkalmazni
 
     //sql->c# irány
     typeMap.insert(QStringLiteral("uniqueidentifier"), QStringLiteral("Guid"));
@@ -86,7 +98,9 @@ void retek2::init()
     auto sp = zFileNameHelper::getSettingsDir();
     auto pp = zFileNameHelper::getProjectDir();
 
-    globalCaptionMaps = zCaptionMap::loadAll(sp);//beallitasok.settingsPath);
+    globalCaptionMaps = zConversionMap::loadAll(sp, zFileNameHelper::captionFileFilter);//beallitasok.settingsPath);
+
+    globalSqlMaps= zConversionMap::loadAll(sp, zFileNameHelper::sqlmapFileFilter);
 
     auto projectdirs = zFileNameHelper::GetSubdirs(pp);//beallitasok.projectPath);
     beallitasok.fillProjectList(projectdirs);
@@ -117,12 +131,16 @@ void retek2::init()
     zlog.trace(QStringLiteral("retek2 init OK"));
 }
 
+// TODO ha a táblázatban egy soron állok, és nincsen caption, lehessen kérni egy felajánlottat
+
 void retek2::loadCurrentProject()
 {
-    if(beallitasok.currentProjectName.isEmpty()){
+    if(beallitasok.currentProjectName.isEmpty())
+    {
             zlog.error(QStringLiteral("Nincs aktuális project. ERROR").arg(beallitasok.currentProjectName));
-        }
-    else{
+    }
+    else
+    {
         ztables.clear();
         ui.listWidget_ztables->clear();
 
@@ -131,17 +149,23 @@ void retek2::loadCurrentProject()
         QStringList files = zFileNameHelper::FindFileNameInDir(currentProjectPath, QString(), zFileNameHelper::xmlFilter);
         zforeach(f, files){
             auto txt = zTextFileHelper::load(*f);
+            // TODO ha nem sikerült beolvasni, nem kell rosszul visszaírni
             auto t = zTable::createTableByXML(txt);
-            if(t.isEmpty() ){
+            if(t.isEmpty() )
+            {
                 zlog.error(QStringLiteral("Nincs tábla: %1").arg(*f));
-                }
-            else{
-                if(t.count()>1){
+            }
+            else
+            {
+                if(t.count()>1)
+                {
                     zlog.error(QStringLiteral("Több tábla: %1").arg(*f));
                 }
-                else{
+                else
+                {
                     auto t0 = t[0];
-                    if(t0.name.isEmpty()){
+                    if(t0.name.isEmpty())
+                    {
                         QString fn = zFileNameHelper::getfileName(*f);
                         zlog.error(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
 
@@ -181,9 +205,9 @@ void retek2::zTablaToList(const zTable& t){
     }   
 
     if(tn.isEmpty()){
-        zlog.error(QStringLiteral("Nincs megnevezés. table: %1 class: %2").arg(t.sql_table, t.classname));
+        zlog.error(QStringLiteral("Nincs megnevezés. table: %1 class: %2").arg(t.sql_table, t.class_name));
         tn = QStringLiteral("?");
-        //tn = (!t.tablename.isEmpty())?t.tablename:(!t.classname.isEmpty())?t.classname:zStringHelper::Empty;
+        //tn = (!t.tablename.isEmpty())?t.tablename:(!t.class_name.isEmpty())?t.class_name:zStringHelper::Empty;
     }
 
     new QListWidgetItem(icon, tn, ui.listWidget_ztables, sourcetype);
@@ -287,7 +311,7 @@ void retek2::GenerateAll() {
         return;
     }
 
-    auto classname = zStringHelper::getClassNameCamelCase(table->name);
+    auto class_name = zStringHelper::getclass_nameCamelCase(table->name);
 
     //saveTablaToXML(table->tablename);
 
@@ -302,14 +326,14 @@ void retek2::GenerateAll() {
         table->toXML(&s);
         s.writeEndDocument();
 
-        zlog.error(e);
+        zlog.message(e);
     }
 
 	if (ui.checkBox_CClass->isChecked()) {
         zlog.trace(QStringLiteral("C# Class"));
 
         auto txt = generateTmp(QStringLiteral("MVC_CClass.cs"));
-        zlog.error(txt);
+        zlog.message(txt);
         //auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + ".cs");
         auto fn = zFileNameHelper::getCurrentProjectFileName(table->name + ".cs");
         zTextFileHelper::save(txt, fn);
@@ -329,7 +353,7 @@ void retek2::GenerateAll() {
                     auto ed = GetEnumData(&zsql);
                     QString txt = zEnumizer::GenerateEnum(ed);
 
-                    zlog.error(txt);
+                    zlog.message(txt);
                     auto fn = zFileNameHelper::getCurrentProjectFileName(table->name + "_enum.cs");
                             //append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + "_enum.cs");
                     zTextFileHelper::save(txt, fn);
@@ -354,8 +378,8 @@ void retek2::GenerateAll() {
         zlog.trace(QStringLiteral("C# Entity"));
 
         auto txt = generateTmp(QStringLiteral("DAL_Entity.cs"));
-        zlog.error(txt);
-        auto fn = beallitasok.getModelFilename(classname + ".cs", QStringLiteral("Entities"));
+        zlog.message(txt);
+        auto fn = beallitasok.getModelFilename(class_name + ".cs", QStringLiteral("Entities"));
         zTextFileHelper::save(txt, fn);
     }
 
@@ -370,46 +394,46 @@ void retek2::GenerateAll() {
         zlog.trace(QStringLiteral("Model"));
         auto txt = generateTmp(QStringLiteral("MVC_Model.cs"));
         //zlog.trace(txt);        
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + ".cs", QStringLiteral("Models")));
+        zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + ".cs", QStringLiteral("Models")));
 	}
 
 	if (ui.checkBox_Meta->isChecked()) {
         zlog.trace(QStringLiteral("ModelMeta"));
         auto txt = generateTmp(QStringLiteral("MVC_ModelMeta.cs"));
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "Meta" + ".cs", QStringLiteral("Models")));
+        zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "Meta" + ".cs", QStringLiteral("Models")));
 	}
 
 	if (ui.checkBox_Controller->isChecked()) {
         zlog.trace(QStringLiteral("Controller"));
         auto txt = generateTmp(QStringLiteral("MVC_Controller.cs"));
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "Controller" + ".cs", QStringLiteral("Controllers")));
+        zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "Controller" + ".cs", QStringLiteral("Controllers")));
 	}
 
     if (ui.checkBox_DataProvider->isChecked()) {
         zlog.trace(QStringLiteral("DataProvider"));
         auto txt = generateTmp(QStringLiteral("MVC_DataProvider.cs"));
-        zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "DataProvider" + ".cs", QStringLiteral("DataProviders")));
+        zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "DataProvider" + ".cs", QStringLiteral("DataProviders")));
     }
 
     if (ui.checkBox_View->isChecked()) {
         zlog.trace(QStringLiteral("View"));
         auto txtIndex = generateTmp(QStringLiteral("MVC_ViewIndex.cshtml"));
-        zTextFileHelper::save(txtIndex, beallitasok.getModelFilename(classname + "ViewIndex" + ".cshtml", QStringLiteral("Views")));
+        zTextFileHelper::save(txtIndex, beallitasok.getModelFilename(class_name + "ViewIndex" + ".cshtml", QStringLiteral("Views")));
 
         auto txtAdatlap = generateTmp(QStringLiteral("MVC_ViewAdatlapDX.cshtml"));
-        zTextFileHelper::save(txtAdatlap, beallitasok.getModelFilename(classname + "ViewAdatlapDX" + ".cshtml", QStringLiteral("Views")));
+        zTextFileHelper::save(txtAdatlap, beallitasok.getModelFilename(class_name + "ViewAdatlapDX" + ".cshtml", QStringLiteral("Views")));
     }
 
 //	if (ui.checkBox_ViewIndex->isChecked()) {
 //        zlog.trace("Index");
 //		auto txt = generateTmp("MVC_Index.cshtml");
-//        zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "ViewIndex" + ".cshtml", "Views"));
+//        zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "ViewIndex" + ".cshtml", "Views"));
 //	}
 
 //	if (ui.checkBox_ViewEdit->isChecked()) {
 //        zlog.trace("Edit");
 //        auto txt = generateTmp("MVC_Edit.cshtml");
-//        zTextFileHelper::save(txt, beallitasok.getModelFilename(classname + "ViewEdit" + ".cshtml", "Views"));
+//        zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "ViewEdit" + ".cshtml", "Views"));
 //	}
 /*
 	if (ui.checkBox_ViewCreate->isChecked()) {
@@ -476,6 +500,10 @@ QString retek2::generateTmp(const QString& tmp_file) {
 void retek2::on_pushButton_2_clicked()
 {    
     // TODO a ztablesbe bele kell tenni az sql connectiont, séma és tábla szinten
+    // ez amikor egy ztable kötődik egy sql-hez, tudjuk megtenni,
+    // - vagy mert onnan olvastuk be
+    // - vagy mert oda írjuk ki (generálunk create scriptet?)
+
     QString schemaName = zStringHelper::Empty;//ui.comboBox_connections->currentText();
     zSQL zsql;
     auto dbconn = beallitasok.getUI();
@@ -646,7 +674,7 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
         }
 
         auto ms = (*zsql).getTable_SQL_ENUM(table->name, fn);
-        QString cn = zStringHelper::getClassNameCamelCase(table->name);
+        QString cn = zStringHelper::getclass_nameCamelCase(table->name);
 
         eredmeny= { cn, ft, ms };
         }
@@ -927,8 +955,8 @@ void retek2::on_pushButton_GenerateAll_clicked()
 void retek2::zTableNamesToUi(const zTable& t){
     ui.lineEdit_name->setText(t.name);
     ui.lineEdit_tablename->setText(t.sql_table);
-    ui.lineEdit_classname->setText(t.classname);
-    ui.lineEdit_classname_plural->setText(t.classname_plural);
+    ui.lineEdit_class_name->setText(t.class_name);
+    ui.lineEdit_class_name_plural->setText(t.class_name_plural);
 }
 
 void retek2::zTableNamesFromUi(zTable& t){
@@ -954,8 +982,8 @@ void retek2::zTableNamesFromUi(zTable& t){
         }
         t.name = txt;
         txt = ui.lineEdit_tablename->text();
-        txt = ui.lineEdit_classname->text();
-        t.classname_plural = ui.lineEdit_classname_plural->text();
+        txt = ui.lineEdit_class_name->text();
+        t.class_name_plural = ui.lineEdit_class_name_plural->text();
     }
 }
 

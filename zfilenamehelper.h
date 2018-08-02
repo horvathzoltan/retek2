@@ -7,37 +7,40 @@ class zFileNameHelper
 {
 private:
     static const QString dxMap;
-    static QString append(QString h, QString p0, QString = nullptr, QString = nullptr);
+    static QString append(const QString& h, QString p0, const QString& = nullptr, const QString& = nullptr);
 public:
     zFileNameHelper();
 //    static QString getContextFilename(QString munkadir, QString tfname);
 //    static QString getCClassFilename(QString munkadir, QString adatbazisNev, QString tfname);
 
 
-    static QStringList FindFileNameInDir(QString, QString, QStringList);
-    static QString getfileName(QString fullPath);
-    static QStringList GetSubdirs(QString& dirName);
+    static QStringList FindFileNameInDir(const QString&, const QString&, const QStringList&);
+    static QString getfileName(const QString& fullPath);
+    static QStringList GetSubdirs(const QString& dirName);
 
     static const QStringList xmlFilter;
     static const QStringList captionFileFilter;    
+    static const QStringList sqlmapFileFilter;
+    static const QStringList classmapFileFilter;
+
     static QString getDxMap();
 
     static QString getProjectDir();
-    static QString getProjectSubDir(QString sd);
+    static QString getProjectSubDir(const QString &sd);
     static QString getCurrentProjectDir();
-    static QString getCurrentProjectSubDir(QString dn);
-    static QString getCurrentProjectFileName(QString fn);
+    static QString getCurrentProjectSubDir(const QString& dn);
+    static QString getCurrentProjectFileName(const QString& fn);
 
     static QString getTmpDir();
-    static QString getTmpSubDir(QString dn);
-    static QString getCurrentTmpSubDir(QString dn);
+    static QString getTmpSubDir(const QString& dn);
+    static QString getCurrentTmpSubDir(const QString& dn);
 
-    static QString getHomeSubDir(QString);
+    static QString getHomeSubDir(const QString&);
     static QString getSettingsDir();
     static QString getSettingsFileName();
     static QString getDbconnFileName();
-    static QString getSettingsSubDir(QString sd);
-    static QString getSettingsFileName(QString fn);
+    static QString getSettingsSubDir(const QString& sd);
+    static QString getSettingsFileName(const QString& fn);
 };
 
 #endif // ZFILENAMEHELPER_H

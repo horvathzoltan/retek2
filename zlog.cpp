@@ -49,6 +49,9 @@ void zLog::log(const QString& m, int errlevel){
     case TRACE:
         this->widget->setTextColor(QColor(Qt::darkGray));
         break;
+    case MESSAGE:
+        this->widget->setTextColor(QColor(Qt::black));
+        break;
     default:
         this->widget->setTextColor(QColor(Qt::black));
         break;
@@ -79,6 +82,9 @@ void zLog::dialog(const QString& str, int errlevel) {
     case TRACE:
         h = QStringLiteral("Trace");
         break;
+    case MESSAGE:
+        h = QStringLiteral("Message");
+        break;
     default:
         h = QStringLiteral("Info");
         break;
@@ -88,6 +94,26 @@ void zLog::dialog(const QString& str, int errlevel) {
     QMessageBox::critical(nullptr, h, str);
     messageBox.setFixedSize(500, 200);
 }
+/*message*/
+
+void zLog::dialogMessage(const QString& str) {
+    dialog(str, MESSAGE);
+}
+
+void zLog::message(const QList<QString>& ml){
+    zforeach(m, ml)
+    {
+        message(*m);
+    }
+}
+
+void zLog::message(const QString& m){
+    log(m, MESSAGE);
+    }
+
+void zLog::message(const char *m){
+    message(QString(m));
+    }
 
 /*ok*/
 

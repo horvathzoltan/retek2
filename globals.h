@@ -17,9 +17,10 @@ extern Beallitasok beallitasok;
 extern zLog zlog;
 //extern zSQL zsql;
 extern zTokenizer ztokenizer;
-extern QList<zCaptionMap> globalCaptionMaps;
-//extern QMap<QString, QVariant> typeMap;
-//extern QMap<QString, QVariant> typeMapR;
+extern QList<zConversionMap> globalCaptionMaps;
+
+extern QList<zConversionMap> globalSqlMaps;
+extern QList<zConversionMap> globalClassMaps;
 //valami 6
 
 extern QMap<QString, QString> typeMap;
@@ -55,8 +56,9 @@ private:
 
 namespace bravikov {
     template<int a>
-    QString _nameof(const QString& x, std::size_t)
+    QString _nameof(const char* y, std::size_t)
     {
+        QString x(y);
         //QRegularExpression re("^&?([_a-zA-Z]\\w*(->|\\.|::))*([_a-zA-Z]\\w*)$");
         QRegularExpression re(QStringLiteral(R"(^&?([_a-zA-Z]\w*)\s*(->|\.|::)?\s*([_a-zA-Z]\w*)?$)"));
         QRegularExpressionMatch m = re.match(x);

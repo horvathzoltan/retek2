@@ -9,7 +9,7 @@ class zTablerow
 {
 public:
     zTablerow();
-    zTablerow(QString colName, QString dtype, int dlen, bool isNullable, QString caption);
+    zTablerow(const QString &colName, const QString &dtype, int dlen, bool isNullable, const QString &caption);
 
     QString Caption;
     QString colName;
@@ -22,11 +22,11 @@ public:
 
     bool operator==(const zTablerow&) const;
 
-    static zTablerow* getByName(QList<zTablerow>*, QString);
+    static zTablerow* getByName(QList<zTablerow>*, const QString&);
 
     QList<QString> Validate(zTablerow*);
-    QString ValidateCaption(QString);
-    QString ValidateColType(QString);
+    QString CompareCaption(const QString&);
+    QString CompareColType(const QString&);
     QString ValidateNullable(bool);
     QString ValidateDLen(int);
     void toXML(QXmlStreamWriter*);

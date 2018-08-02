@@ -25,7 +25,7 @@ public:
     //static QPair<QString,QString> getClass(QString, QString);
 
     static void getChildClasses(QString txt, const QString&, QMap<QString, QString>*);
-    static void getConstMembers(const QString& txt, const QString& parentClassName, QMap<QString, QString> *map);
+    static void getConstMembers(const QString& txt, const QString& parentclass_name, QMap<QString, QString> *map);
 };
 
 #endif // ZSOURCEHELPER_H

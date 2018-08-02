@@ -9,12 +9,12 @@
 
 enum zTableSourceTypes:int { SQL=0, TXT=1, ENTITY=2 };
 
-enum zTableSearchBy{ Name, TableName, ClassName, ClassNamePlural };
+enum zTableSearchBy{ Name, TableName, class_name, class_namePlural };
 
 class zTable
 {
 public:
-    zTable(QString className, const QString& , const QList<zTablerow>&, int type, QString name, QString _sourcepath);
+    zTable(QString class_name, const QString& , const QList<zTablerow>&, int type, QString name, QString _sourcepath);
 
     zTable();
     ~zTable();
@@ -30,8 +30,8 @@ public:
     QString sql_table;//sql_table;
 
     QString class_path;//class_path // ez pedig az az entitás, ami a forráskódban osztályként írja le az adatot - elvileg ez egy adott osztályt tartalmazó file teljes neve
-    QString classname; // osztálynév - singular, ezt a zTables példány létrehozásakor létre lehet már hozni, és validálni egy szabály szerint
-    QString classname_plural; // killekció - osztálynév
+    QString class_name; // osztálynév - singular, ezt a zTables példány létrehozásakor létre lehet már hozni, és validálni egy szabály szerint
+    QString class_name_plural; // killekció - osztálynév
 
     QString comment;
     QString pkname; // rowix
@@ -69,8 +69,8 @@ public:
     void toXML(QXmlStreamWriter*);
     //static zTable fromXML(QString);
     static zTable fromXML(QXmlStreamReader* xml);
-    QStringList getFKClassName();
-    QStringList getRFKClassNamePlural();
+    QStringList getFKclass_name();
+    QStringList getRFKclass_namePlural();
 
     static QStringList getAttrAndParams(const QString& str);
     static QString getFirstNotNull(const QRegularExpressionMatch& m,  int);

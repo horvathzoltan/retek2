@@ -21,15 +21,18 @@
 
 const QStringList zFileNameHelper::xmlFilter = QStringList(QStringLiteral("*.xml"));
 const QStringList zFileNameHelper::captionFileFilter = QStringList(QStringLiteral("caption_*.csv"));
+const QStringList zFileNameHelper::sqlmapFileFilter = QStringList(QStringLiteral("sqlmap_*.csv"));
+const QStringList zFileNameHelper::classmapFileFilter = QStringList(QStringLiteral("classmap_*.csv"));
+
 const QString zFileNameHelper::dxMap = QStringLiteral("dxMap.csv");
 
 
-QString zFileNameHelper::append(QString h, QString p0, QString p1, QString p2){
+QString zFileNameHelper::append(const QString& h, QString p0, const QString& p1, const QString& p2){
     auto s = QDir::separator();
 
     QString e;
 
-    if(p0.length()>3 && QString("CDEFGHIJKL").contains(p0[0]) && p0[1]==QChar(':')){
+    if(p0.length()>3 && QStringLiteral("CDEFGHIJKL").contains(p0[0]) && p0[1]==QChar(':')){
         e = p0;
     }else{
         e = h+s+p0;
@@ -44,7 +47,7 @@ QString zFileNameHelper::append(QString h, QString p0, QString p1, QString p2){
 }
 
 
-QStringList zFileNameHelper::GetSubdirs(QString& dirName){
+QStringList zFileNameHelper::GetSubdirs(const QString& dirName){
     QDir d = QDir(dirName);
     QStringList datadirs  = d.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
     return datadirs;
@@ -57,7 +60,7 @@ QString zFileNameHelper::getDxMap()
     //return zFileNameHelper::append(cp, zFileNameHelper::dxMap);
 }
 
-QString zFileNameHelper::getProjectSubDir(QString sd)
+QString zFileNameHelper::getProjectSubDir(const QString& sd)
 {
     auto td = getProjectDir();
     return append(td, sd);
@@ -70,7 +73,7 @@ QString zFileNameHelper::getCurrentProjectDir()
 }
 
 
-QString zFileNameHelper::getCurrentProjectSubDir(QString dn)
+QString zFileNameHelper::getCurrentProjectSubDir(const QString& dn)
 {
     //auto cp = getCurrentProjectDir();
     //return zFileNameHelper::append(QDir::homePath(),projectdir, beallitasok.currentProjectName, dirname);
@@ -78,21 +81,21 @@ QString zFileNameHelper::getCurrentProjectSubDir(QString dn)
     return getCurrentProjectFileName(dn);
 }
 
-QString zFileNameHelper::getCurrentProjectFileName(QString fn)
+QString zFileNameHelper::getCurrentProjectFileName(const QString& fn)
 {
     auto cp = getCurrentProjectDir();
     //return append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName, fn);
     return append(cp, fn);
 }
 
-QString zFileNameHelper::getTmpSubDir(QString tfname)
+QString zFileNameHelper::getTmpSubDir(const QString& tfname)
 {
     auto td = getTmpDir();
     return append(td, tfname);
 }
 
 
-QString zFileNameHelper::getCurrentTmpSubDir(QString sd)
+QString zFileNameHelper::getCurrentTmpSubDir(const QString& sd)
 {
     auto td = getTmpSubDir(beallitasok.currentProjectName);
     return append(td, sd);
@@ -100,7 +103,7 @@ QString zFileNameHelper::getCurrentTmpSubDir(QString sd)
 
 /*alapdirek*/
 
-QString zFileNameHelper::getHomeSubDir(QString sd){
+QString zFileNameHelper::getHomeSubDir(const QString& sd){
     return append(QDir::homePath(),sd);
 }
 
@@ -119,13 +122,13 @@ QString zFileNameHelper::getTmpDir()
     return getHomeSubDir(beallitasok.tmpDir);
 }
 
-QString zFileNameHelper::getSettingsSubDir(QString sd){
+QString zFileNameHelper::getSettingsSubDir(const QString& sd){
     //auto settingsDir = getSettingsDir();
     //return append(settingsDir,sd);
     return getSettingsFileName(sd);
 }
 
-QString zFileNameHelper::getSettingsFileName(QString fn){
+QString zFileNameHelper::getSettingsFileName(const QString& fn){
     auto settingsDir = getSettingsDir();
     return append(settingsDir,fn);
 }
@@ -151,7 +154,7 @@ QString zFileNameHelper::getDbconnFileName()
 //  class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\})
 
 //https://stackoverflow.com/questions/8052460/recursively-iterate-over-all-the-files-in-a-directory-and-its-subdirectories-in
-QStringList zFileNameHelper::FindFileNameInDir(QString dirName, QString fn_pattern, QStringList nameFilters ){
+QStringList zFileNameHelper::FindFileNameInDir(const QString& dirName, const QString& fn_pattern, const QStringList& nameFilters ){
     QString fn = "*."+fn_pattern;
     QStringList ql;    
 
@@ -179,7 +182,7 @@ QStringList zFileNameHelper::FindFileNameInDir(QString dirName, QString fn_patte
 /// \param fullPath
 /// \return
 ///
-QString zFileNameHelper::getfileName(QString fullPath){
+QString zFileNameHelper::getfileName(const QString& fullPath){
     QFileInfo fi(fullPath);
     QString fileName = fi.baseName();
     return fileName;

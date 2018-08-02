@@ -5,18 +5,20 @@
 #include <QString>
 
 
-
-class zCaptionMap
+/*
+Alfanumerikus kulcs és érték közti konverziót írnak le
+*/
+class zConversionMap
 {
 private:
     QString name;
     QMap<QString, QString> map;
     static const QString Empty;
 public:    
-    zCaptionMap();
-    static QList<zCaptionMap> loadAll(const QString& filePath);
-    static zCaptionMap load(const QString& fileName);
-    static QString value(const QList<zCaptionMap>&, const QString&);
+    zConversionMap();
+    static QList<zConversionMap> loadAll(const QString& filePath, const QStringList &);
+    static zConversionMap load(const QString& fileName);
+    static QString value(const QList<zConversionMap>&, const QString&);
     QString value2(const QString&) const;
 };
 

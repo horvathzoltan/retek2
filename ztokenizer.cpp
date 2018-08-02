@@ -146,7 +146,7 @@ int zTokenizer::tokenizeR(QString *tmp, int ix, int* szint, QMap<QString, QVaria
 }
 
 /*
-A tokenek értékét szerzi meg
+  A template-ban lévő token megnevezéseket oldja fel a megfelelő tárolt - vagy számított értékek alapján
 
 a zTablesben előre meg kell generálni az értékeket - így azok felülírhatóvá válnak
 
@@ -163,13 +163,13 @@ contextname - az adat kontext neve -
 newline - új sor
 
 *** osztálydefiníciós tokenek
-classname - az osztály neve - a modellként használatos osztály neve
+class_name - az osztály neve - a modellként használatos osztály neve
 proplist - egy adott templattel definiált szintaxisú  - propertyk listája
 propline - propertyfelsorolás (pl. vesszővel elválasztott)
 
 ***entity framework tokenek
 
-entityname - classname?
+entityname - class_name?
 entity_attrlist -
 prop_attrlist -
 
@@ -177,7 +177,6 @@ nav_proplist -
 nav_proptype -
 nav_propname -
 */
-
 QString zTokenizer::getToken(const QString& token1, const QString& t2, QMap<QString, QVariant> *map, int whsp, QString dbname) {
     auto t1List = token1.split(' ', QString::SplitBehavior::SkipEmptyParts);
     QString t1 = t1List[0];
@@ -200,7 +199,7 @@ QString zTokenizer::getToken(const QString& token1, const QString& t2, QMap<QStr
     // osztály tokenek
     else if (t1 == QStringLiteral("classname"))
     {
-        eredmeny= table->classname;//zStringHelper::getClassNameCamelCase(table->tablename);
+        eredmeny= table->class_name;//zStringHelper::getclass_nameCamelCase(table->tablename);
     }
     else if (t1 == QStringLiteral("proplist"))
     {
@@ -484,7 +483,7 @@ QString zTokenizer::getEntityAttrList(QMap<QString, QVariant> * /*map*/, int w) 
     {
         attrList<< QStringLiteral("[NotMapped]");
     }
-    if(table->name!=table->classname)
+    if(table->name!=table->class_name)
     {
         attrList<< QStringLiteral("[Table(\"%1\")]").arg(table->name);
     }
@@ -555,7 +554,7 @@ QString zTokenizer::AttrListJoin(const QStringList& e, int w){
 QString zTokenizer::getEntityNavPropList(const QString& tmp, const QString&  /*param*/, int whsp, const QString& dbname){
     if(tmp.isEmpty()) return zStringHelper::Empty;
 
-    auto fkList = table->getFKClassName();
+    auto fkList = table->getFKclass_name();
 
     QStringList propList;
     zforeach(fk, fkList){
@@ -565,7 +564,7 @@ QString zTokenizer::getEntityNavPropList(const QString& tmp, const QString&  /*p
         propList << getProp(propType, propName, tmp, whsp, dbname);
     }
 
-    auto rfkList = table->getRFKClassNamePlural();
+    auto rfkList = table->getRFKclass_namePlural();
     zforeach(rfk, rfkList){
         auto r = (*rfk).split(';');
         QString propType = QStringLiteral("ICollection<%1>").arg(r[0]);

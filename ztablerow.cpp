@@ -9,7 +9,7 @@ zTablerow::zTablerow(){
      this->isNullable = true;
 }
 
-zTablerow::zTablerow(QString colName, QString dtype, int dlen, bool nullable, QString caption){
+zTablerow::zTablerow(const QString& colName, const QString& dtype, int dlen, bool nullable, const QString& caption){
     this->colName = colName;
     this->colType=dtype;
     this->dlen = dlen;
@@ -26,7 +26,7 @@ bool zTablerow::operator==(const zTablerow &o)const {
 }
 
 
-zTablerow* zTablerow::getByName(QList<zTablerow> *rows, QString rn){
+zTablerow* zTablerow::getByName(QList<zTablerow> *rows, const QString& rn){
     if(rn.isEmpty()) return nullptr;
     zforeach(r,*rows){
         if(!r->colName.isEmpty())
@@ -38,85 +38,146 @@ zTablerow* zTablerow::getByName(QList<zTablerow> *rows, QString rn){
     return nullptr;
 }
 
+//
 QList<QString> zTablerow::Validate(zTablerow* rv){
     QList<QString> e;
-    e.append(QString("row name: '%1' OK").arg(colName));
+    e.append(QStringLiteral("row name: '%1' OK").arg(colName));
 
-    e.append(ValidateCaption(rv->Caption));
-    e.append(ValidateColType(rv->colType));
+    e.append(CompareCaption(rv->Caption));
+    e.append(CompareColType(rv->colType));
     e.append(ValidateNullable(rv->isNullable));
     e.append(ValidateDLen(rv->dlen));
 
     return e;
 }
 
-QString zTablerow::ValidateCaption(QString rvCaption){
+/*
+Ha nem egyezik a megadottal, hiba
+*/
+QString zTablerow::CompareCaption(const QString& rvCaption){
+    QString eredmeny;
+
     if(rvCaption.isEmpty())
-        return "Caption NOT_TO_VALIDATE";
-    else{
+    {
+        eredmeny= QStringLiteral("Caption NOT_TO_VALIDATE");
+    }
+    else
+    {
         if(Caption.isEmpty())
-            return "Caption NOT_EXIST ERROR";
-        else{
+        {
+            eredmeny= QStringLiteral("Caption NOT_EXIST ERROR");
+        }
+        else
+        {
             if(Caption == rvCaption)
-                return "Caption OK";
+            {
+                eredmeny= QStringLiteral("Caption OK");
+            }
             else
-                return QString("Caption NOT_EQUALS: '%1', '%2' ERROR").arg(Caption).arg(rvCaption);
+            {
+                eredmeny= QStringLiteral("Caption NOT_EQUALS: '%1', '%2' ERROR").arg(Caption, rvCaption);
             }
         }
     }
+    return eredmeny;
+}
 
+/*
+ez azt is vizsgálja, hogy csereszabatosak-e a colTypeok - de ezt nem kellene, ha minden egy darab belső típusra fordulna ,
+mert akkor nem lehetne keresztbe megadni a típusokat, illetve nem lenne függő attól, hogy honnan származik a row - mindíg az egyetemes típus lenne az
 
-QString zTablerow::ValidateColType(QString rvcolType){
+a típustáblában szerepel-e
+*/
+QString zTablerow::CompareColType(const QString& rvcolType){
+    QString e;
+
     if(rvcolType.isEmpty())
-        return "Type NOT_TO_VALIDATE";
-    else{
+    {
+        e= QStringLiteral("Type NOT_TO_VALIDATE");
+    }
+    else
+    {
         if(colType.isEmpty())
-            return "Type NOT_EXIST ERROR";
+        {
+            e= QStringLiteral("Type NOT_EXIST ERROR");
+        }
         else{
             if(!typeMap.contains(colType))
-                return QString("Type '%1' is NOT_VALID ERROR").arg(colType);
-             else{
+            {
+                e= QStringLiteral("Type '%1' is NOT_VALID ERROR").arg(colType);
+            }
+            else
+            {
                 if(colType == rvcolType)
-                   return "Type OK";
-                else{
+                {
+                   e= QStringLiteral("Type OK");
+                }
+                else
+                {
                     QString c1 = typeMap.value(colType);
                     QString c2 = typeMap.value(rvcolType);
                     if(c1 == c2)
-                        return QString("Type EQUALS: '%1(%3)', '%2(%4)' OK").arg(colType,rvcolType,c1,c2);
+                    {
+                        e= QStringLiteral("Type EQUALS: '%1(%3)', '%2(%4)' OK").arg(colType,rvcolType,c1,c2);
+                    }
                     else
-                        return QString("Type NOT_EQUALS: '%1(%3)', '%2(%4)' ERROR").arg(colType,rvcolType,c1,c2);
+                    {
+                        e= QStringLiteral("Type NOT_EQUALS: '%1(%3)', '%2(%4)' ERROR").arg(colType,rvcolType,c1,c2);
                     }
                 }
             }
         }
     }
+    return e;
+}
 
 QString zTablerow::ValidateNullable(bool rvnullable){
-        if(isNullable == rvnullable)
-           return "Nullable OK";
-        else
-            return QString("Nullable NOT_EQUALS: '%1', '%2' ERROR").arg(isNullable).arg(rvnullable);
+    QString e;
+
+    if(isNullable == rvnullable)
+    {
+      e = QStringLiteral("Nullable OK");
     }
+    else
+    {
+        e= QStringLiteral("Nullable NOT_EQUALS: '%1', '%2' ERROR").arg(isNullable).arg(rvnullable);
+    }
+    return e;
+}
 
 QString zTablerow::ValidateDLen(int rvdLen){
-        if(colType.isEmpty())
-            return "Length: Type NOT_EXIST ERROR";
-        else{
-            if(!typeMap.contains(colType))
-                return QString("Length '%1' is NOT_VALID ERROR").arg(colType);
-             else{
-                if(colType.endsWith("char")){
-                    if(this->dlen == rvdLen)
-                        return "Length OK";
-                    else
-                        return QString("Length NOT_EQUALS: '%1', '%2' ERROR").arg(dlen).arg(rvdLen);
-                    }
-                else{
-                    return "Length NOT_TO_VALIDATE";
+    QString e;
+    if(colType.isEmpty())
+    {
+        e= QStringLiteral("Length: Type NOT_EXIST ERROR");
+    }
+    else
+    {
+        if(!typeMap.contains(colType))
+        {
+            e= QStringLiteral("Length '%1' is NOT_VALID ERROR").arg(colType);
+        }
+        else
+        {
+            if(colType.endsWith(QStringLiteral("char")))
+            {
+                if(this->dlen == rvdLen)
+                {
+                    e= QStringLiteral("Length OK");
                 }
+                else
+                {
+                    e= QStringLiteral("Length NOT_EQUALS: '%1', '%2' ERROR").arg(dlen, rvdLen);
+                }
+            }
+            else
+            {
+                e= QStringLiteral("Length NOT_TO_VALIDATE");
             }
         }
     }
+    return e;
+}
 
 
 ///

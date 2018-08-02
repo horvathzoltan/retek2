@@ -39,8 +39,8 @@ QString zStringHelper::toCamelCase(QString s)
     return o.join("");
 }
 
-//ClassnameCamelCase
-QString zStringHelper::getClassNameCamelCase(QString tnev) {
+//class_nameCamelCase
+QString zStringHelper::getclass_nameCamelCase(QString tnev) {
     QString t2 = tnev;//.toLower();
     //QString sep = TXT+'.';
 
@@ -66,7 +66,7 @@ QStringList zStringHelper::toStringList(QString s){
 // (?:\".*\")|(?:[\d.]+)
 QRegularExpression zStringHelper::r_string_or_number = QRegularExpression(R"((?:\".*\")|(?:[^\p{L}][\d.]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
-bool zStringHelper::isClassName(QString str){
+bool zStringHelper::isclass_name(QString str){
     auto m = r_string_or_number.match(str);
     auto i = !m.hasMatch();    // ha nincs egyezés, nem konstans
     return i;
@@ -127,7 +127,7 @@ QStringList zStringHelper::getFilePaths(QString txt, QStringList fileExtFilter){
 
         }
 
-//        / QStringList files = zFileNameHelper::FindFileNameInDir(path, "Data", classNameFilter);
+//        / QStringList files = zFileNameHelper::FindFileNameInDir(path, "Data", class_nameFilter);
 
 
     }
