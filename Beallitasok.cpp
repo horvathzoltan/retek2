@@ -11,12 +11,13 @@
 #include <QFileInfo>
 
 
-Beallitasok::Beallitasok(){
-    //"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"
-    //dbConnections.append(dbConnection{"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"});
+Beallitasok::Beallitasok() = default;
+//{
+//    //"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"
+//    //dbConnections.append(dbConnection{"QMYSQL", "wiki1", "127.0.0.1", "root", "Aladar123"});
 
-     //selected_ix = 0;
-};
+//     //selected_ix = 0;
+//};
 
 Beallitasok::~Beallitasok()= default;;
 
@@ -74,18 +75,18 @@ void Beallitasok::setUI(const dbConnection& b)
 //}
 
 // megy a
-QString Beallitasok::getModelFilename(const QString& tfname, const QString& dirname) {
+QString Beallitasok::getModelFilename(const QString& tfname, const QString& dirname)
+{
+    QString e = zFileNameHelper::getCurrentProjectSubDir(dirname);
+    //QString  e = zFileNameHelper::append(QDir::homePath(),projectdir, beallitasok.currentProjectName, dirname);
+    QDir d(e);
 
-        QString e = zFileNameHelper::getCurrentProjectSubDir(dirname);
-        //QString  e = zFileNameHelper::append(QDir::homePath(),projectdir, beallitasok.currentProjectName, dirname);
-        QDir d(e);
+    if(!d.exists()){d.mkpath(d.absolutePath());}
 
-        if(!d.exists()){d.mkpath(d.absolutePath());}
-
-        //e += QDir::separator()+tfname;
-        QString e2 = zFileNameHelper::getCurrentProjectFileName(tfname);
-        zlog.trace(e2);
-        return e2;
+    //e += QDir::separator()+tfname;
+    QString e2 = zFileNameHelper::getCurrentProjectFileName(tfname);
+    zlog.trace(e2);
+    return e2;
 
 }
 
@@ -93,48 +94,55 @@ QString Beallitasok::getModelFilename(const QString& tfname, const QString& dirn
  * a beállítások alapján a template névhez tartozó fájl nevét adja
  * ezt az aktuális projectnév alapján kell megtenni
 */
-QString Beallitasok::getTemplateFilename(const QString& tfname) {   
+QString Beallitasok::getTemplateFilename(const QString& tfname)
+{
     bool isVal = true;
     if(tmpDir.isEmpty())
-        {zlog.error("A template könyvtár a beállításokban nincs megadva");isVal=false;}
+    {
+        zlog.error("A template könyvtár a beállításokban nincs megadva");
+        isVal=false;
+    }
     if(tfname.isEmpty())
-        {zlog.error(QStringLiteral("A template fájlnév nincs megadva"));isVal=false;}
+    {
+        zlog.error(QStringLiteral("A template fájlnév nincs megadva"));
+        isVal=false;
+    }
     if(beallitasok.currentProjectName.isEmpty())
-        {zlog.error(QStringLiteral("A projectnév nincs megadva"));isVal=false;}
+    {
+        zlog.error(QStringLiteral("A projectnév nincs megadva"));
+        isVal=false;
+    }
     if(!isVal)
-        {zLog::dialogError(QStringLiteral("A template fájlnév nem meghatározható"));return nullptr;}
+    {
+        zLog::dialogError(QStringLiteral("A template fájlnév nem meghatározható"));
+        return nullptr;
+    }
 
-
-    // project template
     auto fn = zFileNameHelper::getCurrentTmpSubDir(tfname);
-    //auto fn = zFileNameHelper::append(QDir::homePath(),tmpDir, beallitasok.currentProjectName, tfname);
-    //auto fn = zFileNameHelper::append(beallitasok.projectPath, tfname);
 
-    //zlog.log("project template keresese:"+ fn);
     if(QFileInfo::exists(fn))
+    {
         return fn;
-    else{
-        zlog.error("nincs project template:" +fn);
+    }
 
-        fn = zFileNameHelper::getTmpSubDir(tfname);//append(QDir::homePath(),tmpDir, tfname);
-        //fn = QString(beallitasok.tmpDir+R"(\%1)").arg(tfname);
+    zlog.trace("nincs project template:" +fn);
+    fn = zFileNameHelper::getTmpSubDir(tfname);
 
-        if(QFileInfo::exists(fn))
-            return fn;
-        else{
-            zlog.error("nincs default template:"+ fn);
-            }
-        }
-//}
-//    else
-//        zlog.log(QStringLiteral("nincs kiválasztott dbconnection:"));
+    if(QFileInfo::exists(fn))
+    {
+        zlog.trace("global template:" +fn);
+        return fn;
+    }
 
+    zlog.error("nincs global template:"+ fn);
     return nullptr;
 }
 
 
-dbConnection* Beallitasok::getDbConnectionByName(const QString& name){
-    zforeach(o, dbConnections){
+dbConnection* Beallitasok::getDbConnectionByName(const QString& name)
+{
+    zforeach(o, dbConnections)
+    {
         if(o->Name == name) return &(*o);
     }
     return nullptr;
@@ -170,12 +178,15 @@ void Beallitasok::load(){
     QString txt = zTextFileHelper::load(fn);
     widget_connections->clear();
 
-    if(!txt.isEmpty()){
+    if(!txt.isEmpty())
+    {
         //zlog.log(QString("beállítások_dbconnections: %1").arg(fn));
         QStringList csvl = zStringHelper::toStringList(txt);
-        zforeach(csvr, csvl){
+        zforeach(csvr, csvl)
+        {
             auto dbconn = dbConnection::FromCSV(*csvr);
-            if(dbconn.isValid()){
+            if(dbconn.isValid())
+            {
                 addDbConnection(dbconn);
             }
         }
@@ -237,7 +248,8 @@ void Beallitasok::addConnection(dbConnection b){
 
 
 
-void Beallitasok::addDbConnection(dbConnection b){
+void Beallitasok::addDbConnection(const dbConnection& b)
+{
     beallitasok.dbConnections.append(b);        
     widget_connections->addItem(b.Name);
 }

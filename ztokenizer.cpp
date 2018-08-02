@@ -16,7 +16,7 @@ void zTokenizer::init(QTableWidget *w){
 
     QString currentProjectPath = zFileNameHelper::getDxMap();
     zStringMapHelper::StringMapFeltolt(currentProjectPath, &dxMap);
-    zlog.error(QStringLiteral("zTokenizer init ok"));
+    zlog.ok(QStringLiteral("zTokenizer init ok"));
 }
 
 

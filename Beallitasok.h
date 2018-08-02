@@ -144,7 +144,7 @@ abrachadabra
 
     void setSelected(int i);
 
-    void addDbConnection(dbConnection b);
+    void addDbConnection(const dbConnection& b);
 
     void FromCSV(QString& i);
 

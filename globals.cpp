@@ -1,5 +1,5 @@
 #include "globals.h"
-#include "zcaptionmap.h"
+#include "zconversionmap.h"
 
 Beallitasok beallitasok;
 zLog zlog;
@@ -7,6 +7,8 @@ zLog zlog;
 zTokenizer ztokenizer;
 
 QList<zConversionMap> globalCaptionMaps;
+QList<zConversionMap> globalSqlMaps;
+QList<zConversionMap> globalClassMaps;
 
 QMap<QString, QString> typeMap;
 QMap<QString, QString> typeMapR;

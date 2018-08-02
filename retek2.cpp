@@ -32,9 +32,10 @@
 //#include "zsql.h"
 //#include "zenumizer.h"
 #include <QWidget>
-#include "zcaptionmap.h"
+#include "zconversionmap.h"
 
-retek2::retek2(QWidget *parent):QMainWindow(parent){
+retek2::retek2(QWidget *parent):QMainWindow(parent)
+{
 	ui.setupUi(this);
 }
 
@@ -98,9 +99,11 @@ void retek2::init()
     auto sp = zFileNameHelper::getSettingsDir();
     auto pp = zFileNameHelper::getProjectDir();
 
-    globalCaptionMaps = zConversionMap::loadAll(sp, zFileNameHelper::captionFileFilter);//beallitasok.settingsPath);
-
+    // Mezőmegnevezés
+    globalCaptionMaps = zConversionMap::loadAll(sp, zFileNameHelper::captionFileFilter);
+    // típuskonverzió
     globalSqlMaps= zConversionMap::loadAll(sp, zFileNameHelper::sqlmapFileFilter);
+    globalClassMaps= zConversionMap::loadAll(sp, zFileNameHelper::classmapFileFilter);
 
     auto projectdirs = zFileNameHelper::GetSubdirs(pp);//beallitasok.projectPath);
     beallitasok.fillProjectList(projectdirs);
@@ -128,7 +131,7 @@ void retek2::init()
     // ha a leíró módosult, míg a forrás nem, bár ez em egyértelmű mert az sql simán lehet régebbi, mint a leíró
     // elvileg ezt is jelezni kellene,
 
-    zlog.trace(QStringLiteral("retek2 init OK"));
+    zlog.ok(QStringLiteral("retek2 init ok"));
 }
 
 // TODO ha a táblázatban egy soron állok, és nincsen caption, lehessen kérni egy felajánlottat

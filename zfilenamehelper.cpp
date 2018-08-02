@@ -20,9 +20,9 @@
 //}
 
 const QStringList zFileNameHelper::xmlFilter = QStringList(QStringLiteral("*.xml"));
-const QStringList zFileNameHelper::captionFileFilter = QStringList(QStringLiteral("caption_*.csv"));
-const QStringList zFileNameHelper::sqlmapFileFilter = QStringList(QStringLiteral("sqlmap_*.csv"));
-const QStringList zFileNameHelper::classmapFileFilter = QStringList(QStringLiteral("classmap_*.csv"));
+const QStringList zFileNameHelper::captionFileFilter = QStringList(QStringLiteral("caption*.csv"));
+const QStringList zFileNameHelper::sqlmapFileFilter = QStringList(QStringLiteral("sqlmap*.csv"));
+const QStringList zFileNameHelper::classmapFileFilter = QStringList(QStringLiteral("classmap*.csv"));
 
 const QString zFileNameHelper::dxMap = QStringLiteral("dxMap.csv");
 
@@ -167,10 +167,11 @@ QStringList zFileNameHelper::FindFileNameInDir(const QString& dirName, const QSt
     d.setNameFilters(nameFilters);//QStringList()<<"*.c"<<"*.cs");
     
     QDirIterator it(d, QDirIterator::Subdirectories);
-    while (it.hasNext()){
+    while (it.hasNext())
+    {
         auto n =  it.next();
         ql << n;
-        zlog.error("file: "+n);
+        zlog.trace("FindFileNameInDir: "+n);
     }
     return ql;
 

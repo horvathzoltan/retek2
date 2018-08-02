@@ -1,5 +1,5 @@
 #include "globals.h"
-#include "zcaptionmap.h"
+#include "zconversionmap.h"
 #include "zfilenamehelper.h"
 #include "zstringhelper.h"
 #include "zstringmaphelper.h"
@@ -16,7 +16,12 @@ QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QSt
 
     zforeach(f, files){
        auto m = load(*f);
-       if(!m.map.isEmpty()){
+       if(m.map.isEmpty())
+       {
+            zlog.error(QStringLiteral("Nem tartalmaz beolvasható sorokat: %1").arg(*f));
+       }
+       else
+       {
            e << m;
        }
     }
@@ -25,27 +30,31 @@ QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QSt
 }
 
 zConversionMap zConversionMap::load(const QString& fileFullName){
+    zlog.trace("zConversionMapLoad: " + fileFullName);
+
     zConversionMap e;
 
     QString fileName = zFileNameHelper::getfileName(fileFullName);
 
-    QString c = fileName.right(fileName.length()-7);
-    if(c.isEmpty()){
-        e.name = Empty;
-    }
-    else{
-        if(c.startsWith('_')){
-            e.name = c.right(c.length()-1);
-        }
-        else{
-            zlog.error(QStringLiteral("Hibás caption file név: %1").arg(fileName));
-        }
-    }
+    //QString c = fileName.right(fileName.length()-7);
+//    if(c.isEmpty()){
+//        e.name = Empty;
+//    }
+//    else
+//    {
+//        if(c.startsWith('_')){
+//            e.name = c.right(c.length()-1);
+//        }
+//        else{
+//            zlog.error(QStringLiteral("Hibás caption file név: %1").arg(fileName));
+//        }
+    //}
+    e.name = fileName;
+    //if(!e.name.isEmpty()){
 
-    if(!e.name.isEmpty()){
-        zlog.error("load captions: " + e.name);
         zStringMapHelper::StringMapFeltolt(fileFullName, &e.map);
-    }
+    //}
+
 
     return e;
 }
