@@ -17,7 +17,7 @@ class retek2 : public QMainWindow
 	Q_OBJECT
 
 public:
-    explicit retek2(QWidget *parent = nullptr);
+   // explicit retek2(QWidget *parent = nullptr);
     ~retek2() final;
     void init();
 

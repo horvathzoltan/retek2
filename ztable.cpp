@@ -193,6 +193,13 @@ ezt külön kell vizsgálni
 
 ha isRequired, akkor nem lehet nullable
 egyébként akkor nullable, ha az elő van írva
+
+createTableByText
+createTableByText_2
+createTableByText_3
+
+globalSqlMaps
+globalClassMaps
 */
 bool zTable::getType(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
 {
@@ -204,15 +211,19 @@ bool zTable::getType(const QString& ezt1,  QString *dtype, int *dlen, bool *null
     auto m_isNullable = re_isnullable.match(ezt1);
     QString typeName;
 
-    if(isRequired){
+    if(isRequired)
+    {
         *nullable = false;
         typeName = ezt1;
     }
     else{
-        if(m_isNullable.hasMatch()){
+        if(m_isNullable.hasMatch())
+        {
             *nullable = true;
             typeName = getFirstNotNull(m_isNullable, 2);
-        } else{
+        }
+        else
+        {
             *nullable = false;
             typeName = ezt1;
         }
@@ -220,32 +231,38 @@ bool zTable::getType(const QString& ezt1,  QString *dtype, int *dlen, bool *null
 
     bool isDtype = false;
 
-    if(zStringMapHelper::contains(&typeMap, typeName)){
+    if(zStringMapHelper::contains(&typeMap, typeName))
+    {
         QString k = zStringMapHelper::getKey(&typeMap, typeName);
         *dtype =  typeMap.value(k);;
         isDtype = true;
     }
-    else if(zStringMapHelper::contains(&typeMapR, typeName)){
+    else if(zStringMapHelper::contains(&typeMapR, typeName))
+    {
         QString k = zStringMapHelper::getKey(&typeMapR, typeName);
         *dtype =  typeMapR.value(k);;
         isDtype = true;
     }
-    else {//
+    else
+    {
         auto i2 = re_dlen1.match(typeName);
-        if(i2.hasMatch()){
+        if(i2.hasMatch())
+        {
             bool isOK;
             int n = i2.captured(1).toInt(&isOK);
             if(isOK) *dlen = n;
-            }
-        else{
+        }
+        else
+        {
              i2 = re_dlen2.match(typeName);
-             if(i2.hasMatch()){
+             if(i2.hasMatch())
+             {
                  bool isOK;
                  int n = i2.captured(1).toInt(&isOK);
                  if(isOK) *dlen = n;
-                 }
-             }
-         }
+            }
+        }
+    }
 
     if(typeName.isEmpty()){
         zlog.error(QStringLiteral("getType: Unknown type: %1").arg(ezt1));
@@ -366,7 +383,7 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
 
     zXmlHelper::putXmlAttr(a, nameof(name), &(t.name));
     zXmlHelper::putXmlAttr(a, nameof(sql_table), &(t.sql_table));
-    //zXmlHelper::putXmlAttr(a, nameof(sourcetype), &(t.sourcetype));
+
     zXmlHelper::putXmlAttr(a, nameof(sql_conn), &(t.sql_conn));
     zXmlHelper::putXmlAttr(a, nameof(class_path), &(t.class_path));
 
@@ -375,6 +392,12 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
     zXmlHelper::putXmlAttr(a, nameof(pkname), &(t.pkname));
     zXmlHelper::putXmlAttr(a, nameof(name_formatstring), &(t.name_formatstring));
     zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));
+
+    /**/
+    zXmlHelper::putXmlAttr(a, "tablename", &(t.sql_table));
+    zXmlHelper::putXmlAttr(a, "classname", &(t.class_name));
+    zXmlHelper::putXmlAttr(a, "classname_plural", &(t.class_name_plural));
+
 
     if (xml->readNextStartElement() && xml->name() == "rows")
     {
@@ -1094,8 +1117,15 @@ QList<zTable> zTable::createTableByClassTxt(const QString& txt){
 lementi a  táblát - nem caption, hanem teljes xml, így ez később átnevezendő
 */
 void zTable::saveTablaToXML() {
-    if(beallitasok.currentProjectName.isEmpty()) return;
-
+    if(beallitasok.currentProjectName.isEmpty())
+    {
+        return;
+    }
+    if(this->rows.isEmpty())
+    {
+        zlog.error(QStringLiteral("Nem tartalmaz sorokat: ").arg(this->name));
+        return;
+    }
     QString fn = zFileNameHelper::getCurrentProjectFileName(this->name + ".xml");
             //append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName, this->name + ".xml");
 

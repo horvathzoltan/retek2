@@ -54,7 +54,7 @@ A tábla PK mező nevének lekérdezése
 
 public:
     zSQL();
-    bool init(dbConnection c);
+    bool init(const dbConnection &c);
 
 
     ~zSQL(){

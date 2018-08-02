@@ -34,10 +34,10 @@
 #include <QWidget>
 #include "zconversionmap.h"
 
-retek2::retek2(QWidget *parent):QMainWindow(parent)
-{
-	ui.setupUi(this);
-}
+//retek2::retek2(QWidget *parent):QMainWindow(parent)
+//{
+//	ui.setupUi(this);
+//}
 
 retek2::~retek2()= default;
 
@@ -52,6 +52,7 @@ retek2::~retek2()= default;
 
 void retek2::init()
 {	
+    ui.setupUi(this);
     zlog.init(ui.textBrowser, ui.tabWidget, 4);// 4.tab-on van a log
     //beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
     beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server,  ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
@@ -105,7 +106,7 @@ void retek2::init()
     globalSqlMaps= zConversionMap::loadAll(sp, zFileNameHelper::sqlmapFileFilter);
     globalClassMaps= zConversionMap::loadAll(sp, zFileNameHelper::classmapFileFilter);
 
-    auto projectdirs = zFileNameHelper::GetSubdirs(pp);//beallitasok.projectPath);
+    auto projectdirs = zFileNameHelper::GetSubdirs(pp);
     beallitasok.fillProjectList(projectdirs);
 
     loadCurrentProject();
@@ -147,7 +148,6 @@ void retek2::loadCurrentProject()
         ztables.clear();
         ui.listWidget_ztables->clear();
 
-
         QString currentProjectPath = zFileNameHelper::getCurrentProjectDir();
         QStringList files = zFileNameHelper::FindFileNameInDir(currentProjectPath, QString(), zFileNameHelper::xmlFilter);
         zforeach(f, files){
@@ -173,13 +173,24 @@ void retek2::loadCurrentProject()
                         zlog.error(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
 
                         t0.name = fn;
-                    }                    
-                    ztables << t0;
-                    zTablaToList(t0);
+                    }
+                    else
+                    {
+                        if(zTable::find(&ztables, t0.name, zTableSearchBy::Name))
+                        {
+                            QString fn = zFileNameHelper::getfileName(*f);
+                            zlog.error(QStringLiteral("Már van tábla ilyen néven: %1, %2 (.xml)").arg(t0.name, fn));
+                        }
+                        else
+                        {
+                            ztables << t0;
+                            zTablaToList(t0);
+                        }
                     }
                 }
             }
         }
+    }
 }
 
 

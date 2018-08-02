@@ -21,7 +21,7 @@ QString zSQL::getConnStr(){
 
 zSQL::zSQL() = default;
 
-bool zSQL::init(dbConnection c){
+bool zSQL::init(const dbConnection& c){
     return init(c.driver, c.server, c.Name, c.user, c.password);
 }
 
@@ -35,16 +35,18 @@ bool zSQL::init(const QString &_driverName, const QString& _hostName, const QStr
     connectionName = _connectionName;
     bool isok = this->createConnection();
     if(isok){
-        zlog.error("init:"+this->toString());
-        zlog.error("hasFeature: QuerySize "+QString(db.driver()->hasFeature(QSqlDriver::QuerySize)?"true":"false"));
+        zlog.trace("init:"+this->toString());
+        zlog.trace(QStringLiteral("hasFeature: QuerySize: %1").arg(db.driver()->hasFeature(QSqlDriver::QuerySize)?QStringLiteral("true"):QStringLiteral("false")));
         }
     return isok;
     }
 
 bool zSQL::createConnection_MSSQL()
 {    
-    if(db.isValid()){
-        if(db.isOpen()){
+    if(db.isValid())
+    {
+        if(db.isOpen())
+        {
             db.close();
         }
         db = QSqlDatabase();
@@ -60,8 +62,10 @@ bool zSQL::createConnection_MSSQL()
 
 bool zSQL::createConnection_MYSQL()
 {        
-    if(db.isValid()){
-        if(db.isOpen()){
+    if(db.isValid())
+    {
+        if(db.isOpen())
+        {
             db.close();
         }
         db = QSqlDatabase();
@@ -96,7 +100,7 @@ bool zSQL::createConnection(QString connectionName){
 
     if(isok)        
     {
-        zlog.error("Connected");
+        zlog.ok("Connected");
     }
     else
     {
@@ -129,16 +133,14 @@ QList<QString> zSQL::getTableNames(const QString& schemaName){
         {
             return getTableNames_SQL(getTableNames_MSSQL_CMD());//.arg(beallitasok.adatbazisNev);
         }
-        else if(driverName == QMYSQL)
+        if(driverName == QMYSQL)
         {
             return getTableNames_SQL(getTableNames_MYSQL_CMD(schemaName));
-        }
-        else
-        {
-            zlog.error("getTableNames: unknown driver:" + driverName);
-        }
+        }        
+        zlog.error("getTableNames: unknown driver:" + driverName);
     }
-    else{
+    else
+    {
         zlog.error("getTable: db closed" + driverName);
     }
     return QList<QString>();
@@ -206,15 +208,14 @@ zTable zSQL::getTable(const QString& schemaName, const QString& tablanev){
         {
             return getTable_SQL(tablanev, getTable_MSSQL_CMD(tablanev));
         }
-        else if(driverName == QMYSQL)
+        if(driverName == QMYSQL)
         {
             return getTable_SQL(tablanev, getTable_MYSQL_CMD(schemaName, tablanev));
-        }
-        else{
-            zlog.error("getTable: unknown driver:" + driverName);
-        }
+        }        
+        zlog.error("getTable: unknown driver:" + driverName);
     }
-    else{
+    else
+    {
         zlog.error("getTable: db closed" + driverName);
     }
     return zTable();
@@ -281,14 +282,11 @@ QString zSQL::getTablePKName(const QString& tablanev){
         {
             return getTable_SQL_PK(getTable_MSSQL_PK(tablanev));
         }
-        else if(driverName == QMYSQL)
+        if(driverName == QMYSQL)
         {
             return getTable_SQL_PK(getTable_MYSQL_PK(tablanev));
         }
-        else
-        {
-            zlog.error("getTable: unknown driver:" + driverName);        
-        }
+        zlog.error("getTable: unknown driver:" + driverName);
     }
     else
     {
@@ -320,11 +318,12 @@ QMap<int, QString> zSQL::getTable_SQL_ENUM(const QString& tablanev, const QStrin
     query.setForwardOnly(true);
     auto e = QMap<int, QString>();
 
-    while(query.next()) {
+    while(query.next())
+    {
         auto i = query.value(QStringLiteral("id")).toInt();
         auto n = query.value(QStringLiteral("name")).toString();
         e.insert(i, n);
-        }
+    }
 
     return e;
 }
@@ -340,13 +339,12 @@ QList<QString> zSQL::getSchemaNames(){
         {
             return getSchemaNames_SQL(getSchemaNames_MSSQL_CMD());//.arg(beallitasok.adatbazisNev);
         }
-        else if(driverName == QMYSQL)
+        if(driverName == QMYSQL)
         {
             return getSchemaNames_SQL(getSchemaNames_MYSQL_CMD());
         }
-        else{
-            zlog.error("getDbNames: unknown driver:" + driverName);
-        }
+
+        zlog.error("getDbNames: unknown driver:" + driverName);
     }
     else{
         zlog.error("getDb: db closed" + driverName);
