@@ -69,16 +69,46 @@ QString zConversionMap::value(const QList<zConversionMap>& maps, const QString& 
     if(c.isEmpty()) return zStringHelper::Empty;
     QString e;
     zforeach(m, maps){
-        e = m->value2(c);
+        e = m->value(c);
         return e;
         }
     return e;
 }
 
-QString zConversionMap::value2(const QString& c) const {
+QString zConversionMap::value(const QString& c) const {
     QString cn = c.toLower();
     QString e;
     if(this->map.contains(cn))
         e = this->map[cn];
     return e;
 }
+
+//QStringList zConversionMap::keys(const QList<zConversionMap>& maps){
+//    QStringList e;
+//    zforeach(m, maps){
+//        e << m->map.keys();
+//        }
+//    return e;
+//}
+
+QStringList zConversionMap::keys(const QList<zConversionMap>& maps, const QString& value){
+    QStringList e;
+    zforeach(m, maps)
+    {
+        if(value.isEmpty())
+        {
+             e << m->map.keys();
+        }
+        else
+        {
+            e << m->map.keys(value);
+        }
+    }
+    e.removeDuplicates();
+    return e;
+}
+
+//QStringList zConversionMap::keys() {
+//    QStringList e;
+//    this->keys();
+//}

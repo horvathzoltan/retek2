@@ -74,7 +74,7 @@ void retek2::init()
     //sql->c# irány
     typeMap.insert(QStringLiteral("uniqueidentifier"), QStringLiteral("Guid"));
     typeMap.insert(QStringLiteral("int"), QStringLiteral("int"));
-    typeMap.insert(QStringLiteral("datetime"), QStringLiteral("DateTime"));
+    //typeMap.insert(QStringLiteral("datetime"), QStringLiteral("DateTime"));
     typeMap.insert(QStringLiteral("date"), QStringLiteral("Date"));
     typeMap.insert(QStringLiteral("nvarchar"), QStringLiteral("string"));
     typeMap.insert(QStringLiteral("nchar"), QStringLiteral("string"));
@@ -88,7 +88,7 @@ void retek2::init()
     //c# -> sql irány
     typeMapR.insert(QStringLiteral("Guid"), QStringLiteral("uniqueidentifier"));
     typeMapR.insert(QStringLiteral("int"), QStringLiteral("int"));
-    typeMapR.insert(QStringLiteral("DateTime"), QStringLiteral("datetime"));
+    //typeMapR.insert(QStringLiteral("DateTime"), QStringLiteral("datetime"));
     typeMapR.insert(QStringLiteral("Date"), QStringLiteral("date"));
     typeMapR.insert(QStringLiteral("string"), QStringLiteral("nvarchar"));
     typeMapR.insert(QStringLiteral("float"), QStringLiteral("float"));
@@ -102,7 +102,7 @@ void retek2::init()
 
     // Mezőmegnevezés
     globalCaptionMaps = zConversionMap::loadAll(sp, zFileNameHelper::captionFileFilter);
-    // típuskonverzió
+    // típuskonverzió    
     globalSqlMaps= zConversionMap::loadAll(sp, zFileNameHelper::sqlmapFileFilter);
     globalClassMaps= zConversionMap::loadAll(sp, zFileNameHelper::classmapFileFilter);
 
@@ -138,13 +138,16 @@ void retek2::init()
 // TODO ha a táblázatban egy soron állok, és nincsen caption, lehessen kérni egy felajánlottat
 
 void retek2::loadCurrentProject()
-{
+{      
     if(beallitasok.currentProjectName.isEmpty())
     {
             zlog.error(QStringLiteral("Nincs aktuális project. ERROR").arg(beallitasok.currentProjectName));
     }
     else
     {
+        QStringList knownTypeNames;
+        knownTypeNames << zConversionMap::keys(globalClassMaps) << zConversionMap::keys(globalSqlMaps);
+
         ztables.clear();
         ui.listWidget_ztables->clear();
 
@@ -167,25 +170,28 @@ void retek2::loadCurrentProject()
                 else
                 {
                     auto t0 = t[0];
+
+                    // ha nincs név, lesz
                     if(t0.name.isEmpty())
                     {
                         QString fn = zFileNameHelper::getfileName(*f);
-                        zlog.error(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
-
+                        zlog.warning(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
                         t0.name = fn;
                     }
-                    else
+                    bool isValid = t0.Validate(ztables, knownTypeNames);
+
+//                    if(zTable::find(ztables, t0.name, zTableSearchBy::Name))
+//                    {
+//                        QString fn = zFileNameHelper::getfileName(*f);
+//                        zlog.error(QStringLiteral("Már van tábla ilyen néven: %1, %2 (.xml)").arg(t0.name, fn));
+//                    }
+//                    else
+                    ztables << t0;
+                    zTablaToList(t0);
+
+                    if(!isValid)
                     {
-                        if(zTable::find(&ztables, t0.name, zTableSearchBy::Name))
-                        {
-                            QString fn = zFileNameHelper::getfileName(*f);
-                            zlog.error(QStringLiteral("Már van tábla ilyen néven: %1, %2 (.xml)").arg(t0.name, fn));
-                        }
-                        else
-                        {
-                            ztables << t0;
-                            zTablaToList(t0);
-                        }
+                        zlog.error(QStringLiteral("A tábla nem valid: %1").arg(t0.name));
                     }
                 }
             }
@@ -739,7 +745,7 @@ void retek2::on_tableWidget_MezoLista_cellChanged(int row, int column)
     auto i_data = ui.tableWidget_MezoLista->item(row, column);
 
     auto d = i_data->data(Qt::EditRole);
-    auto r = zTablerow::getByName(&(table->rows), i_rowname);
+    auto r = zTablerow::getByName(table->rows, i_rowname);
 
     switch(column){
         case C_ix_Caption:
@@ -784,16 +790,19 @@ az új táblát beolvassuk
 void retek2::on_listWidget_ztables_itemClicked(QListWidgetItem *item)
 {
     auto name = item->text();
-    table = zTable::find(&ztables, name, zTableSearchBy::Name);
+    auto t = zTable::find(ztables, name, zTableSearchBy::Name);
+    table = (zTable*)(t);//(zTable*)(t);
 
-    if(table){
+    if(table)
+    {
         zTableNamesToUi(*table);
         mezoListaFeltolt(*table);
         feltoltKulcsLista(*table);
     }
-    else{
+    else
+    {
         zlog.error(QStringLiteral("Nem található a tábla: %1").arg(name));
-        }
+    }
 }
 
 
@@ -916,7 +925,7 @@ void retek2::on_pushButton_table_import_clicked()
         //dialog.setWindowTitle(QStringliteral("A névvel már létezik tábla"));
         zTable t = zsql.getTable(schemaName, tableName);
         if(t.rows.length()>0){
-            while(isOK && zTable::find(&ztables, tx, zTableSearchBy::TableName)) {
+            while(isOK && zTable::find(ztables, tx, zTableSearchBy::TableName)) {
                 zTableNameDialog.lineEdit_name->setText(tableName + v);
                 isOK = dialog.exec();
                 if(isOK){

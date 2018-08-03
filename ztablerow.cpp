@@ -26,13 +26,14 @@ bool zTablerow::operator==(const zTablerow &o)const {
 }
 
 
-zTablerow* zTablerow::getByName(QList<zTablerow> *rows, const QString& rn){
+zTablerow* zTablerow::getByName(const QList<zTablerow> &rows, const QString& rn)
+{
     if(rn.isEmpty()) return nullptr;
-    zforeach(r,*rows){
+    zforeach(r,rows){
         if(!r->colName.isEmpty())
             if(r->colName == rn){
-                zTablerow *r2 = r.operator->();
-                return r2;
+                auto r2 = r.operator->();
+                return (zTablerow*)r2;
             }
         }
     return nullptr;
@@ -49,6 +50,82 @@ QList<QString> zTablerow::Validate(zTablerow* rv){
     e.append(ValidateDLen(rv->dlen));
 
     return e;
+}
+
+/**
+A colName kötelező, és egyedi kell legyen / table
+A coltype kötelező, és szerepelnie kell az ismert típusok között
+*/
+bool zTablerow::Validate2(const QStringList& colNames, const QStringList&  knownTypeNames ){
+    bool v = true;
+    if(colName.isEmpty())
+    {
+        zlog.error(QStringLiteral("Nincs colName"));
+        v = false;
+    }
+//    if(find(rows, colName))
+//    {
+//        zlog.error(QStringLiteral("colName nem egyedi: %1").arg(colName));
+//        return false;
+//    }
+    if(colType.isEmpty()){
+        zlog.error(QStringLiteral("Nincs típusnév"));
+        v= false;
+    }
+    else
+        {
+        if(colNames.count(colName)>1)
+        {
+            zlog.error(QStringLiteral("colName nem egyedi: %1").arg(colName));
+            v = false;
+        }
+    }
+
+    if(!knownTypeNames.contains(colType))
+    {
+        auto errortxt = QStringLiteral("Ismeretlen típus: %1").arg(colType);
+        bool isError = true;
+        v= false;
+        QStringList tl;
+        tl<< zConversionMap::keys(globalClassMaps, colType) << zConversionMap::keys(globalSqlMaps, colType);
+        tl.removeDuplicates();
+        if(!tl.isEmpty())
+        {
+            if(tl.count()>1)
+            {
+                errortxt += QStringLiteral(" javasolt: %1").arg(tl.join(','));
+            }
+            else
+            {
+                errortxt += QStringLiteral(" cserélve: %1").arg(tl.first());
+                colType = tl.first();
+                isError = false;
+            }
+
+        }
+        if(isError)
+        {
+            zlog.error(errortxt);
+        }
+        else
+        {
+            zlog.trace(errortxt);
+        }
+
+    }
+
+    return v;
+}
+
+const zTablerow* zTablerow::find(const QList<zTablerow>& rows, const QString& rn){
+    if(rn.isEmpty()) return nullptr;
+    zforeach(r, rows){
+        if(rn == r->colName)
+        {
+            return &(*r);//.operator->();
+        }
+    }
+    return nullptr;
 }
 
 /*
@@ -222,6 +299,14 @@ zTablerow zTablerow::fromXML(QXmlStreamReader* s){
     zXmlHelper::putXmlAttr(a, nameof(comment), &(r.comment));
 
     return r;
+}
+
+QStringList zTablerow::colNames(const QList<zTablerow> &rows){
+    QStringList colNames;
+    zforeach(r,rows){
+        colNames << r->colName;
+    }
+    return colNames;
 }
 
 

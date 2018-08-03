@@ -360,7 +360,11 @@ QString zTokenizer::getAttrList(QMap<QString, QVariant> *map, int whsp) {
 }
 
 
-
+/*
+property listát ad vissza - a használt típus a globalClassMaps lesz
+sql irány -> fieldlist
+//mindíg c típusok kellenek
+*/
 QString zTokenizer::getPropList2(const QString& tmp, const QString& param, int whsp, const QString& dbname) {
     //if(MezoLista)
     int rows = MezoLista->rowCount();
@@ -391,7 +395,7 @@ QString zTokenizer::getPropList2(const QString& tmp, const QString& param, int w
             bool isnullable = zStringHelper::toBool(item_isnullable->text());
             auto colType = item_colType->text();            
             QString propType;
-            propType = getPropType(colType, len); //mindíg c típusok kellenek
+            propType = getPropClassType(colType, len); //mindíg c típusok kellenek
 
 //            if(table->sourcetype==zTableSourceTypes::SQL) {
 //                propType = getPropType(colType, len);
@@ -499,7 +503,7 @@ QString zTokenizer::getEntityPropAttrList(QMap<QString, QVariant> *map, int w) {
 
     QString colname = map->value(QStringLiteral("colname")).toString();
 
-    auto r = zTablerow::getByName(&(table->rows), colname);
+    auto r = zTablerow::getByName(table->rows, colname);
     //if(!r->comment.isEmpty())
 
     if(!r->isNullable)
@@ -590,15 +594,29 @@ QString zTokenizer::getProp(const QString& propType, const QString& propName, co
 }
 
 // ha a ztable sql típusú, de ha txt típusú, nem kell keresni, mert ugyanaz
-QString zTokenizer::getPropType(const QString& tipusnev, bool isnullable) {
-    if(!typeMap.contains(tipusnev)){
-        zlog.error(QStringLiteral("Nem található típus: %1").arg(tipusnev));
+//
+//QString zTokenizer::getPropType(const QString& tipusnev, bool isnullable) {
+//    if(!typeMap.contains(tipusnev)){
+//        zlog.error(QStringLiteral("Nem található típus: %1").arg(tipusnev));
+//        return zStringHelper::Empty;
+//    }
+
+//    QString pt = typeMap.value(tipusnev);//.toString();
+//    if (isnullable && !tipusnev.endsWith(QStringLiteral("char"))) pt += '?';
+//    return pt;
+//}
+
+// belső típus -> osztálytípus a gobális tábla alapján key->value irányban
+// ha nullable, akkor a típusnév ?-re fog végződni (lehetne Nullable<típusnév> is)
+QString zTokenizer::getPropClassType(const QString& tipusnev, bool isnullable) {
+    QString cn = zConversionMap::value(globalClassMaps, tipusnev);
+    if(cn.isEmpty())
+    {
+        zlog.error(QStringLiteral("Nem található osztálytípus: %1").arg(tipusnev));
         return zStringHelper::Empty;
     }
-
-    QString pt = typeMap.value(tipusnev);//.toString();
-    if (isnullable && !tipusnev.endsWith(QStringLiteral("char"))) pt += '?';
-    return pt;
+    if (isnullable && !tipusnev.startsWith(QStringLiteral("string"))) cn += '?';
+    return cn;
 }
 
 QString zTokenizer::getePropType(const QString& tipusnev, int length) {

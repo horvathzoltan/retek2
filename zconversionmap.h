@@ -3,7 +3,7 @@
 
 #include <QMap>
 #include <QString>
-
+#include "zstringhelper.h"
 
 /*
 Alfanumerikus kulcs és érték közti konverziót írnak le
@@ -19,7 +19,9 @@ public:
     static QList<zConversionMap> loadAll(const QString& filePath, const QStringList &);
     static zConversionMap load(const QString& fileName);
     static QString value(const QList<zConversionMap>&, const QString&);
-    QString value2(const QString&) const;
+    QString value(const QString&) const;
+    //static QStringList keys(const QList<zConversionMap>& maps);
+    static QStringList keys(const QList<zConversionMap>& maps,const QString& value = zStringHelper::Empty);
 };
 
 #endif // ZCAPTIONMAP_H

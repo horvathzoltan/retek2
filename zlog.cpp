@@ -2,9 +2,9 @@
 #include "zlog.h"
 #include <QMessageBox>
 
-zLog::zLog(){};
+//zLog::zLog() = default;
 
-zLog::~zLog(){};
+//zLog::~zLog() = default;
 
 void zLog::init(QTextBrowser* b, QTabWidget* tw, int tabindex){
     this->widget = b;
@@ -46,6 +46,10 @@ void zLog::log(const QString& m, int errlevel){
         this->widget->setTextColor(QColor(Qt::darkRed));
         tabwidget->setCurrentIndex(tabindex);
         break;
+    case WARNING:
+        this->widget->setTextColor(QColor(Qt::darkYellow));
+        tabwidget->setCurrentIndex(tabindex);
+        break;
     case TRACE:
         this->widget->setTextColor(QColor(Qt::darkGray));
         break;
@@ -78,6 +82,9 @@ void zLog::dialog(const QString& str, int errlevel) {
         break;
     case ERROR:
         h = QStringLiteral("Error");
+        break;
+    case WARNING:
+        h = QStringLiteral("Warning");
         break;
     case TRACE:
         h = QStringLiteral("Trace");
@@ -155,6 +162,27 @@ void zLog::trace(const QList<QString>& ml){
 void zLog::trace(const char *m){
     trace(QString(m));
     }
+
+/*warning*/
+
+void zLog::dialogWarning(const QString& str) {
+    dialog(str, WARNING);
+}
+
+void zLog::warning(const QString& m){
+    log(m, WARNING);
+    }
+
+void zLog::warning(const QList<QString>& ml){
+    zforeach(m, ml){
+        warning(*m);
+        }
+    }
+
+void zLog::warning(const char *m){
+    warning(QString(m));
+    }
+
 
 /*error*/
 

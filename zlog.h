@@ -13,11 +13,11 @@ private:
     int tabindex;
     static void dialog(const QString&, int);
     void log(const QString&, int);
-    enum ErrLevels:int {OK, ERROR, TRACE, MESSAGE};
+    enum ErrLevels:int {OK, ERROR, WARNING, TRACE, MESSAGE};
 
 public:    
-    zLog();
-    ~zLog();
+    //zLog();
+    //~zLog();
 
     void init(QTextBrowser*, QTabWidget*, int);
 
@@ -40,6 +40,12 @@ public:
     void ok(const char*);
     void ok(const QString&);
     void ok(const QList<QString>&);
+
+    /*warning*/
+    static void dialogWarning(const QString& str);
+    void warning(const char*);
+    void warning(const QString&);
+    void warning(const QList<QString>&);
 
     /*error*/
     static void dialogError(const QString& str);

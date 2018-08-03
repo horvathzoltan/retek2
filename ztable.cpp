@@ -125,7 +125,7 @@ QList<QString> zTable::Compare(zTable tv){
     }
 
     zforeach(rv,tv.rows){
-        zTablerow* r = zTablerow::getByName(&rows, rv->colName);
+        zTablerow* r = zTablerow::getByName(rows, rv->colName);
         if(r != nullptr){
            e.append(r->Validate(rv.operator->()));
         }
@@ -136,22 +136,34 @@ QList<QString> zTable::Compare(zTable tv){
     return e;
 }
 
-zTable* zTable::find(QList<zTable> *tables, const QString& rn, zTableSearchBy searchType){
+const zTable* zTable::find(const QList<zTable>& tables, const QString& rn, zTableSearchBy searchType){
     if(rn.isEmpty()) return nullptr;
-    zforeach(r,*tables){
+    zforeach(r, tables){
         switch(searchType){
             case zTableSearchBy::class_name:
                 //if(!r->tablename.isEmpty() && r->tablename == rn){
-                if(rn == r->class_name) return r.operator->();
+                if(rn == r->class_name)
+                {
+                    return r.operator->();
+                }
                 break;
             case zTableSearchBy::class_namePlural:
-                if(rn == r->class_name_plural) return r.operator->();
+                if(rn == r->class_name_plural)
+                {
+                    return r.operator->();
+                }
                 break;
             case zTableSearchBy::Name:
-                if(rn == r->name) return r.operator->();
+                if(rn == r->name)
+                {
+                    return r.operator->();
+                }
                 break;
             case zTableSearchBy::TableName:
-                if(rn == r->sql_table) return r.operator->();
+                if(rn == r->sql_table)
+                {
+                    return r.operator->();
+                }
                 break;
         }
     }
@@ -201,7 +213,7 @@ createTableByText_3
 globalSqlMaps
 globalClassMaps
 */
-bool zTable::getType(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
+bool zTable::getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
 {
     auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -271,6 +283,95 @@ bool zTable::getType(const QString& ezt1,  QString *dtype, int *dlen, bool *null
     return isDtype;
 }
 
+
+bool zTable::getClassType(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
+{
+    auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
+    auto re_isnullable = QRegularExpression(QStringLiteral(R"(Nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    //
+    auto m_isNullable = re_isnullable.match(ezt1);
+    QString typeName;
+
+    if(isRequired)
+    {
+        *nullable = false;
+        typeName = ezt1;
+    }
+    else{
+        if(m_isNullable.hasMatch())
+        {
+            *nullable = true;
+            typeName = getFirstNotNull(m_isNullable, 2);
+        }
+        else
+        {
+            *nullable = false;
+            typeName = ezt1;
+        }
+    }
+
+    bool isDtype = false;
+
+    /*
+    if(zStringMapHelper::contains(&typeMap, typeName))
+    {
+        QString k = zStringMapHelper::getKey(&typeMap, typeName);
+        *dtype =  typeMap.value(k);;
+        isDtype = true;
+    }
+    else if(zStringMapHelper::contains(&typeMapR, typeName))
+    {
+        QString k = zStringMapHelper::getKey(&typeMapR, typeName);
+        *dtype =  typeMapR.value(k);;
+        isDtype = true;
+    }*/
+    //külső típus felől megyünk     belső típus fele
+    QStringList fl = zConversionMap::keys(globalClassMaps, typeName);
+
+    if(fl.isEmpty())
+    {
+        zlog.error(QStringLiteral("Nem található belső adatábrázolási típus: %1").arg(ezt1));
+    }
+    else
+    {
+        if(fl.count()>1)
+        {
+            zlog.error(QStringLiteral("Több típus is javasolt: %1").arg(fl.join(',')));
+        }
+
+        *dtype =  fl.first();
+        isDtype = true;
+    }
+    // elvileg itt már csak kollekció esetén a darabszámot kell megszerezni
+
+        auto i2 = re_dlen1.match(typeName);
+        if(i2.hasMatch())
+        {
+            bool isOK;
+            int n = i2.captured(1).toInt(&isOK);
+            if(isOK) *dlen = n;
+        }
+        else
+        {
+             i2 = re_dlen2.match(typeName);
+             if(i2.hasMatch())
+             {
+                 bool isOK;
+                 int n = i2.captured(1).toInt(&isOK);
+                 if(isOK) *dlen = n;
+            }
+        }
+
+
+    if(typeName.isEmpty()){
+        zlog.error(QStringLiteral("getClassType: Unknown type: %1").arg(ezt1));
+    }
+
+    return isDtype;
+}
+
 /*
 
 */
@@ -333,9 +434,9 @@ Szükséges, hogy egy fájl egy táblát tartalmazzon, külömben követhetetlen
 */
 QList<zTable> zTable::createTableByXML(const QString& txt){
    QList<zTable> tl;
-
+   QStringList knownTypeNames;
+   knownTypeNames << zConversionMap::keys(globalClassMaps) << zConversionMap::keys(globalSqlMaps);
    QXmlStreamReader xml(txt);
-
 //    while(!xml.atEnd()){
 //        xml.readNext();
 //        if(xml.isStartElement() && (xml.name() == nameof(zTable))){
@@ -349,8 +450,9 @@ QList<zTable> zTable::createTableByXML(const QString& txt){
                 if(xml.name()==nameof(zTable))
                 {
                     zTable t = fromXML(&xml);
-                    t.Validate(true);
+                    //t.Validate(tl, knownTypeNames);
                     tl.append(t);
+
                 }
                 else
                 {
@@ -361,7 +463,7 @@ QList<zTable> zTable::createTableByXML(const QString& txt){
         else if(xml.name() == QStringLiteral("zTable"))
         {
             zTable t = fromXML(&xml);
-            //t.Validate(false);
+            //t.Validate(tl, knownTypeNames);
             tl.append(t);
         }
         else
@@ -394,9 +496,9 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
     zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));
 
     /**/
-    zXmlHelper::putXmlAttr(a, "tablename", &(t.sql_table));
-    zXmlHelper::putXmlAttr(a, "classname", &(t.class_name));
-    zXmlHelper::putXmlAttr(a, "classname_plural", &(t.class_name_plural));
+    zXmlHelper::putXmlAttr(a, QStringLiteral("tablename"), &(t.sql_table));
+    zXmlHelper::putXmlAttr(a, QStringLiteral("classname"), &(t.class_name));
+    zXmlHelper::putXmlAttr(a, QStringLiteral("classname_plural"), &(t.class_name_plural));
 
 
     if (xml->readNextStartElement() && xml->name() == "rows")
@@ -518,10 +620,11 @@ QList<zTable> zTable::createTableByText(QString txt)
         QString m_name=m.captured(1);
         QString m_txt=m.captured(2).trimmed();
 
-        if(!macroMap.contains(m_name)){
+        if(!macroMap.contains(m_name))
+        {
             macroMap.insert(m_name, m_txt);
             zlog.trace(QStringLiteral("Macro def: %1").arg(m_name));
-            }
+        }
     }
 
     //QString txt2;
@@ -578,7 +681,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                                ezt1 = *fn3;
                            }
                            //típus vizsgálat
-                           isDtype = zTable::getType(ezt1, &dtype, &dlen, &isNullable, false);
+                           isDtype = zTable::getClassType(ezt1, &dtype, &dlen, &isNullable, false);
                            }
                        // TODO bonyolult típusmeghatározás
                        if(!isDtype){
@@ -720,7 +823,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                         // todo vizsgálni, típus-e, ha igen, megvan. (string - hossz)
                         // amúgy mezőnév lesz
                         // ezért megy a mezőnév listába
-                        isDtype = zTable::getType(*fn2, &dtype, &dlen, &isNullable, false);
+                        isDtype = zTable::getClassType(*fn2, &dtype, &dlen, &isNullable, false);
                         if (isDtype){
                             zlog.trace("sortípus:"+*fn2);
                         }
@@ -947,7 +1050,7 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
 
                             //QString row = m_attrOrProp.captured(0);
                             //bool isDtype =
-                                    zTable::getType(propType, &dtype, &dlen, &isNullable, isRequired);
+                                    zTable::getClassType(propType, &dtype, &dlen, &isNullable, isRequired);
 
 //                            if(isRequired){
 //                                isNullable = false;
@@ -1143,20 +1246,40 @@ void zTable::saveTablaToXML() {
 
 /**
   Az adott táblát validálja -
+  név nem lehet üres - kötelező,
+  a névnek egyedinek kell lennie
+   azok a belső osztályok vannak, amik ezekben kulcsként szerepelnek: globalSqlMaps, globalClassMaps
 */
 
-bool zTable::Validate(bool ){
-    bool e = true;
-    if(this->name.isEmpty()){
-        zlog.error(QStringLiteral("Nincs név"));
-//        e = false;
-//        if(r){
-//            this->name = zShortGuid::createNew().value;
-//            zlog.log(QStringLiteral("Új név: %1").arg(this->name));
-//        } else{
+bool zTable::Validate(const QList<zTable>& tables, const QStringList& knownTypeNames){
+    bool v= true;
 
-//            zlog.log(QStringLiteral("Nincs név"));
-//        }
+    if(name.isEmpty()){
+        zlog.error(QStringLiteral("Nincs név"));
+        v= false;
     }
-    return e;
+    if(zTable::find(tables, name, zTableSearchBy::Name))
+    {
+        zlog.error(QStringLiteral("Név nem egyedi: %1").arg(name));
+        v= false;
+    }
+    if(rows.isEmpty())
+    {
+        zlog.error(QStringLiteral("Nincsenek sorok"));
+        v= false;
+    }    
+    else{
+        QStringList colNames;
+        colNames = zTablerow::colNames(rows);
+
+        zforeach(r,rows)
+        {
+            bool is_rv = r->Validate2(colNames, knownTypeNames);
+            if(!is_rv)
+            {
+                v= false;
+            }
+        }
+    }
+    return v;
 }

@@ -56,10 +56,12 @@ public:
     static QList<zTable> createTableByText_3(const QString& txt, QMap<QString, QString>*, QMap<QString, QString>* = nullptr);
 
     static QString getPkByTableName(QList<zTable> *tables, const QString& rn);
-    static zTable* find(QList<zTable> *tables, const QString& rn, zTableSearchBy searchType = zTableSearchBy::TableName);
+    static const zTable* find(const QList<zTable>& tables, const QString& rn, zTableSearchBy searchType = zTableSearchBy::TableName);
     //void getType(auto re_dlen1, QString dtype, auto re_dlen2, QString ezt1, bool isDtype, int dlen);
 
-    static bool getType(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
+    static bool getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
+
+    static bool getClassType(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
 
     QStringList getFK();
     QStringList getRFK();
@@ -85,7 +87,7 @@ public:
     //    static QString p_attr;
     void saveTablaToXML();
 
-    bool Validate(bool = false);
+    bool Validate(const QList<zTable>& tables, const QStringList& knownTypeNames);
 };
 
 #endif // ZTABLE_H

@@ -37,7 +37,9 @@ public:
 
     QString getAttrList(QMap<QString, QVariant> *map, int whsp);
 
-    QString getPropType(const QString& tipusnev, bool isnullable);
+    //QString getPropType(const QString& tipusnev, bool isnullable);
+
+    QString getPropClassType(const QString& tipusnev, bool isnullable);
     QString getePropType(const QString& tipusnev, int length);
     //QString getReq(QString tmp, QMap<QString, QVariant> *map);
 

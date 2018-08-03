@@ -19,8 +19,13 @@ extern zLog zlog;
 extern zTokenizer ztokenizer;
 extern QList<zConversionMap> globalCaptionMaps;
 
+
+// azok a belső osztályok vannak, amik ezekben kulcsként szerepelnek:
+// belső -> sql
 extern QList<zConversionMap> globalSqlMaps;
+// belső->osztály
 extern QList<zConversionMap> globalClassMaps;
+
 //valami 6
 
 extern QMap<QString, QString> typeMap;

@@ -5,6 +5,8 @@
 #include <QString>
 #include <QXmlStreamWriter>
 
+//enum zRowSearchBy{ Name };
+
 class zTablerow
 {
 public:
@@ -22,7 +24,7 @@ public:
 
     bool operator==(const zTablerow&) const;
 
-    static zTablerow* getByName(QList<zTablerow>*, const QString&);
+    static zTablerow* getByName(const QList<zTablerow>&, const QString&);
 
     QList<QString> Validate(zTablerow*);
     QString CompareCaption(const QString&);
@@ -31,6 +33,9 @@ public:
     QString ValidateDLen(int);
     void toXML(QXmlStreamWriter*);
     static zTablerow fromXML(QXmlStreamReader*);
+    bool Validate2(const QStringList& colNames, const QStringList&  knownTypeNames );
+    const zTablerow* find(const QList<zTablerow>& rows, const QString& rn);
+    static QStringList colNames(const QList<zTablerow>& rows);
 };
 
 #endif // ZTABLEROW_H
