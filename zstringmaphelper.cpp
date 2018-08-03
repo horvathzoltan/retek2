@@ -28,7 +28,7 @@ void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map)
         int ix = line.indexOf(zStringHelper::SEP);
         if (ix > 0) {
             QString k1 = line.left(ix).toLower();
-            QString k2 = line.right(line.length() - (ix + 1));
+            QString k2 = line.right(line.length() - (ix + 1)).toLower();
 
             map->insert(k1, k2);
         }

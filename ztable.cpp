@@ -284,13 +284,15 @@ bool zTable::getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, b
 }
 
 
-bool zTable::getClassType(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
+bool zTable::getClassType(const QString& ezt2,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
 {
     auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
-    auto re_isnullable = QRegularExpression(QStringLiteral(R"(Nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    //
+    auto re_isnullable = QRegularExpression(QStringLiteral(R"(nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
+    QString ezt1 = ezt2.toLower();
+
     auto m_isNullable = re_isnullable.match(ezt1);
     QString typeName;
 
@@ -645,7 +647,7 @@ QList<zTable> zTable::createTableByText(QString txt)
     if(i.hasNext()){        
         while(i.hasNext()){
             QRegularExpressionMatch m = i.next();
-            QString tn=m.captured(1).trimmed();
+            QString tn=m.captured(1).trimmed();            
             QString pkn = QStringLiteral("id");
             auto fns=m.captured(2).split(QRegularExpression(QStringLiteral(R"([\n|\r\n|\r])")), QString::SkipEmptyParts);
             rl.clear();
@@ -679,12 +681,17 @@ QList<zTable> zTable::createTableByText(QString txt)
                                }
                            else{
                                ezt1 = *fn3;
-                           }
+                           }                           
                            //típus vizsgálat
+
                            isDtype = zTable::getClassType(ezt1, &dtype, &dlen, &isNullable, false);
                            }
-                       // TODO bonyolult típusmeghatározás
-                       if(!isDtype){
+                       // a típus tulajdonságainak meghatározása, pl.
+                       // ha a sorban a szavak közt van "required" akkor isrequired true
+                       // ha van not required, akkor viszont false
+                       // ha van olyan ami számmá alakítható, az a hossza
+                      if(!isDtype)
+                       {
                             auto i2 = re_caption.match(*fn2);
                             if(i2.hasMatch())
                             {
@@ -719,9 +726,8 @@ QList<zTable> zTable::createTableByText(QString txt)
                                             }
                                         }
                                     }
-                                }
-                            /**/
-                            }
+                                }                            
+                            } /* típusmeghatározás vége*/
                         }
                     }
                if(dtype.isEmpty())
@@ -739,8 +745,21 @@ QList<zTable> zTable::createTableByText(QString txt)
                }
             }
             auto t = zTable(zStringHelper::Empty, pkn, rl,  TXT, tn, zStringHelper::Empty);
-            tl.append(t);
-            zlog.error("GenerateByText: "+t.toString());
+
+            QStringList knownTypeNames;
+            knownTypeNames << zConversionMap::keys(globalClassMaps) << zConversionMap::keys(globalSqlMaps);
+
+            bool isValid = t.Validate(tl, knownTypeNames);
+            if(isValid)
+            {
+                tl.append(t);
+                zlog.trace("GenerateByText: "+t.toString());
+            }
+            else
+            {
+                zlog.error(QStringLiteral("A tábla nem valid: %1").arg(t.name));
+            }
+
         }
     }
     return tl;
