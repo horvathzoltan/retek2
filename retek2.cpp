@@ -100,9 +100,13 @@ void retek2::init()
     auto sp = zFileNameHelper::getSettingsDir();
     auto pp = zFileNameHelper::getProjectDir();
 
+    // TODO Itt a kisbetű-nagybetűvel kell kezdeni valamit
+    // magát a mapot úgy kell beolvasni ahogy van -
+    // amire keresünk az legyen case insensitiv, vagy normalizált
+
     // Mezőmegnevezés
     globalCaptionMaps = zConversionMap::loadAll(sp, zFileNameHelper::captionFileFilter);
-    // típuskonverzió    
+    // típuskonverzió
     globalSqlMaps= zConversionMap::loadAll(sp, zFileNameHelper::sqlmapFileFilter);
     globalClassMaps= zConversionMap::loadAll(sp, zFileNameHelper::classmapFileFilter);
 
@@ -287,10 +291,26 @@ void retek2::mezoListaFeltolt(zTable t){
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
         auto r = t.rows[r_ix];
         ui.tableWidget_MezoLista->insertRow(r_ix);
+
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colName,  CreateTableItem(QVariant(r.colName)));
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colType,  CreateTableItem(QVariant(r.colType)));
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_dlen, CreateTableItem(QVariant(r.dlen)));
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, CreateTableItem(QVariant(r.Caption)));
+
+
+
+       /*auto cw = ui.tableWidget_MezoLista->indexWidget(//(r_ix,C_ix_Caption);
+       auto l = cw->layout();
+       auto w = l->widget();*/
+
+
+
+       //QPushButton btn1(QStringLiteral("ty"), w);
+
+
+        //ui.tableWidget_MezoLista->setCellWidget(r_ix, C_ix_Caption, pWidget);
+
+
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, CreateTableItem(QVariant(r.isNullable)));
     }    
     ui.tableWidget_MezoLista->blockSignals(false);
@@ -317,6 +337,7 @@ void retek2::feltoltKulcsLista(zTable t) {
 QTableWidgetItem* retek2::CreateTableItem(const QVariant& v){
     auto a = new QTableWidgetItem();
     a->setData(Qt::DisplayRole, v);
+
     return a;
 }
 
@@ -1017,6 +1038,44 @@ void retek2::on_buttonBox_tableNames_clicked(QAbstractButton *button)
     if(button == a->button(QDialogButtonBox::Apply)){
         zTableNamesFromUi(*table);
     }else if(button == a->button(QDialogButtonBox::Cancel)){
-            zTableNamesToUi(*table);
+        zTableNamesToUi(*table);
     }
+}
+
+/*
+A kiválasztott sor captionját szerzi meg
+*/
+void retek2::on_pushButton_getCaption_clicked()
+{
+    auto select = ui.tableWidget_MezoLista->selectionModel();
+    if(select->hasSelection())
+    {
+        auto rs = select->selectedRows();
+        QString colName; // name
+        //QString ft; // type
+        int idix = 0;
+        QString caption;
+
+        zforeach(r,rs)
+        {
+            caption = ui.tableWidget_MezoLista->item(idix, C_ix_Caption)->text();
+            if(caption.isEmpty())
+            {
+                colName = ui.tableWidget_MezoLista->item(idix, C_ix_colName)->text().toLower();
+                QString caption = zConversionMap::value(globalCaptionMaps, colName);
+                if(caption.isEmpty())
+                {
+                    zlog.warning(QStringLiteral("Nem határozható meg felirat a mezőnévhez: %1").arg(colName));
+                }
+                else
+                {
+                    ui.tableWidget_MezoLista->item(idix, C_ix_Caption)->setText(caption);
+                }
+
+            }
+
+        }
+
+    }
+    //QString caption = zConversionMap::value(globalCaptionMaps, ft);
 }

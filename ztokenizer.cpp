@@ -612,7 +612,7 @@ QString zTokenizer::getPropClassType(const QString& tipusnev, bool isnullable) {
     QString cn = zConversionMap::value(globalClassMaps, tipusnev);
     if(cn.isEmpty())
     {
-        zlog.error(QStringLiteral("Nem található osztálytípus: %1").arg(tipusnev));
+        zlog.error(QStringLiteral("Nem található classmap value a keyhez: %1").arg(tipusnev));
         return zStringHelper::Empty;
     }
     if (isnullable && !tipusnev.startsWith(QStringLiteral("string"))) cn += '?';

@@ -68,18 +68,18 @@ kellene kiszedni az értékét
 QString zConversionMap::value(const QList<zConversionMap>& maps, const QString& c){
     if(c.isEmpty()) return zStringHelper::Empty;
     QString e;
-    zforeach(m, maps){
+    zforeach(m, maps)
+    {
         e = m->value(c);
-        return e;
-        }
+        if(!e.isEmpty()) break;
+    }
     return e;
 }
 
 QString zConversionMap::value(const QString& c) const {
     QString cn = c.toLower();
     QString e;
-    if(this->map.contains(cn))
-        e = this->map[cn];
+    if(this->map.contains(cn)) e = this->map[cn];
     return e;
 }
 

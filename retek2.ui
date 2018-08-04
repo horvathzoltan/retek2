@@ -333,7 +333,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -963,49 +963,72 @@
        <attribute name="title">
         <string>Table</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="0">
-         <widget class="QGroupBox" name="groupBox_6">
-          <property name="title">
-           <string>GroupBox</string>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <widget class="QFrame" name="frame_9">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
            <item>
-            <widget class="QTableWidget" name="tableWidget_MezoLista">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>80</height>
-              </size>
+            <widget class="QPushButton" name="pushButton_getCaption">
+             <property name="text">
+              <string>getCaption</string>
              </property>
-             <column>
-              <property name="text">
-               <string>Caption</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>mezőnév</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>sql típus</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>hossz</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>nullable</string>
-              </property>
-             </column>
             </widget>
            </item>
+           <item>
+            <spacer name="horizontalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="tableWidget_MezoLista">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>80</height>
+           </size>
+          </property>
+          <column>
+           <property name="text">
+            <string>Caption</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>mezőnév</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>sql típus</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>hossz</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>nullable</string>
+           </property>
+          </column>
          </widget>
         </item>
        </layout>
