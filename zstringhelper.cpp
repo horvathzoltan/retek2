@@ -134,3 +134,7 @@ QStringList zStringHelper::getFilePaths(QString txt, QStringList fileExtFilter){
 
     return txtlist;
 }
+
+QString zStringHelper::zNormalize(const QString& c){
+    return c.normalized(QString::NormalizationForm_D).replace(QRegExp("[^a-zA-Z0-9_\\s]"), "").replace(' ', '_').toLower();
+}

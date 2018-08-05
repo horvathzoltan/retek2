@@ -58,8 +58,6 @@ void retek2::init()
     beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server,  ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
 //    beallitasok.initPaths();
 
-// TODO kell egy belső típus,
-// átjárhatóvá kell tenni - sql és osztály irányban
 // sql-> osztály irány: Money -> decimal_money -> decimal
 // osztály-> sql irány: decimal -> decimal??? -> Money
 // itt a probléma az, hogy látjuk, hogy definíció szerint decimal, és tudhatjuk, hogy sql irányban money - de    - honnan tudjuk, hogy ez az adattípus pont money, ha nem ismerjük az sql-t?
@@ -100,7 +98,6 @@ void retek2::init()
     auto sp = zFileNameHelper::getSettingsDir();
     auto pp = zFileNameHelper::getProjectDir();
 
-    // TODO Itt a kisbetű-nagybetűvel kell kezdeni valamit
     // magát a mapot úgy kell beolvasni ahogy van -
     // amire keresünk az legyen case insensitiv, vagy normalizált
 
@@ -139,7 +136,6 @@ void retek2::init()
     zlog.ok(QStringLiteral("retek2 init ok"));
 }
 
-// TODO ha a táblázatban egy soron állok, és nincsen caption, lehessen kérni egy felajánlottat
 
 void retek2::loadCurrentProject()
 {      
@@ -159,7 +155,7 @@ void retek2::loadCurrentProject()
         QStringList files = zFileNameHelper::FindFileNameInDir(currentProjectPath, QString(), zFileNameHelper::xmlFilter);
         zforeach(f, files){
             auto txt = zTextFileHelper::load(*f);
-            // TODO ha nem sikerült beolvasni, nem kell rosszul visszaírni
+
             auto t = zTable::createTableByXML(txt);
             if(t.isEmpty() )
             {
@@ -935,8 +931,7 @@ void retek2::on_pushButton_table_import_clicked()
     zforeach(i,items){
         QString tableName = (*i)->text();
 
-        // TODO a táblanév táblanév legyen - az sqlből kell a szerver account, a séma név és a tábla név - ezek az sql forráshoz kötődnek
-        // TODO kell a tábla lista mellé egy mező lista, az importhoz - ha nincs egy mező sem kijelölve, mindegyik kell, ha van, csak a jelöltek
+
         QString v = "_"+zShortGuid::createNew().value;
         QString tx = tableName;
         QDialog dialog(this);
@@ -1051,31 +1046,57 @@ void retek2::on_pushButton_getCaption_clicked()
     if(select->hasSelection())
     {
         auto rs = select->selectedRows();
-        QString colName; // name
+        //auto cs = select->selectedColumns();
+        auto is = select->selectedIndexes();
+        //QString colName; // name
         //QString ft; // type
         int idix = 0;
         QString caption;
 
-        zforeach(r,rs)
+        if(!rs.isEmpty())
         {
-            caption = ui.tableWidget_MezoLista->item(idix, C_ix_Caption)->text();
-            if(caption.isEmpty())
+            zforeach(r,rs)
             {
-                colName = ui.tableWidget_MezoLista->item(idix, C_ix_colName)->text().toLower();
-                QString caption = zConversionMap::value(globalCaptionMaps, colName);
-                if(caption.isEmpty())
+                idix = r->row();
+                caption = getCaptionByRowIx(idix);
+                if(!caption.isEmpty())
                 {
-                    zlog.warning(QStringLiteral("Nem határozható meg felirat a mezőnévhez: %1").arg(colName));
+                    setCaptionByRowIx(idix, caption);
                 }
-                else
-                {
-                    ui.tableWidget_MezoLista->item(idix, C_ix_Caption)->setText(caption);
-                }
-
             }
-
         }
-
+        if(!is.isEmpty())
+        {
+            zforeach(i,is)
+            {
+                idix = i->row();
+                caption = getCaptionByRowIx(i->row());
+                if(!caption.isEmpty())
+                {
+                    setCaptionByRowIx(idix, caption);
+                }
+            }
+        }
     }
     //QString caption = zConversionMap::value(globalCaptionMaps, ft);
+}
+
+QString retek2::getCaptionByRowIx(int idix)
+{
+    QString caption;// = ui.tableWidget_MezoLista->item(idix, C_ix_Caption)->text();
+    //if(caption.isEmpty())
+    //{
+        QString colName = ui.tableWidget_MezoLista->item(idix, C_ix_colName)->text().toLower();
+        caption = zConversionMap::value(globalCaptionMaps, colName);
+        if(caption.isEmpty())
+        {
+            zlog.warning(QStringLiteral("Nem határozható meg felirat a mezőnévhez: %1").arg(colName));
+        }
+    //}
+    return caption;
+}
+
+void retek2::setCaptionByRowIx(int idix, const QString& caption)
+{
+    ui.tableWidget_MezoLista->item(idix, C_ix_Caption)->setText(caption);
 }

@@ -13,15 +13,18 @@ class zConversionMap
 private:
     QString name;
     QMap<QString, QString> map;
-    static const QString Empty;
+    //static const QString Empty;
+    QString value(const QString&) const;
+    QStringList keys(const QString& value);
 public:    
     zConversionMap();
     static QList<zConversionMap> loadAll(const QString& filePath, const QStringList &);
     static zConversionMap load(const QString& fileName);
     static QString value(const QList<zConversionMap>&, const QString&);
-    QString value(const QString&) const;
+
     //static QStringList keys(const QList<zConversionMap>& maps);
     static QStringList keys(const QList<zConversionMap>& maps,const QString& value = zStringHelper::Empty);
+
 };
 
 #endif // ZCAPTIONMAP_H

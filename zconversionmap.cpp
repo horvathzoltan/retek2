@@ -7,7 +7,7 @@
 zConversionMap::zConversionMap() = default;
 
 
-const QString zConversionMap::Empty = QStringLiteral("?");
+//const QString zConversionMap::Empty = QStringLiteral("?");
 
 QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QStringList& fileNameFilters){
     QList<zConversionMap> e;
@@ -31,31 +31,11 @@ QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QSt
 
 zConversionMap zConversionMap::load(const QString& fileFullName){
     zlog.trace("zConversionMapLoad: " + fileFullName);
-
     zConversionMap e;
-
-    QString fileName = zFileNameHelper::getfileName(fileFullName);
-
-    //QString c = fileName.right(fileName.length()-7);
-//    if(c.isEmpty()){
-//        e.name = Empty;
-//    }
-//    else
-//    {
-//        if(c.startsWith('_')){
-//            e.name = c.right(c.length()-1);
-//        }
-//        else{
-//            zlog.error(QStringLiteral("Hibás caption file név: %1").arg(fileName));
-//        }
-    //}
+    QString fileName = zFileNameHelper::getfileName(fileFullName);  
     e.name = fileName;
-    //if(!e.name.isEmpty()){
 
-        zStringMapHelper::StringMapFeltolt(fileFullName, &e.map);
-    //}
-
-
+    zStringMapHelper::StringMapFeltolt(fileFullName, &e.map);
     return e;
 }
 
@@ -68,6 +48,7 @@ kellene kiszedni az értékét
 QString zConversionMap::value(const QList<zConversionMap>& maps, const QString& c){
     if(c.isEmpty()) return zStringHelper::Empty;
     QString e;
+//QString v = zStringHelper::
     zforeach(m, maps)
     {
         e = m->value(c);
@@ -76,11 +57,20 @@ QString zConversionMap::value(const QList<zConversionMap>& maps, const QString& 
     return e;
 }
 
+/*
+*/
+
 QString zConversionMap::value(const QString& c) const {
-    QString cn = c.toLower();
-    QString e;
-    if(this->map.contains(cn)) e = this->map[cn];
-    return e;
+    QString nk = zStringHelper::zNormalize(c);
+    //QString e;
+    /*if(this->map.contains(cn))
+        e = this->map[cn];*/
+    zforeach(m, map)
+    {
+        auto nk0 = zStringHelper::zNormalize(m.key());
+        if(nk0==nk) return m.value();
+    }
+    return zStringHelper::Empty;
 }
 
 //QStringList zConversionMap::keys(const QList<zConversionMap>& maps){
@@ -108,7 +98,15 @@ QStringList zConversionMap::keys(const QList<zConversionMap>& maps, const QStrin
     return e;
 }
 
-//QStringList zConversionMap::keys() {
-//    QStringList e;
-//    this->keys();
-//}
+QStringList zConversionMap::keys(const QString& c) {
+    QStringList e;
+    //auto e = this->keys(value);
+    //return e;
+    QString nv = zStringHelper::zNormalize(c);
+    zforeach(m, map)
+    {
+        auto nv0 = zStringHelper::zNormalize(m.value());
+        if(nv0==nv) e << m.key();
+    }
+    return e;
+}

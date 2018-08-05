@@ -244,6 +244,11 @@ zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd)
 
     //QList<zTablerow> pr;
 
+// TODO a táblanév táblanév legyen - az sqlből kell a szerver account, a séma név és a tábla név - ezek az sql forráshoz kötődnek
+// TODO kell a tábla lista mellé egy mező lista, az importhoz - ha nincs egy mező sem kijelölve, mindegyik kell, ha van, csak a j
+// QString sql_conn;
+// QString sql_schema;
+// QString sql_table;//sql_table;
     auto e = zTable(nullptr, (pkn.isEmpty()?QStringLiteral("zId"):pkn), tr, SQL, tablanev, zStringHelper::Empty);
     return e;
 }

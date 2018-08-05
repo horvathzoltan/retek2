@@ -93,6 +93,8 @@ private:
     void closeEvent(QCloseEvent *event) override;
 
     void schemasFeltolt(const dbConnection& c);
+    QString getCaptionByRowIx(int idix);
+    void setCaptionByRowIx(int idix, const QString& caption);
 };
 
 //#endif // RETEK2_H
