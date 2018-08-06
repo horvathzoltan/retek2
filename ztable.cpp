@@ -23,16 +23,18 @@ zTable::zTable()= default;
 
 zTable::~zTable()= default;
 
-zTable::zTable(QString _class_name, const QString& pkn, const QList<zTablerow>& tr, int type, QString _tablename, QString _sourcepath){
-
-    this->rows = tr;
+zTable::zTable(const QString& _name, const QString& pkn, const QList<zTablerow>& tr){
+    this->name = _name;
     this->pkname = pkn;
+    this->rows = tr;
+
     //this->sourcetype = type;
 
     //this->sourcepath = _sourcepath;
+/*
     switch(type){
         case zTableSourceTypes::SQL:
-            this->sql_conn = _sourcepath;
+            this->sql_conn = //_sourcepath;
             break;
         case zTableSourceTypes::ENTITY:
             this->class_path = _sourcepath;
@@ -81,9 +83,64 @@ zTable::zTable(QString _class_name, const QString& pkn, const QList<zTablerow>& 
     else{
         this->name = class_name_plural;
     }
+    */
 }
 
+void zTable::initClass(const QString& className, const QString& pluralClassName)
+{
+    this->class_name = className;
+    if(!pluralClassName.isEmpty())
+        this->class_name_plural = pluralClassName;
+}
 
+QString zTable::getClassName(const QString& n, QString cnp)
+{
+    QString cn;
+    bool isNameSingular = zPluralizer::IsSingular(n);
+
+    if(isNameSingular)
+    {
+        cn = zStringHelper::getclass_nameCamelCase(n);
+        //cnp = zPluralizer::Pluralize(n);
+        //return cn;
+        //this->initClass(cn,cnp);
+    }
+    else
+    {
+        QString sn = zPluralizer::Singularize(n);
+        cn = zStringHelper::getclass_nameCamelCase(sn);
+        //cnp = zPluralizer::Pluralize(cn);
+        //this->initClass(cn, cnp);
+    }
+    cnp = zPluralizer::Pluralize(cn);
+    return cn;
+}
+
+void zTable::initClassByName()
+{
+    bool isNameSingular = zPluralizer::IsSingular(name);
+
+    if(isNameSingular)
+    {
+        auto cn = zStringHelper::getclass_nameCamelCase(name);
+        auto cnp = zPluralizer::Pluralize(name);
+        this->initClass(cn,cnp);
+    }
+    else
+    {
+        QString sn = zPluralizer::Singularize(name);
+        QString cn = zStringHelper::getclass_nameCamelCase(sn);
+        QString cnp = zPluralizer::Pluralize(cn);
+        this->initClass(cn, cnp);
+    }
+}
+
+void zTable::initSql(const QString& _sql_conn, const QString& _sql_schema, const QString& _sql_table)
+{
+    this->sql_conn = _sql_conn;
+    this->sql_schema = _sql_schema;
+    this->sql_table = _sql_table;
+}
 
 
 QString zTable::toString(){
@@ -744,7 +801,11 @@ QList<zTable> zTable::createTableByText(QString txt)
                    rl.append(r);
                }
             }
-            auto t = zTable(zStringHelper::Empty, pkn, rl,  TXT, tn, zStringHelper::Empty);
+
+            auto t = zTable(tn, pkn, rl);//,  TXT, tn, zStringHelper::Empty);
+            QString pluralClassName;
+            auto className = zTable::getClassName(tn, pluralClassName);
+            t.initClass(className, pluralClassName);
 
             QStringList knownTypeNames;
             knownTypeNames << zConversionMap::keys(globalClassMaps) << zConversionMap::keys(globalSqlMaps);
@@ -886,7 +947,11 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
 
             }
-            auto t = zTable(zStringHelper::Empty, pkn, rl,  TXT, tn, zStringHelper::Empty);
+            auto t = zTable(tn, pkn, rl);//,  TXT, tn, zStringHelper::Empty);
+            QString pluralClassName;
+            auto className = zTable::getClassName(tn, pluralClassName);
+            t.initClass(className, pluralClassName);
+
             tl.append(t);
             zlog.error("GenerateByText2: "+t.toString());
         }
@@ -1095,7 +1160,13 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
 
                     }
                 //}                   
-                   auto t = zTable(class_name, QStringLiteral("id"), rl,  TXT, tableName, zStringHelper::Empty);
+                   //auto t = zTable(class_name, QStringLiteral("id"), rl,  TXT, tableName, zStringHelper::Empty);
+                   auto t = zTable(tableName, QStringLiteral("id"), rl);//,  TXT, tableName, zStringHelper::Empty);
+                   QString pluralClassName;
+                   auto className = zTable::getClassName(class_name, pluralClassName);
+                   t.initClass(className, pluralClassName);
+
+                   //t.initClass(class_name);
                    tl.append(t);
                    zlog.error("GenerateByEntity: "+t.toString());
             }
@@ -1107,6 +1178,8 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
         }   
     return tl;
 }
+
+
 
 // attributum és az argumentumlista
 // \[\s*(\w+)(\((?>[^)(]+|(?2))*\))\s*\]

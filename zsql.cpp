@@ -200,17 +200,23 @@ QString zSQL::getTable_MYSQL_CMD(const QString& schemaName, const QString& tn ){
 
 
 zTable zSQL::getTable(const QString& schemaName, const QString& tablanev){
+    zTable t;
+    QString cmd;
 
     if(db.isValid() && db.isOpen()){
         //QString fn = beallitasok.getCaptionFileName(tablanev);
 
         if(driverName == QODBC)
         {
-            return getTable_SQL(tablanev, getTable_MSSQL_CMD(tablanev));
+            cmd = getTable_MSSQL_CMD(tablanev);
+            //t= getTable_SQL(tablanev, cmd);
+            //return t;
         }
         if(driverName == QMYSQL)
         {
-            return getTable_SQL(tablanev, getTable_MYSQL_CMD(schemaName, tablanev));
+            cmd = getTable_MYSQL_CMD(schemaName, tablanev);
+            //t =  getTable_SQL(tablanev, cmd);
+            //return t;
         }        
         zlog.error("getTable: unknown driver:" + driverName);
     }
@@ -218,7 +224,16 @@ zTable zSQL::getTable(const QString& schemaName, const QString& tablanev){
     {
         zlog.error("getTable: db closed" + driverName);
     }
-    return zTable();
+
+    if(!cmd.isEmpty()){
+        t= getTable_SQL(tablanev, cmd);
+
+        QString classNamePlural;
+        auto className = zTable::getClassName(t.sql_table, classNamePlural);
+        t.initClass(className, classNamePlural);
+    }
+
+    return t;
 }
 
 zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd)
@@ -244,12 +259,13 @@ zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd)
 
     //QList<zTablerow> pr;
 
-// TODO a táblanév táblanév legyen - az sqlből kell a szerver account, a séma név és a tábla név - ezek az sql forráshoz kötődnek
+// a táblanév táblanév legyen - az sqlből kell a szerver account, a séma név és a tábla név - ezek az sql forráshoz kötődnek
 // TODO kell a tábla lista mellé egy mező lista, az importhoz - ha nincs egy mező sem kijelölve, mindegyik kell, ha van, csak a j
 // QString sql_conn;
 // QString sql_schema;
 // QString sql_table;//sql_table;
-    auto e = zTable(nullptr, (pkn.isEmpty()?QStringLiteral("zId"):pkn), tr, SQL, tablanev, zStringHelper::Empty);
+    auto e = zTable(tablanev, (pkn.isEmpty()?QStringLiteral("zId"):pkn), tr);//, SQL, tablanev, zStringHelper::Empty);
+
     return e;
 }
 
@@ -281,23 +297,31 @@ QString zSQL::getTable_MYSQL_PK(const QString& tn){
 }
 
 QString zSQL::getTablePKName(const QString& tablanev){
-
+    QString pk;
     if(db.isValid() && db.isOpen()){
+// TODO szerencsésebb volna enum?
+//        switch(driverType){
+//            case QODBC:
+
+//        }
         if(driverName == QODBC)
         {
-            return getTable_SQL_PK(getTable_MSSQL_PK(tablanev));
+            pk= getTable_SQL_PK(getTable_MSSQL_PK(tablanev));
         }
-        if(driverName == QMYSQL)
+        else if(driverName == QMYSQL)
         {
-            return getTable_SQL_PK(getTable_MYSQL_PK(tablanev));
+            pk= getTable_SQL_PK(getTable_MYSQL_PK(tablanev));
         }
-        zlog.error("getTable: unknown driver:" + driverName);
+        else
+        {
+            zlog.error("getTable: unknown driver:" + driverName);
+        }
     }
     else
     {
         zlog.error("getTable: db closed" + driverName);    
     }
-    return zStringHelper::Empty;
+    return pk;
 }
 
 QString zSQL::getTable_SQL_PK(const QString& cmd)

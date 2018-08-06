@@ -9,6 +9,7 @@ zConversionMap::zConversionMap() = default;
 
 //const QString zConversionMap::Empty = QStringLiteral("?");
 
+// TODO direction bevezetése, használata
 QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QStringList& fileNameFilters){
     QList<zConversionMap> e;
 
@@ -16,7 +17,7 @@ QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QSt
 
     zforeach(f, files){
        auto m = load(*f);
-       if(m.map.isEmpty())
+       if(m.list.isEmpty())
        {
             zlog.error(QStringLiteral("Nem tartalmaz beolvasható sorokat: %1").arg(*f));
        }
@@ -35,7 +36,7 @@ zConversionMap zConversionMap::load(const QString& fileFullName){
     QString fileName = zFileNameHelper::getfileName(fileFullName);  
     e.name = fileName;
 
-    zStringMapHelper::StringMapFeltolt(fileFullName, &e.map);
+    zStringMapHelper::StringMapFeltolt(fileFullName, &e.list);
     return e;
 }
 

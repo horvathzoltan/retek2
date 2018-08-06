@@ -13,6 +13,7 @@ zStringMapHelper::zStringMapHelper()
 }
 
 void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map) {
+    zlog.trace(QStringLiteral("Beolvasás: %1").arg(fn));
     QFile file(fn);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
@@ -22,15 +23,24 @@ void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map)
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
     in.setCodec(QTextCodec::codecForName("UTF-8"));
 
-    while (!in.atEnd()) {
+    while (!in.atEnd())
+    {
         QString line = in.readLine();
 
-        int ix = line.indexOf(zStringHelper::SEP);
-        if (ix > 0) {
-            QString k1 = line.left(ix);//.toLower();
-            QString k2 = line.right(line.length() - (ix + 1));//.toLower();
+        if(line.startsWith('#'))
+        {
+            zlog.trace(line);
+        }
+        else
+        {
+            int ix = line.indexOf(zStringHelper::SEP);
+            if (ix > 0)
+            {
+                QString k1 = line.left(ix);//.toLower();
+                QString k2 = line.right(line.length() - (ix + 1));//.toLower();
 
-            map->insert(k1, k2);
+                map->insert(k1, k2);
+            }
         }
     }
     file.close();

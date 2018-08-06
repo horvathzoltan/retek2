@@ -26,7 +26,8 @@ HEADERS += Beallitasok.h \
     zxmlhelper.h \
     zsourcehelper.h \
     zshortguid.h \
-    zconversionmap.h
+    zconversionmap.h \
+    zconversionstruct.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \
@@ -47,7 +48,8 @@ SOURCES += Beallitasok.cpp \
     zxmlhelper.cpp \
     zsourcehelper.cpp \
     zshortguid.cpp \
-    zconversionmap.cpp
+    zconversionmap.cpp \
+    zconversionstruct.cpp
 FORMS += retek2.ui \
     ztablenames.ui
 RESOURCES += retek2.qrc

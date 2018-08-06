@@ -4,6 +4,7 @@
 #include <QMap>
 #include <QString>
 #include "zstringhelper.h"
+#include "zconversionstruct.h"
 
 /*
 Alfanumerikus kulcs és érték közti konverziót írnak le
@@ -12,7 +13,8 @@ class zConversionMap
 {
 private:
     QString name;
-    QMap<QString, QString> map;
+    //QMap<QString, QString> map;
+    QList<zConversionStruct> list;
     //static const QString Empty;
     QString value(const QString&) const;
     QStringList keys(const QString& value);

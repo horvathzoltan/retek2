@@ -4,7 +4,7 @@
 #include <QList>
 #include <QString>
 #include <QDateTime>
-
+#include "zstringhelper.h"
 #include "ztablerow.h"
 
 enum zTableSourceTypes:int { SQL=0, TXT=1, ENTITY=2 };
@@ -14,7 +14,13 @@ enum zTableSearchBy{ Name, TableName, class_name, class_namePlural };
 class zTable
 {
 public:
-    zTable(QString class_name, const QString& , const QList<zTablerow>&, int type, QString name, QString _sourcepath);
+    //zTable(QString class_name, const QString& , const QList<zTablerow>&, int type, QString name, QString _sourcepath);
+    zTable(const QString& name, const QString& pkName , const QList<zTablerow>&);
+
+    void initSql(const QString&, const QString&, const QString&);
+    void initClass(const QString& className, const QString& pluralClassName = zStringHelper::Empty);
+    void initClassByName();
+    static QString getClassName(const QString& n, QString);
 
     zTable();
     ~zTable();
