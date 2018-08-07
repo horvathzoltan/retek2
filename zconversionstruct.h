@@ -6,11 +6,14 @@
 class zConversionStruct
 {
 public:
-    zConversionStruct(const QString& in, const QString& out,  const QString &dir);
-
-    QString in_value;
-    QString out_value;
+    QString internal;
+    QString external;
     QString direction;
+
+//    zConversionStruct();
+//    ~zConversionStruct();
+
+    zConversionStruct(const QString& internal, const QString& external,  const QString &direction);
 };
 
 #endif // ZCONVERSIONSTRUCT_H

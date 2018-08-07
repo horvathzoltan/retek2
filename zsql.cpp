@@ -110,6 +110,7 @@ bool zSQL::createConnection(QString connectionName){
     return isok;
     }
 
+/*table*/
 const QString zSQL::getTableNames_MYSQL_CMDTMP = "SELECT table_name AS TableName, table_comment AS TableDescription "
                                                  "FROM INFORMATION_SCHEMA.TABLES "
                                                  "WHERE table_schema='%1' ORDER BY TableName;";
@@ -160,6 +161,54 @@ QList<QString> zSQL::getTableNames_SQL(const QString& cmd) {
     return eredmeny;
 }
 
+/* fieldNames */
+// TODO - séma feldolgozása mssql -
+// https://www.mssqltips.com/sqlservertip/1781/list-columns-and-attributes-for-every-table-in-a-sql-server-database/
+const QString zSQL::getFieldNames_MYSQL_CMDTMP ="SELECT "
+                                           "COLUMN_NAME as fieldName "
+                                           "FROM INFORMATION_SCHEMA.COLUMNS "
+                                           "where table_schema = '%1' and table_name = '%2';";
+
+const QString zSQL::getFieldNames_MSSQL_CMDTMP = "SELECT "
+                                            "COLUMN_NAME as fieldName "
+                                            "FROM INFORMATION_SCHEMA.COLUMNS "
+                                            "WHERE TABLE_NAME = '%1'";//WHERE TABLE_SCHEMA = '%1' and
+// SELECT COLUMN_NAME as fieldName FROM [Gloster].INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Articles'
+QString zSQL::getFieldNames_MSSQL_CMD(const QString& schemaName, const QString& tn){ return getFieldNames_MSSQL_CMDTMP.arg(tn); }
+QString zSQL::getFieldNames_MYSQL_CMD(const QString& schemaName, const QString& tn){ return getFieldNames_MYSQL_CMDTMP.arg(schemaName, tn); }
+
+QStringList zSQL::getFieldNames(const QString& schemaName, const QString& tableName){
+    if(db.isValid() && db.isOpen()){
+        if(driverName == QODBC)
+        {
+            return getFieldNames_SQL(getFieldNames_MSSQL_CMD(schemaName, tableName));//.arg(beallitasok.adatbazisNev);
+        }
+        if(driverName == QMYSQL)
+        {
+            return getFieldNames_SQL(getFieldNames_MYSQL_CMD(schemaName, tableName));
+        }
+        zlog.error("getFieldNames: unknown driver:" + driverName);
+    }
+    else
+    {
+        zlog.error("getField: db closed" + driverName);
+    }
+    return QStringList();
+}
+
+QStringList zSQL::getFieldNames_SQL(const QString& cmd) {
+    QStringList eredmeny;
+
+    QSqlQuery query(cmd, db);
+    query.setForwardOnly(true);
+
+    while (query.next())
+    {
+        eredmeny.append(query.value(QStringLiteral("fieldName")).toString());
+    }
+    return eredmeny;
+}
+
 QString zSQL::getLastErrorText(){
     return db.lastError().text();
 }
@@ -169,6 +218,8 @@ QString zSQL::toString()
     //return this->schemaName+":"+this->connectionName;
     return this->connectionName;
 }
+
+/*tableNames */
 
 const QString zSQL::getTable_MYSQL_CMDTMP ="SELECT "
                                            "COLUMN_NAME, "
@@ -250,7 +301,7 @@ zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd)
 
         bool nullable = zStringHelper::toBool(query.value(QStringLiteral("IS_NULLABLE")).toString());
 
-        QString caption = zConversionMap::value(globalCaptionMaps, colName);
+        QString caption = zConversionMap::external(globalCaptionMaps, colName);
         //if(caption.isEmpty()) caption = colName;
         tr.append(zTablerow(colName, dtype, dlen, nullable, caption));
         }
@@ -271,7 +322,7 @@ zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd)
 
 
 /*
-PK kezelés
+PKname
 */
 
 const QString zSQL::getTable_MSSQL_PKTMP = "SELECT COLUMN_NAME "
@@ -296,14 +347,23 @@ QString zSQL::getTable_MYSQL_PK(const QString& tn){
     return getTable_MYSQL_PKTMP.arg(tn);//.arg(this->databaseName);
 }
 
+QString zSQL::getTable_SQL_PK(const QString& cmd)
+{
+    QSqlQuery query(cmd, db);
+    query.setForwardOnly(true);
+
+    if(query.next()) {
+        return query.value(QStringLiteral("COLUMN_NAME")).toString();
+        }
+
+    return zStringHelper::Empty;
+}
+
+
 QString zSQL::getTablePKName(const QString& tablanev){
     QString pk;
-    if(db.isValid() && db.isOpen()){
-// TODO szerencsésebb volna enum?
-//        switch(driverType){
-//            case QODBC:
-
-//        }
+    if(db.isValid() && db.isOpen())
+    {
         if(driverName == QODBC)
         {
             pk= getTable_SQL_PK(getTable_MSSQL_PK(tablanev));
@@ -324,17 +384,6 @@ QString zSQL::getTablePKName(const QString& tablanev){
     return pk;
 }
 
-QString zSQL::getTable_SQL_PK(const QString& cmd)
-{
-    QSqlQuery query(cmd, db);
-    query.setForwardOnly(true);
-
-    if(query.next()) {
-        return query.value(QStringLiteral("COLUMN_NAME")).toString();
-        }
-
-    return zStringHelper::Empty;
-}
 
 
 const QString zSQL::getTable_SQL_ENUMTMP = QStringLiteral("SELECT id, %1 as name FROM %2");

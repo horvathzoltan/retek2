@@ -1,8 +1,11 @@
 #include "zconversionstruct.h"
 
-zConversionStruct::zConversionStruct(const QString& in, const QString& out, const QString& dir)
+//zConversionStruct::zConversionStruct() = default;
+//zConversionStruct::~zConversionStruct() = default;
+
+zConversionStruct::zConversionStruct(const QString& key, const QString& value, const QString& direction)
 {
-    this->in_value = in;
-    this->in_value = out;
-    this->in_value = dir;
+    this->internal = key;
+    this->external = value;
+    this->direction = direction;
 }

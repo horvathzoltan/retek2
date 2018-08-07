@@ -16,17 +16,17 @@ private:
     //QMap<QString, QString> map;
     QList<zConversionStruct> list;
     //static const QString Empty;
-    QString value(const QString&) const;
-    QStringList keys(const QString& value);
+    QString external(const QString&) const;
+    QStringList internals(const QString& external =zStringHelper::Empty ) const;
 public:    
     zConversionMap();
     static QList<zConversionMap> loadAll(const QString& filePath, const QStringList &);
     static zConversionMap load(const QString& fileName);
-    static QString value(const QList<zConversionMap>&, const QString&);
+    static QString external(const QList<zConversionMap>&, const QString&);
 
-    //static QStringList keys(const QList<zConversionMap>& maps);
-    static QStringList keys(const QList<zConversionMap>& maps,const QString& value = zStringHelper::Empty);
+    static QStringList internals(const QList<zConversionMap>& maps,const QString& external = zStringHelper::Empty);
 
+    static void load(const QString& fn, QList<zConversionStruct> *list);
 };
 
 #endif // ZCAPTIONMAP_H

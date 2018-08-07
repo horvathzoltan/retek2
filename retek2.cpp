@@ -146,7 +146,7 @@ void retek2::loadCurrentProject()
     else
     {
         QStringList knownTypeNames;
-        knownTypeNames << zConversionMap::keys(globalClassMaps) << zConversionMap::keys(globalSqlMaps);
+        knownTypeNames << zConversionMap::internals(globalClassMaps) << zConversionMap::internals(globalSqlMaps);
 
         ztables.clear();
         ui.listWidget_ztables->clear();
@@ -537,8 +537,8 @@ QString retek2::generateTmp(const QString& tmp_file) {
 
 void retek2::on_pushButton_2_clicked()
 {    
-    // TODO a ztablesbe bele kell tenni az sql connectiont, séma és tábla szinten
-    // ez amikor egy ztable kötődik egy sql-hez, tudjuk megtenni,
+    // a ztablesbe bele kell tenni az sql connectiont, séma és tábla szinten -
+    // amikor egy ztable kötődik egy sql-hez, tudjuk megtenni,
     // - vagy mert onnan olvastuk be
     // - vagy mert oda írjuk ki (generálunk create scriptet?)
 
@@ -897,6 +897,16 @@ void retek2::on_pushButton_clicked()
 
 }
 
+
+//listWidget_fields
+void retek2::fieldsFeltolt(const dbConnection& c, const QString& schemaName, const QString& tableName) {
+    zSQL zsql;
+    zsql.init(c);
+
+    auto fieldNames = zsql.getFieldNames(schemaName, tableName);
+    ui.listWidget_fields->addItems(fieldNames);
+}
+
 //listWidget_tables
 void retek2::tablesFeltolt(const dbConnection& c, const QString& schemaName) {
     zSQL zsql;
@@ -1104,7 +1114,7 @@ QString retek2::getCaptionByRowIx(int idix)
     //if(caption.isEmpty())
     //{
         QString colName = ui.tableWidget_MezoLista->item(idix, C_ix_colName)->text().toLower();
-        caption = zConversionMap::value(globalCaptionMaps, colName);
+        caption = zConversionMap::external(globalCaptionMaps, colName);
         if(caption.isEmpty())
         {
             zlog.warning(QStringLiteral("Nem határozható meg felirat a mezőnévhez: %1").arg(colName));
@@ -1117,3 +1127,19 @@ void retek2::setCaptionByRowIx(int idix, const QString& caption)
 {
     ui.tableWidget_MezoLista->item(idix, C_ix_Caption)->setText(caption);
 }
+
+void retek2::on_listWidget_tables_itemClicked(QListWidgetItem *item)
+{
+    //zLog::dialogTrace("ez: "+item->text());
+    auto tableName = item->text();
+    QString schemaName = ui.listWidget_schemas->currentItem()->text();
+
+    ui.listWidget_fields->clear();
+    QString connName = ui.comboBox_connections->currentText();
+    auto c = beallitasok.getDbConnectionByName(connName);
+    if(c){
+        fieldsFeltolt(*c, schemaName, tableName);
+        //tablesFeltolt(*c, schemaName);
+    }
+}
+

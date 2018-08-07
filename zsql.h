@@ -12,50 +12,67 @@ class zSQL
 private:    
     static const QString connectionTemplate;
     static const QString QODBC;
-    static const QString QMYSQL;
+    static const QString QMYSQL;     
 
-    static const QString getTableNames_MYSQL_CMDTMP;
-    static const QString getTableNames_MSSQL_CMDTMP;    
-    /*
-A tábla PK mező nevének lekérdezése
-*/
-    static const QString getTable_MSSQL_PKTMP;
-    static const QString getTable_MYSQL_PKTMP;
-
-    static const QString getTable_MYSQL_CMDTMP;
-    static const QString getTable_MSSQL_CMDTMP;
-
-    QString driverName,
+    QString connectionName,
+            driverName,
             hostName,
             user,
             password;
 
-    //QString schemaName;
     QSqlDatabase db;
-    QString connectionName;
 
     QString getLastErrorText();
     QString getConnStr();
     bool createConnection_MSSQL();
     bool createConnection_MYSQL();
 
-    QList<QString> getTableNames_SQL(const QString&);
-    zTable getTable_SQL(const QString&, const QString&);
+    /*schema*/
+    static const QString getSchemaNames_MYSQL_CMDTMP;
+    static const QString getSchemaNames_MSSQL_CMDTMP;
+
+    QString getSchemaNames_MYSQL_CMD();
+    QString getSchemaNames_MSSQL_CMD();
+
+    QList<QString> getSchemaNames_SQL(const QString& cmd);
+
+    /*table*/
+    static const QString getTable_MYSQL_CMDTMP;
+    static const QString getTable_MSSQL_CMDTMP;
 
     QString getTable_MSSQL_CMD(const QString& tn);
     QString getTable_MYSQL_CMD(const QString& tn, const QString&);
+    zTable getTable_SQL(const QString&, const QString&);
+
+    /*tableNames*/
+    static const QString getTableNames_MYSQL_CMDTMP;
+    static const QString getTableNames_MSSQL_CMDTMP;
+
     QString getTableNames_MYSQL_CMD(const QString&);
     QString getTableNames_MSSQL_CMD();
+    QList<QString> getTableNames_SQL(const QString&);
+
+    /*fieldNames*/
+    static const QString getFieldNames_MYSQL_CMDTMP;
+    static const QString getFieldNames_MSSQL_CMDTMP;
+
+    QString getFieldNames_MSSQL_CMD(const QString& schemaName, const QString& tn);
+    QString getFieldNames_MYSQL_CMD(const QString& schemaName, const QString& tn);
+    QStringList getFieldNames_SQL(const QString&);
+
+    /*PKName*/
+    static const QString getTable_MSSQL_PKTMP;
+    static const QString getTable_MYSQL_PKTMP;
 
     QString getTable_MSSQL_PK(const QString& tn);
     QString getTable_MYSQL_PK(const QString& tn);
+    QString getTable_SQL_PK(const QString& cmd);
 
     bool init(const QString&, const QString&, const QString&, const QString&, const QString&);
 
 public:
     zSQL();
     bool init(const dbConnection &c);
-
 
     ~zSQL(){
         //qDebug("%s", qUtf8Printable( QString("~zSQL %1").arg(connectionName)));
@@ -68,10 +85,8 @@ public:
     bool createConnection(QString connectionName=QStringLiteral("default_conn"));
 
     QString toString();
-    QList<QString> getTableNames(const QString& schemaName);
+
     zTable getTable(const QString&, const QString&);
-    QString getTablePKName(const QString& tablanev);
-    QString getTable_SQL_PK(const QString& cmd);
 
     static const QString getTable_SQL_ENUMTMP;
 
@@ -79,11 +94,9 @@ public:
 
     /*db elemeinek kezelése*/
     QList<QString> getSchemaNames();
-    QList<QString> getSchemaNames_SQL(const QString& cmd);
-    static const QString getSchemaNames_MYSQL_CMDTMP;
-    static const QString getSchemaNames_MSSQL_CMDTMP;
-    QString getSchemaNames_MYSQL_CMD();
-    QString getSchemaNames_MSSQL_CMD();
+    QList<QString> getTableNames(const QString& schemaName);
+    QStringList getFieldNames(const QString& schemaName, const QString& tableName);
+    QString getTablePKName(const QString& tablanev);
 };
 
 #endif // ZSQL_H

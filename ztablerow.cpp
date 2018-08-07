@@ -87,7 +87,7 @@ bool zTablerow::Validate2(const QStringList& colNames, const QStringList&  known
         bool isError = true;
         v= false;
         QStringList tl;
-        tl<< zConversionMap::keys(globalClassMaps, colType) << zConversionMap::keys(globalSqlMaps, colType);
+        tl<< zConversionMap::internals(globalClassMaps, colType) << zConversionMap::internals(globalSqlMaps, colType);
         tl.removeDuplicates();
         if(!tl.isEmpty())
         {

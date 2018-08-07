@@ -387,7 +387,7 @@ bool zTable::getClassType(const QString& ezt2,  QString *dtype, int *dlen, bool 
         isDtype = true;
     }*/
     //külső típus felől megyünk     belső típus fele
-    QStringList fl = zConversionMap::keys(globalClassMaps, typeName);
+    QStringList fl = zConversionMap::internals(globalClassMaps, typeName);
 
     if(fl.isEmpty())
     {
@@ -494,7 +494,7 @@ Szükséges, hogy egy fájl egy táblát tartalmazzon, külömben követhetetlen
 QList<zTable> zTable::createTableByXML(const QString& txt){
    QList<zTable> tl;
    QStringList knownTypeNames;
-   knownTypeNames << zConversionMap::keys(globalClassMaps) << zConversionMap::keys(globalSqlMaps);
+   knownTypeNames << zConversionMap::internals(globalClassMaps) << zConversionMap::internals(globalSqlMaps);
    QXmlStreamReader xml(txt);
 //    while(!xml.atEnd()){
 //        xml.readNext();
@@ -795,7 +795,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                {
                    if(caption.isEmpty())
                    {
-                        caption = zConversionMap::value(globalCaptionMaps, fname);
+                        caption = zConversionMap::external(globalCaptionMaps, fname);
                    }
                    auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
                    rl.append(r);
@@ -808,7 +808,7 @@ QList<zTable> zTable::createTableByText(QString txt)
             t.initClass(className, pluralClassName);
 
             QStringList knownTypeNames;
-            knownTypeNames << zConversionMap::keys(globalClassMaps) << zConversionMap::keys(globalSqlMaps);
+            knownTypeNames << zConversionMap::internals(globalClassMaps) << zConversionMap::internals(globalSqlMaps);
 
             bool isValid = t.Validate(tl, knownTypeNames);
             if(isValid)
@@ -924,7 +924,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                         {
                             if(p->Caption.isEmpty())
                             {
-                                p->Caption = zConversionMap::value(globalCaptionMaps, p->colName);
+                                p->Caption = zConversionMap::external(globalCaptionMaps, p->colName);
                             }
                             p->colType = dtype;
                             p->dlen = dlen;
@@ -1149,7 +1149,7 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
 //                            zlog.log("   isRequired: "+((isRequired)?QString("true"):QString("false")));
 //                            zlog.log("   MaxLength: "+MaxLength);
                             if(Caption.isEmpty()){
-                                Caption = zConversionMap::value(globalCaptionMaps, propName);
+                                Caption = zConversionMap::external(globalCaptionMaps, propName);
                             }
                             auto r = zTablerow(propName, dtype, dlen, isNullable, Caption);
                             rl.append(r);

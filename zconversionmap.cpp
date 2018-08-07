@@ -4,6 +4,8 @@
 #include "zstringhelper.h"
 #include "zstringmaphelper.h"
 
+#include <QTextCodec>
+
 zConversionMap::zConversionMap() = default;
 
 
@@ -36,7 +38,7 @@ zConversionMap zConversionMap::load(const QString& fileFullName){
     QString fileName = zFileNameHelper::getfileName(fileFullName);  
     e.name = fileName;
 
-    zStringMapHelper::StringMapFeltolt(fileFullName, &e.list);
+    load(fileFullName, &e.list);
     return e;
 }
 
@@ -46,13 +48,13 @@ amit leginkább egy fa ábrázolna, és annak az ágnak, ami a keresett kulcsot 
 kellene kiszedni az értékét
 */
 
-QString zConversionMap::value(const QList<zConversionMap>& maps, const QString& c){
+QString zConversionMap::external(const QList<zConversionMap>& maps, const QString& c){
     if(c.isEmpty()) return zStringHelper::Empty;
     QString e;
 //QString v = zStringHelper::
     zforeach(m, maps)
     {
-        e = m->value(c);
+        e = m->external(c);
         if(!e.isEmpty()) break;
     }
     return e;
@@ -61,15 +63,18 @@ QString zConversionMap::value(const QList<zConversionMap>& maps, const QString& 
 /*
 */
 
-QString zConversionMap::value(const QString& c) const {
+QString zConversionMap::external(const QString& c) const {
     QString nk = zStringHelper::zNormalize(c);
     //QString e;
     /*if(this->map.contains(cn))
         e = this->map[cn];*/
-    zforeach(m, map)
+    zforeach(m, list)
     {
-        auto nk0 = zStringHelper::zNormalize(m.key());
-        if(nk0==nk) return m.value();
+        if(m->direction.isEmpty()||m->direction.contains('>'))
+        {
+            auto nk0 = zStringHelper::zNormalize(m->internal);
+            if(nk0==nk) return m->external;
+        }
     }
     return zStringHelper::Empty;
 }
@@ -82,32 +87,76 @@ QString zConversionMap::value(const QString& c) const {
 //    return e;
 //}
 
-QStringList zConversionMap::keys(const QList<zConversionMap>& maps, const QString& value){
+QStringList zConversionMap::internals(const QList<zConversionMap>& maps, const QString& value){
     QStringList e;
     zforeach(m, maps)
     {
-        if(value.isEmpty())
-        {
-             e << m->map.keys();
-        }
-        else
-        {
-            e << m->map.keys(value);
-        }
+//        if(value.isEmpty())
+//        {
+//             e << m->key();
+//        }
+//        else
+//        {
+//            e << m->key(value);
+//        }
+        e << m->internals(value);
     }
     e.removeDuplicates();
     return e;
 }
 
-QStringList zConversionMap::keys(const QString& c) {
+QStringList zConversionMap::internals(const QString& c) const {
     QStringList e;
     //auto e = this->keys(value);
     //return e;
     QString nv = zStringHelper::zNormalize(c);
-    zforeach(m, map)
+    zforeach(m, list)
     {
-        auto nv0 = zStringHelper::zNormalize(m.value());
-        if(nv0==nv) e << m.key();
+        if(m->direction.isEmpty()||m->direction.contains('<'))
+        {
+            auto nv0 = zStringHelper::zNormalize(m->external);
+            if(c.isEmpty() || nv0==nv) e << m->internal;
+        }
     }
     return e;
+}
+
+void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
+    zlog.trace(QStringLiteral("Beolvasás: %1").arg(fn));
+    QFile file(fn);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
+
+    list->clear();
+    QTextStream in(&file);
+
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+    in.setCodec(QTextCodec::codecForName("UTF-8"));
+
+    while (!in.atEnd())
+    {
+        QString line = in.readLine();
+        if(line.isEmpty()) continue;
+
+        if(line.startsWith('#'))
+        {
+            zlog.trace(line);
+        }
+        else
+        {
+            auto v = line.split(zStringHelper::SEP);
+
+            //int ix = line.indexOf(zStringHelper::SEP);
+            if (!v.empty()&&v.count()>1)
+            {
+                //QString v0 = v[0];
+                //QString v1 = v[1];
+                //QString v2 = (v.length()>2)?v[1]:zStringHelper::Empty;
+                auto s = zConversionStruct(v[0], v[1], (v.length()>2)?v[2]:zStringHelper::Empty);
+                list->append(s);
+            }
+        }
+    }
+    file.close();
+
+    zlog.ok(QStringLiteral("Beolvasva: %1").arg(fn));
 }

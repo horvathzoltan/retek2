@@ -609,7 +609,7 @@ QString zTokenizer::getProp(const QString& propType, const QString& propName, co
 // belső típus -> osztálytípus a gobális tábla alapján key->value irányban
 // ha nullable, akkor a típusnév ?-re fog végződni (lehetne Nullable<típusnév> is)
 QString zTokenizer::getPropClassType(const QString& tipusnev, bool isnullable) {
-    QString cn = zConversionMap::value(globalClassMaps, tipusnev);
+    QString cn = zConversionMap::external(globalClassMaps, tipusnev);
     if(cn.isEmpty())
     {
         zlog.error(QStringLiteral("Nem található classmap value a keyhez: %1").arg(tipusnev));

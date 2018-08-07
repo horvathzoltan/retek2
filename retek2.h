@@ -61,6 +61,8 @@ private slots:
 
     void on_pushButton_getCaption_clicked();
 
+    void on_listWidget_tables_itemClicked(QListWidgetItem *item);
+
 private:
     Ui::retek2Class ui;
     Ui::Dialog_ztable_name zTableNameDialog;
@@ -69,6 +71,7 @@ private:
 
     void saveTablaToXML(const QString&);
 
+    void fieldsFeltolt(const dbConnection& c, const QString& schemaName, const QString& tableName);
     void tablesFeltolt(const dbConnection& c, const QString&);
     void feltoltTmpMap();
     //void feltoltEljaras(QString tablanev);
