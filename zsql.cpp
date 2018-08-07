@@ -250,7 +250,7 @@ QString zSQL::getTable_MSSQL_CMD(const QString& tn){ return getTable_MSSQL_CMDTM
 QString zSQL::getTable_MYSQL_CMD(const QString& schemaName, const QString& tn ){ return getTable_MYSQL_CMDTMP.arg(schemaName, tn); }
 
 
-zTable zSQL::getTable(const QString& schemaName, const QString& tablanev){
+zTable zSQL::getTable(const QString& schemaName, const QString& tablanev, const QStringList& fl){
     zTable t;
     QString cmd;
 
@@ -277,7 +277,7 @@ zTable zSQL::getTable(const QString& schemaName, const QString& tablanev){
     }
 
     if(!cmd.isEmpty()){
-        t= getTable_SQL(tablanev, cmd);
+        t= getTable_SQL(tablanev, cmd, fl);
 
         QString classNamePlural;
         auto className = zTable::getClassName(t.sql_table, classNamePlural);
@@ -287,24 +287,29 @@ zTable zSQL::getTable(const QString& schemaName, const QString& tablanev){
     return t;
 }
 
-zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd)
+zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd, const QStringList& fl)
 {
     QSqlQuery query(cmd, db);
     query.setForwardOnly(true);
 
     QList<zTablerow> tr;
 
-    while (query.next()) {
+    while (query.next())
+    {
         QString colName = query.value(QStringLiteral("COLUMN_NAME")).toString();
-        QString dtype = query.value(QStringLiteral("DATA_TYPE")).toString();
-        int dlen = query.value(QStringLiteral("CHARACTER_MAXIMUM_LENGTH")).toInt();
 
-        bool nullable = zStringHelper::toBool(query.value(QStringLiteral("IS_NULLABLE")).toString());
+        if(fl.isEmpty() || fl.contains(colName))
+        {
+            QString dtype = query.value(QStringLiteral("DATA_TYPE")).toString();
+            int dlen = query.value(QStringLiteral("CHARACTER_MAXIMUM_LENGTH")).toInt();
 
-        QString caption = zConversionMap::external(globalCaptionMaps, colName);
-        //if(caption.isEmpty()) caption = colName;
-        tr.append(zTablerow(colName, dtype, dlen, nullable, caption));
+            bool nullable = zStringHelper::toBool(query.value(QStringLiteral("IS_NULLABLE")).toString());
+
+            QString caption = zConversionMap::external(globalCaptionMaps, colName);
+            //if(caption.isEmpty()) caption = colName;
+            tr.append(zTablerow(colName, dtype, dlen, nullable, caption));
         }
+    }
 
     QString pkn = getTablePKName(tablanev);
 

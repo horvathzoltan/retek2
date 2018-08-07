@@ -26,6 +26,7 @@ public:
     void zTablaToList(const zTable& t);
     void loadCurrentProject();
     
+    QStringList listWidgetItemsText(QList<QListWidgetItem *> items);
 private slots:
 	void GenerateAll();
 

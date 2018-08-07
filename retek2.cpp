@@ -934,6 +934,9 @@ void retek2::zTablaToList(QList<zTable> ts){
 
 
 
+// TODO Meglevő táblába új mezőket felvenni
+// - itt fel kellene ismerni, hogy meglevő, sql-hez kötött tábláról van szó
+// - és abba a kijelölt mezők közül a nem létezőket fel kell venni
 
 void retek2::on_pushButton_table_import_clicked()
 {
@@ -963,8 +966,13 @@ void retek2::on_pushButton_table_import_clicked()
 
         QString classNamePlural;
         auto className = zTable::getClassName(tableName, classNamePlural);
-        zTable t = zsql.getTable(schemaName, tableName);
+
+        QStringList fl = listWidgetItemsText(ui.listWidget_fields->selectedItems());
+
+        zTable t = zsql.getTable(schemaName, tableName, fl);
+
         t.initSql(connName, schemaName, tableName);
+        // TODO(err) nem készül plural name
         t.initClass(className, classNamePlural);
 
         if(t.rows.length()>0){
@@ -985,6 +993,18 @@ void retek2::on_pushButton_table_import_clicked()
             }
         }
     }
+}
+
+QStringList retek2::listWidgetItemsText(QList<QListWidgetItem*> items)
+{
+    QStringList e;
+
+    zforeach(i, items)
+    {
+        e<<(*i)->text();
+    }
+
+    return e;
 }
 
 void retek2::on_pushButton_createSourcePath_clicked()

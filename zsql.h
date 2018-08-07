@@ -42,7 +42,7 @@ private:
 
     QString getTable_MSSQL_CMD(const QString& tn);
     QString getTable_MYSQL_CMD(const QString& tn, const QString&);
-    zTable getTable_SQL(const QString&, const QString&);
+    zTable getTable_SQL(const QString&, const QString&, const QStringList &fl = QStringList());
 
     /*tableNames*/
     static const QString getTableNames_MYSQL_CMDTMP;
@@ -86,7 +86,7 @@ public:
 
     QString toString();
 
-    zTable getTable(const QString&, const QString&);
+    zTable getTable(const QString&, const QString&, const QStringList &fl = QStringList());
 
     static const QString getTable_SQL_ENUMTMP;
 
