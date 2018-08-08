@@ -8,6 +8,7 @@
 #include "ztextfilehelper.h"
 #include "zshortguid.h"
 #include "zfilenamehelper.h"
+#include "zoshelper.h"
 
 #include <QRegularExpression>
 #include <QTableWidgetItem>
@@ -57,6 +58,8 @@ void retek2::init()
     //beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
     beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server,  ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
 //    beallitasok.initPaths();
+
+    zosHelper::setLocale();
 
 // sql-> osztály irány: Money -> decimal_money -> decimal
 // osztály-> sql irány: decimal -> decimal??? -> Money
@@ -593,9 +596,7 @@ Macro def: Adm
 */
 void retek2::on_pushButton_3_clicked()
 {
-    zlog.trace(__FUNCTION__);
-
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("Windows-1250"));
+    zlog.trace(__FUNCTION__);    
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText(txt);

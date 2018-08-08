@@ -20,7 +20,7 @@ void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map)
     map->clear();
     QTextStream in(&file);
 
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+    //QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
     in.setCodec(QTextCodec::codecForName("UTF-8"));
 
     while (!in.atEnd())
@@ -59,7 +59,7 @@ void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
     }
 
     QTextStream out(&file);
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+    //QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
     out.setCodec(QTextCodec::codecForName("UTF-8"));
 
     out.setGenerateByteOrderMark(true);

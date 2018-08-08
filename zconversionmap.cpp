@@ -128,7 +128,7 @@ void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
     list->clear();
     QTextStream in(&file);
 
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+    //QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
     in.setCodec(QTextCodec::codecForName("UTF-8"));
 
     while (!in.atEnd())

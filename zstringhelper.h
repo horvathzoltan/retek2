@@ -4,6 +4,8 @@
 #include <QString>
 #include <QRegularExpression>
 
+
+
 class zStringHelper
 {    
 public:
@@ -28,7 +30,7 @@ public:
     static const QString p_filename;
     static const QRegularExpression r_filename;
     static QStringList getFilePaths(QString, QStringList);
-    static QString zNormalize(const QString &c);
+    static QString zNormalize(const QString &c);   
 };
 
 #endif // ZSTRINGHELPER_H
