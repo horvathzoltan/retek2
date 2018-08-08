@@ -345,6 +345,7 @@ bool zTable::getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, b
 
 bool zTable::getClassType(const QString& ezt2,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
 {
+//    zlog.trace(getClassType)
     auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
@@ -393,7 +394,7 @@ bool zTable::getClassType(const QString& ezt2,  QString *dtype, int *dlen, bool 
 
     if(fl.isEmpty())
     {
-        zlog.error(QStringLiteral("Nem található belső adatábrázolási típus: %1").arg(ezt1));
+        zlog.warning(QStringLiteral("Nem található belső adatábrázolási típus: %1").arg(ezt1));
     }
     else
     {
