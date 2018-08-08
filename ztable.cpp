@@ -93,8 +93,10 @@ void zTable::initClass(const QString& className, const QString& pluralClassName)
         this->class_name_plural = pluralClassName;
 }
 
-QString zTable::getClassName(const QString& n, QString cnp)
+QString zTable::getClassName(const QString& n, QString& cnp)
 {
+    if(n.isEmpty()) return zStringHelper::Empty;
+
     QString cn;
     bool isNameSingular = zPluralizer::IsSingular(n);
 

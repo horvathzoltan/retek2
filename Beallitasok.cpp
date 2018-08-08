@@ -241,7 +241,8 @@ void Beallitasok::addConnection(dbConnection b){
     QString csvr= b.ToCSV();
 
     zlog.error(QStringLiteral("dbconnection append %1 %2").arg(fn, csvr));
-    zTextFileHelper::append(fn, csvr);  
+    //zTextFileHelper::append(fn, csvr);
+    zTextFileHelper::save(csvr, fn, true);
 
     addDbConnection(b);
 }

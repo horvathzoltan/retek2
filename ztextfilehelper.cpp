@@ -19,34 +19,38 @@ QString zTextFileHelper::load(const QString& filename) {
     return e;
 }
 
+/*
+A txt-t nem feltétlenül kell itt validálni
+- üres fájl mentése/létrehozása lehet egy valós igény
+*/
+
 void zTextFileHelper::save(const QString& txt, const QString& fn, bool isAppend) {
+
+//    QFile logfile(lfn);
+//    logfile.open(QIODevice::Append | QIODevice::Text);
+//    QTextStream out(&logfile);
+//    out << lftxt << endl;
+
     QFile f(fn);
 
-//    QFileInfo check_file(fn);
-
-//    if (check_file.exists()){}
-
-
-    auto om = QIODevice::WriteOnly | QIODevice::Text;
+    auto om = QIODevice::WriteOnly | QIODevice::Text; // openmode
     if(isAppend) om |= QIODevice::Append;
 
     if (!f.open(om)){
         zLog::dialogError("nem menthető: "+fn);
         return;
         }
-//    else{
-//        zLog.("mentve: "+fn);
-//    }
+
+
+    //QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     QTextStream out(&f);
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
-
     out.setCodec(QTextCodec::codecForName("UTF-8"));
     out.setGenerateByteOrderMark(true);
     out << txt.toUtf8();
     f.close();
 }
 
-void zTextFileHelper::append(QString fn, QString txt){
-    save(txt, fn, true);
-}
+//void zTextFileHelper::append(QString fn, QString txt){
+//    save(txt, fn, true);
+//}

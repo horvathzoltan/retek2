@@ -11,7 +11,6 @@ zConversionMap::zConversionMap() = default;
 
 //const QString zConversionMap::Empty = QStringLiteral("?");
 
-// TODO direction bevezetése, használata
 QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QStringList& fileNameFilters){
     QList<zConversionMap> e;
 

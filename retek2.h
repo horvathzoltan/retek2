@@ -22,8 +22,8 @@ public:
     void init();
 
     void tablaAdatokBejegyez(const QString& tn);
-    void zTablaToList(QList<zTable> t);
-    void zTablaToList(const zTable& t);
+    void add_zTablaToListWidget(QList<zTable> t);
+    void add_zTablaToListWidget(const zTable& t);
     void loadCurrentProject();
     
     QStringList listWidgetItemsText(QList<QListWidgetItem *> items);

@@ -4,6 +4,7 @@
 #include <QString>
 #include <QTextBrowser>
 #include <QTabWidget>
+#include <zstringhelper.h>
 
 class zLog
 {
@@ -57,6 +58,8 @@ public:
     static void dialogTrace(const QString& str);
     void trace(const char*);
     void trace(const QString&);
+    void trace(const char*, const QString&);
+    void trace(const QString&, const QString&);
     void trace(const QList<QString>&);
 };
 

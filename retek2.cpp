@@ -114,12 +114,16 @@ void retek2::init()
 
     ztokenizer.init(ui.tableWidget_MezoLista);
 
-    // TODO: - xml beolvasás után a forrást ellenőrízni
+    // TODO: konzisztencia sql és entity vonatkozásokban is
+    // a megjelenítésnél ikonokat kell használni , ha a sql közés ok, ha a forrás kötés ok, illetve ha mindkettő megvan
+    //
+    // - xml beolvasás után a forrást ellenőrízni
+    //
     // - ha az sql tábla frissebb, akkor frissíteni - illetve detektálni és a listában piros háttérrel jelezni
     // illetve, ha ez a változás érdemi - ekkro be lehet olvasni -  és van tábla validáció, ami összeveti
     // - ha az entitás fájl frissebb, akkor hasonlóképpen - lehet validálni
     //
-    // azt kellene inkább vizsgálni: hogy ha a leíró sql vagy kód kötése megvan
+    // azt kellene inkább vizsgálni: hogy ha a leíró sql vagy kód kötése megvan-e
     // forrás típus alapján az sql illetve entity - egyértelmű, hiszen származik belőle
     // és ha az sql vagy forrás módosult, míg a leíró nem, azaz a leíró keletkezése óta újabb az sql
     // ezt detektálni és jelezni kell, illetve kérdés, hogy felszedjük-e a változásokat
@@ -187,7 +191,7 @@ void retek2::loadCurrentProject()
 //                    }
 //                    else
                     ztables << t0;
-                    zTablaToList(t0);
+                    add_zTablaToListWidget(t0);
 
                     if(!isValid)
                     {
@@ -201,36 +205,36 @@ void retek2::loadCurrentProject()
 
 
 
-void retek2::zTablaToList(const zTable& t){
-    QString tn = t.name;
-    int sourcetype = -1;
-    QIcon icon;
-    if(!t.sql_conn.isEmpty()){
-        sourcetype = zTableSourceTypes::SQL;
-    }
-    else if(!t.class_path.isEmpty()){
-        sourcetype = zTableSourceTypes::ENTITY;
-    }
-    switch(sourcetype){
-        case zTableSourceTypes::SQL:
-            icon=QIcon::fromTheme(QStringLiteral("office-database"));            
-            break;
-        case zTableSourceTypes::ENTITY:
-            icon=QIcon::fromTheme(QStringLiteral("text-x-c++"));            
-            break;
-        case zTableSourceTypes::TXT:
-            icon=QIcon::fromTheme(QStringLiteral("text"));
-        default:
-            break;
-    }   
-
-    if(tn.isEmpty()){
+void retek2::add_zTablaToListWidget(const zTable& t){
+    QString tn = t.name; // displayed name
+    if(tn.isEmpty())
+    {
         zlog.error(QStringLiteral("Nincs megnevezés. table: %1 class: %2").arg(t.sql_table, t.class_name));
-        tn = QStringLiteral("?");
-        //tn = (!t.tablename.isEmpty())?t.tablename:(!t.class_name.isEmpty())?t.class_name:zStringHelper::Empty;
+        return;
     }
 
-    new QListWidgetItem(icon, tn, ui.listWidget_ztables, sourcetype);
+    QIcon icon;   
+
+    if(!t.sql_conn.isEmpty())
+    {
+        if(!t.class_path.isEmpty())
+        {
+            icon=QIcon::fromTheme(QStringLiteral(":/database_file-text.ico"));
+        }
+        else
+        {
+            icon=QIcon::fromTheme(QStringLiteral(":/database.ico"));
+        }
+    }
+    else
+    {
+        if(!t.class_path.isEmpty())
+        {
+            icon=QIcon::fromTheme(QStringLiteral(":/file-text.ico"));
+        }
+    }       
+
+    new QListWidgetItem(icon, tn, ui.listWidget_ztables);
 }
 
 
@@ -281,7 +285,7 @@ void retek2::zTablaToList(const zTable& t){
 
 
 void retek2::mezoListaFeltolt(zTable t){
-    zlog.trace("feltoltMezoLista: "+t.toString());
+    zlog.trace(__FUNCTION__, t.toString());
     ui.tableWidget_MezoLista->blockSignals(true);
     ui.tableWidget_MezoLista->setRowCount(0);
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
@@ -291,29 +295,14 @@ void retek2::mezoListaFeltolt(zTable t){
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colName,  CreateTableItem(QVariant(r.colName)));
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_colType,  CreateTableItem(QVariant(r.colType)));
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_dlen, CreateTableItem(QVariant(r.dlen)));
-        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, CreateTableItem(QVariant(r.Caption)));
-
-
-
-       /*auto cw = ui.tableWidget_MezoLista->indexWidget(//(r_ix,C_ix_Caption);
-       auto l = cw->layout();
-       auto w = l->widget();*/
-
-
-
-       //QPushButton btn1(QStringLiteral("ty"), w);
-
-
-        //ui.tableWidget_MezoLista->setCellWidget(r_ix, C_ix_Caption, pWidget);
-
-
+        ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, CreateTableItem(QVariant(r.Caption)));     
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, CreateTableItem(QVariant(r.isNullable)));
     }    
     ui.tableWidget_MezoLista->blockSignals(false);
 }
 
 void retek2::feltoltKulcsLista(zTable t) {
-    zlog.trace("feltoltKulcsLista: " + t.name);
+    zlog.trace(__FUNCTION__, t.name);
 
     ui.listWidget_IdegenKulcs->clear();
     if(!t.pkname.isEmpty()){
@@ -596,31 +585,36 @@ Adm
 RecountRequired,bool
 UserId,guid
 Comments,string,200
-_
-OperationType,OperationType
-InventoryStatus,OperationType
-Storage,Storage
-User,User
-InventoryItem[]
+
 */
 
 /*
 Macro def: Adm
-GenerateByText: Inventory(PK:Id,Name,OperationTypeId,InventoryStatusId,StorageId,DateStart,DateEnd,DateCre,DateMod,RecountRequired,UserId,Comments),OperationType,InventoryStatus,Storage,User,InventoryItem
 */
 void retek2::on_pushButton_3_clicked()
 {
-    zlog.trace(QStringLiteral("on_pushButton_3_clicked"));
+    zlog.trace(__FUNCTION__);
+
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("Windows-1250"));
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText(txt);
 
-    if(tl.length()==0) { zlog.error(QStringLiteral("nincs egyezés, nincs vizsgálat")); return;}
+    if(tl.length()==0)
+    {
+        zlog.error(QStringLiteral("nincs egyezés, nincs vizsgálat"));
+        return;
+    }
 
     zforeach(t,tl){
+        if(zTable::find(ztables, t->name, zTableSearchBy::Name))
+        {
+            zlog.error("Van már ilyen nevű tábla");
+            continue;
+        }
         ztables.append(*t);
-        zTablaToList(*t);
-        }       
+        add_zTablaToListWidget(*t);
+    }
 }
 
 // típusonkénti sororientált leíró
@@ -636,17 +630,27 @@ Adm
 */
 void retek2::on_pushButton_4_clicked()
 {
-    zlog.trace(QStringLiteral("on_pushButton_4_clicked"));
+    zlog.trace(__FUNCTION__);
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText_2(txt);
 
-    if(tl.length()==0) { zlog.error(QStringLiteral("nem jött létre adat")); return;}
+    if(tl.length()==0)
+    {
+        zlog.error(QStringLiteral("nem jött létre adat"));
+        return;
+    }
 
-    zforeach(t,tl){
-        ztables.append(*t);
-        zTablaToList(*t);
+    zforeach(t,tl)
+    {
+        if(zTable::find(ztables, t->name, zTableSearchBy::Name))
+        {
+            zlog.error("Van már ilyen nevű tábla");
+            continue;
         }
+        ztables.append(*t);
+        add_zTablaToListWidget(*t);
+    }
 }
 
 
@@ -662,7 +666,7 @@ void retek2::on_pushButton_5_clicked()
 
     zforeach(t,tl){
         ztables.append(*t);
-        zTablaToList(*t);
+        add_zTablaToListWidget(*t);
         }
 }
 
@@ -758,7 +762,7 @@ void retek2::on_pushButton_6_clicked()
 
     zforeach(t,tl){
         ztables.append(*t);
-        zTablaToList(*t);
+        add_zTablaToListWidget(*t);
         }
 }
 
@@ -802,6 +806,14 @@ void retek2::closeEvent (QCloseEvent * /*event*/)
     zforeach(t, ztables){
         t->saveTablaToXML();
     }
+
+    auto lftxt = ui.textBrowser->toPlainText();
+    if(!lftxt.isEmpty())
+    {
+        auto lfn = zFileNameHelper::getCurrentProjectFileName(QStringLiteral("log.txt"));
+        zTextFileHelper::save(lftxt, lfn, true);
+    }
+
 }
 
 
@@ -926,24 +938,22 @@ void retek2::schemasFeltolt(const dbConnection& c) {
     ui.listWidget_schemas->addItems(schemaNames);
 }
 
-void retek2::zTablaToList(QList<zTable> ts){
+void retek2::add_zTablaToListWidget(QList<zTable> ts){
     zforeach(t, ts){
-        zTablaToList(*t);
+        add_zTablaToListWidget(*t);
     }
 }
-
-
-
-// TODO Meglevő táblába új mezőket felvenni
-// - itt fel kellene ismerni, hogy meglevő, sql-hez kötött tábláról van szó
-// - és abba a kijelölt mezők közül a nem létezőket fel kell venni
 
 void retek2::on_pushButton_table_import_clicked()
 {
     auto items = ui.listWidget_tables->selectedItems();
-    QString schemaName = ui.listWidget_schemas->currentItem()->text();
+    if(items.isEmpty()) return;
+    auto currentSchema = ui.listWidget_schemas->currentItem();
+    if(!currentSchema) return;
+    QString schemaName = currentSchema->text();
 
     QString connName = ui.comboBox_connections->currentText();
+
     auto c = beallitasok.getDbConnectionByName(connName);
 
     zSQL zsql;
@@ -962,17 +972,16 @@ void retek2::on_pushButton_table_import_clicked()
         zTableNameDialog.setupUi(&dialog);
         dialog.setModal(true);
         int isOK = true;
-        //dialog.setWindowTitle(QStringliteral("A névvel már létezik tábla"));
-
-        QString classNamePlural;
-        auto className = zTable::getClassName(tableName, classNamePlural);
+        //dialog.setWindowTitle(QStringliteral("A névvel már létezik tábla"));        
 
         QStringList fl = listWidgetItemsText(ui.listWidget_fields->selectedItems());
 
         zTable t = zsql.getTable(schemaName, tableName, fl);
 
         t.initSql(connName, schemaName, tableName);
-        // TODO(err) nem készül plural name
+
+        QString classNamePlural;
+        auto className = zTable::getClassName(tableName, classNamePlural);
         t.initClass(className, classNamePlural);
 
         if(t.rows.length()>0){
@@ -986,7 +995,7 @@ void retek2::on_pushButton_table_import_clicked()
             if(isOK){
                t.name = tx;
                ztables << t;
-               zTablaToList(t);
+               add_zTablaToListWidget(t);
             }
             else{
                 continue;
@@ -1046,15 +1055,16 @@ void retek2::zTableNamesToUi(const zTable& t){
 }
 
 void retek2::zTableNamesFromUi(zTable& t){
-    QString txt;
-    txt = ui.lineEdit_name->text();
-    if(!txt.isEmpty()){
-        if(txt != t.name){
+    QString name = ui.lineEdit_name->text();
+
+    if(!name.isEmpty()){
+        if(name != t.name){
             auto i = ui.listWidget_ztables->findItems(t.name, Qt::MatchExactly);
-            if(!i.isEmpty()){
-                i[0]->setText(txt);
+            if(!i.isEmpty()){                                
+                i[0]->setText(name);
                 QString fn_old = zFileNameHelper::getCurrentProjectFileName(t.name+".xml");
-                QString fn_new = zFileNameHelper::getCurrentProjectFileName(txt+".xml");
+                t.name = name; // megtaláltuk, innentől kezdve az új néven lesz
+                QString fn_new = zFileNameHelper::getCurrentProjectFileName(t.name+".xml");
                 QFile file(fn_old);
                 if(file.exists())
                 {
@@ -1065,10 +1075,11 @@ void retek2::zTableNamesFromUi(zTable& t){
                     t.saveTablaToXML();
                 }
             }
+
         }
-        t.name = txt;
-        txt = ui.lineEdit_tablename->text();
-        txt = ui.lineEdit_class_name->text();
+
+        //name = ui.lineEdit_tablename->text();
+        t.class_name = ui.lineEdit_class_name->text();
         t.class_name_plural = ui.lineEdit_class_name_plural->text();
     }
 }
@@ -1089,43 +1100,24 @@ A kiválasztott sor captionját szerzi meg
 */
 void retek2::on_pushButton_getCaption_clicked()
 {
-    auto select = ui.tableWidget_MezoLista->selectionModel();
-    if(select->hasSelection())
-    {
-        auto rs = select->selectedRows();
-        //auto cs = select->selectedColumns();
-        auto is = select->selectedIndexes();
-        //QString colName; // name
-        //QString ft; // type
-        int idix = 0;
+    auto selectedItems = ui.tableWidget_MezoLista->selectedItems();
+    if(!selectedItems.isEmpty())
+    {      
+        int row_ix = 0;
         QString caption;
 
-        if(!rs.isEmpty())
+        zforeach(i,selectedItems)
         {
-            zforeach(r,rs)
-            {
-                idix = r->row();
-                caption = getCaptionByRowIx(idix);
+            if((*i)->column()==C_ix_Caption){
+                row_ix = (*i)->row();
+                caption = getCaptionByRowIx(row_ix);
                 if(!caption.isEmpty())
                 {
-                    setCaptionByRowIx(idix, caption);
+                    setCaptionByRowIx(row_ix, caption);
                 }
             }
         }
-        if(!is.isEmpty())
-        {
-            zforeach(i,is)
-            {
-                idix = i->row();
-                caption = getCaptionByRowIx(i->row());
-                if(!caption.isEmpty())
-                {
-                    setCaptionByRowIx(idix, caption);
-                }
-            }
-        }
-    }
-    //QString caption = zConversionMap::value(globalCaptionMaps, ft);
+    }    
 }
 
 QString retek2::getCaptionByRowIx(int idix)

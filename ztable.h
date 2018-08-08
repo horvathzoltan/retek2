@@ -18,9 +18,9 @@ public:
     zTable(const QString& name, const QString& pkName , const QList<zTablerow>&);
 
     void initSql(const QString&, const QString&, const QString&);
-    void initClass(const QString& className, const QString& pluralClassName = zStringHelper::Empty);
+    void initClass(const QString& className,const QString &pluralClassName = zStringHelper::Empty);
     void initClassByName();
-    static QString getClassName(const QString& n, QString);
+    static QString getClassName(const QString& n, QString&);
 
     zTable();
     ~zTable();

@@ -34,14 +34,14 @@ private:
     QString getSchemaNames_MYSQL_CMD();
     QString getSchemaNames_MSSQL_CMD();
 
-    QList<QString> getSchemaNames_SQL(const QString& cmd);
+    QStringList getSchemaNames_SQL(const QString& cmd);
 
     /*table*/
     static const QString getTable_MYSQL_CMDTMP;
     static const QString getTable_MSSQL_CMDTMP;
 
-    QString getTable_MSSQL_CMD(const QString& tn);
-    QString getTable_MYSQL_CMD(const QString& tn, const QString&);
+    QString getTable_MSSQL_CMD(const QString& schemaName, const QString& tn);
+    QString getTable_MYSQL_CMD(const QString&, const QString&);
     zTable getTable_SQL(const QString&, const QString&, const QStringList &fl = QStringList());
 
     /*tableNames*/
@@ -49,8 +49,8 @@ private:
     static const QString getTableNames_MSSQL_CMDTMP;
 
     QString getTableNames_MYSQL_CMD(const QString&);
-    QString getTableNames_MSSQL_CMD();
-    QList<QString> getTableNames_SQL(const QString&);
+    QString getTableNames_MSSQL_CMD(const QString&);
+    QStringList getTableNames_SQL(const QString&);
 
     /*fieldNames*/
     static const QString getFieldNames_MYSQL_CMDTMP;
@@ -93,8 +93,8 @@ public:
     QMap<int, QString> getTable_SQL_ENUM(const QString& tablanev, const QString& mezonev);
 
     /*db elemeinek kezelése*/
-    QList<QString> getSchemaNames();
-    QList<QString> getTableNames(const QString& schemaName);
+    QStringList getSchemaNames();
+    QStringList getTableNames(const QString& schemaName);
     QStringList getFieldNames(const QString& schemaName, const QString& tableName);
     QString getTablePKName(const QString& tablanev);
 };

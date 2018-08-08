@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "zlog.h"
 #include <QMessageBox>
+#include <QTextCodec>
 
 //zLog::zLog() = default;
 
@@ -119,7 +120,7 @@ void zLog::message(const QString& m){
     }
 
 void zLog::message(const char *m){
-    message(QString(m));
+    message(QString::fromUtf8(m));
     }
 
 /*ok*/
@@ -139,7 +140,7 @@ void zLog::ok(const QString& m){
     }
 
 void zLog::ok(const char *m){
-    ok(QString(m));
+    ok(QString::fromUtf8(m));
     }
 
 
@@ -148,6 +149,10 @@ void zLog::ok(const char *m){
 void zLog::dialogTrace(const QString& str) {
     dialog(str, TRACE);
 }
+
+void zLog::trace(const char *m){
+    trace(QString::fromUtf8(m));
+    }
 
 void zLog::trace(const QString& msg){
     log(msg, TRACE);
@@ -159,10 +164,13 @@ void zLog::trace(const QList<QString>& ml){
         }
     }
 
-void zLog::trace(const char *m){
-    trace(QString(m));
+void zLog::trace(const char *m, const QString& msg2){
+    trace(QString::fromUtf8(m) + ", " + msg2);
     }
 
+void zLog::trace(const QString& msg, const QString& msg2){
+    trace(msg + ", " + msg2);
+}
 /*warning*/
 
 void zLog::dialogWarning(const QString& str) {
@@ -180,7 +188,7 @@ void zLog::warning(const QList<QString>& ml){
     }
 
 void zLog::warning(const char *m){
-    warning(QString(m));
+    warning(QString::fromUtf8(m));
     }
 
 
@@ -201,5 +209,6 @@ void zLog::error(const QList<QString>& ml){
     }
 
 void zLog::error(const char *m){
-    error(QString(m));
+
+    error(QString::fromLocal8Bit(m));
     }
