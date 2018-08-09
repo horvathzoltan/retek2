@@ -7,8 +7,11 @@ zLog zlog;
 zTokenizer ztokenizer;
 
 QList<zConversionMap> globalCaptionMaps;
+QList<zConversionMap> projectCaptionMaps;
+
 QList<zConversionMap> globalSqlMaps;
 QList<zConversionMap> globalClassMaps;
+
 
 QMap<QString, QString> typeMap;
 QMap<QString, QString> typeMapR;

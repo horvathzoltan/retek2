@@ -20,7 +20,7 @@ public:
     bool isNullable;
     QString comment;
 
-    QString toString();
+    QString toString() const;
 
     bool operator==(const zTablerow&) const;
 

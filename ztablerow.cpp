@@ -17,7 +17,8 @@ zTablerow::zTablerow(const QString& colName, const QString& dtype, int dlen, boo
     this->Caption=caption;    
 }
 
-QString zTablerow::toString(){
+QString zTablerow::toString() const
+{
     return this->colName;
 }
 

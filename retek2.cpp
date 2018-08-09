@@ -106,6 +106,7 @@ void retek2::init()
 
     // Mezőmegnevezés
     globalCaptionMaps = zConversionMap::loadAll(sp, zFileNameHelper::captionFileFilter);
+    projectCaptionMaps = zConversionMap::loadAll(pp, zFileNameHelper::captionFileFilter);
     // típuskonverzió
     globalSqlMaps= zConversionMap::loadAll(sp, zFileNameHelper::sqlmapFileFilter);
     globalClassMaps= zConversionMap::loadAll(sp, zFileNameHelper::classmapFileFilter);
@@ -287,8 +288,8 @@ void retek2::add_zTablaToListWidget(const zTable& t){
 
 
 
-void retek2::mezoListaFeltolt(zTable t){
-    zlog.trace(__FUNCTION__, t.toString());
+void retek2::mezoListaFeltolt(const zTable& t){
+    zlog.trace(zfunc, t.toString());
     ui.tableWidget_MezoLista->blockSignals(true);
     ui.tableWidget_MezoLista->setRowCount(0);
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
@@ -305,7 +306,7 @@ void retek2::mezoListaFeltolt(zTable t){
 }
 
 void retek2::feltoltKulcsLista(zTable t) {
-    zlog.trace(__FUNCTION__, t.name);
+    zlog.trace(zfunc, t.name);
 
     ui.listWidget_IdegenKulcs->clear();
     if(!t.pkname.isEmpty()){
@@ -372,7 +373,7 @@ void retek2::GenerateAll() {
     {
         if(!table->sql_conn.isEmpty())
         {
-            zlog.trace("Enum");
+            zlog.trace(QStringLiteral("Enum"));
 
             auto dbconn = beallitasok.getUI();
             if(dbconn.isValid())
@@ -398,7 +399,7 @@ void retek2::GenerateAll() {
         }
         else
         {
-            zlog.trace("nem sql típusú");
+            zlog.trace(QStringLiteral("nem sql típusú"));
         }
     }
 
@@ -596,21 +597,20 @@ Macro def: Adm
 */
 void retek2::on_pushButton_3_clicked()
 {
-    zlog.trace(__FUNCTION__);    
+    zlog.trace(zfunc);
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText(txt);
 
-    if(tl.length()==0)
+    if(tl.isEmpty())
     {
-        zlog.error(QStringLiteral("nincs egyezés, nincs vizsgálat"));
-        return;
+        zlog.error(QStringLiteral("Nem jött létre tábla"));
     }
 
     zforeach(t,tl){
         if(zTable::find(ztables, t->name, zTableSearchBy::Name))
         {
-            zlog.error("Van már ilyen nevű tábla");
+            zlog.error(QStringLiteral("Van már ilyen nevű tábla"));
             continue;
         }
         ztables.append(*t);
@@ -631,7 +631,7 @@ Adm
 */
 void retek2::on_pushButton_4_clicked()
 {
-    zlog.trace(__FUNCTION__);
+    zlog.trace(zfunc);
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText_2(txt);
@@ -646,7 +646,7 @@ void retek2::on_pushButton_4_clicked()
     {
         if(zTable::find(ztables, t->name, zTableSearchBy::Name))
         {
-            zlog.error("Van már ilyen nevű tábla");
+            zlog.error(QStringLiteral("Van már ilyen nevű tábla"));
             continue;
         }
         ztables.append(*t);
@@ -1127,7 +1127,8 @@ QString retek2::getCaptionByRowIx(int idix)
     //if(caption.isEmpty())
     //{
         QString colName = ui.tableWidget_MezoLista->item(idix, C_ix_colName)->text().toLower();
-        caption = zConversionMap::external(globalCaptionMaps, colName);
+        //caption = zConversionMap::external(globalCaptionMaps, colName);
+        caption = zTable::getCaption(colName);
         if(caption.isEmpty())
         {
             zlog.warning(QStringLiteral("Nem határozható meg felirat a mezőnévhez: %1").arg(colName));

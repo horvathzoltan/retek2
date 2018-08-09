@@ -51,7 +51,7 @@ public:
     //static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMySQL(QString, QMap<QString, QString>, QString );
 
-    QString toString();
+    QString toString() const;
 
     QList<QString> Compare(zTable);
 
@@ -67,7 +67,7 @@ public:
 
     static bool getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
 
-    static bool getClassType(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
+    static bool getClassType(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings = false);
 
     QStringList getFK();
     QStringList getRFK();
@@ -94,6 +94,8 @@ public:
     void saveTablaToXML();
 
     bool Validate(const QList<zTable>& tables, const QStringList& knownTypeNames);
+
+    static QString getCaption(const QString& fname);
 };
 
 #endif // ZTABLE_H

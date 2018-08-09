@@ -83,7 +83,7 @@ private:
     void zTableNamesToUi(const zTable& t);
     void zTableNamesFromUi(zTable& t);
 
-    void mezoListaFeltolt(zTable t);
+    void mezoListaFeltolt(const zTable &t);
     void feltoltKulcsLista(zTable t);
     //void feltoltFk(zTable t);
 

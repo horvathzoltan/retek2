@@ -12,13 +12,14 @@
 
 #define zforeach(var, container) for(auto (var) = (container).begin(); (var) != (container).end(); ++(var))
 #define zforeach_from(var, container, ix) for(auto (var) = (container).begin()+(ix); (var) != (container).end(); ++(var))
+#define zfunc QStringLiteral(__FUNCTION__)
 
 extern Beallitasok beallitasok;
 extern zLog zlog;
 //extern zSQL zsql;
 extern zTokenizer ztokenizer;
 extern QList<zConversionMap> globalCaptionMaps;
-
+extern QList<zConversionMap> projectCaptionMaps;
 
 // azok a belső osztályok vannak, amik ezekben kulcsként szerepelnek:
 // belső -> sql

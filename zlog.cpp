@@ -119,9 +119,9 @@ void zLog::message(const QString& m){
     log(m, MESSAGE);
     }
 
-void zLog::message(const char *m){
-    message(QString::fromUtf8(m));
-    }
+//void zLog::message(const char *m){
+//    message(QString::fromLocal8Bit(m));
+//    }
 
 /*ok*/
 
@@ -139,9 +139,9 @@ void zLog::ok(const QString& m){
     log(m, OK);
     }
 
-void zLog::ok(const char *m){
-    ok(QString::fromUtf8(m));
-    }
+//void zLog::ok(const char *m){
+//    ok(QString::fromLocal8Bit(m));
+//    }
 
 
 
@@ -150,9 +150,10 @@ void zLog::dialogTrace(const QString& str) {
     dialog(str, TRACE);
 }
 
-void zLog::trace(const char *m){
-    trace(QString::fromUtf8(m));
-    }
+//void zLog::trace(const char *m){
+//    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+//    trace(QString::fromLocal8Bit(m));
+//    }
 
 void zLog::trace(const QString& msg){
     log(msg, TRACE);
@@ -164,13 +165,14 @@ void zLog::trace(const QList<QString>& ml){
         }
     }
 
-void zLog::trace(const char *m, const QString& msg2){
-    trace(QString::fromUtf8(m) + ", " + msg2);
-    }
+//void zLog::trace(const char *m, const QString& msg2){
+//    trace(QString::fromLocal8Bit(m) + ", " + msg2);
+//    }
 
 void zLog::trace(const QString& msg, const QString& msg2){
-    trace(msg + ", " + msg2);
+    trace(msg + ": " + msg2);
 }
+
 /*warning*/
 
 void zLog::dialogWarning(const QString& str) {
@@ -187,9 +189,9 @@ void zLog::warning(const QList<QString>& ml){
         }
     }
 
-void zLog::warning(const char *m){
-    warning(QString::fromUtf8(m));
-    }
+//void zLog::warning(const char *m){
+//    warning(QString::fromLocal8Bit(m));
+//    }
 
 
 /*error*/
@@ -208,7 +210,6 @@ void zLog::error(const QList<QString>& ml){
         }
     }
 
-void zLog::error(const char *m){
-
-    error(QString::fromLocal8Bit(m));
-    }
+//void zLog::error(const char *m){
+//    error(QString::fromLocal8Bit(m));
+//    }

@@ -145,7 +145,8 @@ void zTable::initSql(const QString& _sql_conn, const QString& _sql_schema, const
 }
 
 
-QString zTable::toString(){
+QString zTable::toString() const
+{
     QString rs = zStringHelper::Empty;
     QString ps;
     zforeach(r, this->rows){
@@ -343,91 +344,79 @@ bool zTable::getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, b
 }
 
 
-bool zTable::getClassType(const QString& ezt2,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
+bool zTable::getClassType(const QString& ezt2,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings)
 {
 //    zlog.trace(getClassType)
-    auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+   // auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+   // auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_dlen3 = QRegularExpression(QStringLiteral(R"((\w)\(?(\d+)\)?$)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
     auto re_isnullable = QRegularExpression(QStringLiteral(R"(nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
     QString ezt1 = ezt2.toLower();
 
+    bool isDtype = false;
+
     auto m_isNullable = re_isnullable.match(ezt1);
+
     QString typeName;
+    bool inullable;
+    int idlen=0;
 
     if(isRequired)
     {
-        *nullable = false;
+        inullable = false;
         typeName = ezt1;
     }
     else{
         if(m_isNullable.hasMatch())
         {
-            *nullable = true;
+            inullable = true;
             typeName = getFirstNotNull(m_isNullable, 2);
         }
         else
         {
-            *nullable = false;
+            inullable = false;
             typeName = ezt1;
         }
     }
 
-    bool isDtype = false;
+     auto i2 = re_dlen3.match(typeName);
+     if(i2.hasMatch())
+     {
+         bool isOK;
+         int n = i2.captured(2).toInt(&isOK);
+         if(isOK) idlen = n;
+         typeName = typeName.left(i2.capturedStart(1)+1);
+     }
 
-    /*
-    if(zStringMapHelper::contains(&typeMap, typeName))
-    {
-        QString k = zStringMapHelper::getKey(&typeMap, typeName);
-        *dtype =  typeMap.value(k);;
-        isDtype = true;
-    }
-    else if(zStringMapHelper::contains(&typeMapR, typeName))
-    {
-        QString k = zStringMapHelper::getKey(&typeMapR, typeName);
-        *dtype =  typeMapR.value(k);;
-        isDtype = true;
-    }*/
-    //külső típus felől megyünk     belső típus fele
     QStringList fl = zConversionMap::internals(globalClassMaps, typeName);
 
     if(fl.isEmpty())
     {
-        zlog.warning(QStringLiteral("Nem található belső adatábrázolási típus: %1").arg(ezt1));
+        if(!noWarnings)
+        {
+            zlog.warning(QStringLiteral("Nem található belső adatábrázolási típus: %1").arg(ezt1));
+        }
     }
     else
     {
         if(fl.count()>1)
         {
-            zlog.error(QStringLiteral("Több típus is javasolt: %1").arg(fl.join(',')));
-        }
-
-        *dtype =  fl.first();
-        isDtype = true;
-    }
-    // elvileg itt már csak kollekció esetén a darabszámot kell megszerezni
-
-        auto i2 = re_dlen1.match(typeName);
-        if(i2.hasMatch())
-        {
-            bool isOK;
-            int n = i2.captured(1).toInt(&isOK);
-            if(isOK) *dlen = n;
-        }
-        else
-        {
-             i2 = re_dlen2.match(typeName);
-             if(i2.hasMatch())
-             {
-                 bool isOK;
-                 int n = i2.captured(1).toInt(&isOK);
-                 if(isOK) *dlen = n;
+            if(!noWarnings)
+            {
+                zlog.warning(QStringLiteral("Több típus is javasolt: %1 -> %2").arg(ezt1, fl.join(',')));
             }
         }
 
+        *dtype =  fl.first();
+        *nullable = inullable;
+        *dlen = idlen;
+        isDtype = true;
+    }
 
-    if(typeName.isEmpty()){
+    if(typeName.isEmpty())
+    {
         zlog.error(QStringLiteral("getClassType: Unknown type: %1").arg(ezt1));
     }
 
@@ -450,18 +439,26 @@ QStringList zTable::getFK(){
 
 QStringList zTable::getFKclass_name(){
     QStringList fknames;
-    zforeach(t, ztables){
+    zforeach(t, ztables)
+    {
         QString pn = t->class_name+t->pkname;
-        if(containsRow(pn)){
+        if(containsRow(pn))
+        {
            fknames<<t->class_name;
         }
-        }
+    }
     return fknames;
 }
 
-bool zTable::containsRow(const QString& n){
+bool zTable::containsRow(const QString& n)
+{
     zforeach(r, this->rows)
-        if( r->colName.toLower()==n.toLower() ) return true;
+    {
+        if(r->colName.toLower()==n.toLower())
+        {
+            return true;
+        }
+    }
     return false;
 }
 
@@ -709,11 +706,13 @@ QList<zTable> zTable::createTableByText(QString txt)
             QRegularExpressionMatch m = i.next();
             QString tn=m.captured(1).trimmed();            
             QString pkn = QStringLiteral("id");
-            auto fns=m.captured(2).split(QRegularExpression(QStringLiteral(R"([\n|\r\n|\r])")), QString::SkipEmptyParts);
+            //QString fn_line = m.captured(2);
+            auto fn_lines = m.captured(2).split(QRegularExpression(QStringLiteral(R"([\n|\r\n|\r])")), QString::SkipEmptyParts);
             rl.clear();
             //QList<zTablerow> pl;
-
-            zforeach(fn, fns){
+            int rl_counter = 0;
+            zforeach(fn, fn_lines){
+               rl_counter++;
                if(fn->isEmpty()) continue;
                if(*fn==QStringLiteral("_")) continue;
 
@@ -726,7 +725,8 @@ QList<zTable> zTable::createTableByText(QString txt)
                auto fns = fn->split(',', QString::SkipEmptyParts);
                QString fname = fns[0].trimmed();
 
-               if(fns.length()>1){
+               if(fns.length()>1)
+               {
                    zforeach_from(fn2, fns, 1){
                        auto fn3s= fn2->split(' ', QString::SkipEmptyParts);
                        bool isDtype = false;
@@ -743,8 +743,8 @@ QList<zTable> zTable::createTableByText(QString txt)
                                ezt1 = *fn3;
                            }                           
                            //típus vizsgálat
-
-                           isDtype = zTable::getClassType(ezt1, &dtype, &dlen, &isNullable, false);
+                           // csak egy típus felismerés - próbálkozásos alapon, így a warningokat elnyomjuk
+                           isDtype = zTable::getClassType(ezt1, &dtype, &dlen, &isNullable, false, true);
                            }
                        // a típus tulajdonságainak meghatározása, pl.
                        // ha a sorban a szavak közt van "required" akkor isrequired true
@@ -792,13 +792,14 @@ QList<zTable> zTable::createTableByText(QString txt)
                     }
                if(dtype.isEmpty())
                {
-                   zlog.error(QStringLiteral("nem meghatározható típus: %1").arg(ezt1));
+                   // az egész sor releváns - nem tudjuk melyik szava milyen információt hordoz - illetve melyiknem mit kellene
+                   zlog.error(QStringLiteral("%1 sor: nincs meghatározható típus: %2").arg(rl_counter).arg(*fn));
                }
                else
                {
                    if(caption.isEmpty())
-                   {
-                        caption = zConversionMap::external(globalCaptionMaps, fname);
+                   {                                          
+                       caption = getCaption(fname);
                    }
                    auto r = zTablerow(fname, dtype, dlen, isNullable, caption);
                    rl.append(r);
@@ -829,6 +830,30 @@ QList<zTable> zTable::createTableByText(QString txt)
     return tl;
 }
 
+QString zTable::getCaption(const QString& fname){
+    QString caption;
+    auto sp = zFileNameHelper::getSettingsDir();
+    auto pp = zFileNameHelper::getProjectDir();
+
+    // TODO a lokális terminológiát - terminológiákat tároló táblák használata
+    // - caption = getCaption(fname)
+    // ha a lokális tábla módosult a legutolsó betöltés óta - ezek időbélyegeit le kell tenni
+    // keresás a lokális táblában
+    // sikertelenség esetén
+    // keresés a globális táblákban
+    zConversionMap::reLoadAll(globalCaptionMaps, sp, zFileNameHelper::captionFileFilter);
+    zConversionMap::reLoadAll(projectCaptionMaps, pp, zFileNameHelper::captionFileFilter);
+
+    //globalCaptionMaps = zConversionMap::reLoadAll(sp, zFileNameHelper::captionFileFilter);
+    caption = zConversionMap::external(projectCaptionMaps, fname);
+
+    if(caption.isEmpty())
+    {
+        caption = zConversionMap::external(globalCaptionMaps, fname);
+    }
+
+    return caption;
+}
 
 /*
 #Adm
@@ -873,7 +898,8 @@ QList<zTable> zTable::createTableByText_2(QString txt){
     auto i = re.globalMatch(txt);
     QList<zTable> tl;
     QList<zTablerow> rl;
-    QVector<zTablerow> pls;
+    //QVector<zTablerow> tableRows;
+    QStringList fieldNames;
     if(i.hasNext()){
         while(i.hasNext()){
             QRegularExpressionMatch m = i.next();
@@ -884,71 +910,56 @@ QList<zTable> zTable::createTableByText_2(QString txt){
             rl.clear();//resize(0);
             //QList<zTablerow> pl;
 
-            zforeach(fn, fns){ // sorok
+            zforeach(fn, fns)
+            { // sorok
                if(fn->isEmpty()) continue;
                if(*fn==QStringLiteral("_")) continue;
 
                QString dtype= zStringHelper::Empty;
                int dlen = 0;
                bool isNullable = true;
-              // QString caption = "";
 
                auto fns = fn->split(' ', QString::SkipEmptyParts);
 
-               //zlog.trace("sor:"+*fn);
-
-               if(fns.length()>2){ //szavak (mezők)
+               if(fns.length()>2) //szavak (mezők) - legalább kettő/sor: egy típus és egy mező kell, hogy legyen
+               {
                     bool isDtype = false;
-                    //QVector<zTablerow> pls;
-                    pls.resize(0);
-                    zforeach(fn2, fns){
-                        //zlog.trace("szó:"+*fn2);
-                        // todo vizsgálni, típus-e, ha igen, megvan. (string - hossz)
-                        // amúgy mezőnév lesz
-                        // ezért megy a mezőnév listába
-                        isDtype = zTable::getClassType(*fn2, &dtype, &dlen, &isNullable, false);
-                        if (isDtype){
-                            zlog.trace("sortípus:"+*fn2);
-                        }
-//                        if (!isDtype){
-//                            //dtype = "property";
-//                            //dlen = 0;
-
-//                            auto r = zTablerow(*fn2, "property", 0, false, "");
-//                            pls.append(r);
-//                        }
-//                        else{
-//                            zlog.trace("sortípus:"+*fn2);
-//                        }
-                    }
-
-                    zforeach(p, pls){
-                        if(!dtype.isEmpty())
+                    fieldNames.clear();//.resize(0);//mező lista
+                    // a vizsgált sor szavanként
+                    zforeach(word, fns)
+                    {
+                        // a vizsgált szó vagy típus, vagy mező
+                        // Elnyomjuk a warningokat - a szavankénti próbálkozás miatt - soronként csak egy lesz jó
+                        isDtype = zTable::getClassType(*word, &dtype, &dlen, &isNullable, false, true);
+                        if (isDtype)
                         {
-                            if(p->Caption.isEmpty())
-                            {
-                                p->Caption = zConversionMap::external(globalCaptionMaps, p->colName);
-                            }
-                            p->colType = dtype;
-                            p->dlen = dlen;
-                            rl.append(*p);
+                            zlog.trace(QStringLiteral("sortípus: %1").arg(*word));
                         }
                         else
                         {
-                           // pl.append(*p);
+                            fieldNames.append(*word);
                         }
-
                     }
 
+                    if(!dtype.isEmpty())
+                    {
+                        zforeach(fn, fieldNames)
+                        {
+                            QString caption = zConversionMap::external(globalCaptionMaps, *fn);
 
+                            zTablerow p(*fn, dtype, dlen, isNullable, caption);
+                            rl.append(p);
+                        }
+                    }
+                    else
+                    {
+                       zlog.trace(QStringLiteral("nem található sortípus: %1").arg(*fn));
+                    }
                     // ha van mezőnév lista
                     // ha van ismert típus, akkor mezőlistához,
                     // ha nincs ismert a típus,
                     // a property listához adjuk hozzá
-
                }
-
-
             }
             auto t = zTable(tn, pkn, rl);//,  TXT, tn, zStringHelper::Empty);
             QString pluralClassName;
@@ -1137,7 +1148,8 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
 
                             //QString row = m_attrOrProp.captured(0);
                             //bool isDtype =
-                                    zTable::getClassType(propType, &dtype, &dlen, &isNullable, isRequired);
+
+                                 zTable::getClassType(propType, &dtype, &dlen, &isNullable, isRequired);
 
 //                            if(isRequired){
 //                                isNullable = false;
@@ -1261,7 +1273,11 @@ QList<zTable> zTable::createTableByClassTxt(const QString& txt){
 
     auto tl = zTable::createTableByText_3(txt, &constNameMap);
 
-    if(tl.length()==0) { zlog.error("nem jött létre adat"); return tl;}
+    if(tl.length()==0)
+    {
+        zlog.error(QStringLiteral("nem jött létre adat"));
+        return tl;
+    }
 
     if(!beallitasok.currentProjectName.isEmpty()){
         return tl;

@@ -4,6 +4,7 @@
 #include "zstringhelper.h"
 #include "zstringmaphelper.h"
 
+#include <QFileInfo>
 #include <QTextCodec>
 
 zConversionMap::zConversionMap() = default;
@@ -32,12 +33,19 @@ QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QSt
 }
 
 zConversionMap zConversionMap::load(const QString& fileFullName){
-    zlog.trace("zConversionMapLoad: " + fileFullName);
+    zlog.trace(zfunc, fileFullName);
     zConversionMap e;
     QString fileName = zFileNameHelper::getfileName(fileFullName);  
-    e.name = fileName;
 
     load(fileFullName, &e.list);
+    e.fullname = fileFullName;
+    e.name = fileName;
+    e.lastloaded = QDateTime::currentDateTime();
+
+    if(e.list.isEmpty())
+    {
+        zlog.warning(QStringLiteral("Nem tartalmaz sorokat: %1").arg(fileName));
+    }
     return e;
 }
 
@@ -121,7 +129,7 @@ QStringList zConversionMap::internals(const QString& c) const {
 }
 
 void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
-    zlog.trace(QStringLiteral("Beolvasás: %1").arg(fn));
+    zlog.trace(zfunc, fn);
     QFile file(fn);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
@@ -159,3 +167,57 @@ void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
 
     zlog.ok(QStringLiteral("Beolvasva: %1").arg(fn));
 }
+
+
+void zConversionMap::reLoadAll(QList<zConversionMap>& maps, const QString& filePath, const QStringList& fileNameFilters){
+    //QList<zConversionMap> e;
+
+    QStringList files = zFileNameHelper::FindFileNameInDir(filePath, zStringHelper::Empty, fileNameFilters);
+    bool toLoad = true;
+
+    zforeach(f, files){
+        auto f_ix = indexByFullName(maps, *f);
+        if(f_ix>-1)
+        {
+            toLoad = false; //  magunk gondoskodunk róla - frissítés
+            auto m = maps[f_ix];
+            // ha megvan, azaz van ilyen, meginfózzuk, ha van újabb, csere van
+            QFileInfo fileInfo(*f);
+            if((fileInfo.lastModified()) > (m.lastloaded)) // - frissítés
+            {
+                auto lm = load(*f);
+                maps.replace(f_ix, lm);
+            }
+        }
+
+        if(toLoad)
+        {
+            auto m = load(*f);
+            maps.append(m);
+        }
+    }
+}
+
+int zConversionMap::indexByFullName(const QList<zConversionMap>& maps, const QString& fullName){
+    for(int i = 0;i<maps.count();i++)
+    {
+        auto m = maps[i];
+        if(m.fullname==fullName)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+//zConversionMap zConversionMap::reLoad(const QString& fileFullName){
+//    zlog.trace(zfunc, fileFullName);
+//    QString fileName = zFileNameHelper::getfileName(fileFullName);
+
+//    zConversionMap e;
+
+//    load(fileFullName, &e.list);
+//    e.name = fileName;
+//    e.lastloaded = QDateTime::currentDateTime();
+
+//    return e;
+//}
