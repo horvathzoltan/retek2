@@ -830,6 +830,7 @@ QList<zTable> zTable::createTableByText(QString txt)
     return tl;
 }
 
+// TODO getCaption bevezetése mindenhol
 QString zTable::getCaption(const QString& fname){
     QString caption;
     auto sp = zFileNameHelper::getSettingsDir();
