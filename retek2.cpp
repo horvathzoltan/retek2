@@ -289,7 +289,7 @@ void retek2::add_zTablaToListWidget(const zTable& t){
 
 
 void retek2::mezoListaFeltolt(const zTable& t){
-    zlog.trace(zfunc, t.toString());
+    zlog.trace(zinfo(), t.toString());
     ui.tableWidget_MezoLista->blockSignals(true);
     ui.tableWidget_MezoLista->setRowCount(0);
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
@@ -306,7 +306,7 @@ void retek2::mezoListaFeltolt(const zTable& t){
 }
 
 void retek2::feltoltKulcsLista(zTable t) {
-    zlog.trace(zfunc, t.name);
+    zlog.trace(zinfo(), t.name);
 
     ui.listWidget_IdegenKulcs->clear();
     if(!t.pkname.isEmpty()){
@@ -597,7 +597,7 @@ Macro def: Adm
 */
 void retek2::on_pushButton_3_clicked()
 {
-    zlog.trace(zfunc);
+    zlog.trace(zinfo());
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText(txt);
@@ -631,7 +631,7 @@ Adm
 */
 void retek2::on_pushButton_4_clicked()
 {
-    zlog.trace(zfunc);
+    zlog.trace(zinfo());
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText_2(txt);

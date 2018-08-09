@@ -12,7 +12,8 @@
 
 #define zforeach(var, container) for(auto (var) = (container).begin(); (var) != (container).end(); ++(var))
 #define zforeach_from(var, container, ix) for(auto (var) = (container).begin()+(ix); (var) != (container).end(); ++(var))
-#define zfunc QStringLiteral(__FUNCTION__)
+
+//QStringLiteral(Q_FUNC_INFO)
 
 extern Beallitasok beallitasok;
 extern zLog zlog;
@@ -45,9 +46,10 @@ static constexpr int C_ix_colType=2;
 static constexpr int C_ix_dlen=3;
 static constexpr int C_ix_nullable=4;
 
-#endif // GLOBALS_H
+
 
 #define nameof(x) bravikov::_nameof<0>(#x, sizeof(x))
+#define zinfo() bravikov::_zinfo(Q_FUNC_INFO)
 
 class zLogicException: public QException
 {
@@ -74,4 +76,20 @@ namespace bravikov {
         }
         throw zLogicException("A bad expression x in nameof(x). The expression is \"" + x + "\".");
     }
-}  // namespace bravikov
+
+    static QString _zinfo(const char* y) {
+        QString x(y);
+
+        QRegularExpression re(QStringLiteral(R"(([\w]+::[\w]+))"));
+        QRegularExpressionMatch m = re.match(x);
+
+        if (m.hasMatch())
+        {
+            return m.captured(m.lastCapturedIndex());
+        }
+        throw zLogicException("A bad expression x in _zinfo(x). The expression is \"" + x + "\".");
+    }
+}// namespace bravikov
+
+
+#endif // GLOBALS_H

@@ -33,7 +33,7 @@ QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QSt
 }
 
 zConversionMap zConversionMap::load(const QString& fileFullName){
-    zlog.trace(zfunc, fileFullName);
+    zlog.trace(zinfo(), fileFullName);
     zConversionMap e;
     QString fileName = zFileNameHelper::getfileName(fileFullName);  
 
@@ -129,7 +129,7 @@ QStringList zConversionMap::internals(const QString& c) const {
 }
 
 void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
-    zlog.trace(zfunc, fn);
+    zlog.trace(zinfo(), fn);
     QFile file(fn);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
