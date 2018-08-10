@@ -946,7 +946,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                     {
                         zforeach(fn, fieldNames)
                         {
-                            QString caption = zConversionMap::external(globalCaptionMaps, *fn);
+                            QString caption = zTable::getCaption(*fn);//zConversionMap::external(globalCaptionMaps, *fn);
 
                             zTablerow p(*fn, dtype, dlen, isNullable, caption);
                             rl.append(p);
@@ -1165,7 +1165,7 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
 //                            zlog.log("   isRequired: "+((isRequired)?QString("true"):QString("false")));
 //                            zlog.log("   MaxLength: "+MaxLength);
                             if(Caption.isEmpty()){
-                                Caption = zConversionMap::external(globalCaptionMaps, propName);
+                                Caption = zTable::getCaption(propName);//zConversionMap::external(globalCaptionMaps, propName);
                             }
                             auto r = zTablerow(propName, dtype, dlen, isNullable, Caption);
                             rl.append(r);
