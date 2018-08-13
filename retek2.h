@@ -27,6 +27,10 @@ public:
     void loadCurrentProject();
     
     QStringList listWidgetItemsText(QList<QListWidgetItem *> items);
+
+    void validateCurrentProject_SQL();
+    void validateCurrentProject_Source();
+    void validateCurrentProject_Document();
 private slots:
 	void GenerateAll();
 

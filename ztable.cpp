@@ -1395,3 +1395,31 @@ bool zTable::Validate(const QList<zTable>& tables, const QStringList& knownTypeN
     }
     return v;
 }
+
+QDateTime zTable::getSqlTimestamp()
+{
+    return QDateTime::currentDateTime();
+}
+
+QDateTime zTable::getSourceTimestamp()
+{
+    return QDateTime::currentDateTime();
+}
+
+QDateTime zTable::getDocTimestamp()
+{
+    return QDateTime::currentDateTime();
+}
+
+void zTable::validateSQL(){
+
+}
+
+
+void zTable::validateSource(){
+
+}
+
+void zTable::validateDocument(){
+
+}

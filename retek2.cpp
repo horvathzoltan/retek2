@@ -115,6 +115,9 @@ void retek2::init()
     beallitasok.fillProjectList(projectdirs);
 
     loadCurrentProject();
+    validateCurrentProject_SQL();
+    validateCurrentProject_Source();
+    validateCurrentProject_Document();
 
     ztokenizer.init(ui.tableWidget_MezoLista);
 
@@ -207,7 +210,34 @@ void retek2::loadCurrentProject()
     }
 }
 
+void retek2::validateCurrentProject_SQL(){
+    zforeach(t, ztables)
+    {
+        if(!t->sql_conn.isEmpty()){
+            QDateTime = t2->getSqlTimestamp();
+            if(t2>t->sql_timestamp)
+            {
+                t->validateSQL();
+            } // egyébként nincs változás
+        }
+    }
+}
 
+void retek2::validateCurrentProject_Source(){
+    zforeach(t, ztables)
+    {
+        if(!t->class_path.isEmpty()){
+            t->validateSource();
+        }
+    }
+}
+
+void retek2::validateCurrentProject_Document(){
+    zforeach(t, ztables)
+    {
+        t->validateDocument();
+    }
+}
 
 void retek2::add_zTablaToListWidget(const zTable& t){
     QString tn = t.name; // displayed name

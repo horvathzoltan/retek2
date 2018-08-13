@@ -46,24 +46,8 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0" rowspan="4">
+       <item row="0" column="0" rowspan="2">
         <widget class="QListWidget" name="listWidget_ztables">
-         <property name="minimumSize">
-          <size>
-           <width>120</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>120</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QListWidget" name="listWidget_3">
          <property name="minimumSize">
           <size>
            <width>120</width>
@@ -93,6 +77,9 @@
           </size>
          </property>
         </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QTableWidget" name="tableWidget"/>
        </item>
       </layout>
      </widget>
@@ -333,7 +320,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">

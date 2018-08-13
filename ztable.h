@@ -7,7 +7,7 @@
 #include "zstringhelper.h"
 #include "ztablerow.h"
 
-enum zTableSourceTypes:int { SQL=0, TXT=1, ENTITY=2 };
+//enum zTableSourceTypes:int { SQL=0, TXT=1, ENTITY=2 };
 
 enum zTableSearchBy{ Name, TableName, class_name, class_namePlural };
 
@@ -34,10 +34,14 @@ public:
     QString sql_conn;
     QString sql_schema;
     QString sql_table;//sql_table;
+    bool sql_isValid;
+    QDateTime sql_updateTimeStamp;
 
     QString class_path;//class_path // ez pedig az az entitás, ami a forráskódban osztályként írja le az adatot - elvileg ez egy adott osztályt tartalmazó file teljes neve
     QString class_name; // osztálynév - singular, ezt a zTables példány létrehozásakor létre lehet már hozni, és validálni egy szabály szerint
     QString class_name_plural; // killekció - osztálynév
+    bool source_isValid;
+    QDateTime source_updateTimeStamp;
 
     QString comment;
     QString pkname; // rowix
@@ -46,6 +50,8 @@ public:
     // a megnevezés képzésének szabálya, leírója
     QString name_formatstring;
     QDateTime updateTime;
+    bool document_isValid;
+    QDateTime document_updateTimeStamp;
 
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );
@@ -96,6 +102,13 @@ public:
     bool Validate(const QList<zTable>& tables, const QStringList& knownTypeNames);
 
     static QString getCaption(const QString& fname);
+    void validateSQL();
+    void validateSource();
+    void validateDocument();
+
+    QDateTime getSqlTimestamp();
+    QDateTime getSourceTimestamp();
+    QDateTime getDocTimestamp();
 };
 
 #endif // ZTABLE_H
