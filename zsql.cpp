@@ -453,3 +453,9 @@ const QString zSQL::getSchemaNames_MYSQL_CMDTMP = QStringLiteral("SELECT DISTINC
                                               "WHERE TABLE_SCHEMA not in('mysql', 'performance_schema', 'information_schema','sys') ORDER BY schema_name" );
 
 const QString zSQL::getSchemaNames_MSSQL_CMDTMP = QStringLiteral("SELECT name AS schema_name FROM sys.databases WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb') ORDER BY schema_name");
+
+/*const QString zSQL::getTable_MSSQL_PKTMP =
+ * "SELECT name, create_date, modify_date
+FROM BuildInfoFlex.sys.objects
+where type='U'
+"*/
