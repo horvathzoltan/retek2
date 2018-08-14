@@ -204,6 +204,10 @@ void zLog::error(const QString& m){
     log(m, ERROR);
     }
 
+void zLog::error(const QString& msg, const QString& msg2){
+    error(msg + ": " + msg2);
+}
+
 void zLog::error(const QList<QString>& ml){
     zforeach(m, ml){
         error(*m);

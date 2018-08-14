@@ -28,12 +28,12 @@ public:
 
     QList<QString> Validate(zTablerow*);
     QString CompareCaption(const QString&);
-    QString CompareColType(const QString&);
+    bool isKnownTypeName(const QString&);
     QString ValidateNullable(bool);
     QString ValidateDLen(int);
     void toXML(QXmlStreamWriter*);
     static zTablerow fromXML(QXmlStreamReader*);
-    bool Validate2(const QStringList& colNames, const QStringList&  knownTypeNames );
+    bool Validate2(const QStringList& colNames);
     const zTablerow* find(const QList<zTablerow>& rows, const QString& rn);
     static QStringList colNames(const QList<zTablerow>& rows);
 };

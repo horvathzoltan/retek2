@@ -33,6 +33,8 @@ public:
     QString currentProjectName;
     QList<dbConnection> dbConnections;
 
+    dbConnection* findDbConnection(const QString& connName);
+
     Beallitasok();
     ~Beallitasok();
 

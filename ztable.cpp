@@ -273,75 +273,75 @@ createTableByText_3
 globalSqlMaps
 globalClassMaps
 */
-bool zTable::getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
-{
-    auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+//bool zTable::getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
+//{
+//    auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+//    auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
-    auto re_isnullable = QRegularExpression(QStringLiteral(R"(Nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    //
-    auto m_isNullable = re_isnullable.match(ezt1);
-    QString typeName;
+//    auto re_isnullable = QRegularExpression(QStringLiteral(R"(Nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+//    //
+//    auto m_isNullable = re_isnullable.match(ezt1);
+//    QString typeName;
 
-    if(isRequired)
-    {
-        *nullable = false;
-        typeName = ezt1;
-    }
-    else{
-        if(m_isNullable.hasMatch())
-        {
-            *nullable = true;
-            typeName = getFirstNotNull(m_isNullable, 2);
-        }
-        else
-        {
-            *nullable = false;
-            typeName = ezt1;
-        }
-    }
+//    if(isRequired)
+//    {
+//        *nullable = false;
+//        typeName = ezt1;
+//    }
+//    else{
+//        if(m_isNullable.hasMatch())
+//        {
+//            *nullable = true;
+//            typeName = getFirstNotNull(m_isNullable, 2);
+//        }
+//        else
+//        {
+//            *nullable = false;
+//            typeName = ezt1;
+//        }
+//    }
 
-    bool isDtype = false;
+//    bool isDtype = false;
 
-    if(zStringMapHelper::contains(&typeMap, typeName))
-    {
-        QString k = zStringMapHelper::getKey(&typeMap, typeName);
-        *dtype =  typeMap.value(k);;
-        isDtype = true;
-    }
-    else if(zStringMapHelper::contains(&typeMapR, typeName))
-    {
-        QString k = zStringMapHelper::getKey(&typeMapR, typeName);
-        *dtype =  typeMapR.value(k);;
-        isDtype = true;
-    }
-    else
-    {
-        auto i2 = re_dlen1.match(typeName);
-        if(i2.hasMatch())
-        {
-            bool isOK;
-            int n = i2.captured(1).toInt(&isOK);
-            if(isOK) *dlen = n;
-        }
-        else
-        {
-             i2 = re_dlen2.match(typeName);
-             if(i2.hasMatch())
-             {
-                 bool isOK;
-                 int n = i2.captured(1).toInt(&isOK);
-                 if(isOK) *dlen = n;
-            }
-        }
-    }
+//    if(zStringMapHelper::contains(&typeMap, typeName))
+//    {
+//        QString k = zStringMapHelper::getKey(&typeMap, typeName);
+//        *dtype =  typeMap.value(k);;
+//        isDtype = true;
+//    }
+//    else if(zStringMapHelper::contains(&typeMapR, typeName))
+//    {
+//        QString k = zStringMapHelper::getKey(&typeMapR, typeName);
+//        *dtype =  typeMapR.value(k);;
+//        isDtype = true;
+//    }
+//    else
+//    {
+//        auto i2 = re_dlen1.match(typeName);
+//        if(i2.hasMatch())
+//        {
+//            bool isOK;
+//            int n = i2.captured(1).toInt(&isOK);
+//            if(isOK) *dlen = n;
+//        }
+//        else
+//        {
+//             i2 = re_dlen2.match(typeName);
+//             if(i2.hasMatch())
+//             {
+//                 bool isOK;
+//                 int n = i2.captured(1).toInt(&isOK);
+//                 if(isOK) *dlen = n;
+//            }
+//        }
+//    }
 
-    if(typeName.isEmpty()){
-        zlog.error(QStringLiteral("getType: Unknown type: %1").arg(ezt1));
-    }
+//    if(typeName.isEmpty()){
+//        zlog.error(QStringLiteral("getType: Unknown type: %1").arg(ezt1));
+//    }
 
-    return isDtype;
-}
+//    return isDtype;
+//}
 
 
 bool zTable::getClassType(const QString& ezt2,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings)
@@ -493,8 +493,6 @@ Szükséges, hogy egy fájl egy táblát tartalmazzon, külömben követhetetlen
 */
 QList<zTable> zTable::createTableByXML(const QString& txt){
    QList<zTable> tl;
-   QStringList knownTypeNames;
-   knownTypeNames << zConversionMap::internals(globalClassMaps) << zConversionMap::internals(globalSqlMaps);
    QXmlStreamReader xml(txt);
 //    while(!xml.atEnd()){
 //        xml.readNext();
@@ -509,7 +507,7 @@ QList<zTable> zTable::createTableByXML(const QString& txt){
                 if(xml.name()==nameof(zTable))
                 {
                     zTable t = fromXML(&xml);
-                    //t.Validate(tl, knownTypeNames);
+                    //t.Validate(tl);
                     tl.append(t);
 
                 }
@@ -522,7 +520,7 @@ QList<zTable> zTable::createTableByXML(const QString& txt){
         else if(xml.name() == QStringLiteral("zTable"))
         {
             zTable t = fromXML(&xml);
-            //t.Validate(tl, knownTypeNames);
+            //t.Validate(tl);
             tl.append(t);
         }
         else
@@ -811,10 +809,8 @@ QList<zTable> zTable::createTableByText(QString txt)
             auto className = zTable::getClassName(tn, pluralClassName);
             t.initClass(className, pluralClassName);
 
-            QStringList knownTypeNames;
-            knownTypeNames << zConversionMap::internals(globalClassMaps) << zConversionMap::internals(globalSqlMaps);
-
-            bool isValid = t.Validate(tl, knownTypeNames);
+//
+            bool isValid = t.Validate(tl);
             if(isValid)
             {
                 tl.append(t);
@@ -1363,7 +1359,7 @@ void zTable::saveTablaToXML() {
    azok a belső osztályok vannak, amik ezekben kulcsként szerepelnek: globalSqlMaps, globalClassMaps
 */
 
-bool zTable::Validate(const QList<zTable>& tables, const QStringList& knownTypeNames){
+bool zTable::Validate(const QList<zTable>& tables){
     bool v= true;
 
     if(name.isEmpty()){
@@ -1386,7 +1382,7 @@ bool zTable::Validate(const QList<zTable>& tables, const QStringList& knownTypeN
 
         zforeach(r,rows)
         {
-            bool is_rv = r->Validate2(colNames, knownTypeNames);
+            bool is_rv = r->Validate2(colNames);
             if(!is_rv)
             {
                 v= false;
@@ -1396,30 +1392,54 @@ bool zTable::Validate(const QList<zTable>& tables, const QStringList& knownTypeN
     return v;
 }
 
-QDateTime zTable::getSqlTimestamp()
+QDateTime zTable::getSqlUpdateTimestamp()
+{
+    zSQL zsql;
+    auto dbconn = beallitasok.findDbConnection(this->sql_conn);
+    //QString driver, QString adatbazisNev, QString server, QString user, QString password
+    if(dbconn == nullptr)
+    {
+        zlog.warning(QStringLiteral("dbconn nem található: %1").arg(this->sql_conn));
+        return QDateTime();
+    }
+    if(!dbconn->isValid())
+    {
+        zlog.warning(QStringLiteral("dbconn nem valid: %1").arg(this->sql_conn));
+        return QDateTime();
+    }
+
+    if(zsql.init(*dbconn))
+    {
+        auto e = zsql.getTableUTIME(this->sql_schema, this->sql_table);
+        zlog.trace(QStringLiteral("updated: %1").arg(e.toString()));
+    }
+
+    return QDateTime();
+}
+
+QDateTime zTable::getSourceUpdateTimestamp()
 {
     return QDateTime::currentDateTime();
 }
 
-QDateTime zTable::getSourceTimestamp()
+QDateTime zTable::getDocUpdateTimestamp()
 {
     return QDateTime::currentDateTime();
 }
 
-QDateTime zTable::getDocTimestamp()
-{
-    return QDateTime::currentDateTime();
-}
-
-void zTable::validateSQL(){
-
+bool zTable::validateSQL(){
+    //auto t2 = sql::get
+    bool v = true;
+    return v;
 }
 
 
-void zTable::validateSource(){
-
+bool zTable::validateSource(){
+    bool v = true;
+    return v;
 }
 
-void zTable::validateDocument(){
-
+bool zTable::validateDocument(){
+    bool v = true;
+    return v;
 }

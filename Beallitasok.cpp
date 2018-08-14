@@ -21,6 +21,18 @@ Beallitasok::Beallitasok() = default;
 
 Beallitasok::~Beallitasok()= default;;
 
+dbConnection* Beallitasok::findDbConnection(const QString &connName)
+{
+    zforeach(c, this->dbConnections)
+    {
+        if(c->Name==connName)
+        {
+            return c.operator->();
+        }
+    }
+    return nullptr;
+}
+
 void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver,  QComboBox *qc, QComboBox *dc, QListWidget* lv)
 {
     this->widget_user = wu;

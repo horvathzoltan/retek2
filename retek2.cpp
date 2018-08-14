@@ -72,30 +72,6 @@ void retek2::init()
 //
 // ennek szerepe van a perzisztens tárolás kialakításakor, illetve     az ui-n nyilván az altípsutól függő controlt kell feltenni, validációt alkalmazni
 
-    //sql->c# irány
-    typeMap.insert(QStringLiteral("uniqueidentifier"), QStringLiteral("Guid"));
-    typeMap.insert(QStringLiteral("int"), QStringLiteral("int"));
-    //typeMap.insert(QStringLiteral("datetime"), QStringLiteral("DateTime"));
-    typeMap.insert(QStringLiteral("date"), QStringLiteral("Date"));
-    typeMap.insert(QStringLiteral("nvarchar"), QStringLiteral("string"));
-    typeMap.insert(QStringLiteral("nchar"), QStringLiteral("string"));
-    typeMap.insert(QStringLiteral("char"), QStringLiteral("string"));
-    typeMap.insert(QStringLiteral("varchar"), QStringLiteral("string"));
-    typeMap.insert(QStringLiteral("float"), QStringLiteral("float"));
-    typeMap.insert(QStringLiteral("bit"), QStringLiteral("bool"));
-    typeMap.insert(QStringLiteral("decimal"), QStringLiteral("decimal"));
-    typeMap.insert(QStringLiteral("xml"), QStringLiteral("string"));
-
-    //c# -> sql irány
-    typeMapR.insert(QStringLiteral("Guid"), QStringLiteral("uniqueidentifier"));
-    typeMapR.insert(QStringLiteral("int"), QStringLiteral("int"));
-    //typeMapR.insert(QStringLiteral("DateTime"), QStringLiteral("datetime"));
-    typeMapR.insert(QStringLiteral("Date"), QStringLiteral("date"));
-    typeMapR.insert(QStringLiteral("string"), QStringLiteral("nvarchar"));
-    typeMapR.insert(QStringLiteral("float"), QStringLiteral("float"));
-    typeMapR.insert(QStringLiteral("bool"), QStringLiteral("bit"));
-    typeMapR.insert(QStringLiteral("decimal"), QStringLiteral("decimal"));
-
     beallitasok.load();
 
     auto sp = zFileNameHelper::getSettingsDir();
@@ -156,9 +132,6 @@ void retek2::loadCurrentProject()
     }
     else
     {
-        QStringList knownTypeNames;
-        knownTypeNames << zConversionMap::internals(globalClassMaps) << zConversionMap::internals(globalSqlMaps);
-
         ztables.clear();
         ui.listWidget_ztables->clear();
 
@@ -189,7 +162,7 @@ void retek2::loadCurrentProject()
                         zlog.warning(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
                         t0.name = fn;
                     }
-                    bool isValid = t0.Validate(ztables, knownTypeNames);
+                    bool isValid = t0.Validate(ztables);
 
 //                    if(zTable::find(ztables, t0.name, zTableSearchBy::Name))
 //                    {
@@ -214,10 +187,12 @@ void retek2::validateCurrentProject_SQL(){
     zforeach(t, ztables)
     {
         if(!t->sql_conn.isEmpty()){
-            QDateTime = t2->getSqlTimestamp();
-            if(t2>t->sql_timestamp)
+            QDateTime lastUpdateTimeStamp = t->getSqlUpdateTimestamp();
+            if(t->sql_updateTimeStamp.isNull() || lastUpdateTimeStamp > t->sql_updateTimeStamp)
             {
-                t->validateSQL();
+                zlog.trace(QStringLiteral("updated: %1 at: %2").arg(t->name, t->sql_updateTimeStamp.toString()));
+                auto isValid = t->validateSQL();
+                zlog.trace(QStringLiteral("isValid: %1").arg(zStringHelper::boolToString(isValid)));
             } // egyébként nincs változás
         }
     }
@@ -319,7 +294,7 @@ void retek2::add_zTablaToListWidget(const zTable& t){
 
 
 void retek2::mezoListaFeltolt(const zTable& t){
-    zlog.trace(zinfo(), t.toString());
+    zlog.trace(zfn(), t.toString());
     ui.tableWidget_MezoLista->blockSignals(true);
     ui.tableWidget_MezoLista->setRowCount(0);
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
@@ -336,7 +311,7 @@ void retek2::mezoListaFeltolt(const zTable& t){
 }
 
 void retek2::feltoltKulcsLista(zTable t) {
-    zlog.trace(zinfo(), t.name);
+    zlog.trace(zfn(), t.name);
 
     ui.listWidget_IdegenKulcs->clear();
     if(!t.pkname.isEmpty()){
@@ -627,7 +602,7 @@ Macro def: Adm
 */
 void retek2::on_pushButton_3_clicked()
 {
-    zlog.trace(zinfo());
+    zlog.trace(zfn());
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText(txt);
@@ -661,7 +636,7 @@ Adm
 */
 void retek2::on_pushButton_4_clicked()
 {
-    zlog.trace(zinfo());
+    zlog.trace(zfn());
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText_2(txt);

@@ -46,7 +46,7 @@ QList<QString> zTablerow::Validate(zTablerow* rv){
     e.append(QStringLiteral("row name: '%1' OK").arg(colName));
 
     e.append(CompareCaption(rv->Caption));
-    e.append(CompareColType(rv->colType));
+    e.append(isKnownTypeName(rv->colType)?QStringLiteral("type ok: %1").arg(rv->colType):QStringLiteral("Valid type: %1").arg(rv->colType));
     e.append(ValidateNullable(rv->isNullable));
     e.append(ValidateDLen(rv->dlen));
 
@@ -57,7 +57,7 @@ QList<QString> zTablerow::Validate(zTablerow* rv){
 A colName kötelező, és egyedi kell legyen / table
 A coltype kötelező, és szerepelnie kell az ismert típusok között
 */
-bool zTablerow::Validate2(const QStringList& colNames, const QStringList&  knownTypeNames ){
+bool zTablerow::Validate2(const QStringList& colNames){
     bool v = true;
     if(colName.isEmpty())
     {
@@ -82,7 +82,8 @@ bool zTablerow::Validate2(const QStringList& colNames, const QStringList&  known
         }
     }
 
-    if(!knownTypeNames.contains(colType))
+    auto isKnownType = isKnownTypeName(colType);
+    if(!isKnownType)
     {
         auto errortxt = QStringLiteral("Ismeretlen típus: %1").arg(colType);
         bool isError = true;
@@ -161,53 +162,17 @@ QString zTablerow::CompareCaption(const QString& rvCaption){
 }
 
 /*
-ez azt is vizsgálja, hogy csereszabatosak-e a colTypeok - de ezt nem kellene, ha minden egy darab belső típusra fordulna ,
-mert akkor nem lehetne keresztbe megadni a típusokat, illetve nem lenne függő attól, hogy honnan származik a row - mindíg az egyetemes típus lenne az
-
-a típustáblában szerepel-e
+az ismert típusok közt szerepel-e
 */
-QString zTablerow::CompareColType(const QString& rvcolType){
-    QString e;
+bool zTablerow::isKnownTypeName(const QString& tn)
+{
+    QStringList knownTypeNames;
+    knownTypeNames << zConversionMap::internals(globalClassMaps) << zConversionMap::internals(globalSqlMaps);
 
-    if(rvcolType.isEmpty())
-    {
-        e= QStringLiteral("Type NOT_TO_VALIDATE");
-    }
-    else
-    {
-        if(colType.isEmpty())
-        {
-            e= QStringLiteral("Type NOT_EXIST ERROR");
-        }
-        else{
-            if(!typeMap.contains(colType))
-            {
-                e= QStringLiteral("Type '%1' is NOT_VALID ERROR").arg(colType);
-            }
-            else
-            {
-                if(colType == rvcolType)
-                {
-                   e= QStringLiteral("Type OK");
-                }
-                else
-                {
-                    QString c1 = typeMap.value(colType);
-                    QString c2 = typeMap.value(rvcolType);
-                    if(c1 == c2)
-                    {
-                        e= QStringLiteral("Type EQUALS: '%1(%3)', '%2(%4)' OK").arg(colType,rvcolType,c1,c2);
-                    }
-                    else
-                    {
-                        e= QStringLiteral("Type NOT_EQUALS: '%1(%3)', '%2(%4)' ERROR").arg(colType,rvcolType,c1,c2);
-                    }
-                }
-            }
-        }
-    }
-    return e;
+    auto v= knownTypeNames.contains(tn);
+    return v;
 }
+
 
 QString zTablerow::ValidateNullable(bool rvnullable){
     QString e;
@@ -231,13 +196,14 @@ QString zTablerow::ValidateDLen(int rvdLen){
     }
     else
     {
-        if(!typeMap.contains(colType))
-        {
-            e= QStringLiteral("Length '%1' is NOT_VALID ERROR").arg(colType);
-        }
-        else
-        {
-            if(colType.endsWith(QStringLiteral("char")))
+//        if(!typeMap.contains(colType))
+//        {
+//            e= QStringLiteral("Length '%1' is NOT_VALID ERROR").arg(colType);
+//        }
+//        else
+//        {
+            //if(colType.endsWith(QStringLiteral("char")))
+            if(colType.startsWith(QStringLiteral("string")))
             {
                 if(this->dlen == rvdLen)
                 {
@@ -253,7 +219,7 @@ QString zTablerow::ValidateDLen(int rvdLen){
                 e= QStringLiteral("Length NOT_TO_VALIDATE");
             }
         }
-    }
+   // }
     return e;
 }
 

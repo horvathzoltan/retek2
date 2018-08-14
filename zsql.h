@@ -1,7 +1,8 @@
 #ifndef ZSQL_H
 #define ZSQL_H
 
-#include <QString>
+//#include <QString>
+#include <QStringList>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include "ztable.h"
@@ -60,13 +61,25 @@ private:
     QString getFieldNames_MYSQL_CMD(const QString& schemaName, const QString& tn);
     QStringList getFieldNames_SQL(const QString&);
 
-    /*PKName*/
+    /*Primary key name PKName*/
     static const QString getTable_MSSQL_PKTMP;
     static const QString getTable_MYSQL_PKTMP;
 
     QString getTable_MSSQL_PK(const QString& tn);
     QString getTable_MYSQL_PK(const QString& tn);
     QString getTable_SQL_PK(const QString& cmd);
+
+    /*table updateTime - UTIME*/
+    static const QString getTable_MSSQL_UTIMETMP;
+    static const QString getTable_MYSQL_UTIMETMP;
+    static const QString SQL_UTIMEKEY;
+
+    QString getTable_MSSQL_UTIME(const QString& sn, const QString& tn);
+    QString getTable_MYSQL_UTIME(const QString& sn, const QString& tn);
+    QString getTable_SQL_UTIME(const QString& schemaName, const QString& tablanev);
+
+    QDateTime getTable_SQL_UTIME(const QString& cmd);
+
 
     bool init(const QString&, const QString&, const QString&, const QString&, const QString&);
 
@@ -97,6 +110,9 @@ public:
     QStringList getTableNames(const QString& schemaName);
     QStringList getFieldNames(const QString& schemaName, const QString& tableName);
     QString getTablePKName(const QString& tablanev);
+    QDateTime getTableUTIME(const QString& schemaName, const QString& tablanev);
+
+    QMap<QString, QVariant> getData(const QString& cmd, QStringList keys);
 };
 
 #endif // ZSQL_H

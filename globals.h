@@ -29,9 +29,9 @@ extern QList<zConversionMap> globalSqlMaps;
 extern QList<zConversionMap> globalClassMaps;
 
 //valami 6
-
-extern QMap<QString, QString> typeMap;
-extern QMap<QString, QString> typeMapR;
+// elavultak
+//extern QMap<QString, QString> typeMap;
+//extern QMap<QString, QString> typeMapR;
 
 extern QMap<QString, QString> macroMap;
 extern QList<zTable> ztables;
@@ -48,8 +48,8 @@ static constexpr int C_ix_nullable=4;
 
 
 
-#define nameof(x) bravikov::_nameof<0>(#x, sizeof(x))
-#define zinfo() bravikov::_zinfo(Q_FUNC_INFO)
+#define nameof(x) z_macro_factory::_nameof<0>(#x, sizeof(x))
+#define zfn() z_macro_factory::_zinfo(Q_FUNC_INFO)
 
 class zLogicException: public QException
 {
@@ -62,7 +62,7 @@ private:
     QString msg;
 };
 
-namespace bravikov {
+namespace z_macro_factory {
     template<int a>
     QString _nameof(const char* y, std::size_t)
     {

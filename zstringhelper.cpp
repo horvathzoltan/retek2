@@ -16,31 +16,38 @@ zStringHelper::zStringHelper()
 const QChar zStringHelper::SEP = ';';
 const QString zStringHelper::Empty = QString();
 
-bool zStringHelper::toBool(QString ezt){
-    if(ezt.isEmpty()) return false;
-    ezt = ezt.toLower();
-    if(!ezt.compare("yes", Qt::CaseInsensitive)) return true;
-    if(!ezt.compare("true", Qt::CaseInsensitive)) return true;
-    if(!ezt.compare("ok", Qt::CaseInsensitive)) return true;
-    if(ezt.compare("0", Qt::CaseInsensitive)) return true;
-    return false;
+const QStringList zStringHelper::TrueStr = {QStringLiteral("true"), QStringLiteral("yes"), QStringLiteral("ok"), QStringLiteral("1")};
+const QStringList zStringHelper::FalseStr = {QStringLiteral("false"), QStringLiteral("no"), QStringLiteral("nok"), QStringLiteral("0")};
+
+bool zStringHelper::toBool(const QString& ezt){
+    if(ezt.isEmpty()) return false;    
+    return TrueStr.contains(ezt.toLower());
+}
+
+QString zStringHelper::boolToString(bool a)
+{
+    if(a)
+    {
+        return TrueStr.first();
+    }
+    return FalseStr.first();
 }
 
 /*
  * ponttal elválasztott tagok esetén
 */
-QString zStringHelper::toCamelCase(QString s)
+QString zStringHelper::toCamelCase(const QString& s)
 {
     auto o = s.split('.');
 
     for (int i = 0; i < o.length(); i++)
         o[i][0] = o[i][0].toUpper();
 
-    return o.join("");
+    return o.join(Empty);
 }
 
 //class_nameCamelCase
-QString zStringHelper::getclass_nameCamelCase(QString tnev) {
+QString zStringHelper::getclass_nameCamelCase(const QString& tnev) {
     QString t2 = tnev;//.toLower();
     //QString sep = TXT+'.';
 
@@ -59,14 +66,14 @@ QString zStringHelper::getclass_nameCamelCase(QString tnev) {
     return toCamelCase(t2.replace('_', '.'));
 }
 
-QStringList zStringHelper::toStringList(QString s){
-    return s.split(QRegExp("(\\r\\n)|(\\n\\r)|\\r|\\n"), QString::SkipEmptyParts);
+QStringList zStringHelper::toStringList(const QString &s){
+    return s.split(QRegExp(QStringLiteral("(\\r\\n)|(\\n\\r)|\\r|\\n")), QString::SkipEmptyParts);
 }
 
 // (?:\".*\")|(?:[\d.]+)
-QRegularExpression zStringHelper::r_string_or_number = QRegularExpression(R"((?:\".*\")|(?:[^\p{L}][\d.]+))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+QRegularExpression zStringHelper::r_string_or_number = QRegularExpression(QStringLiteral(R"((?:\".*\")|(?:[^\p{L}][\d.]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
-bool zStringHelper::isclass_name(QString str){
+bool zStringHelper::isclass_name(const QString& str){
     auto m = r_string_or_number.match(str);
     auto i = !m.hasMatch();    // ha nincs egyezés, nem konstans
     return i;
@@ -93,10 +100,10 @@ QString zStringHelper::caseFixer(QString minta, QString ezt){
     return ezt;
 }
 
-const QString zStringHelper::p_filename = QString(R"((?:file:\/{2})?((?:[a-zA-Z]\:)?(?:[\\\/][\w._]+)+))");
+const QString zStringHelper::p_filename = QStringLiteral(R"((?:file:\/{2})?((?:[a-zA-Z]\:)?(?:[\\\/][\w._]+)+))");
 const QRegularExpression zStringHelper::r_filename = QRegularExpression(p_filename, QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 // ha fájlnévvel kezdődik, 
-QStringList zStringHelper::getFilePaths(QString txt, QStringList fileExtFilter){
+QStringList zStringHelper::getFilePaths(const QString& txt, const QStringList& fileExtFilter){
     auto i_filename = r_filename.globalMatch(txt);
     
     QStringList txtlist;
@@ -117,7 +124,7 @@ QStringList zStringHelper::getFilePaths(QString txt, QStringList fileExtFilter){
            txtlist << filePath;
         }
         else if(filePathInfo.isDir()){
-            QStringList files = zFileNameHelper::FindFileNameInDir(filePath, "", fileNameFilter);
+            QStringList files = zFileNameHelper::FindFileNameInDir(filePath, Empty, fileNameFilter);
             if(!files.isEmpty()){
                 txtlist << files;
                 }
@@ -136,7 +143,8 @@ QStringList zStringHelper::getFilePaths(QString txt, QStringList fileExtFilter){
 }
 
 QString zStringHelper::zNormalize(const QString& c){
-    return c.normalized(QString::NormalizationForm_D).replace(QRegExp("[^a-zA-Z0-9_\\s]"), "").replace(' ', '_').toLower();
+    return c.normalized(QString::NormalizationForm_D).replace(QRegExp("[^a-zA-Z0-9_\\s]"), Empty).replace(' ', '_').toLower();
 }
+
 
 

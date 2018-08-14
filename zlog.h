@@ -52,6 +52,7 @@ public:
     static void dialogError(const QString& str);
     //void error(const char*);
     void error(const QString&);
+    void error(const QString&, const QString&);
     void error(const QList<QString>&);
 
     /*trace*/

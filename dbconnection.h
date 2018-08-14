@@ -13,7 +13,7 @@ public:
     QString user;
     QString password;
 
-    dbConnection(QString, QString, QString, QString, QString);
+    dbConnection(QString driver, QString adatbazisNev, QString server, QString user, QString password);
 
     QString ToCSV();
     static dbConnection FromCSV(QString);

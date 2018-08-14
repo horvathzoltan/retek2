@@ -214,9 +214,8 @@ QString zSQL::getLastErrorText(){
 }
 
 QString zSQL::toString()
-{
-    //return this->schemaName+":"+this->connectionName;
-    return this->connectionName;
+{        
+    return this->connectionName+'(' + this->hostName+')';
 }
 
 /*tableNames */
@@ -454,8 +453,104 @@ const QString zSQL::getSchemaNames_MYSQL_CMDTMP = QStringLiteral("SELECT DISTINC
 
 const QString zSQL::getSchemaNames_MSSQL_CMDTMP = QStringLiteral("SELECT name AS schema_name FROM sys.databases WHERE name NOT IN ('master', 'tempdb', 'model', 'msdb') ORDER BY schema_name");
 
+/**
+  Adatbázisok utolsó módosításának idejét adó lekérdezések -
+  */
 /*const QString zSQL::getTable_MSSQL_PKTMP =
  * "SELECT name, create_date, modify_date
 FROM BuildInfoFlex.sys.objects
 where type='U'
 "*/
+
+/*
+PKname
+*/
+
+const QString zSQL::SQL_UTIMEKEY = QStringLiteral("moddate");
+
+const QString zSQL::getTable_MSSQL_UTIMETMP =
+        QStringLiteral("SELECT name, create_date, MODIFY_DATE as %3 "
+        "FROM [%1].sys.objects "
+        "WHERE type='U' and name = '%2'");
+
+const QString zSQL::getTable_MYSQL_UTIMETMP =
+        QStringLiteral("SELECT name, create_date, MODIFY_DATE as %3 "
+        "FROM [%1].sys.objects "
+        "WHERE type='U' and name = '%2'");
+
+QString zSQL::getTable_MSSQL_UTIME(const QString& sn, const QString& tn){
+    return getTable_MSSQL_UTIMETMP.arg(sn,tn, SQL_UTIMEKEY);
+}
+
+QString zSQL::getTable_MYSQL_UTIME(const QString& sn, const QString& tn){
+    return getTable_MYSQL_UTIMETMP.arg(sn, tn, SQL_UTIMEKEY);
+}
+
+QString zSQL::getTable_SQL_UTIME(const QString& schemaName, const QString& tablanev)
+{
+    if(driverName == QODBC)
+    {
+        return getTable_MSSQL_UTIME(schemaName, tablanev);
+    }
+    if(driverName == QMYSQL)
+    {
+        return getTable_MYSQL_UTIME(schemaName, tablanev);
+    }
+
+    zlog.error(zfn(), "unknown driver:" + driverName);
+    return zStringHelper::Empty;
+}
+
+QMap<QString, QVariant> zSQL::getData(const QString& cmd, QStringList keys)
+{
+    QMap<QString, QVariant> e;
+    QSqlQuery query(cmd, db);
+    query.setForwardOnly(true);
+
+    if(query.next())
+    {
+        zforeach(k, keys)
+        {
+            e.insert(*k, query.value(*k));
+        }
+    }
+
+    return e;
+}
+
+QDateTime zSQL::getTableUTIME(const QString& schemaName, const QString& tablanev){
+    if(schemaName.isEmpty())
+    {
+        zlog.warning(QStringLiteral("nincs séma megnevezés"));
+        return QDateTime();
+    }
+    if(tablanev.isEmpty())
+    {
+        zlog.warning(QStringLiteral("nincs tábla megnevezés"));
+        return QDateTime();
+    }
+    if(!db.isValid())
+    {
+        zlog.warning(QStringLiteral("érvénytelen adatbázis"));
+        return QDateTime();
+    }
+    if(!db.isOpen())
+    {
+        zlog.warning(QStringLiteral("érvénytelen adatbázis"));
+        return QDateTime();
+    }
+
+    auto cmd = getTable_SQL_UTIME(schemaName, tablanev);
+
+    if(!cmd.isEmpty())
+    {
+        //QStringList(UTIMEKEY);
+        //keys << UTIMEKEY;
+        auto valuemap = getData(cmd, QStringList(SQL_UTIMEKEY));
+        //auto dt = valuemap.value(UTIMEKEY).toDateTime();
+        return valuemap.value(SQL_UTIMEKEY).toDateTime();
+    }
+
+
+    return QDateTime();
+}

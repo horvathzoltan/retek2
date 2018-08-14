@@ -12,9 +12,9 @@ QList<zConversionMap> projectCaptionMaps;
 QList<zConversionMap> globalSqlMaps;
 QList<zConversionMap> globalClassMaps;
 
-
-QMap<QString, QString> typeMap;
-QMap<QString, QString> typeMapR;
+// elavultak
+//QMap<QString, QString> typeMap;
+//QMap<QString, QString> typeMapR;
 
 QMap<QString, QString> macroMap;
 QList<zTable> ztables;

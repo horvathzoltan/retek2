@@ -71,7 +71,7 @@ public:
     static const zTable* find(const QList<zTable>& tables, const QString& rn, zTableSearchBy searchType = zTableSearchBy::TableName);
     //void getType(auto re_dlen1, QString dtype, auto re_dlen2, QString ezt1, bool isDtype, int dlen);
 
-    static bool getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
+    //static bool getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
 
     static bool getClassType(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings = false);
 
@@ -99,16 +99,16 @@ public:
     //    static QString p_attr;
     void saveTablaToXML();
 
-    bool Validate(const QList<zTable>& tables, const QStringList& knownTypeNames);
+    bool Validate(const QList<zTable>& tables);
 
     static QString getCaption(const QString& fname);
-    void validateSQL();
-    void validateSource();
-    void validateDocument();
+    bool validateSQL();
+    bool validateSource();
+    bool validateDocument();
 
-    QDateTime getSqlTimestamp();
-    QDateTime getSourceTimestamp();
-    QDateTime getDocTimestamp();
+    QDateTime getSqlUpdateTimestamp();
+    QDateTime getSourceUpdateTimestamp();
+    QDateTime getDocUpdateTimestamp();
 };
 
 #endif // ZTABLE_H

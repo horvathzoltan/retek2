@@ -12,24 +12,28 @@ public:
     static const QChar SEP;
     static const QString Empty;
 
-    zStringHelper();
-    static bool toBool(QString);  
+    static const QStringList TrueStr;
+    static const QStringList FalseStr;
 
-    static QString toCamelCase(QString);
-    static QStringList toStringList(QString s);
+    zStringHelper();
+    static bool toBool(const QString&);
+    static QString boolToString(bool a);
+
+    static QString toCamelCase(const QString& );
+    static QStringList toStringList(const QString& s);
 
 //    static QString singularize(QString s);
 //    static QString pluralize(QString s);
 
 //    static QString singularizeAll(QString s);
 
-    static QString getclass_nameCamelCase(QString tablanev);
-    static bool isclass_name(QString str);    
+    static QString getclass_nameCamelCase(const QString& tablanev);
+    static bool isclass_name(const QString &str);
     static QRegularExpression r_string_or_number;
     static QString caseFixer(QString, QString);
     static const QString p_filename;
     static const QRegularExpression r_filename;
-    static QStringList getFilePaths(QString, QStringList);
+    static QStringList getFilePaths(const QString &, const QStringList &);
     static QString zNormalize(const QString &c);   
 };
 
