@@ -183,18 +183,33 @@ void retek2::loadCurrentProject()
     }
 }
 
-void retek2::validateCurrentProject_SQL(){
+void retek2::validateCurrentProject_SQL(){    
+    zlog.trace(zfn());
     zforeach(t, ztables)
     {
-        if(!t->sql_conn.isEmpty()){
-            QDateTime lastUpdateTimeStamp = t->getSqlUpdateTimestamp();
-            if(t->sql_updateTimeStamp.isNull() || lastUpdateTimeStamp > t->sql_updateTimeStamp)
-            {
-                zlog.trace(QStringLiteral("updated: %1 at: %2").arg(t->name, t->sql_updateTimeStamp.toString()));
-                auto isValid = t->validateSQL();
-                zlog.trace(QStringLiteral("isValid: %1").arg(zStringHelper::boolToString(isValid)));
-            } // egyébként nincs változás
+        zlog.trace(QStringLiteral("validating table: %1").arg(t->name));
+        if(t->sql_conn.isEmpty())
+        {
+            zlog.trace(QStringLiteral("sql_conn is empty"));
+            continue;
         }
+        if(t->sql_updateTimeStamp.isNull())
+        {
+            zlog.trace(QStringLiteral("no sql_updateTimeStamp"));
+        }
+
+        QDateTime lastUpdateTimeStamp = t->getSqlUpdateTimestamp();
+        if(true || lastUpdateTimeStamp > t->sql_updateTimeStamp) // ha az sql újabb
+        {            
+            zlog.trace(QStringLiteral("newer available: %1 at: %2").arg(t->name, t->sql_updateTimeStamp.toString()));
+            auto isValid = t->validateSQL();
+            zlog.trace(QStringLiteral("isValid: %1").arg(zStringHelper::boolToString(isValid)));
+        } // egyébként nincs változás
+        else
+        {
+            zlog.trace(QStringLiteral("not changed."));
+        }
+
     }
 }
 

@@ -31,7 +31,7 @@ public:
     // sql conn: conn_név + driver + server + user + pass (pl: deathstar)
     // sql adatbázis_név (pl: gloster)
     // sql tábla név (pl: atricles)
-    QString sql_conn;
+    QString sql_conn;// ez a conn neve, de lehetne a conn is - pointerrel
     QString sql_schema;
     QString sql_table;//sql_table;
     bool sql_isValid;

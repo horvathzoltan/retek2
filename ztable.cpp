@@ -468,16 +468,26 @@ void zTable::toXML(QXmlStreamWriter *s)
 
     s->writeStartElement(nameof(zTable));
     //s->writeAttribute(nameof(this->sourcetype), QString::number(this->sourcetype));
-    s->writeAttribute(nameof(this->sql_conn), this->sql_conn);
-    s->writeAttribute(nameof(this->class_path), this->class_path);
-
     s->writeAttribute(nameof(this->name), this->name);
+
+    s->writeAttribute(nameof(this->sql_conn), this->sql_conn);
+    s->writeAttribute(nameof(this->sql_schema), this->sql_schema);
     s->writeAttribute(nameof(this->sql_table), this->sql_table);    
+    s->writeAttribute(nameof(this->sql_updateTimeStamp), this->sql_updateTimeStamp.toString());
+    s->writeAttribute(nameof(this->sql_isValid), zStringHelper::boolToString(this->sql_isValid));
+
+    s->writeAttribute(nameof(this->class_path), this->class_path);
     s->writeAttribute(nameof(this->class_name), this->class_name);
     s->writeAttribute(nameof(this->class_name_plural), this->class_name_plural);
+    s->writeAttribute(nameof(this->source_updateTimeStamp), this->source_updateTimeStamp.toString());
+    s->writeAttribute(nameof(this->source_isValid), zStringHelper::boolToString(this->source_isValid));
+
+    s->writeAttribute(nameof(this->document_updateTimeStamp), this->document_updateTimeStamp.toString());
+    s->writeAttribute(nameof(this->document_isValid), zStringHelper::boolToString(this->document_isValid));
+
+    s->writeAttribute(nameof(this->comment), this->comment);
     s->writeAttribute(nameof(this->pkname), this->pkname);
     s->writeAttribute(nameof(this->name_formatstring), this->name_formatstring);
-    s->writeAttribute(nameof(this->comment), this->comment);
     s->writeAttribute(nameof(this->updateTime), this->updateTime.toString());
 
     s->writeStartElement(nameof(this->rows));
@@ -541,16 +551,26 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
     auto a = xml->attributes();
 
     zXmlHelper::putXmlAttr(a, nameof(name), &(t.name));
-    zXmlHelper::putXmlAttr(a, nameof(sql_table), &(t.sql_table));
 
     zXmlHelper::putXmlAttr(a, nameof(sql_conn), &(t.sql_conn));
-    zXmlHelper::putXmlAttr(a, nameof(class_path), &(t.class_path));
+    zXmlHelper::putXmlAttr(a, nameof(sql_schema), &(t.sql_schema));
+    zXmlHelper::putXmlAttr(a, nameof(sql_table), &(t.sql_table));
+    zXmlHelper::putXmlAttr(a, nameof(sql_isValid), &(t.sql_isValid));
+    zXmlHelper::putXmlAttr(a, nameof(sql_updateTimeStamp), &(t.sql_updateTimeStamp));
 
+    zXmlHelper::putXmlAttr(a, nameof(class_path), &(t.class_path));
     zXmlHelper::putXmlAttr(a, nameof(class_name), &(t.class_name));
     zXmlHelper::putXmlAttr(a, nameof(class_name_plural), &(t.class_name_plural));
+    zXmlHelper::putXmlAttr(a, nameof(source_isValid), &(t.source_isValid));
+    zXmlHelper::putXmlAttr(a, nameof(source_updateTimeStamp), &(t.source_updateTimeStamp));
+
+    zXmlHelper::putXmlAttr(a, nameof(document_isValid), &(t.document_isValid));
+    zXmlHelper::putXmlAttr(a, nameof(document_updateTimeStamp), &(t.document_updateTimeStamp));
+
+    zXmlHelper::putXmlAttr(a, nameof(comment), &(t.comment));
     zXmlHelper::putXmlAttr(a, nameof(pkname), &(t.pkname));
     zXmlHelper::putXmlAttr(a, nameof(name_formatstring), &(t.name_formatstring));
-    zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));
+    zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));    
 
     /**/
     zXmlHelper::putXmlAttr(a, QStringLiteral("tablename"), &(t.sql_table));
