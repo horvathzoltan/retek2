@@ -59,7 +59,7 @@ public:
 
     QString toString() const;
 
-    QList<QString> Compare(zTable);
+    bool Compare(const zTable &, QStringList &);
 
     static QList<zTable> createTableByText(QString txt);    
     static QList<zTable> createTableByText_2(QString txt);
@@ -81,8 +81,8 @@ public:
     bool containsRow(const QString& n);
 
     void toXML(QXmlStreamWriter*);
-    //static zTable fromXML(QString);
     static zTable fromXML(QXmlStreamReader* xml);
+
     QStringList getFKclass_name();
     QStringList getRFKclass_namePlural();
 
@@ -100,8 +100,8 @@ public:
     void saveTablaToXML();
 
     bool Validate(const QList<zTable>& tables);
-
     static QString getCaption(const QString& fname);
+
     bool validateSQL();
     bool validateSource();
     bool validateDocument();

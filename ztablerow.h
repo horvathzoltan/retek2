@@ -26,7 +26,7 @@ public:
 
     static zTablerow* getByName(const QList<zTablerow>&, const QString&);
 
-    QList<QString> Validate(zTablerow*);
+    bool zTablerow::Compare(const zTablerow& rv, QStringList& e);
     QString CompareCaption(const QString&);
     bool isKnownTypeName(const QString&);
     QString ValidateNullable(bool);

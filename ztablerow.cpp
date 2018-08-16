@@ -40,17 +40,20 @@ zTablerow* zTablerow::getByName(const QList<zTablerow> &rows, const QString& rn)
     return nullptr;
 }
 
+/*
+sorokat hasonlít össze - metaadataik alapján
+*/
 //
-QList<QString> zTablerow::Validate(zTablerow* rv){
-    QList<QString> e;
+bool zTablerow::Compare(const zTablerow& rv, QStringList& e){
+    bool isOK  = true;
     e.append(QStringLiteral("row name: '%1' OK").arg(colName));
 
-    e.append(CompareCaption(rv->Caption));
-    e.append(isKnownTypeName(rv->colType)?QStringLiteral("type ok: %1").arg(rv->colType):QStringLiteral("Valid type: %1").arg(rv->colType));
-    e.append(ValidateNullable(rv->isNullable));
-    e.append(ValidateDLen(rv->dlen));
+    e.append(CompareCaption(rv.Caption));
+    e.append(isKnownTypeName(rv.colType)?QStringLiteral("type ok: %1").arg(rv.colType):QStringLiteral("Valid type: %1").arg(rv.colType));
+    e.append(ValidateNullable(rv.isNullable));
+    e.append(ValidateDLen(rv.dlen));
 
-    return e;
+    return isOK;
 }
 
 /**

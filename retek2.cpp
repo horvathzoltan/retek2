@@ -541,7 +541,7 @@ QString retek2::generateTmp(const QString& tmp_file) {
 
 
 /*!
-  Validáció
+  Validáció - SQL validáció -
  * A 2-es tabon megadott szöveg alapján generál táblaszerkezetet
  * ami alapján validálja az adatbázisban szereplő táblát.
  *
@@ -570,10 +570,10 @@ void retek2::on_pushButton_2_clicked()
                     auto t_sql = zsql.getTable(schemaName, t->sql_table);
                     t_sql.initSql(dbconn.Name, schemaName, t_sql.sql_table);
 
-
-                    auto vl = t_sql.Compare(*t);
+                    QStringList e;
+                    auto vl = t_sql.Compare(*t, e);
                     zlog.error("--- "+t->sql_table+" ---");
-                    zlog.error(vl);
+                    zlog.error(e);
                     }
                 zlog.error(QStringLiteral("--- --- ---"));
                 }
@@ -998,7 +998,6 @@ void retek2::on_pushButton_table_import_clicked()
         QStringList fl = listWidgetItemsText(ui.listWidget_fields->selectedItems());
 
         zTable t = zsql.getTable(schemaName, tableName, fl);
-
         t.initSql(connName, schemaName, tableName);
 
         QString classNamePlural;

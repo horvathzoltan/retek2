@@ -250,26 +250,33 @@ QString zSQL::getTable_MYSQL_CMD(const QString& schemaName, const QString& tn ){
 
 
 zTable zSQL::getTable(const QString& schemaName, const QString& tablanev, const QStringList& fl){
+    zlog.trace(zfn());
     zTable t;
     QString cmd;
 
-    if(db.isValid() && db.isOpen()){
-        if(driverName == QODBC)
-        {
-            cmd = getTable_MSSQL_CMD(schemaName, tablanev);
-        }
-        else if(driverName == QMYSQL)
-        {
-            cmd = getTable_MYSQL_CMD(schemaName, tablanev);
-        }        
-        else
-        {
-            zlog.error("getTable: unknown driver:" + driverName);
-        }
+    if(!db.isValid())
+    {
+        zlog.error("getTable: db invalid" + driverName);
+        return t;
+    }
+
+    if(!db.isOpen())
+    {
+        zlog.error("getTable: db closed" + driverName);
+        return t;
+    }
+
+    if(driverName == QODBC)
+    {
+        cmd = getTable_MSSQL_CMD(schemaName, tablanev);
+    }
+    else if(driverName == QMYSQL)
+    {
+        cmd = getTable_MYSQL_CMD(schemaName, tablanev);
     }
     else
     {
-        zlog.error("getTable: db closed" + driverName);
+        zlog.error("getTable: unknown driver:" + driverName);
     }
 
     if(!cmd.isEmpty()){
@@ -551,6 +558,7 @@ QDateTime zSQL::getTableUTIME(const QString& schemaName, const QString& tablanev
         return valuemap.value(SQL_UTIMEKEY).toDateTime();
     }
 
+    db.close();
 
     return QDateTime();
 }

@@ -173,12 +173,14 @@ QString zTable::toString() const
 
 /**
   összehasonlítja a két táblát, és annak sorait
+  név, sorok száma, azok metaadatai -  nevei, típusai hosszai, nullable required a relevánsak
 */
-QList<QString> zTable::Compare(zTable tv){
-    QList<QString> e;
+bool zTable::Compare(const zTable& tv, QStringList& e){
+    bool v = true;
 
-    if(this->name!=tv.name){
+    if(this->name!=tv.name){                
         e.append(QStringLiteral("Tablename: NOT_EQUALS ERROR"));
+        v = false;
     }
     else{
         e.append(QStringLiteral("Tablename: OK"));
@@ -186,14 +188,15 @@ QList<QString> zTable::Compare(zTable tv){
 
     zforeach(rv,tv.rows){
         zTablerow* r = zTablerow::getByName(rows, rv->colName);
-        if(r != nullptr){
-           e.append(r->Validate(rv.operator->()));
+        if(r != nullptr)
+        {
+           r->Compare(*rv, e);
         }
         else{
            e.append(QStringLiteral("row: '%1' NOT_EXIST ERROR").arg(rv->colName));
         }
     }
-    return e;
+    return v;
 }
 
 const zTable* zTable::find(const QList<zTable>& tables, const QString& rn, zTableSearchBy searchType){
@@ -1447,10 +1450,27 @@ QDateTime zTable::getDocUpdateTimestamp()
     return QDateTime::currentDateTime();
 }
 
+/*
+Validálja a táblát annak sql kötése alapján
+*/
 bool zTable::validateSQL(){
-    //auto t2 = sql::get
-    bool v = true;
-    return v;
+    zSQL zsql;
+    auto dbconn = beallitasok.findDbConnection(this->sql_conn);
+
+    if(zsql.init(*dbconn))
+    {
+        zTable t_sql = zsql.getTable(this->sql_schema, this->sql_table);
+        // nem feltétlenül kell initelni a kapcsolatait, mert nem kell az összehasonlítás célját képeznie
+
+        //t.initSql(connName, schemaName, tableName);
+        //QString classNamePlural;
+        //auto className = zTable::getClassName(tableName, classNamePlural);
+        //t.initClass(className, classNamePlural);
+
+        QStringList e;
+        auto isOK = Compare(t_sql, e);
+    }
+    return isOK;
 }
 
 
