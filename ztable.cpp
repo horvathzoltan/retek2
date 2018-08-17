@@ -178,24 +178,40 @@ QString zTable::toString() const
 bool zTable::Compare(const zTable& tv, QStringList& e){
     bool v = true;
 
-    if(this->name!=tv.name){                
-        e.append(QStringLiteral("Tablename: NOT_EQUALS ERROR"));
+    if(this->name!=tv.name)
+    {
+        e.append(QStringLiteral("Tablename Not Equals (%1, %2)").arg(this->name,tv.name));
         v = false;
     }
-    else{
-        e.append(QStringLiteral("Tablename: OK"));
+
+    if(this->pkname!=tv.pkname)
+    {
+        e.append(QStringLiteral("PkName Not Equals: %1(%2, %3)").arg(this->name, this->pkname!=tv.pkname));
+        v = false;
     }
 
-    zforeach(rv,tv.rows){
-        zTablerow* r = zTablerow::getByName(rows, rv->colName);
-        if(r != nullptr)
+    // azt kell vizsgálni, hogy a tábla oszlopaihoz van -e megfelelő az sql-ben
+//    if(this->rows.count()!=tv.rows.count())
+//    {
+//        e.append(QStringLiteral("rowCount Not Equals"));
+//        v = false;
+//    }
+//    else
+//    {
+        zforeach(r,this->rows)
         {
-           r->Compare(*rv, e);
+            zTablerow* rv = zTablerow::getByName(tv.rows, r->colName);
+            if(rv != nullptr)
+            {
+               auto v2 = r->Compare(*rv, e);
+               if(!v2)
+               {
+                   //zlog.warning(e);
+                   v = false;
+               }
+            }            
         }
-        else{
-           e.append(QStringLiteral("row: '%1' NOT_EXIST ERROR").arg(rv->colName));
-        }
-    }
+//    }
     return v;
 }
 
@@ -1457,20 +1473,20 @@ bool zTable::validateSQL(){
     zSQL zsql;
     auto dbconn = beallitasok.findDbConnection(this->sql_conn);
 
+
     if(zsql.init(*dbconn))
     {
         zTable t_sql = zsql.getTable(this->sql_schema, this->sql_table);
-        // nem feltétlenül kell initelni a kapcsolatait, mert nem kell az összehasonlítás célját képeznie
-
-        //t.initSql(connName, schemaName, tableName);
-        //QString classNamePlural;
-        //auto className = zTable::getClassName(tableName, classNamePlural);
-        //t.initClass(className, classNamePlural);
-
         QStringList e;
         auto isOK = Compare(t_sql, e);
+        if(!isOK)
+        {
+            zlog.warning(e);
+        }
+        return isOK;
     }
-    return isOK;
+
+    return false;
 }
 
 

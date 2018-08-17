@@ -45,13 +45,40 @@ sorokat hasonlít össze - metaadataik alapján
 */
 //
 bool zTablerow::Compare(const zTablerow& rv, QStringList& e){
-    bool isOK  = true;
-    e.append(QStringLiteral("row name: '%1' OK").arg(colName));
+    bool v  = true;
+    if(this->colName!=rv.colName)
+    {
+        e.append(QStringLiteral("colName Not Equals: (%1, %2)").arg(colName, rv.colName));
+        v = false;
+    }
+    if(this->colType!=rv.colType)
+    {
+        e.append(QStringLiteral("colType Not Equals: %1(%2, %3)").arg(colName,colType,rv.colType ));
+        v = false;
+    }
 
-    e.append(CompareCaption(rv.Caption));
-    e.append(isKnownTypeName(rv.colType)?QStringLiteral("type ok: %1").arg(rv.colType):QStringLiteral("Valid type: %1").arg(rv.colType));
-    e.append(ValidateNullable(rv.isNullable));
-    e.append(ValidateDLen(rv.dlen));
+    if(this->dlen!=rv.dlen)
+    {
+        e.append(QStringLiteral("dlen not equals: %1(%2, %3)").arg(colName).arg(this->dlen,rv.dlen));
+        v = false;
+    }
+
+    if(this->isNullable!=rv.isNullable)
+    {
+        e.append(QStringLiteral("isNullable not equals: %1(%2, %3)").arg(colName).arg(isNullable,rv.isNullable));
+        v = false;
+    }
+
+    return v;
+}
+
+bool zTablerow::Validate(QStringList& e){
+    bool isOK  = true;
+    //e.append(QStringLiteral("row name: '%1' OK").arg(colName));
+    e.append(CompareCaption(this->Caption));
+    e.append(isKnownTypeName(this->colType)?QStringLiteral("type ok: %1").arg(this->colType):QStringLiteral("Valid type: %1").arg(this->colType));
+    e.append(ValidateNullable(this->isNullable));
+    e.append(ValidateDLen(this->dlen));
 
     return isOK;
 }

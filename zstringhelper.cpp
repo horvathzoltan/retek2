@@ -16,8 +16,11 @@ zStringHelper::zStringHelper()
 const QChar zStringHelper::SEP = ';';
 const QString zStringHelper::Empty = QString();
 
+const QString zStringHelper::Equals = QStringLiteral("Equals");
+
 const QStringList zStringHelper::TrueStr = {QStringLiteral("true"), QStringLiteral("yes"), QStringLiteral("ok"), QStringLiteral("1")};
 const QStringList zStringHelper::FalseStr = {QStringLiteral("false"), QStringLiteral("no"), QStringLiteral("nok"), QStringLiteral("0")};
+
 
 bool zStringHelper::toBool(const QString& ezt){
     if(ezt.isEmpty()) return false;    
@@ -31,6 +34,15 @@ QString zStringHelper::boolToString(bool a)
         return TrueStr.first();
     }
     return FalseStr.first();
+}
+
+QString zStringHelper::boolToString(bool a, const QString& s)
+{
+    if(a)
+    {
+        return s;
+    }
+    return QStringLiteral("Not")+s;
 }
 
 /*

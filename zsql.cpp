@@ -34,10 +34,15 @@ bool zSQL::init(const QString &_driverName, const QString& _hostName, const QStr
     //schemaName = _databaseName;
     connectionName = _connectionName;
     bool isok = this->createConnection();
-    if(isok){
-        zlog.trace("init:"+this->toString());
+    if(isok)
+    {
+        zlog.trace(QStringLiteral("init: %1").arg(this->toString()));
         zlog.trace(QStringLiteral("hasFeature: QuerySize: %1").arg(db.driver()->hasFeature(QSqlDriver::QuerySize)?QStringLiteral("true"):QStringLiteral("false")));
-        }
+    }
+    else
+    {
+        zlog.error(QStringLiteral("init failed: %1").arg(this->toString()));
+    }
     return isok;
     }
 
@@ -279,17 +284,17 @@ zTable zSQL::getTable(const QString& schemaName, const QString& tablanev, const 
         zlog.error("getTable: unknown driver:" + driverName);
     }
 
-    if(!cmd.isEmpty()){
+    if(!cmd.isEmpty())
+    {
         t= getTable_SQL(tablanev, cmd, fl);
-
-        QString classNamePlural;
-        auto className = zTable::getClassName(t.sql_table, classNamePlural);
-        t.initClass(className, classNamePlural);
     }
 
     return t;
 }
 
+/*
+Felépíti a táblát az sql-ben elérhető adatokkal
+*/
 zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd, const QStringList& fl)
 {
     QSqlQuery query(cmd, db);
@@ -300,30 +305,18 @@ zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd, const QSt
     while (query.next())
     {
         QString colName = query.value(QStringLiteral("COLUMN_NAME")).toString();
-
         if(fl.isEmpty() || fl.contains(colName))
         {
             QString dtype = query.value(QStringLiteral("DATA_TYPE")).toString();
             int dlen = query.value(QStringLiteral("CHARACTER_MAXIMUM_LENGTH")).toInt();
-
             bool nullable = zStringHelper::toBool(query.value(QStringLiteral("IS_NULLABLE")).toString());
-
-            QString caption = zTable::getCaption(colName);//zConversionMap::external(globalCaptionMaps, colName);
-            //if(caption.isEmpty()) caption = colName;
+            QString caption = zStringHelper::Empty;
             tr.append(zTablerow(colName, dtype, dlen, nullable, caption));
         }
     }
 
     QString pkn = getTablePKName(tablanev);
-
-    //QList<zTablerow> pr;
-
-// a táblanév táblanév legyen - az sqlből kell a szerver account, a séma név és a tábla név - ezek az sql forráshoz kötődnek
-// QString sql_conn;
-// QString sql_schema;
-// QString sql_table;//sql_table;
-    auto e = zTable(tablanev, (pkn.isEmpty()?QStringLiteral("zId"):pkn), tr);//, SQL, tablanev, zStringHelper::Empty);
-
+    auto e = zTable(tablanev, (pkn.isEmpty()?QStringLiteral("zId"):pkn), tr);
     return e;
 }
 

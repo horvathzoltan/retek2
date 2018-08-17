@@ -171,7 +171,7 @@ QStringList zFileNameHelper::FindFileNameInDir(const QString& dirName, const QSt
     {
         auto n =  it.next();
         ql << n;
-        zlog.trace("FindFileNameInDir: "+n);
+        zlog.trace(zfn(), n);
     }
     return ql;
 

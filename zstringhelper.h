@@ -11,6 +11,7 @@ class zStringHelper
 public:
     static const QChar SEP;
     static const QString Empty;
+    static const QString Equals;
 
     static const QStringList TrueStr;
     static const QStringList FalseStr;
@@ -18,6 +19,7 @@ public:
     zStringHelper();
     static bool toBool(const QString&);
     static QString boolToString(bool a);
+    static QString boolToString(bool a, const QString&);
 
     static QString toCamelCase(const QString& );
     static QStringList toStringList(const QString& s);
@@ -34,7 +36,7 @@ public:
     static const QString p_filename;
     static const QRegularExpression r_filename;
     static QStringList getFilePaths(const QString &, const QStringList &);
-    static QString zNormalize(const QString &c);   
+    static QString zNormalize(const QString &c);
 };
 
 #endif // ZSTRINGHELPER_H
