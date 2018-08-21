@@ -28,3 +28,6 @@ zTable *table = nullptr;
 //extern const int C_ix_colType = 2;
 //extern const int C_ix_dlen = 3;
 //extern const int C_ix_nullable = 4;
+
+
+

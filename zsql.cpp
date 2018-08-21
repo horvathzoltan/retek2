@@ -307,11 +307,15 @@ zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd, const QSt
         QString colName = query.value(QStringLiteral("COLUMN_NAME")).toString();
         if(fl.isEmpty() || fl.contains(colName))
         {
-            QString dtype = query.value(QStringLiteral("DATA_TYPE")).toString();
+            QString dtype1 = query.value(QStringLiteral("DATA_TYPE")).toString();
+            QString dtype;
             int dlen = query.value(QStringLiteral("CHARACTER_MAXIMUM_LENGTH")).toInt();
-            bool nullable = zStringHelper::toBool(query.value(QStringLiteral("IS_NULLABLE")).toString());
+            bool isNullable = zStringHelper::toBool(query.value(QStringLiteral("IS_NULLABLE")).toString());
             QString caption = zStringHelper::Empty;
-            tr.append(zTablerow(colName, dtype, dlen, nullable, caption));
+
+            zTable::getClassType(globalSqlMaps, dtype1, &dtype, &dlen, &isNullable, false, true);
+
+            tr.append(zTablerow(colName, dtype, dlen, isNullable, caption));
         }
     }
 

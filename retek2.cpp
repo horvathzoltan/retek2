@@ -184,6 +184,7 @@ void retek2::loadCurrentProject()
 }
 
 void retek2::validateCurrentProject_SQL(){    
+    //const char* a = (const char*)Q_FUNC_INFO;//zfn();
     zlog.trace(zfn());
     zforeach(t, ztables)
     {

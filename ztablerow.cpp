@@ -6,7 +6,8 @@
 #include <QXmlStreamWriter>
 
 zTablerow::zTablerow(){
-     this->isNullable = true;
+    this->isNullable = true;
+    this->dlen = 0;
 }
 
 zTablerow::zTablerow(const QString& colName, const QString& dtype, int dlen, bool nullable, const QString& caption){
@@ -30,13 +31,17 @@ bool zTablerow::operator==(const zTablerow &o)const {
 zTablerow* zTablerow::getByName(const QList<zTablerow> &rows, const QString& rn)
 {
     if(rn.isEmpty()) return nullptr;
-    zforeach(r,rows){
+    zforeach(r,rows)
+    {
         if(!r->colName.isEmpty())
-            if(r->colName == rn){
+        {
+            if(r->colName == rn)
+            {
                 auto r2 = r.operator->();
                 return (zTablerow*)r2;
             }
         }
+    }
     return nullptr;
 }
 
@@ -48,24 +53,29 @@ bool zTablerow::Compare(const zTablerow& rv, QStringList& e){
     bool v  = true;
     if(this->colName!=rv.colName)
     {
-        e.append(QStringLiteral("colName Not Equals: (%1, %2)").arg(colName, rv.colName));
+        e.append(QStringLiteral("colName Not Equals: (%1,%2)").arg(colName, rv.colName));
         v = false;
     }
     if(this->colType!=rv.colType)
     {
-        e.append(QStringLiteral("colType Not Equals: %1(%2, %3)").arg(colName,colType,rv.colType ));
+        e.append(QStringLiteral("colType Not Equals: %1(%2,%3)").arg(colName,colType,rv.colType ));
         v = false;
     }
 
     if(this->dlen!=rv.dlen)
     {
-        e.append(QStringLiteral("dlen not equals: %1(%2, %3)").arg(colName).arg(this->dlen,rv.dlen));
+        e.append(QStringLiteral("dlen not equals: %1(%2,%3)").arg(colName).arg(this->dlen).arg(rv.dlen));
         v = false;
     }
 
     if(this->isNullable!=rv.isNullable)
     {
-        e.append(QStringLiteral("isNullable not equals: %1(%2, %3)").arg(colName).arg(isNullable,rv.isNullable));
+        e.append(QStringLiteral("isNullable not equals: %1(%2,%3)").arg(
+                     colName,
+                     zStringHelper::boolToString(isNullable),
+                     zStringHelper::boolToString(rv.isNullable)
+                     )
+                 );
         v = false;
     }
 

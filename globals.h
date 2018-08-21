@@ -46,20 +46,25 @@ static constexpr int C_ix_colType=2;
 static constexpr int C_ix_dlen=3;
 static constexpr int C_ix_nullable=4;
 
-
-
 #define nameof(x) z_macro_factory::_nameof<0>(#x, sizeof(x))
-#define zfn() z_macro_factory::_zinfo(Q_FUNC_INFO)
+#define zfn() z_macro_factory::_zfn<0>((const char*)Q_FUNC_INFO)//Q_FUNC_INFO
 
 class zLogicException: public QException
 {
+private:
+    //Q_DISABLE_COPY(zLogicException)
+       const QString& msg;
+
 public:
-    explicit zLogicException(QString const& _msg){ qDebug() << _msg; this->msg = _msg;}
+    explicit zLogicException(const QString& _msg)
+           :msg(_msg)
+       {           
+            qDebug() << this->msg;
+       }
 
     void raise() const override { throw *this; }
     zLogicException *clone() const override { return new zLogicException(*this); }
-private:
-    QString msg;
+
 };
 
 namespace z_macro_factory {
@@ -77,7 +82,8 @@ namespace z_macro_factory {
         throw zLogicException("A bad expression x in nameof(x). The expression is \"" + x + "\".");
     }
 
-    static QString _zinfo(const char* y) {
+    template<int a> QString _zfn(const char* y)
+    {
         QString x(y);
 
         QRegularExpression re(QStringLiteral(R"(([\w]+::[\w]+))"));
@@ -87,9 +93,22 @@ namespace z_macro_factory {
         {
             return m.captured(m.lastCapturedIndex());
         }
-        throw zLogicException("A bad expression x in _zinfo(x). The expression is \"" + x + "\".");
+
+        throw zLogicException("A bad expression x in _zfn(x). The expression is \"" + x + "\".");
+        return QStringLiteral("unknown");
     }
-}// namespace bravikov
+}// namespace z_macro_factory
+
+
+
+
+
+//namespace z_macro_factory
+//{
+//    template<int a> QString _nameof(const char* y, std::size_t);
+//    QString _zfn(const char* y);
+//}
+
 
 
 #endif // GLOBALS_H

@@ -362,9 +362,9 @@ globalClassMaps
 //    return isDtype;
 //}
 
-
-bool zTable::getClassType(const QString& ezt2,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings)
+bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings)
 {
+    noWarnings = false;
 //    zlog.trace(getClassType)
    // auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
    // auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -380,7 +380,7 @@ bool zTable::getClassType(const QString& ezt2,  QString *dtype, int *dlen, bool 
 
     QString typeName;
     bool inullable;
-    int idlen=0;
+    int idlen=*dlen;
 
     if(isRequired)
     {
@@ -409,7 +409,7 @@ bool zTable::getClassType(const QString& ezt2,  QString *dtype, int *dlen, bool 
          typeName = typeName.left(i2.capturedStart(1)+1);
      }
 
-    QStringList fl = zConversionMap::internals(globalClassMaps, typeName);
+    QStringList fl = zConversionMap::internals(maps, typeName);
 
     if(fl.isEmpty())
     {
@@ -781,7 +781,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                            }                           
                            //típus vizsgálat
                            // csak egy típus felismerés - próbálkozásos alapon, így a warningokat elnyomjuk
-                           isDtype = zTable::getClassType(ezt1, &dtype, &dlen, &isNullable, false, true);
+                           isDtype = zTable::getClassType(globalClassMaps, ezt1, &dtype, &dlen, &isNullable, false, true);
                            }
                        // a típus tulajdonságainak meghatározása, pl.
                        // ha a sorban a szavak közt van "required" akkor isrequired true
@@ -966,7 +966,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                     {
                         // a vizsgált szó vagy típus, vagy mező
                         // Elnyomjuk a warningokat - a szavankénti próbálkozás miatt - soronként csak egy lesz jó
-                        isDtype = zTable::getClassType(*word, &dtype, &dlen, &isNullable, false, true);
+                        isDtype = zTable::getClassType(globalClassMaps, *word, &dtype, &dlen, &isNullable, false, true);
                         if (isDtype)
                         {
                             zlog.trace(QStringLiteral("sortípus: %1").arg(*word));
@@ -1185,7 +1185,7 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
                             //QString row = m_attrOrProp.captured(0);
                             //bool isDtype =
 
-                                 zTable::getClassType(propType, &dtype, &dlen, &isNullable, isRequired);
+                                 zTable::getClassType(globalClassMaps, propType, &dtype, &dlen, &isNullable, isRequired);
 
 //                            if(isRequired){
 //                                isNullable = false;

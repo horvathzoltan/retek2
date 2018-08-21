@@ -158,7 +158,7 @@ void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
                 //QString v0 = v[0];
                 //QString v1 = v[1];
                 //QString v2 = (v.length()>2)?v[1]:zStringHelper::Empty;
-                auto s = zConversionStruct(v[0], v[1], (v.length()>2)?v[2]:zStringHelper::Empty);
+                auto s = zConversionStruct(v[0].trimmed(), v[1].trimmed(), (v.length()>2)?v[2]:zStringHelper::Empty);
                 list->append(s);
             }
         }

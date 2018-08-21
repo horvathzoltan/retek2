@@ -4,6 +4,7 @@
 #include <QList>
 #include <QString>
 #include <QDateTime>
+#include "zconversionmap.h"
 #include "zstringhelper.h"
 #include "ztablerow.h"
 
@@ -73,7 +74,8 @@ public:
 
     //static bool getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
 
-    static bool getClassType(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings = false);
+    // TODO milyen irányból - sql, class - állapítjuk meg a típust?
+    static bool getClassType(const QList<zConversionMap>& maps, const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings = false);
 
     QStringList getFK();
     QStringList getRFK();
