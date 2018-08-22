@@ -9,6 +9,7 @@
 #include "ztable.h"
 #include "zenumizer.h"
 #include "dbconnection.h"
+#include "srcconnection.h"
 #include "zsql.h"
 
 #endif // RETEK2_H
@@ -58,8 +59,6 @@ private slots:
 
     void on_pushButton_table_import_clicked();
 
-    void on_pushButton_createSourcePath_clicked();    
-
     void on_pushButton_GenerateAll_clicked();
 
     void on_buttonBox_tableNames_clicked(QAbstractButton *button);
@@ -67,6 +66,12 @@ private slots:
     void on_pushButton_getCaption_clicked();
 
     void on_listWidget_tables_itemClicked(QListWidgetItem *item);
+
+    void on_pushButton_table_connect_clicked();
+
+    void on_comboBox_srcconn_currentIndexChanged(const QString &arg1);
+
+    void on_pushButton_srcimport_clicked();
 
 private:
     Ui::retek2Class ui;
@@ -101,6 +106,7 @@ private:
     void closeEvent(QCloseEvent *event) override;
 
     void schemasFeltolt(const dbConnection& c);
+    void sourcesFeltolt(const srcConnection& c);
     QString getCaptionByRowIx(int idix);
     void setCaptionByRowIx(int idix, const QString& caption);
 };

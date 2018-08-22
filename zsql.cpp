@@ -310,12 +310,14 @@ zTable zSQL::getTable_SQL(const QString& tablanev, const QString& cmd, const QSt
             QString dtype1 = query.value(QStringLiteral("DATA_TYPE")).toString();
             QString dtype;
             int dlen = query.value(QStringLiteral("CHARACTER_MAXIMUM_LENGTH")).toInt();
-            bool isNullable = zStringHelper::toBool(query.value(QStringLiteral("IS_NULLABLE")).toString());
+            auto nstr = query.value(QStringLiteral("IS_NULLABLE")).toString();
+            bool isNullable = zStringHelper::toBool(nstr);
             QString caption = zStringHelper::Empty;
 
             zTable::getClassType(globalSqlMaps, dtype1, &dtype, &dlen, &isNullable, false, true);
 
-            tr.append(zTablerow(colName, dtype, dlen, isNullable, caption));
+            auto row = zTablerow(colName, dtype, dlen, isNullable, caption);
+            tr.append(row);
         }
     }
 

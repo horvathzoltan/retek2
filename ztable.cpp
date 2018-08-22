@@ -376,26 +376,26 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
 
     bool isDtype = false;
 
-    auto m_isNullable = re_isnullable.match(ezt1);
+    auto m_isNullable = re_isnullable.match(ezt1);// ki van írva betűvel, hogy nullable
 
     QString typeName;
     bool inullable;
     int idlen=*dlen;
 
-    if(isRequired)
+    if(isRequired)// ha kötelező, akkor nem lehet null
     {
         inullable = false;
         typeName = ezt1;
     }
-    else{
-        if(m_isNullable.hasMatch())
+    else{ // ha nem kötelező
+        if(m_isNullable.hasMatch()) // és ki van írva,
         {
             inullable = true;
             typeName = getFirstNotNull(m_isNullable, 2);
         }
         else
         {
-            inullable = false;
+            inullable = *nullable; // ha nincs rá explicit előírás, akkor az marad amit hoz
             typeName = ezt1;
         }
     }
@@ -1306,7 +1306,7 @@ QString zTable::getConstFromArgument(const QString& str){
 QList<zTable> zTable::createTableByClassTxt(const QString& txt){
 
     QMap<QString, QString> constNameMap;
-
+//TODO classpath, name
     auto tl = zTable::createTableByText_3(txt, &constNameMap);
 
     if(tl.length()==0)

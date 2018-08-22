@@ -1,5 +1,6 @@
 #include "globals.h"
 //#include "Beallitasok.h"
+#include "srcconnection.h"
 #include "zfilenamehelper.h"
 #include "zstringhelper.h"
 
@@ -33,12 +34,14 @@ dbConnection* Beallitasok::findDbConnection(const QString &connName)
     return nullptr;
 }
 
-void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver,  QComboBox *qc, QComboBox *dc, QListWidget* lv)
+void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver,  QComboBox *qc, QComboBox *dc, QListWidget* lv,QComboBox *qsrcc )
 {
     this->widget_user = wu;
     this->widget_password = wp;
     this->widget_server = wserver;
     this->widget_connections = qc;
+    this->widget_src_connections = qsrcc;
+
     this->widget_driver = dc;
     this->listWidget_projects = lv;
 }
@@ -160,6 +163,15 @@ dbConnection* Beallitasok::getDbConnectionByName(const QString& name)
     return nullptr;
 }
 
+srcConnection* Beallitasok::getSrcConnectionByName(const QString& name)
+{
+    zforeach(o, srcConnections)
+    {
+        if(o->Name == name) return &(*o);
+    }
+    return nullptr;
+}
+
 //dbConnection* Beallitasok::getDbConnectionBySchemaName(const QString& name){
 //    zforeach(o, dbConnections){
 //        if(o->schemaName == name) return &(*o);
@@ -182,14 +194,14 @@ fel kell olvasni a kapcsolat fájlt
 beállítások csv visszaolvasása
 
 */
-void Beallitasok::load(){
+void Beallitasok::load()
+{
 
     //QString path = beallitasok.settingsPath;
-    QString fn = zFileNameHelper::getDbconnFileName();//append(path, dbconnections_filename);
+    QString fn = zFileNameHelper::getDbConnFileName();
 
     QString txt = zTextFileHelper::load(fn);
     widget_connections->clear();
-
     if(!txt.isEmpty())
     {
         //zlog.log(QString("beállítások_dbconnections: %1").arg(fn));
@@ -206,13 +218,31 @@ void Beallitasok::load(){
        // selected_ix = 0;
     }
 
-    fn = zFileNameHelper::getSettingsFileName();//append(settingsPath, settings_filename);
+    fn = zFileNameHelper::getSourceConnFileName();
     txt = zTextFileHelper::load(fn);
-    if(!txt.isEmpty()){
+    widget_src_connections->clear();
+    if(!txt.isEmpty())
+    {
         QStringList csvl = zStringHelper::toStringList(txt);
-        Beallitasok::FromCSV(csvl.first());
+
+        zforeach(csvr, csvl)
+        {
+            auto c = srcConnection::FromCSV(*csvr);
+            if(c.isValid())
+            {
+                addSrcConnection(c);
+            }
         }
     }
+
+    fn = zFileNameHelper::getSettingsFileName();//append(settingsPath, settings_filename);
+    txt = zTextFileHelper::load(fn);
+    if(!txt.isEmpty())
+    {
+        QStringList csvl = zStringHelper::toStringList(txt);
+        Beallitasok::FromCSV(csvl.first());
+    }   
+}
 
 void Beallitasok::FromCSV(QString& i){
     QStringList a = i.split(zStringHelper::SEP);
@@ -247,7 +277,7 @@ void Beallitasok::fillProjectList(const QStringList& projectdirs)
 
 void Beallitasok::addConnection(dbConnection b){  
 
-    QString fn = zFileNameHelper::getDbconnFileName();
+    QString fn = zFileNameHelper::getDbConnFileName();
 
     //QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, QString());
     QString csvr= b.ToCSV();
@@ -267,6 +297,11 @@ void Beallitasok::addDbConnection(const dbConnection& b)
     widget_connections->addItem(b.Name);
 }
 
+void Beallitasok::addSrcConnection(const srcConnection& b)
+{
+    beallitasok.srcConnections.append(b);
+    widget_src_connections->addItem(b.Name);
+}
 
 
 

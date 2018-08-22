@@ -136,18 +136,17 @@ QString zFileNameHelper::getSettingsFileName(const QString& fn){
 
 QString zFileNameHelper::getSettingsFileName()
 {
-    //auto settingsPath = getSettingsDir();
-    //return append(settingsPath, beallitasok.settings_filename);
-    //return append(settingsPath, beallitasok.settings_filename);
     return getSettingsFileName(beallitasok.settings_filename);
 }
 
-QString zFileNameHelper::getDbconnFileName()
+QString zFileNameHelper::getDbConnFileName()
 {
-    //QString path = beallitasok.settingsPath;
-    //auto settingsPath = getSettingsDir();
-    //return append(settingsPath, beallitasok.dbconnections_filename);
     return getSettingsFileName(beallitasok.dbconnections_filename);
+}
+
+QString zFileNameHelper::getSourceConnFileName()
+{
+    return getSettingsFileName(beallitasok.source_connections_filename);
 }
 
 //zTable::r_class 
@@ -183,11 +182,20 @@ QStringList zFileNameHelper::FindFileNameInDir(const QString& dirName, const QSt
 /// \param fullPath
 /// \return
 ///
-QString zFileNameHelper::getfileName(const QString& fullPath){
+QString zFileNameHelper::getfileName(const QString& fullPath)
+{
     QFileInfo fi(fullPath);
     QString fileName = fi.baseName();
     return fileName;
 }
 
+
+QStringList zFileNameHelper::getSourceFilenames(const QString& path)
+{
+    QStringList nameFilters(QStringLiteral("*.c?"));
+    auto e = FindFileNameInDir(path, zStringHelper::Empty, nameFilters);
+
+    return e;
+}
 
 

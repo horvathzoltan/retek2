@@ -56,7 +56,15 @@ void retek2::init()
     ui.setupUi(this);
     zlog.init(ui.textBrowser, ui.tabWidget, 4);// 4.tab-on van a log
     //beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
-    beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server,  ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
+    beallitasok.init(
+                ui.lineEdit_User,
+                ui.lineEdit_Password,
+                ui.lineEdit_Server,
+                ui.comboBox_connections,
+                ui.comboBox,
+                ui.listWidget_projects,
+                ui.comboBox_srcconn
+                );
 //    beallitasok.initPaths();
 
     zosHelper::setLocale();
@@ -896,6 +904,20 @@ void retek2::on_comboBox_connections_currentIndexChanged(const QString &arg1)
 }
 
 /*
+ források feltöltése
+*/
+
+void retek2::on_comboBox_srcconn_currentIndexChanged(const QString &arg1)
+{
+    ui.listWidget_sources->clear();
+
+    auto c = beallitasok.getSrcConnectionByName(arg1);
+    if(c){
+        sourcesFeltolt(*c);
+    }
+}
+
+/*
 A táblák feltöltése - egy konkrét séma tábláinak feltöltése
 */
 void retek2::on_listWidget_schemas_currentTextChanged(const QString &schemaName)
@@ -960,12 +982,31 @@ void retek2::schemasFeltolt(const dbConnection& c) {
     ui.listWidget_schemas->addItems(schemaNames);
 }
 
+//listWidget_sources
+void retek2::sourcesFeltolt(const srcConnection& c) {
+//    zSQL zsql;
+//    zsql.init(c);
+
+    auto sourceNames = zFileNameHelper::getSourceFilenames(c.path);
+    zforeach(sn, sourceNames)
+    {
+        auto fn = zFileNameHelper::getfileName(*sn);
+        auto i = new QListWidgetItem(fn);
+        //isetText(fn);
+        i->setData(Qt::UserRole, *sn);
+        ui.listWidget_sources->addItem(i);
+    }
+}
+
 void retek2::add_zTablaToListWidget(QList<zTable> ts){
     zforeach(t, ts){
         add_zTablaToListWidget(*t);
     }
 }
 
+/*
+import és connect - sql műveletek
+*/
 void retek2::on_pushButton_table_import_clicked()
 {
     auto items = ui.listWidget_tables->selectedItems();
@@ -1025,6 +1066,26 @@ void retek2::on_pushButton_table_import_clicked()
     }
 }
 
+/*
+A tábla honnan jön, ez meglevő tábla illetve egy adatbázis tábla - kell-e névegyezés
+*/
+
+void retek2::on_pushButton_table_connect_clicked()
+{
+    if(table == nullptr) return; // kell egy belső tábla
+    auto items = ui.listWidget_tables->selectedItems();
+    if(items.isEmpty()) return; // kell egy, és pontosan egy külső tábla
+    if(items.count()>1) return;
+    // ha megvannak, bejegyezzük a kapcsolatot
+    auto currentSchema = ui.listWidget_schemas->currentItem();
+    if(!currentSchema) return;
+    QString schemaName = currentSchema->text();
+    QString connName = ui.comboBox_connections->currentText();
+    QString tableName = (items.first())->text();
+
+    table->initSql(connName, schemaName, tableName);
+}
+
 QStringList retek2::listWidgetItemsText(QList<QListWidgetItem*> items)
 {
     QStringList e;
@@ -1037,10 +1098,7 @@ QStringList retek2::listWidgetItemsText(QList<QListWidgetItem*> items)
     return e;
 }
 
-void retek2::on_pushButton_createSourcePath_clicked()
-{
 
-}
 
 
 //void retek2::on_buttonBox_clicked(QAbstractButton *button)
@@ -1177,3 +1235,26 @@ void retek2::on_listWidget_tables_itemClicked(QListWidgetItem *item)
     }
 }
 
+/*
+pushButton_srcimport - on_pushButton_table_import_clicked
+*/
+
+void retek2::on_pushButton_srcimport_clicked()
+{
+     zlog.trace(zfn());
+
+     auto currentSrc = ui.listWidget_sources->currentItem();
+     if(!currentSrc) return;
+     QString srcName = currentSrc->data(Qt::UserRole).toString();
+
+     //zLog::dialogTrace(srcName);
+
+     QString f_txt = zTextFileHelper::load(srcName);
+     auto tl = zTable::createTableByClassTxt(f_txt);
+
+     zforeach(t,tl)
+     {
+        ztables.append(*t);
+        add_zTablaToListWidget(*t);
+     }
+}

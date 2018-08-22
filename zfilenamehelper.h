@@ -38,9 +38,13 @@ public:
     static QString getHomeSubDir(const QString&);
     static QString getSettingsDir();
     static QString getSettingsFileName();
-    static QString getDbconnFileName();
+    static QString getDbConnFileName();
+    static QString getSourceConnFileName();
+
     static QString getSettingsSubDir(const QString& sd);
     static QString getSettingsFileName(const QString& fn);
+
+    static QStringList getSourceFilenames(const QString& path);
 };
 
 #endif // ZFILENAMEHELPER_H

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "dbconnection.h"
+#include "srcconnection.h"
 
 #include <QLineEdit>
 #include <QList>
@@ -24,6 +25,7 @@ private:
     QLineEdit *widget_server;
     //QLineEdit *widget_adatbazisNev;
     QComboBox *widget_connections;
+    QComboBox *widget_src_connections;
     QComboBox *widget_driver;
     QListWidget *listWidget_projects;
 
@@ -32,13 +34,14 @@ public:
     //static const QString filename;
     QString currentProjectName;
     QList<dbConnection> dbConnections;
+    QList<srcConnection> srcConnections;
 
     dbConnection* findDbConnection(const QString& connName);
 
     Beallitasok();
     ~Beallitasok();
 
-    void init(QLineEdit*, QLineEdit*, QLineEdit*,  QComboBox *qc, QComboBox *dc, QListWidget *lw);
+    void init(QLineEdit*, QLineEdit*, QLineEdit*,  QComboBox *qc, QComboBox *dc, QListWidget *lw, QComboBox *qsrcc);
 
     void load();
     void addConnection(dbConnection);
@@ -132,6 +135,8 @@ abrachadabra
    // QString projectPath;
 
     QString dbconnections_filename = QStringLiteral(R"(dbconnections.csv)");
+    QString source_connections_filename = QStringLiteral(R"(srcconnections.csv)");
+
     QString settings_filename = QStringLiteral(R"(settings.csv)");
     /*
 #if defined(Q_OS_WIN)
@@ -147,6 +152,7 @@ abrachadabra
     void setSelected(int i);
 
     void addDbConnection(const dbConnection& b);
+    void addSrcConnection(const srcConnection& b);
 
     void FromCSV(QString& i);
 
@@ -155,6 +161,7 @@ abrachadabra
     void initPaths();
 
     dbConnection* getDbConnectionByName(const QString& name);
+    srcConnection* getSrcConnectionByName(const QString& name);
     dbConnection* getDbConnectionBySchemaName(const QString& name);
     //void setCurrentProjectName(const QString& v);
 };
