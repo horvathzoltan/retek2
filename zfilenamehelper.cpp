@@ -158,6 +158,12 @@ QStringList zFileNameHelper::FindFileNameInDir(const QString& dirName, const QSt
     QStringList ql;    
 
     QDir d = QDir(dirName);
+
+    if(!d.exists())
+    {
+        zlog.error(QStringLiteral("directory not exist: %1").arg(dirName));
+        return ql;
+    }
     QStringList datadirs  = d.entryList(QStringList() << fn, QDir::Dirs);
 
     if(datadirs.isEmpty()) return ql;

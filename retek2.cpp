@@ -768,33 +768,33 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
 }
 
 
-void retek2::on_pushButton_6_clicked()
-{    
-    zlog.trace(QStringLiteral("Entitások beolvasása"));
+//void retek2::on_pushButton_6_clicked()
+//{
+//    zlog.trace(QStringLiteral("Entitások beolvasása"));
 
-    auto txt = ui.textEdit->toPlainText();
+//    auto txt = ui.textEdit->toPlainText();
 
-    auto sourceFileFilter = QStringList()<<QStringLiteral("*.c")<<QStringLiteral("*.cs");
+//    auto sourceFileFilter = QStringList()<<QStringLiteral("*.c")<<QStringLiteral("*.cs");
 
-    auto txtFileList = zStringHelper::getFilePaths(txt, sourceFileFilter);
+//    auto txtFileList = zStringHelper::getFilePaths(txt, sourceFileFilter);
 
-    QList<zTable> tl;
+//    QList<zTable> tl;
 
-    if(txtFileList.isEmpty()){
-        tl = zTable::createTableByClassTxt(txt);
-    }
-    else{
-        zforeach(f, txtFileList){
-            QString f_txt = zTextFileHelper::load(*f);
-            tl << zTable::createTableByClassTxt(f_txt);
-        }
-    }
+//    if(txtFileList.isEmpty()){
+//        tl = zTable::createTableByClassTxt(txt);
+//    }
+//    else{
+//        zforeach(f, txtFileList){
+//            QString f_txt = zTextFileHelper::load(*f);
+//            tl << zTable::createTableByClassTxt(f_txt);
+//        }
+//    }
 
-    zforeach(t,tl){
-        ztables.append(*t);
-        add_zTablaToListWidget(*t);
-        }
-}
+//    zforeach(t,tl){
+//        ztables.append(*t);
+//        add_zTablaToListWidget(*t);
+//        }
+//}
 
 /*
 a táblanév nem átírható, illetve a mezőnév sem, ezek rendszerszintű azonosítók
@@ -1252,6 +1252,8 @@ void retek2::on_pushButton_srcimport_clicked()
      QString f_txt = zTextFileHelper::load(srcName);
      auto tl = zTable::createTableByClassTxt(f_txt);
 
+
+     // TODO itt kell name és classpath
      zforeach(t,tl)
      {
         ztables.append(*t);
