@@ -9,6 +9,7 @@
 #include "zshortguid.h"
 #include "zfilenamehelper.h"
 #include "zoshelper.h"
+#include "ziconhelper.h"
 
 #include <QRegularExpression>
 #include <QTableWidgetItem>
@@ -54,6 +55,7 @@ retek2::~retek2()= default;
 void retek2::init()
 {	
     ui.setupUi(this);
+    ui.listWidget_ztables->setIconSize(QSize(48,24));
     zlog.init(ui.textBrowser, ui.tabWidget, 4);// 4.tab-on van a log
     //beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
     beallitasok.init(
@@ -246,27 +248,36 @@ void retek2::add_zTablaToListWidget(const zTable& t){
         return;
     }
 
-    QIcon icon;   
+    //QIcon icon;
 
-    if(!t.sql_conn.isEmpty())
-    {
-        if(!t.class_path.isEmpty())
-        {
-            icon=QIcon::fromTheme(QStringLiteral(":/database_file-text.ico"));
-        }
-        else
-        {
-            icon=QIcon::fromTheme(QStringLiteral(":/database.ico"));
-        }
-    }
-    else
-    {
-        if(!t.class_path.isEmpty())
-        {
-            icon=QIcon::fromTheme(QStringLiteral(":/file-text.ico"));
-        }
-    }       
+//    if(!t.sql_conn.isEmpty())
+//    {
+//        if(!t.class_path.isEmpty())
+//        {
+//            icon=QIcon::fromTheme(QStringLiteral(":/database_file-text.ico"));
+//        }
+//        else
+//        {
+//            icon=QIcon::fromTheme(QStringLiteral(":/database.ico"));
+//        }
+//    }
+//    else
+//    {
+//        if(!t.class_path.isEmpty())
+//        {
+//            icon=QIcon::fromTheme(QStringLiteral(":/file-text.ico"));
+//        }
+//    }
 
+    //QIcon icon;
+
+    auto icon = zIconHelper::concatenate();
+
+    //championbtn->setIcon(dummyIcon);
+
+
+
+    //auto is = ui.listWidget_ztables->iconSize();
     new QListWidgetItem(icon, tn, ui.listWidget_ztables);
 }
 
@@ -1247,6 +1258,7 @@ void retek2::on_pushButton_srcimport_clicked()
      if(!currentSrc) return;
      QString srcName = currentSrc->data(Qt::UserRole).toString();
 
+     auto name = currentSrc->text();
      //zLog::dialogTrace(srcName);
 
      QString f_txt = zTextFileHelper::load(srcName);
@@ -1256,6 +1268,8 @@ void retek2::on_pushButton_srcimport_clicked()
      // TODO itt kell name és classpath
      zforeach(t,tl)
      {
+         t->name = zStringHelper::zNormalize(name);
+         t->class_path = srcName;
         ztables.append(*t);
         add_zTablaToListWidget(*t);
      }

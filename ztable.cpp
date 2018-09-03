@@ -865,13 +865,11 @@ QList<zTable> zTable::createTableByText(QString txt)
     return tl;
 }
 
-// TODO getCaption bevezetése mindenhol
 QString zTable::getCaption(const QString& fname){
     QString caption;
     auto sp = zFileNameHelper::getSettingsDir();
     auto pp = zFileNameHelper::getProjectDir();
-
-    // TODO a lokális terminológiát - terminológiákat tároló táblák használata
+    
     // - caption = getCaption(fname)
     // ha a lokális tábla módosult a legutolsó betöltés óta - ezek időbélyegeit le kell tenni
     // keresás a lokális táblában
@@ -1307,8 +1305,9 @@ QList<zTable> zTable::createTableByClassTxt(const QString& txt){
 
     QMap<QString, QString> constNameMap;
 //TODO classpath, name
+    
     auto tl = zTable::createTableByText_3(txt, &constNameMap);
-
+    
     if(tl.length()==0)
     {
         zlog.error(QStringLiteral("nem jött létre adat"));
@@ -1489,7 +1488,7 @@ bool zTable::validateSQL(){
     return false;
 }
 
-
+// TODO validálás a sql alapján
 bool zTable::validateSource(){
     bool v = true;
     return v;
