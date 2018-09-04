@@ -271,7 +271,13 @@ void retek2::add_zTablaToListWidget(const zTable& t){
 
     //QIcon icon;
 
-    auto icon = zIconHelper::concatenate();
+    QStringList icons
+    {
+        QStringLiteral(":/database.ico"),
+        QStringLiteral(":/file-text.ico")
+    };
+
+    auto icon = zIconHelper::concatenate(icons);
 
     //championbtn->setIcon(dummyIcon);
 

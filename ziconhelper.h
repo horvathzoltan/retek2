@@ -10,7 +10,7 @@ class zIconHelper
 public:
     zIconHelper();
 
-    static QIcon concatenate();
+    static QIcon concatenate(QStringList iconPaths);
 };
 
 #endif // ZICONHELPER_H
