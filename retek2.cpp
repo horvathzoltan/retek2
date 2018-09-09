@@ -248,39 +248,20 @@ void retek2::add_zTablaToListWidget(const zTable& t){
         return;
     }
 
-    //QIcon icon;
+    // TODO kell valid és invalid ikon, azokat kel használni - summázandó a validációs információt
+    QStringList icons;
 
-//    if(!t.sql_conn.isEmpty())
-//    {
-//        if(!t.class_path.isEmpty())
-//        {
-//            icon=QIcon::fromTheme(QStringLiteral(":/database_file-text.ico"));
-//        }
-//        else
-//        {
-//            icon=QIcon::fromTheme(QStringLiteral(":/database.ico"));
-//        }
-//    }
-//    else
-//    {
-//        if(!t.class_path.isEmpty())
-//        {
-//            icon=QIcon::fromTheme(QStringLiteral(":/file-text.ico"));
-//        }
-//    }
-
-    //QIcon icon;
-
-    QStringList icons
+    if(!t.sql_conn.isEmpty())
     {
-        QStringLiteral(":/database.ico"),
-        QStringLiteral(":/file-text.ico")
-    };
+        icons << QStringLiteral(":/database.ico");
+    }
+
+    if(!t.class_path.isEmpty())
+    {
+         icons << QStringLiteral(":/file-text.ico");
+    }
 
     auto icon = zIconHelper::concatenate(icons);
-
-    //championbtn->setIcon(dummyIcon);
-
 
 
     //auto is = ui.listWidget_ztables->iconSize();
