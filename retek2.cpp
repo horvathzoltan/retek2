@@ -100,7 +100,13 @@ void retek2::init()
     auto projectdirs = zFileNameHelper::GetSubdirs(pp);
     beallitasok.fillProjectList(projectdirs);
 
-    loadCurrentProject();
+    // TODO a: szétválasztani a betöltést, validációt és a megjelenítést
+    // olyan módon, hogy a a project szintből kiválik egy tábla szint
+    // illetve hogy a validacio a megjelenites elott megtortenik, es a megjelenites annak az eredmenyetol fugg
+    // b: így marad, de a validacio eredmenyet tarolni kell, es kesobb kell osszefuzni
+    // a megjelenites eredmenyevel
+
+    loadCurrentProject(); // ez tölti a ztablakat
     validateCurrentProject_SQL();
     validateCurrentProject_Source();
     validateCurrentProject_Document();
@@ -248,17 +254,18 @@ void retek2::add_zTablaToListWidget(const zTable& t){
         return;
     }
 
-    // TODO kell valid és invalid ikon, azokat kel használni - summázandó a validációs információt
     QStringList icons;
 
     if(!t.sql_conn.isEmpty())
     {
         icons << QStringLiteral(":/database.ico");
+        // TODO ha invalid, az ikon neve += "|x"
     }
 
     if(!t.class_path.isEmpty())
     {
          icons << QStringLiteral(":/file-text.ico");
+         // TODO ha invalid, az ikon neve += "|x"
     }
 
     auto icon = zIconHelper::concatenate(icons);

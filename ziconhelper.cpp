@@ -16,14 +16,34 @@ QIcon zIconHelper::concatenate(QStringList icons)
     if(icons.isEmpty()) return dummyIcon;
 
     QPixmap comboPixmap(32*icons.count(), 32);
-    comboPixmap.fill();
+    comboPixmap.fill();//Qt::red
     QPainter painter(&comboPixmap);
+
+    QPixmap alertPixmap(QStringLiteral(":/alert-triangle.ico"));
 
     int zix = 0;
     zforeach(i, icons)
     {
-        QPixmap p1(*i);
+        bool xflag;
+        QString iconname;
+        if(i->endsWith(QStringLiteral("|x")))
+        {
+            xflag = true;
+            iconname = i->left(i->length()-2);
+        }
+        else
+        {
+            iconname = *i;
+            xflag = false;
+        }
+        QPixmap p1(iconname);
         painter.drawPixmap(zix, 0, p1);
+        if(xflag)
+        {
+            painter.eraseRect(zix+16, 0, 16, 16);
+            painter.drawPixmap(zix+16, 0, alertPixmap);
+        }
+
         zix += p1.width();
     }
 

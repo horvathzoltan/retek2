@@ -4,6 +4,6 @@
         <file>retek.ico</file>
         <file>database.ico</file>
         <file>file-text.ico</file>
-        <file>database_file_text.ico</file>
+        <file>alert-triangle.ico</file>
     </qresource>
 </RCC>
