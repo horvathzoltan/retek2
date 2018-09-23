@@ -41,6 +41,7 @@ QIcon zIconHelper::concatenate(QStringList icons)
         if(xflag)
         {
             painter.eraseRect(zix+16, 0, 16, 16);
+            painter.fillRect(zix+16, 0, 16, 16, Qt::yellow);
             painter.drawPixmap(zix+16, 0, alertPixmap);
         }
 

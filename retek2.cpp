@@ -107,9 +107,15 @@ void retek2::init()
     // a megjelenites eredmenyevel
 
     loadCurrentProject(); // ez tölti a ztablakat
-    validateCurrentProject_SQL();
-    validateCurrentProject_Source();
-    validateCurrentProject_Document();
+
+    fillListWidgetByCurrentProject();
+
+    auto sqlmap = validateCurrentProject_SQL();
+    auto srcmap = validateCurrentProject_Source();
+    auto docmap = validateCurrentProject_Document();
+
+    setListWidgetIconsByCurrentProject(sqlmap, srcmap, docmap);
+
 
     ztokenizer.init(ui.tableWidget_MezoLista);
 
@@ -139,6 +145,78 @@ void retek2::init()
     zlog.ok(QStringLiteral("retek2 init ok"));
 }
 
+void retek2::fillListWidgetByCurrentProject()
+{
+    //zlog.trace(zfn());
+    zforeach(t, ztables)
+    {
+        add_zTablaToListWidget(*t);
+    }
+}
+
+void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap)
+{
+    zforeach(t, ztables)
+    {
+        auto items = ui.listWidget_ztables->findItems(t->name, Qt::MatchExactly);
+        if(items.isEmpty()) continue;
+        if(items.count()==1)
+        {
+            QStringList icons = getIconsByFlags(t->name, sqlmap, srcmap, docmap);
+            auto icon = zIconHelper::concatenate(icons);
+            items[0]->setIcon(icon);
+        }
+        else
+        {
+            zlog.error(QStringLiteral("Több tábla található azonos néven: %1").arg(t->name));
+        }
+    }
+}
+
+QStringList retek2::getIconsByFlags(QString name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap)
+{
+    QStringList e;
+
+
+    if(sqlmap.contains(name))
+    {
+        if(sqlmap.value(name, false))
+        {
+            e << QStringLiteral(":/database.ico");
+        }
+        else
+        {
+            e << QStringLiteral(":/database.ico|x");
+        }
+    }
+
+    if(srcmap.contains(name))
+    {
+        if(srcmap.value(name, false))
+        {
+            e << QStringLiteral(":/file-text.ico");
+        }
+        else
+        {
+            e << QStringLiteral("::/file-text.ico|x");
+        }
+    }
+
+    /*
+    if(docmap.contains(name))
+    {
+        if(docmap.value(name, false))
+        {
+            e << QStringLiteral(":/file-text.ico");
+        }
+        else
+        {
+            e << QStringLiteral("::/file-text.ico|x");
+        }
+    }
+    */
+    return e;
+}
 
 void retek2::loadCurrentProject()
 {      
@@ -187,7 +265,7 @@ void retek2::loadCurrentProject()
 //                    }
 //                    else
                     ztables << t0;
-                    add_zTablaToListWidget(t0);
+//                    add_zTablaToListWidget(t0);
 
                     if(!isValid)
                     {
@@ -199,17 +277,16 @@ void retek2::loadCurrentProject()
     }
 }
 
-void retek2::validateCurrentProject_SQL(){    
+QMap<QString,bool> retek2::validateCurrentProject_SQL(){
     //const char* a = (const char*)Q_FUNC_INFO;//zfn();
     zlog.trace(zfn());
+    QMap<QString,bool> e;
+
     zforeach(t, ztables)
     {
         zlog.trace(QStringLiteral("validating table: %1").arg(t->name));
-        if(t->sql_conn.isEmpty())
-        {
-            zlog.trace(QStringLiteral("sql_conn is empty"));
-            continue;
-        }
+        if(t->sql_conn.isEmpty()) continue;
+
         if(t->sql_updateTimeStamp.isNull())
         {
             zlog.trace(QStringLiteral("no sql_updateTimeStamp"));
@@ -220,6 +297,7 @@ void retek2::validateCurrentProject_SQL(){
         {            
             zlog.trace(QStringLiteral("newer available: %1 at: %2").arg(t->name, t->sql_updateTimeStamp.toString()));
             auto isValid = t->validateSQL();
+            e.insert(t->name, isValid);
             zlog.trace(QStringLiteral("isValid: %1").arg(zStringHelper::boolToString(isValid)));
         } // egyébként nincs változás
         else
@@ -228,22 +306,32 @@ void retek2::validateCurrentProject_SQL(){
         }
 
     }
+
+    return e;
 }
 
-void retek2::validateCurrentProject_Source(){
+QMap<QString, bool> retek2::validateCurrentProject_Source(){
+    QMap<QString, bool> e;
     zforeach(t, ztables)
     {
         if(!t->class_path.isEmpty()){
-            t->validateSource();
+            auto a = t->validateSource();
+            e.insert(t->name, a);
         }
     }
+    return e;
 }
 
-void retek2::validateCurrentProject_Document(){
+QMap<QString, bool> retek2::validateCurrentProject_Document(){
+    QMap<QString, bool>e;
+
     zforeach(t, ztables)
     {
-        t->validateDocument();
+        auto a = t->validateDocument();
+        e.insert(t->name, a);
     }
+
+    return e;
 }
 
 void retek2::add_zTablaToListWidget(const zTable& t){
@@ -253,7 +341,7 @@ void retek2::add_zTablaToListWidget(const zTable& t){
         zlog.error(QStringLiteral("Nincs megnevezés. table: %1 class: %2").arg(t.sql_table, t.class_name));
         return;
     }
-
+/*
     QStringList icons;
 
     if(!t.sql_conn.isEmpty())
@@ -273,6 +361,9 @@ void retek2::add_zTablaToListWidget(const zTable& t){
 
     //auto is = ui.listWidget_ztables->iconSize();
     new QListWidgetItem(icon, tn, ui.listWidget_ztables);
+    */
+
+    new QListWidgetItem(tn, ui.listWidget_ztables);
 }
 
 
