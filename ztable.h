@@ -51,6 +51,7 @@ public:
     // a megnevezés képzésének szabálya, leírója
     QString name_formatstring;
     QDateTime updateTime;
+    QString document_path;
     bool document_isValid;
     QDateTime document_updateTimeStamp;
 

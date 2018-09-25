@@ -194,15 +194,15 @@ QStringList retek2::getIconsByFlags(QString name, const QMap<QString, bool> &sql
     {
         if(srcmap.value(name, false))
         {
-            e << QStringLiteral(":/file-text.ico");
+            e << QStringLiteral(":/class.ico");
         }
         else
         {
-            e << QStringLiteral("::/file-text.ico|x");
+            e << QStringLiteral("::/class.ico|x");
         }
     }
 
-    /*
+
     if(docmap.contains(name))
     {
         if(docmap.value(name, false))
@@ -214,7 +214,7 @@ QStringList retek2::getIconsByFlags(QString name, const QMap<QString, bool> &sql
             e << QStringLiteral("::/file-text.ico|x");
         }
     }
-    */
+
     return e;
 }
 
@@ -313,11 +313,11 @@ QMap<QString,bool> retek2::validateCurrentProject_SQL(){
 QMap<QString, bool> retek2::validateCurrentProject_Source(){
     QMap<QString, bool> e;
     zforeach(t, ztables)
-    {
-        if(!t->class_path.isEmpty()){
-            auto a = t->validateSource();
-            e.insert(t->name, a);
-        }
+    {        
+        if(t->class_path.isEmpty()) continue;
+
+        auto a = t->validateSource();
+        e.insert(t->name, a);
     }
     return e;
 }
@@ -327,6 +327,8 @@ QMap<QString, bool> retek2::validateCurrentProject_Document(){
 
     zforeach(t, ztables)
     {
+        if(t->document_path.isEmpty()) continue;
+
         auto a = t->validateDocument();
         e.insert(t->name, a);
     }
