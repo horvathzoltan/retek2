@@ -100,15 +100,13 @@ void retek2::init()
     auto projectdirs = zFileNameHelper::GetSubdirs(pp);
     beallitasok.fillProjectList(projectdirs);
 
-    // TODO a: szétválasztani a betöltést, validációt és a megjelenítést
-    // olyan módon, hogy a a project szintből kiválik egy tábla szint
-    // illetve hogy a validacio a megjelenites elott megtortenik, es a megjelenites annak az eredmenyetol fugg
-    // b: így marad, de a validacio eredmenyet tarolni kell, es kesobb kell osszefuzni
-    // a megjelenites eredmenyevel
-
     loadCurrentProject(); // ez tölti a ztablakat
 
     fillListWidgetByCurrentProject();
+
+    // TODO a projet validalas mintajara meg kell alkotni a tábla validálást
+    // amikor a táblázatot kitöltjük a ztabla adatokkal, frissíteni kell a validációs állapotot, illetve a nem valid
+    // mezőket sárga háttérszínnel jelezni kell
 
     auto sqlmap = validateCurrentProject_SQL();
     auto srcmap = validateCurrentProject_Source();
@@ -277,6 +275,7 @@ void retek2::loadCurrentProject()
     }
 }
 
+// TODO if(true ||  - nem kell az élesben
 QMap<QString,bool> retek2::validateCurrentProject_SQL(){
     //const char* a = (const char*)Q_FUNC_INFO;//zfn();
     zlog.trace(zfn());
@@ -284,7 +283,7 @@ QMap<QString,bool> retek2::validateCurrentProject_SQL(){
 
     zforeach(t, ztables)
     {
-        zlog.trace(QStringLiteral("validating table: %1").arg(t->name));
+        //zlog.trace(QStringLiteral("sql validating table: %1").arg(t->name));
         if(t->sql_conn.isEmpty()) continue;
 
         if(t->sql_updateTimeStamp.isNull())
@@ -310,18 +309,34 @@ QMap<QString,bool> retek2::validateCurrentProject_SQL(){
     return e;
 }
 
+// TODO if(true ||  - nem kell az élesben
 QMap<QString, bool> retek2::validateCurrentProject_Source(){
     QMap<QString, bool> e;
     zforeach(t, ztables)
     {        
         if(t->class_path.isEmpty()) continue;
 
-        auto a = t->validateSource();
-        e.insert(t->name, a);
+        if(t->source_updateTimeStamp.isNull())
+        {
+            zlog.trace(QStringLiteral("no source_updateTimeStamp"));
+        }
+
+        QDateTime lastUpdateTimeStamp = t->getSourceUpdateTimestamp();
+
+        if(true || lastUpdateTimeStamp > t->source_updateTimeStamp) // ha a forrás újabb
+        {
+            auto a = t->validateSource();
+            e.insert(t->name, a);
+        }
+        else
+        {
+            zlog.trace(QStringLiteral("not changed."));
+        }
     }
     return e;
 }
 
+// TODO if(true ||  - nem kell az élesben
 QMap<QString, bool> retek2::validateCurrentProject_Document(){
     QMap<QString, bool>e;
 
@@ -337,35 +352,14 @@ QMap<QString, bool> retek2::validateCurrentProject_Document(){
 }
 
 void retek2::add_zTablaToListWidget(const zTable& t){
-    QString tn = t.name; // displayed name
-    if(tn.isEmpty())
+   // QString tn = t.name; // displayed name
+    if(t.name.isEmpty())
     {
         zlog.error(QStringLiteral("Nincs megnevezés. table: %1 class: %2").arg(t.sql_table, t.class_name));
         return;
     }
-/*
-    QStringList icons;
 
-    if(!t.sql_conn.isEmpty())
-    {
-        icons << QStringLiteral(":/database.ico");
-        // TODO ha invalid, az ikon neve += "|x"
-    }
-
-    if(!t.class_path.isEmpty())
-    {
-         icons << QStringLiteral(":/file-text.ico");
-         // TODO ha invalid, az ikon neve += "|x"
-    }
-
-    auto icon = zIconHelper::concatenate(icons);
-
-
-    //auto is = ui.listWidget_ztables->iconSize();
-    new QListWidgetItem(icon, tn, ui.listWidget_ztables);
-    */
-
-    new QListWidgetItem(tn, ui.listWidget_ztables);
+    new QListWidgetItem(t.name, ui.listWidget_ztables);
 }
 
 

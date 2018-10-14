@@ -1455,11 +1455,13 @@ QDateTime zTable::getSqlUpdateTimestamp()
     return QDateTime();
 }
 
+//TODO fájl utolsó szerkesztés idejének megszerzése
 QDateTime zTable::getSourceUpdateTimestamp()
-{
+{    
     return QDateTime::currentDateTime();
 }
 
+// TODO fájl utolsó szerkesztés idejének megszerzése
 QDateTime zTable::getDocUpdateTimestamp()
 {
     return QDateTime::currentDateTime();
@@ -1488,12 +1490,17 @@ bool zTable::validateSQL(){
     return false;
 }
 
-// TODO validálás a sql alapján
+// TODO validálás a forrás file  alapján
+// be kell olvasni a forrást , ztablevé kell alakítani, majd compare
 bool zTable::validateSource(){
+
+    //QString f_txt = zTextFileHelper::load(srcName);
+    //auto tl = zTable::createTableByClassTxt(f_txt);
     bool v = true;
     return v;
 }
 
+// TODO validálás a dokumentáció  alapján
 bool zTable::validateDocument(){
     bool v = true;
     return v;
