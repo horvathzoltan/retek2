@@ -1346,7 +1346,6 @@ void retek2::on_pushButton_srcimport_clicked()
      auto tl = zTable::createTableByClassTxt(f_txt);
 
 
-     // TODO itt kell name és classpath
      zforeach(t,tl)
      {
          t->name = zStringHelper::zNormalize(name);

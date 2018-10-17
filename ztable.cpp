@@ -1304,7 +1304,6 @@ QString zTable::getConstFromArgument(const QString& str){
 QList<zTable> zTable::createTableByClassTxt(const QString& txt){
 
     QMap<QString, QString> constNameMap;
-//TODO classpath, name
     
     auto tl = zTable::createTableByText_3(txt, &constNameMap);
     
@@ -1491,9 +1490,14 @@ bool zTable::validateSQL(){
 }
 
 // TODO validálás a forrás file  alapján
-// be kell olvasni a forrást , ztablevé kell alakítani, majd compare
+// be kell olvasni a forrást, ztablevé kell alakítani, majd compare
+// void retek2::on_pushButton_srcimport_clicked() alapján
 bool zTable::validateSource(){
 
+    if(!this->class_path.isEmpty())
+    {
+
+    }
     //QString f_txt = zTextFileHelper::load(srcName);
     //auto tl = zTable::createTableByClassTxt(f_txt);
     bool v = true;
