@@ -55,7 +55,7 @@ void zLog::log(const QString& m, int errlevel){
         this->widget->setTextColor(QColor(Qt::darkGray));
         break;
     case MESSAGE:
-        this->widget->setTextColor(QColor(Qt::black));
+        this->widget->setTextColor(QColor("steelblue"));
         break;
     default:
         this->widget->setTextColor(QColor(Qt::black));

@@ -176,6 +176,8 @@ QString zTable::toString() const
   név, sorok száma, azok metaadatai -  nevei, típusai hosszai, nullable required a relevánsak
 */
 bool zTable::Compare(const zTable& tv, QStringList& e){
+    zlog.message(zfn());
+
     bool v = true;
 
     if(this->name!=tv.name)
@@ -1470,6 +1472,7 @@ QDateTime zTable::getDocUpdateTimestamp()
 Validálja a táblát annak sql kötése alapján
 */
 bool zTable::validateSQL(){
+    zlog.trace(zfn());
     zSQL zsql;
     auto dbconn = beallitasok.findDbConnection(this->sql_conn);
 
@@ -1493,15 +1496,30 @@ bool zTable::validateSQL(){
 // be kell olvasni a forrást, ztablevé kell alakítani, majd compare
 // void retek2::on_pushButton_srcimport_clicked() alapján
 bool zTable::validateSource(){
-
+    zlog.trace(zfn());
     if(!this->class_path.isEmpty())
     {
 
+        QString f_txt = zTextFileHelper::load(this->class_path);
+        auto tl = zTable::createTableByClassTxt(f_txt);
+
+        zforeach(t,tl)
+        {
+            t->name = this->name;
+            if(t->class_name == this->class_name)
+            {
+
+                    QStringList e;
+                     auto isOK = Compare(*t, e);
+                     if(!isOK)
+                     {
+                         zlog.warning(e);
+                     }
+                     return isOK;
+            }
+        }
     }
-    //QString f_txt = zTextFileHelper::load(srcName);
-    //auto tl = zTable::createTableByClassTxt(f_txt);
-    bool v = true;
-    return v;
+    return false;
 }
 
 // TODO validálás a dokumentáció  alapján
