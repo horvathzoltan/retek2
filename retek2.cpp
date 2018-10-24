@@ -104,10 +104,6 @@ void retek2::init()
 
     fillListWidgetByCurrentProject();
 
-    // TODO a projet validalas mintajara meg kell alkotni a tábla validálást
-    // amikor a táblázatot kitöltjük a ztabla adatokkal, frissíteni kell a validációs állapotot, illetve a nem valid
-    // mezőket sárga háttérszínnel jelezni kell
-
     auto sqlmap = validateCurrentProject_SQL();
     auto srcmap = validateCurrentProject_Source();
     auto docmap = validateCurrentProject_Document();
