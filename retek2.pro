@@ -30,7 +30,8 @@ HEADERS += Beallitasok.h \
     zconversionstruct.h \
     zoshelper.h \
     srcconnection.h \
-    ziconhelper.h
+    ziconhelper.h \
+    zlogicexception.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \
@@ -55,7 +56,8 @@ SOURCES += Beallitasok.cpp \
     zconversionstruct.cpp \
     zoshelper.cpp \
     srcconnection.cpp \
-    ziconhelper.cpp
+    ziconhelper.cpp \
+    zlogicexception.cpp
 FORMS += retek2.ui \
     ztablenames.ui
 RESOURCES += retek2.qrc

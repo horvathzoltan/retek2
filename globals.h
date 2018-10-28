@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QException>
 #include "zconversionmap.h"
+#include "zlogicexception.h"
 
 #define zforeach(var, container) for(auto (var) = (container).begin(); (var) != (container).end(); ++(var))
 #define zforeach_from(var, container, ix) for(auto (var) = (container).begin()+(ix); (var) != (container).end(); ++(var))
@@ -48,24 +49,6 @@ static constexpr int C_ix_nullable=4;
 
 #define nameof(x) z_macro_factory::_nameof<0>(#x, sizeof(x))
 #define zfn() z_macro_factory::_zfn<0>((const char*)Q_FUNC_INFO)//Q_FUNC_INFO
-
-class zLogicException: public QException
-{
-private:
-    //Q_DISABLE_COPY(zLogicException)
-       const QString& msg;
-
-public:
-    explicit zLogicException(const QString& _msg)
-           :msg(_msg)
-       {           
-            qDebug() << this->msg;
-       }
-
-    void raise() const override { throw *this; }
-    zLogicException *clone() const override { return new zLogicException(*this); }
-
-};
 
 namespace z_macro_factory {
     template<int a>

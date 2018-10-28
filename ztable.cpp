@@ -503,6 +503,7 @@ void zTable::toXML(QXmlStreamWriter *s)
     s->writeAttribute(nameof(this->source_updateTimeStamp), this->source_updateTimeStamp.toString());
     s->writeAttribute(nameof(this->source_isValid), zStringHelper::boolToString(this->source_isValid));
 
+    s->writeAttribute(nameof(this->document_path), this->document_path);
     s->writeAttribute(nameof(this->document_updateTimeStamp), this->document_updateTimeStamp.toString());
     s->writeAttribute(nameof(this->document_isValid), zStringHelper::boolToString(this->document_isValid));
 
@@ -585,6 +586,7 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
     zXmlHelper::putXmlAttr(a, nameof(source_isValid), &(t.source_isValid));
     zXmlHelper::putXmlAttr(a, nameof(source_updateTimeStamp), &(t.source_updateTimeStamp));
 
+    zXmlHelper::putXmlAttr(a, nameof(document_path), &(t.document_path));
     zXmlHelper::putXmlAttr(a, nameof(document_isValid), &(t.document_isValid));
     zXmlHelper::putXmlAttr(a, nameof(document_updateTimeStamp), &(t.document_updateTimeStamp));
 
@@ -1501,6 +1503,8 @@ bool zTable::validateSource(){
     {
 
         QString f_txt = zTextFileHelper::load(this->class_path);
+        if(f_txt==zStringHelper::Empty) return false;
+
         auto tl = zTable::createTableByClassTxt(f_txt);
 
         zforeach(t,tl)
@@ -1523,7 +1527,17 @@ bool zTable::validateSource(){
 }
 
 // TODO validálás a dokumentáció  alapján
-bool zTable::validateDocument(){
-    bool v = true;
-    return v;
+bool zTable::validateDocument(){    
+    zlog.trace(zfn());
+    if(!this->document_path.isEmpty())
+    {
+        //TODO ha a forrás http vagy https akkor le kell tölteni külső toolal a fájlt
+        // és át kell adni a path-t
+        // ha nem, akkor  a path van benne
+
+        QString f_txt = zTextFileHelper::load(this->document_path);
+        if(f_txt==zStringHelper::Empty) return false;
+
+    }    
+    return false;
 }

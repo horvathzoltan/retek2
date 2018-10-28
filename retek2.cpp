@@ -167,6 +167,7 @@ void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlma
     }
 }
 
+
 QStringList retek2::getIconsByFlags(QString name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap)
 {
     QStringList e;
@@ -192,7 +193,7 @@ QStringList retek2::getIconsByFlags(QString name, const QMap<QString, bool> &sql
         }
         else
         {
-            e << QStringLiteral("::/class.ico|x");
+            e << QStringLiteral(":/class.ico|x");
         }
     }
 
@@ -205,7 +206,7 @@ QStringList retek2::getIconsByFlags(QString name, const QMap<QString, bool> &sql
         }
         else
         {
-            e << QStringLiteral("::/file-text.ico|x");
+            e << QStringLiteral(":/file-text.ico|x");
         }
     }
 
@@ -340,8 +341,22 @@ QMap<QString, bool> retek2::validateCurrentProject_Document(){
     {
         if(t->document_path.isEmpty()) continue;
 
-        auto a = t->validateDocument();
-        e.insert(t->name, a);
+        if(t->document_updateTimeStamp.isNull())
+        {
+            zlog.trace(QStringLiteral("no document_updateTimeStamp"));
+        }
+
+        QDateTime lastUpdateTimeStamp = t->getDocUpdateTimestamp();
+
+        if(true || lastUpdateTimeStamp > t->document_updateTimeStamp) // ha a leírás újabb
+        {
+            auto a = t->validateDocument();
+            e.insert(t->name, a);
+        }
+        else
+        {
+            zlog.trace(QStringLiteral("not changed."));
+        }
     }
 
     return e;
