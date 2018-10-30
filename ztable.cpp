@@ -1531,9 +1531,15 @@ bool zTable::validateDocument(){
     zlog.trace(zfn());
     if(!this->document_path.isEmpty())
     {
-        //TODO ha a forrás http vagy https akkor le kell tölteni külső toolal a fájlt
+        // TODO ha a forrás http vagy https akkor le kell tölteni külső toolal a fájlt
         // és át kell adni a path-t
         // ha nem, akkor  a path van benne
+
+        /*
+         * /home/zoli/retek2/munka_dir/wiki1/CGCStock.Data/Entity/Fue.cs
+        QString approot = QStringLiteral(R"(retek2)");
+
+         * */
 
         QString f_txt = zTextFileHelper::load(this->document_path);
         if(f_txt==zStringHelper::Empty) return false;

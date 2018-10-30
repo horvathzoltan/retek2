@@ -124,6 +124,7 @@ abrachadabra
 
     //QString connectionString = connectionTemplate.arg(server).arg(adatbazisNev);
 
+    QString approot = QStringLiteral(R"(retek2)");
     // ez a templatedir
     QString tmpDir = QStringLiteral(R"(retek2/template_dir)");
 
