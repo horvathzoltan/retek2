@@ -6,14 +6,33 @@
 #include <QFileInfo>
 
 QString zTextFileHelper::load(const QString& filename) {
+    QFileInfo fi(filename);
+    if(!fi.exists())
+    {
+        zlog.error(QStringLiteral("a fájl nem létezik: %2").arg(filename));
+        return zStringHelper::Empty;
+    }
+
+    if(fi.isRelative())
+    {
+        // ha a filepath relatív, akkor az abszolút függ a művelettől  - hogy melyik könyvtárra mutat/mutathat
+
+        zlog.error(QStringLiteral("az elérési út relatív: %2").arg(filename));
+        return zStringHelper::Empty;
+    }
+
     QFile f(filename);
-    QString e;
+    QString e;   
+
+    // TODO ha relatív a filename, akkor abszolúttá kell tenni
+    // egyébként megnyitható azaz
+
     if (f.open(QFile::ReadOnly | QFile::Text))  {
         zlog.ok(QStringLiteral("Beolvasva: %1").arg(filename));
         e =  QTextStream(&f).readAll();
     }
     else{
-        zlog.error(QStringLiteral("A fájl nem található: %1 ERROR").arg(filename));
+        zlog.error(QStringLiteral("A fájl nem nyitható meg: %1 ERROR").arg(filename));
         e= zStringHelper::Empty;
     }
     return e;

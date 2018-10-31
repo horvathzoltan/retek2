@@ -1563,7 +1563,9 @@ bool zTable::validateDocument(){
         else if(zFileNameHelper::isAppLocal(this->document_path))
         {
             zlog.trace("lokális");
-            //lokális
+            // relatív vagy abszolút -> az abszolút egyből megnyitható
+            // míg a relatívból abszolútot kellene csinálni
+            // azaz ez megnyitáskor releváns
         }
         else
         {
