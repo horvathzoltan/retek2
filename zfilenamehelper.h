@@ -18,6 +18,8 @@ public:
     static QString getfileName(const QString& fullPath);
     static QStringList GetSubdirs(const QString& dirName);
 
+    static const QString urlpattern;
+    static const QRegularExpression urlregexp;
     static const QStringList xmlFilter;
     static const QStringList captionFileFilter;    
     static const QStringList sqlmapFileFilter;
@@ -45,6 +47,9 @@ public:
     static QString getSettingsFileName(const QString& fn);
 
     static QStringList getSourceFilenames(const QString& path);
+
+    static bool isURL(const QString& path);
+    static bool isAppLocal(const QString& path);
 };
 
 #endif // ZFILENAMEHELPER_H

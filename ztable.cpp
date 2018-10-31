@@ -1535,11 +1535,41 @@ bool zTable::validateDocument(){
         // és át kell adni a path-t
         // ha nem, akkor  a path van benne
 
+        // nem biztos, hogy a project könyvtárban van - itt külömbséget kellene tenni, hogy igen, vagy nem
+        // ha igen, akkor relatív, ha nem , abszolót path kell
+        // ha ez url, akkor le kell tölteni a project könyvtárba
+
+        // a project könyvtárnak is kellene tükröznie ezt a hármas tagoltságot
+        // és azt is, hogy a generált dolgok hova kerüljenek
+
         /*
          * /home/zoli/retek2/munka_dir/wiki1/CGCStock.Data/Entity/Fue.cs
         QString approot = QStringLiteral(R"(retek2)");
 
-         * */
+        // webes, ha http vagy https-el kezdődik,
+        // globális, ha meghajtóbetűvel kezdődik
+        // lokális, ha az alkalmazás könyvtárában van
+        // - ez azt jelenti, hogy a path eleje konkrét stringgel egyezik
+        //   azaz a felhasználó egy adott könyvtárára mutat
+        // - ha a path + lokális létezik
+        // egyébként globálisként kezelendő
+         */
+
+        if(zFileNameHelper::isURL(this->document_path))
+        {
+            zlog.trace("url");
+            //TODO letölteni, lokális pathon elhelyezni
+        }
+        else if(zFileNameHelper::isAppLocal(this->document_path))
+        {
+            zlog.trace("lokális");
+            //lokális
+        }
+        else
+        {
+            zlog.trace("globális");
+            //globális
+        }
 
         QString f_txt = zTextFileHelper::load(this->document_path);
         if(f_txt==zStringHelper::Empty) return false;
