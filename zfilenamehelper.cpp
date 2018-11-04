@@ -87,6 +87,18 @@ QString zFileNameHelper::getCurrentProjectFileName(const QString& fn)
     return append(cp, fn);
 }
 
+QString zFileNameHelper::getCurrentProjectFileNameAbsolut(const QString& fn)
+{
+    if(isAppLocal(fn) && isRelative(fn))
+    {
+        return zFileNameHelper::getCurrentProjectFileName(fn);
+    }
+    // ha nem lokális, és relatív, akkor ugyan, honnan képest?
+
+    return fn;//append(cp, fn);
+}
+
+
 QString zFileNameHelper::getTmpSubDir(const QString& tfname)
 {
     auto td = getTmpDir();
@@ -103,7 +115,7 @@ QString zFileNameHelper::getCurrentTmpSubDir(const QString& sd)
 /*alapdirek*/
 
 QString zFileNameHelper::getHomeSubDir(const QString& sd){
-    return append(QDir::homePath(),sd);
+    return append(QDir::homePath(),beallitasok.approot,sd);
 }
 
 QString zFileNameHelper::getSettingsDir()
@@ -231,6 +243,12 @@ bool zFileNameHelper::isAppLocal(const QString &path)
     QString p = zFileNameHelper::append(QDir::homePath(), beallitasok.approot);
     if(path.startsWith(p)) return true;
     return false;
+}
+
+bool zFileNameHelper::isRelative(const QString &path)
+{
+    QFileInfo fi(path);
+    return fi.isRelative();
 }
 
 

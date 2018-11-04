@@ -126,11 +126,11 @@ abrachadabra
 
     QString approot = QStringLiteral(R"(retek2)");
     // ez a templatedir
-    QString tmpDir = QStringLiteral(R"(retek2/template_dir)");
+    QString tmpDir = QStringLiteral(R"(template_dir)");//retek2
 
     // ez a projectek elérési útja
-    QString projectdir = QStringLiteral(R"(retek2/munka_dir)");
-    QString settingsdir = QStringLiteral(R"(retek2/settings)");
+    QString projectdir = QStringLiteral(R"(munka_dir)");//retek2
+    QString settingsdir = QStringLiteral(R"(settings)");//retek2
 
    // QString settingsPath;
    // QString projectPath;

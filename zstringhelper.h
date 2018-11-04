@@ -16,6 +16,14 @@ public:
     static const QStringList TrueStr;
     static const QStringList FalseStr;
 
+    static const QString HTML_TAGPATTERN;
+    static const QString HTML_TABLE;
+    static const QString HTML_TBODY;
+    static const QString HTML_TR;
+    static const QString HTML_TD;
+    static const QString HTML_P;
+    static const QString HTML_SPAN;
+
     zStringHelper();
     static bool toBool(const QString&);
     static QString boolToString(bool a);
@@ -37,6 +45,8 @@ public:
     static const QRegularExpression r_filename;
     static QStringList getFilePaths(const QString &, const QStringList &);
     static QString zNormalize(const QString &c);
+
+    static QRegularExpression getHTMLRegExp(const QString &s);
 };
 
 #endif // ZSTRINGHELPER_H

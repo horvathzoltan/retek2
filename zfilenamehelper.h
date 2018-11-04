@@ -32,6 +32,8 @@ public:
     static QString getCurrentProjectDir();
     static QString getCurrentProjectSubDir(const QString& dn);
     static QString getCurrentProjectFileName(const QString& fn);
+    static QString getCurrentProjectFileNameAbsolut(const QString& fn);
+
 
     static QString getTmpDir();
     static QString getTmpSubDir(const QString& dn);
@@ -50,6 +52,7 @@ public:
 
     static bool isURL(const QString& path);
     static bool isAppLocal(const QString& path);
+    static bool isRelative(const QString& path);
 };
 
 #endif // ZFILENAMEHELPER_H

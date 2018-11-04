@@ -7,19 +7,17 @@
 
 QString zTextFileHelper::load(const QString& filename) {
     QFileInfo fi(filename);
+    if(!fi.isAbsolute())
+    {
+        zlog.error(QStringLiteral("nem abszolut path: %1").arg(filename));
+        return zStringHelper::Empty;
+    }
+
     if(!fi.exists())
     {
-        zlog.error(QStringLiteral("a fájl nem létezik: %2").arg(filename));
+        zlog.error(QStringLiteral("a fájl nem létezik: %1").arg(filename));
         return zStringHelper::Empty;
-    }
-
-    if(fi.isRelative())
-    {
-        // ha a filepath relatív, akkor az abszolút függ a művelettől  - hogy melyik könyvtárra mutat/mutathat
-
-        zlog.error(QStringLiteral("az elérési út relatív: %2").arg(filename));
-        return zStringHelper::Empty;
-    }
+    }    
 
     QFile f(filename);
     QString e;   

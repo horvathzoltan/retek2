@@ -188,7 +188,7 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
 
     if(this->pkname!=tv.pkname)
     {
-        e.append(QStringLiteral("PkName Not Equals: %1(%2, %3)").arg(this->name, this->pkname!=tv.pkname));
+        e.append(QStringLiteral("PkName Not Equals: %1(%2, %3)").arg(this->name, this->pkname, tv.pkname));
         v = false;
     }
 
@@ -1304,7 +1304,6 @@ QString zTable::getConstFromArgument(const QString& str){
     return eredmeny;
 }
 
-
 QList<zTable> zTable::createTableByClassTxt(const QString& txt){
 
     QMap<QString, QString> constNameMap;
@@ -1502,7 +1501,9 @@ bool zTable::validateSource(){
     if(!this->class_path.isEmpty())
     {
 
-        QString f_txt = zTextFileHelper::load(this->class_path);
+        QString fn = zFileNameHelper::getCurrentProjectFileNameAbsolut(this->class_path);
+
+        QString f_txt = zTextFileHelper::load(fn);
         if(f_txt==zStringHelper::Empty) return false;
 
         auto tl = zTable::createTableByClassTxt(f_txt);
@@ -1555,27 +1556,246 @@ bool zTable::validateDocument(){
         // egyébként globálisként kezelendő
          */
 
+        QString fn;
+
+
         if(zFileNameHelper::isURL(this->document_path))
         {
             zlog.trace("url");
             //TODO letölteni, lokális pathon elhelyezni
         }
-        else if(zFileNameHelper::isAppLocal(this->document_path))
-        {
-            zlog.trace("lokális");
-            // relatív vagy abszolút -> az abszolút egyből megnyitható
-            // míg a relatívból abszolútot kellene csinálni
-            // azaz ez megnyitáskor releváns
-        }
         else
         {
-            zlog.trace("globális");
-            //globális
+            fn = zFileNameHelper::getCurrentProjectFileNameAbsolut(this->document_path);
         }
 
-        QString f_txt = zTextFileHelper::load(this->document_path);
+        QString f_txt = zTextFileHelper::load(fn);
         if(f_txt==zStringHelper::Empty) return false;
+
+        auto tl = zTable::createTableByHtml(f_txt);
+
+        zforeach(t,tl)
+        {
+            //t->name = this->name;
+            if(t->name == this->name)
+            {
+
+                    QStringList e;
+                     auto isOK = Compare(*t, e);
+                     if(!isOK)
+                     {
+                         zlog.warning(e);
+                     }
+                     return isOK;
+            }
+        }
 
     }    
     return false;
+}
+
+//auto rt = zTable::QStringLiteral(R"(<table.*?>([\s\S]*)<\/table>)");
+
+QList<zTable> zTable::createTableByHtml(const QString& txt){
+    QList<zTable> e;
+
+    QRegularExpression rtable = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TABLE);
+    QRegularExpression rtbody = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TBODY);
+    QRegularExpression rtr = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TR);
+    QRegularExpression rtd = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TD);
+    QRegularExpression rp = zStringHelper::getHTMLRegExp(zStringHelper::HTML_P);
+    QRegularExpression rspan = zStringHelper::getHTMLRegExp(zStringHelper::HTML_SPAN);
+
+    auto rti = rtable.globalMatch(txt);
+
+    QStringList name_list{"nev","name","mezo","field","column","oszlop"};
+    QStringList type_list{"tipus","type"};
+    QStringList comment_list{"comment","megjegyzes","komment","leiras"};
+
+    auto pkstr = QStringLiteral("pk");
+
+    int table_ix=0;
+    while(rti.hasNext())
+    {
+        QList<zTablerow> rowlist;
+        int row_ix=0;
+        QString tablename;
+        QString pkname;
+        auto rtm = rti.next();
+        QString table_txt=rtm.captured(1);
+
+
+        int ix_name=-1;
+        int ix_type=-1;
+        int ix_comment=-1;
+
+        if(!table_txt.isEmpty())
+        {
+            //tbody
+
+            auto rtbodym = rtbody.match(table_txt);
+            if(rtbodym.hasMatch())
+            {
+                table_txt = rtbodym.captured(1);
+            }
+            //tr
+
+            auto rtri = rtr.globalMatch(table_txt);
+            while(rtri.hasNext())
+            {
+                auto rtrm = rtri.next();
+                QString tr_txt=rtrm.captured(1);
+
+
+                QString row_name;
+                QString row_type;
+                QString row_comment;
+
+                if(!tr_txt.isEmpty())
+                {
+                    auto tdi = rtd.globalMatch(tr_txt);
+                    int col_ix = 0;
+                    while(tdi.hasNext())
+                    {
+                        auto tdm = tdi.next();
+
+                        QString td_txt = tdm.captured(1);
+
+                        if(!td_txt.isEmpty())
+                        {
+                            auto rpm = rp.match(td_txt);
+                            if(rpm.hasMatch())
+                            {
+                                td_txt = rpm.captured(1);
+                            }
+                        }
+
+                        if(!td_txt.isEmpty())
+                        {
+                            auto rspani = rspan.globalMatch(td_txt);
+                            QString innerspan;
+                            while(rspani.hasNext())
+                            {
+                                auto rspanm = rspani.next();
+                                if(!innerspan.isEmpty())
+                                {
+                                    innerspan+=" ";
+                                }
+                                innerspan += rspanm.captured(1);
+                            }
+                            td_txt = innerspan;
+                        }
+
+
+                        switch (row_ix)
+                        {
+                            case 0:
+                            {
+                                if(!td_txt.isEmpty() && !td_txt.contains('<'))
+                                {
+                                    if(!tablename.isEmpty())
+                                    {
+                                        tablename+="_";
+                                    }
+                                    tablename+=td_txt;
+                                }
+                                //zlog.trace(QStringLiteral("tablename: %1").arg(td_txt));
+                                break;
+                            }
+                            case 1:
+                            {
+                                QString a = zStringHelper::zNormalize(td_txt);
+
+                                if(name_list.contains(a))
+                                {
+                                    ix_name=col_ix;
+                                    //zlog.trace(QStringLiteral("ix_name: %1 (%2)").arg(col_ix).arg(td_txt));
+                                }
+                                if(type_list.contains(a))
+                                {
+                                    ix_type=col_ix;
+                                    //zlog.trace(QStringLiteral("ix_type: %1 (%2)").arg(col_ix).arg(td_txt));
+                                }
+                                if(comment_list.contains(a))
+                                {
+                                    ix_comment=col_ix;
+                                    //zlog.trace(QStringLiteral("comment_list: %1 (%2)").arg(col_ix).arg(td_txt));
+                                }
+
+
+
+                                break;
+                            }
+                            default:
+                            {
+                                if(col_ix==ix_name)
+                                {
+                                    row_name = td_txt;
+                                }
+
+                                if(col_ix==ix_type)
+                                {
+//                                    if(tablename=="fue")
+//                                    {
+//                                        zlog.trace("");
+//                                    }
+                                    QString a = zStringHelper::zNormalize(td_txt);
+                                    if(a.endsWith(pkstr))
+                                    {
+                                        pkname = row_name;
+
+                                        td_txt.chop(pkstr.length());
+                                    }
+                                    row_type = td_txt;
+                                    //zTablerow::
+                                }
+
+                                if(col_ix==ix_comment)
+                                {
+                                    row_comment = td_txt;
+                                }
+                                break;
+                            }
+                        }
+                        col_ix++;
+                    }
+                }
+                if(row_ix>=2)
+                {
+                    if(ix_name!=-1 && ix_type!=-1 && !row_type.isEmpty())
+                    {
+                        QString row_dtype;
+                        int dlen = 1;
+                        bool isNullable = false;
+                        zTable::getClassType(globalSqlMaps, row_type, &row_dtype, &dlen, &isNullable, false, true);
+                        //auto gtype = zTable::getClassType(globalClassMaps, propType, &dtype, &dlen, &isNullable, isRequired);
+
+                        auto row = zTablerow(row_name, row_dtype, dlen, isNullable, "");
+                        row.comment = row_comment;
+                        rowlist.append(row);
+
+                        //zlog.trace(QStringLiteral("row %1: %2,%3,%4").arg(row_ix).arg(row_name, row_type, row_comment));
+                    }
+                    else
+                    {
+                        //zlog.trace(QStringLiteral("hibás sor %1: %2").arg(row_ix).arg(tr_txt));
+                        zlog.trace(QStringLiteral("hibás sor %1: %2,%3,%4").arg(row_ix).arg(row_name, row_type, row_comment));
+                    }
+
+                }
+
+                row_ix++;
+            }
+            //td
+            //p?
+            //span?
+        }
+        auto t = zTable(tablename, pkname, rowlist);
+
+        zlog.trace(QStringLiteral("zTable: %1").arg(t.toString()));
+        e.append(t);
+        table_ix++;
+    }
+
+    return e;
 }

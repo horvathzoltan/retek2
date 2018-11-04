@@ -21,6 +21,14 @@ const QString zStringHelper::Equals = QStringLiteral("Equals");
 const QStringList zStringHelper::TrueStr = {QStringLiteral("true"), QStringLiteral("yes"), QStringLiteral("ok"), QStringLiteral("1")};
 const QStringList zStringHelper::FalseStr = {QStringLiteral("false"), QStringLiteral("no"), QStringLiteral("nok"), QStringLiteral("0")};
 
+const QString zStringHelper::HTML_TAGPATTERN = QStringLiteral(R"(<%1.*?>([\s\S]*?)<\/%1>)");
+const QString zStringHelper::HTML_TABLE = QStringLiteral("table");
+const QString zStringHelper::HTML_TBODY = QStringLiteral("tbody");
+const QString zStringHelper::HTML_TR = QStringLiteral("tr");
+const QString zStringHelper::HTML_TD = QStringLiteral("td");
+const QString zStringHelper::HTML_P= QStringLiteral("p");
+const QString zStringHelper::HTML_SPAN = QStringLiteral("span");
+
 
 bool zStringHelper::toBool(const QString& ezt){
     if(ezt.isEmpty()) return false;    
@@ -158,5 +166,11 @@ QString zStringHelper::zNormalize(const QString& c){
     return c.normalized(QString::NormalizationForm_D).replace(QRegExp("[^a-zA-Z0-9_\\s]"), Empty).replace(' ', '_').toLower();
 }
 
+
+QRegularExpression zStringHelper::getHTMLRegExp(const QString &s)
+{
+    auto r = QRegularExpression(HTML_TAGPATTERN.arg(s));
+    return r;
+}
 
 
