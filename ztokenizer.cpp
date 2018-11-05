@@ -510,7 +510,7 @@ QString zTokenizer::getEntityPropAttrList(QMap<QString, QVariant> *map, int w) {
     {
        attrList<< QStringLiteral("[Reqiured]");
     }
-    if(table->pkname == r->colName)
+    if(table->pkname() == r->colName)
     {
         attrList<< QStringLiteral("[Key]");
     }

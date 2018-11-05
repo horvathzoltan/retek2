@@ -441,9 +441,12 @@ void retek2::feltoltKulcsLista(zTable t) {
     zlog.trace(zfn(), t.name);
 
     ui.listWidget_IdegenKulcs->clear();
-    if(!t.pkname.isEmpty()){
-        ui.listWidget_IdegenKulcs->addItem("PK:"+t.pkname);
-        }   
+    //QString pkname = t.pkname();
+    //if(!pkname.isEmpty())
+    if(t.hasPkname())
+    {
+        ui.listWidget_IdegenKulcs->addItem("PK:"+t.pkname());
+    }
     auto fkl = t.getFK();
     auto rfkl = t.getRFK();
 

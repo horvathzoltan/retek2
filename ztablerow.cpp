@@ -170,6 +170,19 @@ const zTablerow* zTablerow::find(const QList<zTablerow>& rows, const QString& rn
     return nullptr;
 }
 
+int zTablerow::findIx(const QList<zTablerow> &rows, const QString &rn)
+{
+    if(rn.isEmpty()) return -1;
+    for(int ix=0;ix>rows.count();ix++)
+    {
+        if(rn == rows[ix].colName)
+        {
+            return ix;
+        }
+    }
+    return  -1;
+}
+
 /*
 Ha nem egyezik a megadottal, hiba
 */

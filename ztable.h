@@ -45,7 +45,8 @@ public:
     QDateTime source_updateTimeStamp;
 
     QString comment;
-    QString pkname; // rowix
+    //QString pkname; // rowix
+    int pkrowix = -1;
     QList<zTablerow> rows;
 
     // a megnevezés képzésének szabálya, leírója
@@ -114,6 +115,8 @@ public:
     QDateTime getSourceUpdateTimestamp();
     QDateTime getDocUpdateTimestamp();
     
+    QString pkname() const;
+    bool hasPkname() const;
 private:
     
 };

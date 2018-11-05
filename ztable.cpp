@@ -25,8 +25,10 @@ zTable::~zTable()= default;
 
 zTable::zTable(const QString& _name, const QString& pkn, const QList<zTablerow>& tr){
     this->name = _name;
-    this->pkname = pkn;
+    //this->pkname = pkn;
     this->rows = tr;
+
+    this->pkrowix = zTablerow::findIx(tr, pkn);
 
     //this->sourcetype = type;
 
@@ -154,7 +156,7 @@ QString zTable::toString() const
         {
             rs += ',';
         }
-        if(r->colName==this->pkname)
+        if(r->colName==this->pkname())
         {
             rs += QStringLiteral("PK:");
         }
@@ -186,9 +188,9 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
         v = false;
     }
 
-    if(this->pkname!=tv.pkname)
+    if(this->pkname()!=tv.pkname())
     {
-        e.append(QStringLiteral("PkName Not Equals: %1(%2, %3)").arg(this->name, this->pkname, tv.pkname));
+        e.append(QStringLiteral("PkName Not Equals: %1(%2, %3)").arg(this->name, this->pkname(), tv.pkname()));
         v = false;
     }
 
@@ -261,7 +263,7 @@ QString zTable::getPkByTableName(QList<zTable> *tables, const QString& rn){
         {
             if(r->sql_table == rn)
             {
-                QString r2 = r.operator->()->pkname;
+                QString r2 = r.operator->()->pkname();
                 return r2;
             }
         }
@@ -450,7 +452,7 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
 QStringList zTable::getFK(){
     QStringList fknames;
     zforeach(t, ztables){
-        QString pn = t->class_name+t->pkname;
+        QString pn = t->class_name+t->pkname();
         if(containsRow(pn)){
            fknames<<pn;
         }
@@ -462,7 +464,7 @@ QStringList zTable::getFKclass_name(){
     QStringList fknames;
     zforeach(t, ztables)
     {
-        QString pn = t->class_name+t->pkname;
+        QString pn = t->class_name+t->pkname();
         if(containsRow(pn))
         {
            fknames<<t->class_name;
@@ -508,7 +510,8 @@ void zTable::toXML(QXmlStreamWriter *s)
     s->writeAttribute(nameof(this->document_isValid), zStringHelper::boolToString(this->document_isValid));
 
     s->writeAttribute(nameof(this->comment), this->comment);
-    s->writeAttribute(nameof(this->pkname), this->pkname);
+    //TODO ha függvény?
+    s->writeAttribute("pkname", this->pkname());
     s->writeAttribute(nameof(this->name_formatstring), this->name_formatstring);
     s->writeAttribute(nameof(this->updateTime), this->updateTime.toString());
 
@@ -591,7 +594,8 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
     zXmlHelper::putXmlAttr(a, nameof(document_updateTimeStamp), &(t.document_updateTimeStamp));
 
     zXmlHelper::putXmlAttr(a, nameof(comment), &(t.comment));
-    zXmlHelper::putXmlAttr(a, nameof(pkname), &(t.pkname));
+    QString pkname;
+    zXmlHelper::putXmlAttr(a, "pkname", &(pkname));
     zXmlHelper::putXmlAttr(a, nameof(name_formatstring), &(t.name_formatstring));
     zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));    
 
@@ -621,7 +625,9 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
 
             }
             xml->readNextStartElement();
-        }
+    }
+
+    t.pkrowix = zTablerow::findIx(t.rows, pkname);
 
     //t.props = QList<zTablerow>();
     //tl.append(t);
@@ -636,7 +642,7 @@ hogy az elsődleges kulcs milyen entitásokban szerepel mezőként
 */
 QStringList zTable::getRFK(){
     QStringList rfknames;
-    QString pn = class_name+pkname;
+    QString pn = class_name+this->pkname();
 
     zforeach(t, ztables){
         if(t->containsRow(pn)){
@@ -648,7 +654,7 @@ QStringList zTable::getRFK(){
 
 QStringList zTable::getRFKclass_namePlural(){
     QStringList rfknames;
-    QString pn = class_name+pkname;
+    QString pn = class_name+pkname();
 
     zforeach(t, ztables){
         if(t->containsRow(pn)){
@@ -1469,6 +1475,21 @@ QDateTime zTable::getDocUpdateTimestamp()
     return QDateTime::currentDateTime();
 }
 
+QString zTable::pkname() const
+{
+    if(hasPkname())
+    {
+        return this->rows[this->pkrowix].colName;
+    }
+
+    return zStringHelper::Empty;
+}
+
+bool zTable::hasPkname() const
+{
+    return this->pkrowix>-1;
+}
+
 /*
 Validálja a táblát annak sql kötése alapján
 */
@@ -1765,7 +1786,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                     if(ix_name!=-1 && ix_type!=-1 && !row_type.isEmpty())
                     {
                         QString row_dtype;
-                        int dlen = 1;
+                        int dlen = 0;
                         bool isNullable = false;
                         zTable::getClassType(globalSqlMaps, row_type, &row_dtype, &dlen, &isNullable, false, true);
                         //auto gtype = zTable::getClassType(globalClassMaps, propType, &dtype, &dlen, &isNullable, isRequired);

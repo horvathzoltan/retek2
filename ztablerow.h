@@ -35,7 +35,8 @@ public:
     void toXML(QXmlStreamWriter*);
     static zTablerow fromXML(QXmlStreamReader*);
     bool Validate2(const QStringList& colNames);
-    const zTablerow* find(const QList<zTablerow>& rows, const QString& rn);
+    static const zTablerow* find(const QList<zTablerow>& rows, const QString& rn);
+    static int findIx(const QList<zTablerow>& rows, const QString& rn);
     static QStringList colNames(const QList<zTablerow>& rows);
 };
 
