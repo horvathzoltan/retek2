@@ -31,7 +31,8 @@ HEADERS += Beallitasok.h \
     zoshelper.h \
     srcconnection.h \
     ziconhelper.h \
-    zlogicexception.h
+    zlogicexception.h \
+    zlocinfo.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \
@@ -57,7 +58,8 @@ SOURCES += Beallitasok.cpp \
     zoshelper.cpp \
     srcconnection.cpp \
     ziconhelper.cpp \
-    zlogicexception.cpp
+    zlogicexception.cpp \
+    zlocinfo.cpp
 FORMS += retek2.ui \
     ztablenames.ui
 RESOURCES += retek2.qrc
@@ -68,6 +70,7 @@ DEFINES += QT_DLL QT_SQL_LIB QT_WIDGETS_LIB
 CONFIG += c++14
 CONFIG += warn_on
 
+QMAKE_LFLAGS += -rdynamic
 # LIBS += -L$$PWD/../../mysql/lib/ -lmysqlcppconn
 
 #INCLUDEPATH += $$PWD/../../mysql/include

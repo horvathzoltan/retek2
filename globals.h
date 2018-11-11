@@ -92,6 +92,6 @@ namespace z_macro_factory {
 //    QString _zfn(const char* y);
 //}
 
-
+//#define BREAKPOINT __asm ({ int 3; })
 
 #endif // GLOBALS_H

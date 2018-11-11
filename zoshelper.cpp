@@ -1,7 +1,7 @@
 #include "zoshelper.h"
 
 #include <QTextCodec>
-
+#include "zlog.h"
 
 QString zosHelper::name()
 {
@@ -54,6 +54,7 @@ osType zosHelper::type()
 
 void zosHelper::setLocale()
 {
+//    zError("a");
     switch(type())
     {
     case Android:

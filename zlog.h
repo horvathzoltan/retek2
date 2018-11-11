@@ -5,7 +5,21 @@
 #include <QTextBrowser>
 #include <QTabWidget>
 #include <zstringhelper.h>
+#include "zlocinfo.h"
 
+#define getLocInfo zLocInfo(__PRETTY_FUNCTION__,__FILE__,__LINE__)
+#define zError(msg) zLog::error2((msg), getLocInfo);
+#define zWarning(msg) zLog::warning2((msg), getLocInfo);
+#define zInfo(msg) zLog::info2((msg));
+#define zDebug() zLog::debug2(getLocInfo);
+#define zTrace() zLog::trace2(getLocInfo);
+
+// 1. log egy messaget
+// 2. szerez loc infot
+// 3. szerez debug infot (stack)
+
+
+//QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC
 class zLog
 {
 private:
@@ -13,14 +27,25 @@ private:
     QTabWidget *tabwidget;
     int tabindex;
     static void dialog(const QString&, int);
-    void log(const QString&, int);
-    enum ErrLevels:int {OK, ERROR, WARNING, TRACE, MESSAGE};
+    void log(const QString&, int);    
 
-public:    
+    static QTextBrowser *widget2;
+    static QTabWidget *tabwidget2;
+    static int tabindex2;
+    static bool isBreakOnError;
+
+    static QString logToGUI(int, const QString&, const QString&, const QString&);
+    static QString LevelToString(int loglevel);
+
+    //static QString zGetLocInfo(const char *func, const char *file, int line);
+    static QString zStackTrace();
+
+public:
+    enum ErrLevels:int {OK, ERROR, WARNING, TRACE, DEBUG, INFO};
     //zLog();
     //~zLog();
 
-    void init(QTextBrowser*, QTabWidget*, int);
+    void init(QTextBrowser*, QTabWidget*, int,bool);
 
 
 //    [[deprecated]]
@@ -62,6 +87,12 @@ public:
    // void trace(const char*, const QString&);
     void trace(const QString&, const QString&);
     void trace(const QList<QString>&);
+
+    static void error2(const QString& msg, const zLocInfo& l);
+    static void warning2(const QString& msg, const zLocInfo& l);
+    static void info2(const QString& msg);
+    static void debug2(const zLocInfo& l);
+    static void trace2(const zLocInfo& l);
 };
 
 #endif // ZERROR_H
