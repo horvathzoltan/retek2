@@ -178,7 +178,7 @@ QString zTable::toString() const
   név, sorok száma, azok metaadatai -  nevei, típusai hosszai, nullable required a relevánsak
 */
 bool zTable::Compare(const zTable& tv, QStringList& e){
-    zlog.message(zfn());
+    zInfo(zfn());
 
     bool v = true;
 
@@ -210,7 +210,7 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
                auto v2 = r->Compare(*rv, e);
                if(!v2)
                {
-                   //zlog.warning(e);
+                   //zWarning(e);
                    v = false;
                }
             }            
@@ -360,7 +360,7 @@ globalClassMaps
 //    }
 
 //    if(typeName.isEmpty()){
-//        zlog.error(QStringLiteral("getType: Unknown type: %1").arg(ezt1));
+//        zError(QStringLiteral("getType: Unknown type: %1").arg(ezt1));
 //    }
 
 //    return isDtype;
@@ -369,7 +369,7 @@ globalClassMaps
 bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings)
 {
     noWarnings = false;
-//    zlog.trace(getClassType)
+//    zTrace(getClassType)
    // auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
    // auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_dlen3 = QRegularExpression(QStringLiteral(R"((\w)\(?(\d+)\)?$)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -419,7 +419,7 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
     {
         if(!noWarnings)
         {
-            zlog.warning(QStringLiteral("Nem található belső adatábrázolási típus: %1").arg(ezt1));
+            zWarning(QStringLiteral("Nem található belső adatábrázolási típus: %1").arg(ezt1));
         }
     }
     else
@@ -428,7 +428,7 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
         {
             if(!noWarnings)
             {
-                zlog.warning(QStringLiteral("Több típus is javasolt: %1 -> %2").arg(ezt1, fl.join(',')));
+                zWarning(QStringLiteral("Több típus is javasolt: %1 -> %2").arg(ezt1, fl.join(',')));
             }
         }
 
@@ -440,7 +440,7 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
 
     if(typeName.isEmpty())
     {
-        zlog.error(QStringLiteral("getClassType: Unknown type: %1").arg(ezt1));
+        zError(QStringLiteral("getClassType: Unknown type: %1").arg(ezt1));
     }
 
     return isDtype;
@@ -565,7 +565,7 @@ QList<zTable> zTable::createTableByXML(const QString& txt){
     }
     if(xml.hasError())
     {
-        zlog.error("createTableByXML: "+xml.errorString());
+        zError("createTableByXML: "+xml.errorString());
     }
     return tl;
 }
@@ -729,7 +729,7 @@ QList<zTable> zTable::createTableByText(QString txt)
         if(!macroMap.contains(m_name))
         {
             macroMap.insert(m_name, m_txt);
-            zlog.trace(QStringLiteral("Macro def: %1").arg(m_name));
+            zInfo(QStringLiteral("Macro def: %1").arg(m_name));
         }
     }
 
@@ -840,7 +840,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                if(dtype.isEmpty())
                {
                    // az egész sor releváns - nem tudjuk melyik szava milyen információt hordoz - illetve melyiknem mit kellene
-                   zlog.error(QStringLiteral("%1 sor: nincs meghatározható típus: %2").arg(rl_counter).arg(*fn));
+                   zError(QStringLiteral("%1 sor: nincs meghatározható típus: %2").arg(rl_counter).arg(*fn));
                }
                else
                {
@@ -863,11 +863,11 @@ QList<zTable> zTable::createTableByText(QString txt)
             if(isValid)
             {
                 tl.append(t);
-                zlog.trace("GenerateByText: "+t.toString());
+                zInfo("GenerateByText: "+t.toString());
             }
             else
             {
-                zlog.error(QStringLiteral("A tábla nem valid: %1").arg(t.name));
+                zInfo(QStringLiteral("A tábla nem valid: %1").arg(t.name));
             }
 
         }
@@ -918,16 +918,18 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
     auto j = re_macro_def.globalMatch(txt);
 
-    while(j.hasNext()){
+    while(j.hasNext())
+    {
         QRegularExpressionMatch m = j.next();
         QString m_name=m.captured(1);
         QString m_txt=m.captured(2).trimmed();
 
-        if(!macroMap.contains(m_name)){
+        if(!macroMap.contains(m_name))
+        {
             macroMap.insert(m_name, m_txt);
-            zlog.trace(QStringLiteral("Macro def: %1").arg(m_name));
-            }
+            zInfo(QStringLiteral("Macro def: %1").arg(m_name));
         }
+    }
 
     auto keys = macroMap.keys();
     zforeach(m, keys){
@@ -977,7 +979,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                         isDtype = zTable::getClassType(globalClassMaps, *word, &dtype, &dlen, &isNullable, false, true);
                         if (isDtype)
                         {
-                            zlog.trace(QStringLiteral("sortípus: %1").arg(*word));
+                            zInfo(QStringLiteral("sortípus: %1").arg(*word));
                         }
                         else
                         {
@@ -997,7 +999,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                     }
                     else
                     {
-                       zlog.trace(QStringLiteral("nem található sortípus: %1").arg(*fn));
+                       zInfo(QStringLiteral("nem található sortípus: %1").arg(*fn));
                     }
                     // ha van mezőnév lista
                     // ha van ismert típus, akkor mezőlistához,
@@ -1011,7 +1013,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
             t.initClass(className, pluralClassName);
 
             tl.append(t);
-            zlog.error("GenerateByText2: "+t.toString());
+            zError("GenerateByText2: "+t.toString());
         }
     }
 
@@ -1057,8 +1059,9 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
 QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QString>* constMap, QMap<QString, QString>* valueMap)
 {
+    zTrace();
     QList<zTable> tl;
-    zlog.error("GenerateByText3: ");
+
     // attributumok és az osztály
     // 1:név, 2:definíció
     auto re = QRegularExpression(QStringLiteral(R"((?:\[[(.\w)]*\])|class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\}))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -1090,7 +1093,7 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
                 QString class_name = m.captured(1);
                 QString class_txt = m.captured(2);
                 QString pkName = zStringHelper::Empty;
-                zlog.error("class: " + class_name);
+                zInfo("class: " + class_name);
 
                 if(!classAttrs.isEmpty()){
                     zforeach(a, classAttrs){
@@ -1119,7 +1122,7 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
                         }
                         else
                         {
-                            zlog.error(QStringLiteral("Unknown TableAttr: %1").arg(*a));
+                            zInfo(QStringLiteral("Unknown TableAttr: %1").arg(*a));
                             }
                         }
                     classAttrs.clear();//resize(0);
@@ -1183,7 +1186,7 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
 
                                         }
                                     else{
-                                        zlog.error(QStringLiteral("Unknown PropertyAttr: %1").arg(*a));
+                                        zInfo(QStringLiteral("Unknown PropertyAttr: %1").arg(*a));
                                         }
                                     }
                                 propAttrs.clear();//.resize(0);
@@ -1199,7 +1202,7 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
 //                                isNullable = false;
 //                            }
 //                            if (isDtype){
-//                                zlog.trace("sortípus:"+dtype);
+//                                zTrace("sortípus:"+dtype);
 //                            }
 
 
@@ -1214,7 +1217,7 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
                             rl.append(r);
                         }
                         else{
-                            zlog.error("undefined: "+attrOrProp);
+                            zInfo("undefined: "+attrOrProp);
                         }
 
                     }
@@ -1227,10 +1230,10 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
 
                    //t.initClass(class_name);
                    tl.append(t);
-                   zlog.error("GenerateByEntity: "+t.toString());
+                   zInfo("GenerateByEntity: "+t.toString());
             }
             else{
-                zlog.error("undefined: "+g);
+                zInfo("undefined: "+g);
             }
 
             // attributumok és az osztály
@@ -1318,7 +1321,7 @@ QList<zTable> zTable::createTableByClassTxt(const QString& txt){
     
     if(tl.length()==0)
     {
-        zlog.error(QStringLiteral("nem jött létre adat"));
+        zError(QStringLiteral("nem jött létre adat"));
         return tl;
     }
 
@@ -1380,7 +1383,7 @@ void zTable::saveTablaToXML() {
     }
     if(this->rows.isEmpty())
     {
-        zlog.error(QStringLiteral("Nem tartalmaz sorokat: ").arg(this->name));
+        zError(QStringLiteral("Nem tartalmaz sorokat: ").arg(this->name));
         return;
     }
     QString fn = zFileNameHelper::getCurrentProjectFileName(this->name + ".xml");
@@ -1409,17 +1412,17 @@ bool zTable::Validate(const QList<zTable>& tables){
     bool v= true;
 
     if(name.isEmpty()){
-        zlog.error(QStringLiteral("Nincs név"));
+        zError(QStringLiteral("Nincs név"));
         v= false;
     }
     if(zTable::find(tables, name, zTableSearchBy::Name))
     {
-        zlog.error(QStringLiteral("Név nem egyedi: %1").arg(name));
+        zError(QStringLiteral("Név nem egyedi: %1").arg(name));
         v= false;
     }
     if(rows.isEmpty())
     {
-        zlog.error(QStringLiteral("Nincsenek sorok"));
+        zError(QStringLiteral("Nincsenek sorok"));
         v= false;
     }    
     else{
@@ -1445,19 +1448,19 @@ QDateTime zTable::getSqlUpdateTimestamp()
     //QString driver, QString adatbazisNev, QString server, QString user, QString password
     if(dbconn == nullptr)
     {
-        zlog.warning(QStringLiteral("dbconn nem található: %1").arg(this->sql_conn));
+        zWarning(QStringLiteral("dbconn nem található: %1").arg(this->sql_conn));
         return QDateTime();
     }
     if(!dbconn->isValid())
     {
-        zlog.warning(QStringLiteral("dbconn nem valid: %1").arg(this->sql_conn));
+        zWarning(QStringLiteral("dbconn nem valid: %1").arg(this->sql_conn));
         return QDateTime();
     }
 
     if(zsql.init(*dbconn))
     {
         auto e = zsql.getTableUTIME(this->sql_schema, this->sql_table);
-        zlog.trace(QStringLiteral("updated: %1").arg(e.toString()));
+        zInfo(QStringLiteral("updated: %1").arg(e.toString()));
     }
 
     return QDateTime();
@@ -1494,7 +1497,7 @@ bool zTable::hasPkname() const
 Validálja a táblát annak sql kötése alapján
 */
 bool zTable::validateSQL(){
-    zlog.trace(zfn());
+    zTrace();
     zSQL zsql;
     auto dbconn = beallitasok.findDbConnection(this->sql_conn);
 
@@ -1506,7 +1509,7 @@ bool zTable::validateSQL(){
         auto isOK = Compare(t_sql, e);
         if(!isOK)
         {
-            zlog.warning(e);
+            zInfo(e);
         }
         return isOK;
     }
@@ -1518,7 +1521,7 @@ bool zTable::validateSQL(){
 // be kell olvasni a forrást, ztablevé kell alakítani, majd compare
 // void retek2::on_pushButton_srcimport_clicked() alapján
 bool zTable::validateSource(){
-    zlog.trace(zfn());
+    zTrace();
     if(!this->class_path.isEmpty())
     {
 
@@ -1539,7 +1542,7 @@ bool zTable::validateSource(){
                      auto isOK = Compare(*t, e);
                      if(!isOK)
                      {
-                         zlog.warning(e);
+                         zInfo(e);
                      }
                      return isOK;
             }
@@ -1550,7 +1553,7 @@ bool zTable::validateSource(){
 
 // TODO validálás a dokumentáció  alapján
 bool zTable::validateDocument(){    
-    zlog.trace(zfn());
+    zTrace();
     if(!this->document_path.isEmpty())
     {
         // TODO ha a forrás http vagy https akkor le kell tölteni külső toolal a fájlt
@@ -1582,7 +1585,7 @@ bool zTable::validateDocument(){
 
         if(zFileNameHelper::isURL(this->document_path))
         {
-            zlog.trace("url");
+            zInfo("url");
             //TODO letölteni, lokális pathon elhelyezni
         }
         else
@@ -1605,7 +1608,7 @@ bool zTable::validateDocument(){
                      auto isOK = Compare(*t, e);
                      if(!isOK)
                      {
-                         zlog.warning(e);
+                         zInfo(e);
                      }
                      return isOK;
             }
@@ -1720,7 +1723,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                                     }
                                     tablename+=td_txt;
                                 }
-                                //zlog.trace(QStringLiteral("tablename: %1").arg(td_txt));
+                                //zTrace(QStringLiteral("tablename: %1").arg(td_txt));
                                 break;
                             }
                             case 1:
@@ -1730,17 +1733,17 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                                 if(name_list.contains(a))
                                 {
                                     ix_name=col_ix;
-                                    //zlog.trace(QStringLiteral("ix_name: %1 (%2)").arg(col_ix).arg(td_txt));
+                                    //zTrace(QStringLiteral("ix_name: %1 (%2)").arg(col_ix).arg(td_txt));
                                 }
                                 if(type_list.contains(a))
                                 {
                                     ix_type=col_ix;
-                                    //zlog.trace(QStringLiteral("ix_type: %1 (%2)").arg(col_ix).arg(td_txt));
+                                    //zTrace(QStringLiteral("ix_type: %1 (%2)").arg(col_ix).arg(td_txt));
                                 }
                                 if(comment_list.contains(a))
                                 {
                                     ix_comment=col_ix;
-                                    //zlog.trace(QStringLiteral("comment_list: %1 (%2)").arg(col_ix).arg(td_txt));
+                                    //zTrace(QStringLiteral("comment_list: %1 (%2)").arg(col_ix).arg(td_txt));
                                 }
 
 
@@ -1758,7 +1761,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                                 {
 //                                    if(tablename=="fue")
 //                                    {
-//                                        zlog.trace("");
+//                                        zTrace("");
 //                                    }
                                     QString a = zStringHelper::zNormalize(td_txt);
                                     if(a.endsWith(pkstr))
@@ -1795,12 +1798,12 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                         row.comment = row_comment;
                         rowlist.append(row);
 
-                        //zlog.trace(QStringLiteral("row %1: %2,%3,%4").arg(row_ix).arg(row_name, row_type, row_comment));
+                        //zTrace(QStringLiteral("row %1: %2,%3,%4").arg(row_ix).arg(row_name, row_type, row_comment));
                     }
                     else
                     {
-                        //zlog.trace(QStringLiteral("hibás sor %1: %2").arg(row_ix).arg(tr_txt));
-                        zlog.trace(QStringLiteral("hibás sor %1: %2,%3,%4").arg(row_ix).arg(row_name, row_type, row_comment));
+                        //zTrace(QStringLiteral("hibás sor %1: %2").arg(row_ix).arg(tr_txt));
+                        zInfo(QStringLiteral("hibás sor %1: %2,%3,%4").arg(row_ix).arg(row_name, row_type, row_comment));
                     }
 
                 }
@@ -1813,7 +1816,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
         }
         auto t = zTable(tablename, pkname, rowlist);
 
-        zlog.trace(QStringLiteral("zTable: %1").arg(t.toString()));
+        zInfo(QStringLiteral("zTable: %1").arg(t.toString()));
         e.append(t);
         table_ix++;
     }

@@ -8,7 +8,9 @@
 #include "zlocinfo.h"
 
 #define getLocInfo zLocInfo(__PRETTY_FUNCTION__,__FILE__,__LINE__)
-#define zError(msg) zLog::error2((msg), getLocInfo);
+
+#define zError(msg) zLog::error2((msg), getLocInfo)
+
 #define zWarning(msg) zLog::warning2((msg), getLocInfo);
 #define zInfo(msg) zLog::info2((msg));
 #define zDebug() zLog::debug2(getLocInfo);
@@ -23,11 +25,11 @@
 class zLog
 {
 private:
-    QTextBrowser *widget;
-    QTabWidget *tabwidget;
-    int tabindex;
+//    QTextBrowser *widget;
+//    QTabWidget *tabwidget;
+//    int tabindex;
     static void dialog(const QString&, int);
-    void log(const QString&, int);    
+//    void log(const QString&, int);
 
     static QTextBrowser *widget2;
     static QTabWidget *tabwidget2;
@@ -57,40 +59,41 @@ public:
 
     /*message*/
     static void dialogMessage(const QString& str);
-    //void message(const char*);
-    void message(const QString&);
-    void message(const QList<QString>&);
+//    //void message(const char*);
+//    void message(const QString&);
+//    void message(const QList<QString>&);
 
-    /*ok*/
+//    /*ok*/
     static void dialogOk(const QString& str);
-    //void ok(const char*);
-    void ok(const QString&);
-    void ok(const QList<QString>&);
+//    //void ok(const char*);
+//    void ok(const QString&);
+//    void ok(const QList<QString>&);
 
-    /*warning*/
+//    /*warning*/
     static void dialogWarning(const QString& str);
-    //void warning(const char*);
-    void warning(const QString&);
-    void warning(const QList<QString>&);
+//    //void warning(const char*);
+//    void warning(const QString&);
+//    void warning(const QList<QString>&);
 
-    /*error*/
+//    /*error*/
     static void dialogError(const QString& str);
-    //void error(const char*);
-    void error(const QString&);
-    void error(const QString&, const QString&);
-    void error(const QList<QString>&);
+//    //void error(const char*);
+//    void error(const QString&);
+//    void error(const QString&, const QString&);
+//    void error(const QList<QString>&);
 
-    /*trace*/
+//    /*trace*/
     static void dialogTrace(const QString& str);
-    //void trace(const char*);
-    void trace(const QString&);
-   // void trace(const char*, const QString&);
-    void trace(const QString&, const QString&);
-    void trace(const QList<QString>&);
+//    //void trace(const char*);
+//    void trace(const QString&);
+//   // void trace(const char*, const QString&);
+//    void trace(const QString&, const QString&);
+//    void trace(const QList<QString>&);
 
     static void error2(const QString& msg, const zLocInfo& l);
     static void warning2(const QString& msg, const zLocInfo& l);
     static void info2(const QString& msg);
+    static void info2(const QStringList& msg);
     static void debug2(const zLocInfo& l);
     static void trace2(const zLocInfo& l);
 };

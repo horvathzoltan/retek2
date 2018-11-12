@@ -16,7 +16,7 @@ void zTokenizer::init(QTableWidget *w){
 
     QString currentProjectPath = zFileNameHelper::getDxMap();
     zStringMapHelper::StringMapFeltolt(currentProjectPath, &dxMap);
-    zlog.ok(QStringLiteral("zTokenizer init ok"));
+    zInfo(QStringLiteral("zTokenizer init ok"));
 }
 
 
@@ -252,11 +252,11 @@ QString zTokenizer::getToken(const QString& token1, const QString& t2, QMap<QStr
         else
         {
             auto colname = map->value(QStringLiteral("colname")).toString();
-            zlog.error(QStringLiteral("A tokenhez nincs érték párosítva: %1 => %2").arg(t1, colname));
+            zError(QStringLiteral("A tokenhez nincs érték párosítva: %1 => %2").arg(t1, colname));
             eredmeny= "?1" + t1 + "?";
         }
     } else{
-        zlog.error(QStringLiteral("Token nem oldható fel: %1").arg(t1));
+        zError(QStringLiteral("Token nem oldható fel: %1").arg(t1));
         eredmeny= "?2" + t1 + "?";
     }
 
@@ -597,7 +597,7 @@ QString zTokenizer::getProp(const QString& propType, const QString& propName, co
 //
 //QString zTokenizer::getPropType(const QString& tipusnev, bool isnullable) {
 //    if(!typeMap.contains(tipusnev)){
-//        zlog.error(QStringLiteral("Nem található típus: %1").arg(tipusnev));
+//        zError(QStringLiteral("Nem található típus: %1").arg(tipusnev));
 //        return zStringHelper::Empty;
 //    }
 
@@ -612,7 +612,7 @@ QString zTokenizer::getPropClassType(const QString& tipusnev, bool isnullable) {
     QString cn = zConversionMap::external(globalClassMaps, tipusnev);
     if(cn.isEmpty())
     {
-        zlog.error(QStringLiteral("Nem található classmap value a keyhez: %1").arg(tipusnev));
+        zError(QStringLiteral("Nem található classmap value a keyhez: %1").arg(tipusnev));
         return zStringHelper::Empty;
     }
     if (isnullable && !tipusnev.startsWith(QStringLiteral("string"))) cn += '?';

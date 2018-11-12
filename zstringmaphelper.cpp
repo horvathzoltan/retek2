@@ -13,7 +13,7 @@ zStringMapHelper::zStringMapHelper()
 }
 
 void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map) {
-    zlog.trace(QStringLiteral("Beolvasás: %1").arg(fn));
+    zInfo(QStringLiteral("Beolvasás: %1").arg(fn));
     QFile file(fn);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
@@ -29,7 +29,7 @@ void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map)
 
         if(line.startsWith('#'))
         {
-            zlog.trace(line);
+            zInfo(line);
         }
         else
         {
@@ -45,7 +45,7 @@ void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map)
     }
     file.close();
 
-    zlog.ok(QStringLiteral("Beolvasva: %1").arg(fn));
+    zInfo(QStringLiteral("Beolvasva: %1").arg(fn));
 }
 
 void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
@@ -72,7 +72,7 @@ void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
 
     file.close();
 
-    zlog.ok(QStringLiteral("Kiírva: %1").arg(fn));
+    zInfo(QStringLiteral("Kiírva: %1 ok").arg(fn));
 }
 
 bool zStringMapHelper::contains(QMap<QString, QString> *map, QString k){

@@ -172,7 +172,7 @@ QStringList zFileNameHelper::FindFileNameInDir(const QString& dirName, const QSt
 
     if(!d.exists())
     {
-        zlog.error(QStringLiteral("directory not exist: %1").arg(dirName));
+        zError(QStringLiteral("directory not exist: %1").arg(dirName));
         return ql;
     }
     QStringList datadirs  = d.entryList(QStringList() << fn, QDir::Dirs);
@@ -187,7 +187,7 @@ QStringList zFileNameHelper::FindFileNameInDir(const QString& dirName, const QSt
     {
         auto n =  it.next();
         ql << n;
-        zlog.trace(zfn(), n);
+        zInfo(n);
     }
     return ql;
 

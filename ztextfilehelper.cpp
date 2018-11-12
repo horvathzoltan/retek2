@@ -9,13 +9,13 @@ QString zTextFileHelper::load(const QString& filename) {
     QFileInfo fi(filename);
     if(!fi.isAbsolute())
     {
-        zlog.error(QStringLiteral("nem abszolut path: %1").arg(filename));
+        zInfo(QStringLiteral("nem abszolut path: %1").arg(filename));
         return zStringHelper::Empty;
     }
 
     if(!fi.exists())
     {
-        zlog.error(QStringLiteral("a fájl nem létezik: %1").arg(filename));
+        zInfo(QStringLiteral("a fájl nem létezik: %1").arg(filename));
         return zStringHelper::Empty;
     }    
 
@@ -26,11 +26,11 @@ QString zTextFileHelper::load(const QString& filename) {
     // egyébként megnyitható azaz
 
     if (f.open(QFile::ReadOnly | QFile::Text))  {
-        zlog.ok(QStringLiteral("Beolvasva: %1").arg(filename));
+        zInfo(QStringLiteral("Beolvasva: %1").arg(filename));
         e =  QTextStream(&f).readAll();
     }
     else{
-        zlog.error(QStringLiteral("A fájl nem nyitható meg: %1 ERROR").arg(filename));
+        zInfo(QStringLiteral("A fájl nem nyitható meg: %1 ERROR").arg(filename));
         e= zStringHelper::Empty;
     }
     return e;

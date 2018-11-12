@@ -59,11 +59,11 @@ void retek2::init()
     ui.listWidget_ztables->setIconSize(QSize(48,24));
     zlog.init(ui.textBrowser, ui.tabWidget, 4, false);// 4.tab-on van a log
 
-    //zlog.error("a");
-    //zlog.warning("a");
-    //zlog.message("a");
+    //zError("a");
+    //zWarning("a");
+    //zInfo("a");
     //zlog.debug();
-    //zlog.error2("a",__func__,__FILE__,__LINE__);
+    //zError2("a",__func__,__FILE__,__LINE__);
 
     zError("a");
     zWarning("b");
@@ -73,7 +73,7 @@ void retek2::init()
 
     //asm("int $3");
 
-    //zlog.trace("a");
+    //zTrace("a");
 
     //beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
     beallitasok.init(
@@ -154,12 +154,12 @@ void retek2::init()
     // ha a leíró módosult, míg a forrás nem, bár ez em egyértelmű mert az sql simán lehet régebbi, mint a leíró
     // elvileg ezt is jelezni kellene,
 
-    zlog.ok(QStringLiteral("retek2 init ok"));
+    zInfo(QStringLiteral("retek2 init ok"));
 }
 
 void retek2::fillListWidgetByCurrentProject()
 {
-    //zlog.trace(zfn());
+    //zTrace();
     zforeach(t, ztables)
     {
         add_zTablaToListWidget(*t);
@@ -180,7 +180,7 @@ void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlma
         }
         else
         {
-            zlog.error(QStringLiteral("Több tábla található azonos néven: %1").arg(t->name));
+            zError(QStringLiteral("Több tábla található azonos néven: %1").arg(t->name));
         }
     }
 }
@@ -235,7 +235,7 @@ void retek2::loadCurrentProject()
 {      
     if(beallitasok.currentProjectName.isEmpty())
     {
-            zlog.error(QStringLiteral("Nincs aktuális project. ERROR").arg(beallitasok.currentProjectName));
+            zError(QStringLiteral("Nincs aktuális project. ERROR").arg(beallitasok.currentProjectName));
     }
     else
     {
@@ -250,13 +250,13 @@ void retek2::loadCurrentProject()
             auto t = zTable::createTableByXML(txt);
             if(t.isEmpty() )
             {
-                zlog.error(QStringLiteral("Nincs tábla: %1").arg(*f));
+                zError(QStringLiteral("Nincs tábla: %1").arg(*f));
             }
             else
             {
                 if(t.count()>1)
                 {
-                    zlog.error(QStringLiteral("Több tábla: %1").arg(*f));
+                    zError(QStringLiteral("Több tábla: %1").arg(*f));
                 }
                 else
                 {
@@ -266,7 +266,7 @@ void retek2::loadCurrentProject()
                     if(t0.name.isEmpty())
                     {
                         QString fn = zFileNameHelper::getfileName(*f);
-                        zlog.warning(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
+                        zWarning(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
                         t0.name = fn;
                     }
                     bool isValid = t0.Validate(ztables);
@@ -274,7 +274,7 @@ void retek2::loadCurrentProject()
 //                    if(zTable::find(ztables, t0.name, zTableSearchBy::Name))
 //                    {
 //                        QString fn = zFileNameHelper::getfileName(*f);
-//                        zlog.error(QStringLiteral("Már van tábla ilyen néven: %1, %2 (.xml)").arg(t0.name, fn));
+//                        zError(QStringLiteral("Már van tábla ilyen néven: %1, %2 (.xml)").arg(t0.name, fn));
 //                    }
 //                    else
                     ztables << t0;
@@ -282,7 +282,7 @@ void retek2::loadCurrentProject()
 
                     if(!isValid)
                     {
-                        zlog.error(QStringLiteral("A tábla nem valid: %1").arg(t0.name));
+                        zError(QStringLiteral("A tábla nem valid: %1").arg(t0.name));
                     }
                 }
             }
@@ -293,30 +293,30 @@ void retek2::loadCurrentProject()
 // TODO if(true ||  - nem kell az élesben
 QMap<QString,bool> retek2::validateCurrentProject_SQL(){
     //const char* a = (const char*)Q_FUNC_INFO;//zfn();
-    zlog.trace(zfn());
+    zTrace();
     QMap<QString,bool> e;
 
     zforeach(t, ztables)
     {
-        //zlog.trace(QStringLiteral("sql validating table: %1").arg(t->name));
+        //zTrace(QStringLiteral("sql validating table: %1").arg(t->name));
         if(t->sql_conn.isEmpty()) continue;
 
         if(t->sql_updateTimeStamp.isNull())
         {
-            zlog.trace(QStringLiteral("no sql_updateTimeStamp"));
+            zInfo(QStringLiteral("no sql_updateTimeStamp"));
         }
 
         QDateTime lastUpdateTimeStamp = t->getSqlUpdateTimestamp();
         if(true || lastUpdateTimeStamp > t->sql_updateTimeStamp) // ha az sql újabb
         {            
-            zlog.trace(QStringLiteral("newer available: %1 at: %2").arg(t->name, t->sql_updateTimeStamp.toString()));
+            zInfo(QStringLiteral("newer available: %1 at: %2").arg(t->name, t->sql_updateTimeStamp.toString()));
             auto isValid = t->validateSQL();
             e.insert(t->name, isValid);
-            zlog.trace(QStringLiteral("isValid: %1").arg(zStringHelper::boolToString(isValid)));
+            zInfo(QStringLiteral("isValid: %1").arg(zStringHelper::boolToString(isValid)));
         } // egyébként nincs változás
         else
         {
-            zlog.trace(QStringLiteral("not changed."));
+            zInfo(QStringLiteral("not changed."));
         }
 
     }
@@ -333,7 +333,7 @@ QMap<QString, bool> retek2::validateCurrentProject_Source(){
 
         if(t->source_updateTimeStamp.isNull())
         {
-            zlog.trace(QStringLiteral("no source_updateTimeStamp"));
+            zInfo(QStringLiteral("no source_updateTimeStamp"));
         }
 
         QDateTime lastUpdateTimeStamp = t->getSourceUpdateTimestamp();
@@ -345,7 +345,7 @@ QMap<QString, bool> retek2::validateCurrentProject_Source(){
         }
         else
         {
-            zlog.trace(QStringLiteral("not changed."));
+            zInfo(QStringLiteral("not changed."));
         }
     }
     return e;
@@ -361,7 +361,7 @@ QMap<QString, bool> retek2::validateCurrentProject_Document(){
 
         if(t->document_updateTimeStamp.isNull())
         {
-            zlog.trace(QStringLiteral("no document_updateTimeStamp"));
+            zInfo(QStringLiteral("no document_updateTimeStamp"));
         }
 
         QDateTime lastUpdateTimeStamp = t->getDocUpdateTimestamp();
@@ -373,7 +373,7 @@ QMap<QString, bool> retek2::validateCurrentProject_Document(){
         }
         else
         {
-            zlog.trace(QStringLiteral("not changed."));
+            zInfo(QStringLiteral("not changed."));
         }
     }
 
@@ -384,7 +384,7 @@ void retek2::add_zTablaToListWidget(const zTable& t){
    // QString tn = t.name; // displayed name
     if(t.name.isEmpty())
     {
-        zlog.error(QStringLiteral("Nincs megnevezés. table: %1 class: %2").arg(t.sql_table, t.class_name));
+        zError(QStringLiteral("Nincs megnevezés. table: %1 class: %2").arg(t.sql_table, t.class_name));
         return;
     }
 
@@ -439,7 +439,8 @@ void retek2::add_zTablaToListWidget(const zTable& t){
 
 
 void retek2::mezoListaFeltolt(const zTable& t){
-    zlog.trace(zfn(), t.toString());
+    zTrace();
+    zInfo(t.toString());
     ui.tableWidget_MezoLista->blockSignals(true);
     ui.tableWidget_MezoLista->setRowCount(0);
     for(int r_ix=0;r_ix<t.rows.length();r_ix++){
@@ -456,7 +457,8 @@ void retek2::mezoListaFeltolt(const zTable& t){
 }
 
 void retek2::feltoltKulcsLista(zTable t) {
-    zlog.trace(zfn(), t.name);
+    zTrace();
+    zInfo(t.name);
 
     ui.listWidget_IdegenKulcs->clear();
     //QString pkname = t.pkname();
@@ -490,7 +492,7 @@ QTableWidgetItem* retek2::CreateTableItem(const QVariant& v){
 */
 void retek2::GenerateAll() {        
     if (table == nullptr){
-        zlog.error(QStringLiteral("nincs tábla kiválasztva"));
+        zError(QStringLiteral("nincs tábla kiválasztva"));
         return;
     }
 
@@ -499,7 +501,7 @@ void retek2::GenerateAll() {
     //saveTablaToXML(table->tablename);
 
     if (ui.checkBox_XML->isChecked()) {
-        zlog.trace(QStringLiteral("XML"));
+        zInfo(QStringLiteral("XML"));
 
         QString e;
         QXmlStreamWriter s(&e);
@@ -509,14 +511,14 @@ void retek2::GenerateAll() {
         table->toXML(&s);
         s.writeEndDocument();
 
-        zlog.message(e);
+        zInfo(e);
     }
 
 	if (ui.checkBox_CClass->isChecked()) {
-        zlog.trace(QStringLiteral("C# Class"));
+        zInfo(QStringLiteral("C# Class"));
 
         auto txt = generateTmp(QStringLiteral("MVC_CClass.cs"));
-        zlog.message(txt);
+        zInfo(txt);
         //auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + ".cs");
         auto fn = zFileNameHelper::getCurrentProjectFileName(table->name + ".cs");
         zTextFileHelper::save(txt, fn);
@@ -526,7 +528,7 @@ void retek2::GenerateAll() {
     {
         if(!table->sql_conn.isEmpty())
         {
-            zlog.trace(QStringLiteral("Enum"));
+            zInfo(QStringLiteral("Enum"));
 
             auto dbconn = beallitasok.getUI();
             if(dbconn.isValid())
@@ -536,32 +538,32 @@ void retek2::GenerateAll() {
                     auto ed = GetEnumData(&zsql);
                     QString txt = zEnumizer::GenerateEnum(ed);
 
-                    zlog.message(txt);
+                    zInfo(txt);
                     auto fn = zFileNameHelper::getCurrentProjectFileName(table->name + "_enum.cs");
                             //append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + "_enum.cs");
                     zTextFileHelper::save(txt, fn);
                 }
                 else{
-                    zlog.trace(QStringLiteral("nincs sqlinit"));
+                    zInfo(QStringLiteral("nincs sqlinit"));
                 }
             }
             else
             {
-                zlog.trace(QStringLiteral("nincs dbconn"));
+                zInfo(QStringLiteral("nincs dbconn"));
             }
         }
         else
         {
-            zlog.trace(QStringLiteral("nem sql típusú"));
+            zInfo(QStringLiteral("nem sql típusú"));
         }
     }
 
 
     if (ui.checkBox_Entity->isChecked()) {
-        zlog.trace(QStringLiteral("C# Entity"));
+        zInfo(QStringLiteral("C# Entity"));
 
         auto txt = generateTmp(QStringLiteral("DAL_Entity.cs"));
-        zlog.message(txt);
+        zInfo(txt);
         auto fn = beallitasok.getModelFilename(class_name + ".cs", QStringLiteral("Entities"));
         zTextFileHelper::save(txt, fn);
     }
@@ -574,32 +576,32 @@ void retek2::GenerateAll() {
 	}*/
 
 	if (ui.checkBox_Model->isChecked()) {
-        zlog.trace(QStringLiteral("Model"));
+        zInfo(QStringLiteral("Model"));
         auto txt = generateTmp(QStringLiteral("MVC_Model.cs"));
-        //zlog.trace(txt);        
+        //zInfo\([\w)]+\);
         zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + ".cs", QStringLiteral("Models")));
 	}
 
 	if (ui.checkBox_Meta->isChecked()) {
-        zlog.trace(QStringLiteral("ModelMeta"));
+        zInfo(QStringLiteral("ModelMeta"));
         auto txt = generateTmp(QStringLiteral("MVC_ModelMeta.cs"));
         zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "Meta" + ".cs", QStringLiteral("Models")));
 	}
 
 	if (ui.checkBox_Controller->isChecked()) {
-        zlog.trace(QStringLiteral("Controller"));
+        zInfo(QStringLiteral("Controller"));
         auto txt = generateTmp(QStringLiteral("MVC_Controller.cs"));
         zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "Controller" + ".cs", QStringLiteral("Controllers")));
 	}
 
     if (ui.checkBox_DataProvider->isChecked()) {
-        zlog.trace(QStringLiteral("DataProvider"));
+        zInfo(QStringLiteral("DataProvider"));
         auto txt = generateTmp(QStringLiteral("MVC_DataProvider.cs"));
         zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "DataProvider" + ".cs", QStringLiteral("DataProviders")));
     }
 
     if (ui.checkBox_View->isChecked()) {
-        zlog.trace(QStringLiteral("View"));
+        zInfo(QStringLiteral("View"));
         auto txtIndex = generateTmp(QStringLiteral("MVC_ViewIndex.cshtml"));
         zTextFileHelper::save(txtIndex, beallitasok.getModelFilename(class_name + "ViewIndex" + ".cshtml", QStringLiteral("Views")));
 
@@ -608,13 +610,13 @@ void retek2::GenerateAll() {
     }
 
 //	if (ui.checkBox_ViewIndex->isChecked()) {
-//        zlog.trace("Index");
+//        zTrace("Index");
 //		auto txt = generateTmp("MVC_Index.cshtml");
 //        zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "ViewIndex" + ".cshtml", "Views"));
 //	}
 
 //	if (ui.checkBox_ViewEdit->isChecked()) {
-//        zlog.trace("Edit");
+//        zTrace("Edit");
 //        auto txt = generateTmp("MVC_Edit.cshtml");
 //        zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "ViewEdit" + ".cshtml", "Views"));
 //	}
@@ -694,30 +696,36 @@ void retek2::on_pushButton_2_clicked()
     if(dbconn.isValid()){
         if(zsql.init(dbconn)) // ez a szerverig - tehát a sémanév és a táblanév nyitott marad
         {
-            zlog.trace(QStringLiteral("GenerateByText: zsql.init ok"));
+            zInfo(QStringLiteral("GenerateByText: zsql.init ok"));
 
             auto txt = ui.textEdit->toPlainText();
             auto tl = zTable::createTableByText(txt);
-            if(tl.length()>0){
-                zforeach(t,tl){
+            if(tl.length()>0)
+            {
+                zforeach(t,tl)
+                {
                     auto t_sql = zsql.getTable(schemaName, t->sql_table);
                     t_sql.initSql(dbconn.Name, schemaName, t_sql.sql_table);
 
                     QStringList e;
                     auto vl = t_sql.Compare(*t, e);
-                    zlog.error("--- "+t->sql_table+" ---");
-                    zlog.error(e);
+                    zError("--- "+t->sql_table+" ---");
+
+                    zforeach(ee, e)
+                    {
+                        zInfo(*ee);
                     }
-                zlog.error(QStringLiteral("--- --- ---"));
                 }
+                zInfo(QStringLiteral("--- --- ---"));
+            }
             else
             {
-                zlog.error(QStringLiteral("nincs egyezés, nincs vizsgálat"));
+                zError(QStringLiteral("nincs egyezés, nincs vizsgálat"));
             }
         }
         else
         {
-            zlog.error(QStringLiteral("GenerateByText: zsql.init sikertelen"));
+            zError(QStringLiteral("GenerateByText: zsql.init sikertelen"));
         }
     }
 }
@@ -750,20 +758,20 @@ Macro def: Adm
 */
 void retek2::on_pushButton_3_clicked()
 {
-    zlog.trace(zfn());
+    zTrace();
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText(txt);
 
     if(tl.isEmpty())
     {
-        zlog.error(QStringLiteral("Nem jött létre tábla"));
+        zError(QStringLiteral("Nem jött létre tábla"));
     }
 
     zforeach(t,tl){
         if(zTable::find(ztables, t->name, zTableSearchBy::Name))
         {
-            zlog.error(QStringLiteral("Van már ilyen nevű tábla"));
+            zError(QStringLiteral("Van már ilyen nevű tábla"));
             continue;
         }
         ztables.append(*t);
@@ -784,14 +792,14 @@ Adm
 */
 void retek2::on_pushButton_4_clicked()
 {
-    zlog.trace(zfn());
+    zTrace();
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByText_2(txt);
 
     if(tl.length()==0)
     {
-        zlog.error(QStringLiteral("nem jött létre adat"));
+        zError(QStringLiteral("nem jött létre adat"));
         return;
     }
 
@@ -799,7 +807,7 @@ void retek2::on_pushButton_4_clicked()
     {
         if(zTable::find(ztables, t->name, zTableSearchBy::Name))
         {
-            zlog.error(QStringLiteral("Van már ilyen nevű tábla"));
+            zError(QStringLiteral("Van már ilyen nevű tábla"));
             continue;
         }
         ztables.append(*t);
@@ -811,12 +819,12 @@ void retek2::on_pushButton_4_clicked()
 // load from xml
 void retek2::on_pushButton_5_clicked()
 {
-    zlog.trace(QStringLiteral("on_pushButton_5_clicked"));
+    zTrace();
 
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByXML(txt);
 
-   if(tl.length()==0) { zlog.error(QStringLiteral("nem jött létre adat")); return;}
+   if(tl.length()==0) { zError(QStringLiteral("nem jött létre adat")); return;}
 
     zforeach(t,tl){
         ztables.append(*t);
@@ -830,11 +838,11 @@ Enumot készít a megnevezés és az id mező adatbázisban lévő értéke alap
 /*
 void retek2::on_pushButton_5_clicked()
 {
-    zlog.trace("on_pushButton_5_clicked");
+    zTrace("on_pushButton_5_clicked");
 
     auto ed = GetEnumData();
     QString enumstr = zEnumizer::GenerateEnum(ed);
-    zlog.trace(enumstr);
+    zInfo\([\w)]+\);
 }
 */
 /*
@@ -855,7 +863,7 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
         ft = ui.tableWidget_MezoLista->item(idix, C_ix_colType)->text();
 
         if(r.length()<1){
-            zlog.trace(QStringLiteral("Nincs megnevezés sor kijelölve"));
+            zInfo(QStringLiteral("Nincs megnevezés sor kijelölve"));
             eredmeny= { "", "", QMap<int, QString>() };
         }
         else if (r.length()>1)
@@ -885,7 +893,7 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
         }
     else
     {
-        zlog.trace(QStringLiteral("Nincs sor kijelölve"));
+        zInfo(QStringLiteral("Nincs sor kijelölve"));
         eredmeny= { "", "", QMap<int, QString>() };
     }
     return eredmeny;
@@ -894,7 +902,7 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
 
 //void retek2::on_pushButton_6_clicked()
 //{
-//    zlog.trace(QStringLiteral("Entitások beolvasása"));
+//    zTrace(QStringLiteral("Entitások beolvasása"));
 
 //    auto txt = ui.textEdit->toPlainText();
 
@@ -948,7 +956,7 @@ void retek2::on_tableWidget_MezoLista_cellChanged(int row, int column)
     //case C_ix_comment:
         default:
             auto mn = ui.tableWidget_MezoLista->horizontalHeaderItem(column)->text();
-            zlog.error(QStringLiteral("Nem módosítható oszlop: %1").arg(mn));
+            zError(QStringLiteral("Nem módosítható oszlop: %1").arg(mn));
             break;
 
     }
@@ -994,7 +1002,7 @@ void retek2::on_listWidget_ztables_itemClicked(QListWidgetItem *item)
     }
     else
     {
-        zlog.error(QStringLiteral("Nem található a tábla: %1").arg(name));
+        zError(QStringLiteral("Nem található a tábla: %1").arg(name));
     }
 }
 
@@ -1071,7 +1079,7 @@ void retek2::on_pushButton_clicked()
         //tablaListaFeltolt();
         }
     else{
-       zlog.error(QString(QStringLiteral("Az adatbáziskapcsolat adatai hibásak: %1 driver: %2")).arg(dbconn.Name,dbconn.driver));
+       zError(QString(QStringLiteral("Az adatbáziskapcsolat adatai hibásak: %1 driver: %2")).arg(dbconn.Name,dbconn.driver));
     }
     //zsql.createConnection();
 
@@ -1333,7 +1341,7 @@ QString retek2::getCaptionByRowIx(int idix)
         caption = zTable::getCaption(colName);
         if(caption.isEmpty())
         {
-            zlog.warning(QStringLiteral("Nem határozható meg felirat a mezőnévhez: %1").arg(colName));
+            zWarning(QStringLiteral("Nem határozható meg felirat a mezőnévhez: %1").arg(colName));
         }
     //}
     return caption;
@@ -1365,7 +1373,7 @@ pushButton_srcimport - on_pushButton_table_import_clicked
 
 void retek2::on_pushButton_srcimport_clicked()
 {
-     zlog.trace(zfn());
+     zTrace();
 
      auto currentSrc = ui.listWidget_sources->currentItem();
      if(!currentSrc) return;

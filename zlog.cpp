@@ -17,9 +17,9 @@ int zLog::tabindex2;
 bool zLog::isBreakOnError;
 
 void zLog::init(QTextBrowser* b, QTabWidget* tw, int tabindex, bool isBreak){
-    widget = b;
-    tabwidget = tw;
-    tabindex = tabindex;
+//    widget = b;
+//    tabwidget = tw;
+//    tabindex = tabindex;
 
     widget2=b;
     tabwidget2 = tw;
@@ -45,42 +45,42 @@ void zLog::init(QTextBrowser* b, QTabWidget* tw, int tabindex, bool isBreak){
 //    #endif
 //}
 
-void zLog::log(const QString& m, int errlevel){
-   // #ifdef QT_DEBUG
+//void zLog::log(const QString& m, int errlevel){
+//   // #ifdef QT_DEBUG
 
-    auto c = widget->textColor();
+//    auto c = widget->textColor();
 
-    switch(errlevel){
+//    switch(errlevel){
 
-    case ERROR:
-        widget->setTextColor(QColor(Qt::darkRed));
-        tabwidget->setCurrentIndex(tabindex);
-        break;
-    case WARNING:
-        widget->setTextColor(QColor(Qt::darkYellow));
-        tabwidget->setCurrentIndex(tabindex);
-        break;
-    case TRACE:
-        widget->setTextColor(QColor(Qt::darkGray));
-        break;
-    case DEBUG:
-        widget->setTextColor(QColor(Qt::darkRed));
-        break;
-    case INFO:
-        widget->setTextColor(QColor("steelblue"));
-        break;
-    case OK:
-        widget->setTextColor(QColor(Qt::darkGreen));
-        break;
-    default:
-        widget->setTextColor(QColor(Qt::black));
-        break;
-    }
+//    case ERROR:
+//        widget->setTextColor(QColor(Qt::darkRed));
+//        tabwidget->setCurrentIndex(tabindex);
+//        break;
+//    case WARNING:
+//        widget->setTextColor(QColor(Qt::darkYellow));
+//        tabwidget->setCurrentIndex(tabindex);
+//        break;
+//    case TRACE:
+//        widget->setTextColor(QColor(Qt::darkGray));
+//        break;
+//    case DEBUG:
+//        widget->setTextColor(QColor(Qt::darkRed));
+//        break;
+//    case INFO:
+//        widget->setTextColor(QColor("steelblue"));
+//        break;
+//    case OK:
+//        widget->setTextColor(QColor(Qt::darkGreen));
+//        break;
+//    default:
+//        widget->setTextColor(QColor(Qt::black));
+//        break;
+//    }
 
-    widget->append(m);
-    widget->setTextColor(c);
-    //#endif
-}
+//    widget->append(m);
+//    widget->setTextColor(c);
+//    //#endif
+//}
 
 //void zLog::log(const QList<QString>& ml){
 //    zforeach(m, ml){
@@ -153,21 +153,19 @@ void zLog::dialog(const QString& str, int errlevel) {
 }
 /*message*/
 
-void zLog::dialogMessage(const QString& str) {
-    dialog(str, INFO);
-}
-
-void zLog::message(const QList<QString>& ml){
-    zforeach(m, ml)
-    {
-        message(*m);
-    }
-}
 
 
-void zLog::message(const QString& m){
-    log(m, INFO);
-    }
+//void zLog::message(const QList<QString>& ml){
+//    zforeach(m, ml)
+//    {
+//        message(*m);
+//    }
+//}
+
+
+//void zLog::message(const QString& m){
+//    log(m, INFO);
+//    }
 
 //void zLog::message(const char *m){
 //    message(QString::fromLocal8Bit(m));
@@ -175,19 +173,17 @@ void zLog::message(const QString& m){
 
 /*ok*/
 
-void zLog::dialogOk(const QString& str) {
-    dialog(str, OK);
-}
 
-void zLog::ok(const QList<QString>& ml){
-    zforeach(m, ml){
-        ok(*m);
-        }
-    }
 
-void zLog::ok(const QString& m){
-    log(m, OK);
-    }
+//void zLog::ok(const QList<QString>& ml){
+//    zforeach(m, ml){
+//        ok(*m);
+//        }
+//    }
+
+//void zLog::ok(const QString& m){
+//    log(m, OK);
+//    }
 
 //void zLog::ok(const char *m){
 //    ok(QString::fromLocal8Bit(m));
@@ -195,9 +191,26 @@ void zLog::ok(const QString& m){
 
 
 
-/*trace*/
+
+
+void zLog::dialogMessage(const QString& str) {
+    dialog(str, INFO);
+}
+
 void zLog::dialogTrace(const QString& str) {
     dialog(str, TRACE);
+}
+
+void zLog::dialogWarning(const QString& str) {
+    dialog(str, WARNING);
+}
+
+void zLog::dialogError(const QString& str) {
+    dialog(str, ERROR);
+}
+
+void zLog::dialogOk(const QString& str) {
+    dialog(str, OK);
 }
 
 //void zLog::trace(const char *m){
@@ -205,39 +218,37 @@ void zLog::dialogTrace(const QString& str) {
 //    trace(QString::fromLocal8Bit(m));
 //    }
 
-void zLog::trace(const QString& msg){
-    log(msg, TRACE);
-}
+//void zLog::trace(const QString& msg){
+//    log(msg, TRACE);
+//}
 
-void zLog::trace(const QList<QString>& ml){
-    zforeach(m, ml){
-        trace(*m);
-        }
-    }
+//void zLog::trace(const QList<QString>& ml){
+//    zforeach(m, ml){
+//        trace(*m);
+//        }
+//    }
 
 //void zLog::trace(const char *m, const QString& msg2){
 //    trace(QString::fromLocal8Bit(m) + ", " + msg2);
 //    }
 
-void zLog::trace(const QString& msg, const QString& msg2){
+/*void zLog::trace(const QString& msg, const QString& msg2){
     trace(msg + ": " + msg2);
 }
 
 /*warning*/
 
-void zLog::dialogWarning(const QString& str) {
-    dialog(str, WARNING);
-}
 
-void zLog::warning(const QString& m){
-    log(m, WARNING);
-    }
 
-void zLog::warning(const QList<QString>& ml){
-    zforeach(m, ml){
-        warning(*m);
-        }
-    }
+//void zLog::warning(const QString& m){
+//    log(m, WARNING);
+//    }
+
+//void zLog::warning(const QList<QString>& ml){
+//    zforeach(m, ml){
+//        warning(*m);
+//        }
+//    }*/
 
 //void zLog::warning(const char *m){
 //    warning(QString::fromLocal8Bit(m));
@@ -246,23 +257,21 @@ void zLog::warning(const QList<QString>& ml){
 
 /*error*/
 
-void zLog::dialogError(const QString& str) {
-    dialog(str, ERROR);
-}
 
-void zLog::error(const QString& m){
-    log(m, ERROR);
-    }
 
-void zLog::error(const QString& msg, const QString& msg2){
-    error(msg + ": " + msg2);
-}
+//void zLog::error(const QString& m){
+//    log(m, ERROR);
+//    }
 
-void zLog::error(const QList<QString>& ml){
-    zforeach(m, ml){
-        error(*m);
-        }
-    }
+//void zLog::error(const QString& msg, const QString& msg2){
+//    error(msg + ": " + msg2);
+//}
+
+//void zLog::error(const QList<QString>& ml){
+//    zforeach(m, ml){
+//        error(*m);
+//        }
+//    }
 
 
 /*
@@ -270,28 +279,43 @@ log to gui -> QString
 */
 QString zLog::logToGUI(int errlevel, const QString &msg, const QString &loci, const QString &st)
 {
-    QStringList msg2;
-
+    auto level = LevelToString(errlevel);
     auto c = widget2->textColor();
+    QString msg3;
 
     switch(errlevel){
     case ERROR:
         widget2->setTextColor(QColor(Qt::darkRed));
         tabwidget2->setCurrentIndex(tabindex2);
+        widget2->append(level+": "+msg);
+        widget2->append(loci);
+        widget2->append(st);
+        msg3= level+": "+msg+"\n"+loci;
         break;
     case WARNING:
         widget2->setTextColor(QColor(Qt::darkYellow));
         tabwidget2->setCurrentIndex(tabindex2);
+        widget2->append(level+": "+msg);
+        widget2->append(loci);
+        msg3= level+": "+msg+"\n"+loci;
         break;
     case TRACE:
         widget2->setTextColor(QColor(Qt::darkGray));
+        widget2->append(level+": "+loci);
+        msg3= level+": "+loci;
         break;
     case DEBUG:
         widget2->setTextColor(QColor(Qt::darkRed));
         tabwidget2->setCurrentIndex(tabindex2);
+        widget2->append(level);
+        widget2->append(loci);
+        widget2->append(st);
+        msg3= level+": "+msg+"\n"+loci;
         break;
     case INFO:
         widget2->setTextColor(QColor("steelblue"));
+        widget2->append(msg);
+        msg3= level+": "+msg;
         break;
     case OK:
         widget2->setTextColor(QColor(Qt::darkGreen));
@@ -301,34 +325,8 @@ QString zLog::logToGUI(int errlevel, const QString &msg, const QString &loci, co
         break;
     }
 
-
-    if(!loci.isEmpty())
-    {
-        widget2->append(loci);
-        msg2 << loci;
-    }
-
-    auto level = LevelToString(errlevel);
-    if(level.isEmpty())
-    {
-        widget2->append(msg);
-        msg2 << msg;
-    }
-    else
-    {
-        auto a = level+": "+msg;
-        widget2->append(a);
-        msg2 << a;
-    }
-
-    if(!st.isEmpty())
-    {
-        widget2->append(st);
-    }
-
     widget2->setTextColor(c);
-
-    return msg2.join(' ');
+    return msg3;
 }
 
 //QString zLog::zGetLocInfo(const char *func, const char *file, int line)
@@ -465,12 +463,24 @@ void zLog::warning2(const QString& msg, const zLocInfo& locinfo){
 #endif
     }
 
-void zLog::info2(const QString& msg){
+void zLog::info2(const QString& msg)
+{
     auto msg2 = logToGUI(INFO, msg, nullptr, nullptr);
 #ifdef QT_DEBUG
     qInfo().noquote() << msg2;
 #endif
+}
+
+void zLog::info2(const QStringList& msgl)
+{
+    zforeach(msg,msgl)
+    {
+        auto msg2 = logToGUI(INFO, *msg, nullptr, nullptr);
+#ifdef QT_DEBUG
+        qInfo();//.noquote() << msg2;
+#endif
     }
+}
 
 void zLog::debug2(const zLocInfo& locinfo){
     auto li = locinfo.toString();

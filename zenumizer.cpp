@@ -4,10 +4,15 @@
 //QString cn, QString ft, QMap<int, QString> ms
 QString zEnumizer::GenerateEnum(EnumSource es)
 {
-    zlog.trace("GenerateEnum");
-    if(es.cn.isEmpty()||es.ft.isEmpty()) {zlog.trace("no enum name or type");return "";}
+    zTrace();
+    if(es.cn.isEmpty()||es.ft.isEmpty())
+    {
+        zInfo("no enum name or type");
+        return zStringHelper::Empty;
+    }
     QString vl = "";
-    zforeach(m, es.ms){
+    zforeach(m, es.ms)
+    {
         if(!vl.isEmpty()) vl+=",\n";
         //auto en = m.value().normalized(QString::NormalizationForm_D).replace(QRegExp("[^a-zA-Z0-9_\\s]"), "").replace(' ', '_').toLower();
         auto en = zStringHelper::zNormalize(m.value());

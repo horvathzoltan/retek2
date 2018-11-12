@@ -21,7 +21,7 @@ QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QSt
        auto m = load(*f);
        if(m.list.isEmpty())
        {
-            zlog.error(QStringLiteral("Nem tartalmaz beolvasható sorokat: %1").arg(*f));
+            zError(QStringLiteral("Nem tartalmaz beolvasható sorokat: %1").arg(*f));
        }
        else
        {
@@ -33,7 +33,8 @@ QList<zConversionMap> zConversionMap::loadAll(const QString& filePath, const QSt
 }
 
 zConversionMap zConversionMap::load(const QString& fileFullName){
-    zlog.trace(zfn(), fileFullName);
+    zTrace();
+    zInfo(fileFullName);
     zConversionMap e;
     QString fileName = zFileNameHelper::getfileName(fileFullName);  
 
@@ -44,7 +45,7 @@ zConversionMap zConversionMap::load(const QString& fileFullName){
 
     if(e.list.isEmpty())
     {
-        zlog.warning(QStringLiteral("Nem tartalmaz sorokat: %1").arg(fileName));
+        zWarning(QStringLiteral("Nem tartalmaz sorokat: %1").arg(fileName));
     }
     return e;
 }
@@ -129,7 +130,7 @@ QStringList zConversionMap::internals(const QString& c) const {
 }
 
 void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
-    zlog.trace(zfn(), fn);
+    zTrace();zInfo(fn);
     QFile file(fn);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
@@ -146,7 +147,7 @@ void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
 
         if(line.startsWith('#'))
         {
-            zlog.trace(line);
+            zInfo(line);
         }
         else
         {
@@ -165,7 +166,7 @@ void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
     }
     file.close();
 
-    zlog.ok(QStringLiteral("Beolvasva: %1").arg(fn));
+    zInfo(QStringLiteral("Beolvasva: %1").arg(fn));
 }
 
 
@@ -210,7 +211,7 @@ int zConversionMap::indexByFullName(const QList<zConversionMap>& maps, const QSt
     return -1;
 }
 //zConversionMap zConversionMap::reLoad(const QString& fileFullName){
-//    zlog.trace(zfunc, fileFullName);
+//    zTrace(zfunc, fileFullName);
 //    QString fileName = zFileNameHelper::getfileName(fileFullName);
 
 //    zConversionMap e;

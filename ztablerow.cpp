@@ -101,23 +101,23 @@ bool zTablerow::Validate2(const QStringList& colNames){
     bool v = true;
     if(colName.isEmpty())
     {
-        zlog.error(QStringLiteral("Nincs colName"));
+        zError(QStringLiteral("Nincs colName"));
         v = false;
     }
 //    if(find(rows, colName))
 //    {
-//        zlog.error(QStringLiteral("colName nem egyedi: %1").arg(colName));
+//        zError(QStringLiteral("colName nem egyedi: %1").arg(colName));
 //        return false;
 //    }
     if(colType.isEmpty()){
-        zlog.error(QStringLiteral("Nincs típusnév"));
+        zError(QStringLiteral("Nincs típusnév"));
         v= false;
     }
     else
         {
         if(colNames.count(colName)>1)
         {
-            zlog.error(QStringLiteral("colName nem egyedi: %1").arg(colName));
+            zError(QStringLiteral("colName nem egyedi: %1").arg(colName));
             v = false;
         }
     }
@@ -147,11 +147,11 @@ bool zTablerow::Validate2(const QStringList& colNames){
         }
         if(isError)
         {
-            zlog.error(errortxt);
+            zError(errortxt);
         }
         else
         {
-            zlog.trace(errortxt);
+            zInfo(errortxt);
         }
 
     }

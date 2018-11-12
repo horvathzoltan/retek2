@@ -36,12 +36,12 @@ bool zSQL::init(const QString &_driverName, const QString& _hostName, const QStr
     bool isok = this->createConnection();
     if(isok)
     {
-        zlog.trace(QStringLiteral("init: %1").arg(this->toString()));
-        zlog.trace(QStringLiteral("hasFeature: QuerySize: %1").arg(db.driver()->hasFeature(QSqlDriver::QuerySize)?QStringLiteral("true"):QStringLiteral("false")));
+        zInfo(QStringLiteral("init: %1").arg(this->toString()));
+        zInfo(QStringLiteral("hasFeature: QuerySize: %1").arg(db.driver()->hasFeature(QSqlDriver::QuerySize)?QStringLiteral("true"):QStringLiteral("false")));
     }
     else
     {
-        zlog.error(QStringLiteral("init failed: %1").arg(this->toString()));
+        zError(QStringLiteral("init failed: %1").arg(this->toString()));
     }
     return isok;
     }
@@ -99,17 +99,17 @@ bool zSQL::createConnection(QString connectionName){
     }
     else
     {
-        zlog.error("createConnection: unknown driver:" + driverName);
+        zError("createConnection: unknown driver:" + driverName);
         return false;
     }
 
     if(isok)        
     {
-        zlog.ok("Connected");
+        zInfo("Connected ok");
     }
     else
     {
-        zlog.error("Not Connected: " + this->getLastErrorText());
+        zInfo("Not Connected: " + this->getLastErrorText());
     }
 
     return isok;
@@ -143,11 +143,11 @@ QStringList zSQL::getTableNames(const QString& schemaName){
         {
             return getTableNames_SQL(getTableNames_MYSQL_CMD(schemaName));
         }        
-        zlog.error("getTableNames: unknown driver:" + driverName);
+        zError("getTableNames: unknown driver:" + driverName);
     }
     else
     {
-        zlog.error("getTable: db closed" + driverName);
+        zError("getTable: db closed" + driverName);
     }
     return QStringList();
 }
@@ -192,11 +192,11 @@ QStringList zSQL::getFieldNames(const QString& schemaName, const QString& tableN
         {
             return getFieldNames_SQL(getFieldNames_MYSQL_CMD(schemaName, tableName));
         }
-        zlog.error("getFieldNames: unknown driver:" + driverName);
+        zError("getFieldNames: unknown driver:" + driverName);
     }
     else
     {
-        zlog.error("getField: db closed" + driverName);
+        zError("getField: db closed" + driverName);
     }
     return QStringList();
 }
@@ -255,19 +255,19 @@ QString zSQL::getTable_MYSQL_CMD(const QString& schemaName, const QString& tn ){
 
 
 zTable zSQL::getTable(const QString& schemaName, const QString& tablanev, const QStringList& fl){
-    zlog.trace(zfn());
+    zTrace();
     zTable t;
     QString cmd;
 
     if(!db.isValid())
     {
-        zlog.error("getTable: db invalid" + driverName);
+        zError("getTable: db invalid" + driverName);
         return t;
     }
 
     if(!db.isOpen())
     {
-        zlog.error("getTable: db closed" + driverName);
+        zError("getTable: db closed" + driverName);
         return t;
     }
 
@@ -281,7 +281,7 @@ zTable zSQL::getTable(const QString& schemaName, const QString& tablanev, const 
     }
     else
     {
-        zlog.error("getTable: unknown driver:" + driverName);
+        zError("getTable: unknown driver:" + driverName);
     }
 
     if(!cmd.isEmpty())
@@ -377,11 +377,11 @@ QString zSQL::getTablePKName(const QString& tablanev){
         {
             return getTable_SQL_PK(getTable_MYSQL_PK(tablanev));
         }
-        zlog.error("getTable: unknown driver:" + driverName);
+        zError("getTable: unknown driver:" + driverName);
     }
     else
     {
-        zlog.error("getTable: db closed" + driverName);    
+        zError("getTable: db closed" + driverName);    
     }
     return zStringHelper::Empty;
 }
@@ -423,10 +423,10 @@ QStringList zSQL::getSchemaNames(){
         {
             return getSchemaNames_SQL(getSchemaNames_MYSQL_CMD());
         }
-        zlog.error("getDbNames: unknown driver:" + driverName);
+        zError("getDbNames: unknown driver:" + driverName);
     }
     else{
-        zlog.error("getDb: db closed" + driverName);
+        zError("getDb: db closed" + driverName);
     }
     return QStringList();
 }
@@ -503,7 +503,7 @@ QString zSQL::getTable_SQL_UTIME(const QString& schemaName, const QString& tabla
         return getTable_MYSQL_UTIME(schemaName, tablanev);
     }
 
-    zlog.error(zfn(), "unknown driver:" + driverName);
+    zError("unknown driver:" + driverName);
     return zStringHelper::Empty;
 }
 
@@ -527,22 +527,22 @@ QMap<QString, QVariant> zSQL::getData(const QString& cmd, QStringList keys)
 QDateTime zSQL::getTableUTIME(const QString& schemaName, const QString& tablanev){
     if(schemaName.isEmpty())
     {
-        zlog.warning(QStringLiteral("nincs séma megnevezés"));
+        zWarning(QStringLiteral("nincs séma megnevezés"));
         return QDateTime();
     }
     if(tablanev.isEmpty())
     {
-        zlog.warning(QStringLiteral("nincs tábla megnevezés"));
+        zWarning(QStringLiteral("nincs tábla megnevezés"));
         return QDateTime();
     }
     if(!db.isValid())
     {
-        zlog.warning(QStringLiteral("érvénytelen adatbázis"));
+        zWarning(QStringLiteral("érvénytelen adatbázis"));
         return QDateTime();
     }
     if(!db.isOpen())
     {
-        zlog.warning(QStringLiteral("érvénytelen adatbázis"));
+        zWarning(QStringLiteral("érvénytelen adatbázis"));
         return QDateTime();
     }
 

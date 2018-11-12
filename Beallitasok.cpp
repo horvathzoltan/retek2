@@ -100,7 +100,7 @@ QString Beallitasok::getModelFilename(const QString& tfname, const QString& dirn
 
     //e += QDir::separator()+tfname;
     QString e2 = zFileNameHelper::getCurrentProjectFileName(tfname);
-    zlog.trace(e2);
+    zInfo(e2);
     return e2;
 
 }
@@ -114,17 +114,17 @@ QString Beallitasok::getTemplateFilename(const QString& tfname)
     bool isVal = true;
     if(tmpDir.isEmpty())
     {
-        zlog.error("A template könyvtár a beállításokban nincs megadva");
+        zError("A template könyvtár a beállításokban nincs megadva");
         isVal=false;
     }
     if(tfname.isEmpty())
     {
-        zlog.error(QStringLiteral("A template fájlnév nincs megadva"));
+        zError(QStringLiteral("A template fájlnév nincs megadva"));
         isVal=false;
     }
     if(beallitasok.currentProjectName.isEmpty())
     {
-        zlog.error(QStringLiteral("A projectnév nincs megadva"));
+        zError(QStringLiteral("A projectnév nincs megadva"));
         isVal=false;
     }
     if(!isVal)
@@ -140,16 +140,16 @@ QString Beallitasok::getTemplateFilename(const QString& tfname)
         return fn;
     }
 
-    zlog.trace("nincs project template:" +fn);
+    zInfo("nincs project template:" +fn);
     fn = zFileNameHelper::getTmpSubDir(tfname);
 
     if(QFileInfo::exists(fn))
     {
-        zlog.trace("global template:" +fn);
+        zInfo("global template:" +fn);
         return fn;
     }
 
-    zlog.error("nincs global template:"+ fn);
+    zError("nincs global template:"+ fn);
     return nullptr;
 }
 
@@ -266,7 +266,7 @@ void Beallitasok::fillProjectList(const QStringList& projectdirs)
     if(!currentProjectName.isEmpty()){
         auto items = listWidget_projects->findItems(currentProjectName, Qt::MatchExactly);
         if(items.isEmpty()){
-            zlog.error(QStringLiteral("Az aktuális project nem található: %1 ERROR").arg(currentProjectName));
+            zError(QStringLiteral("Az aktuális project nem található: %1 ERROR").arg(currentProjectName));
         }
         else{
             listWidget_projects->setCurrentItem(items[0]);
@@ -282,7 +282,7 @@ void Beallitasok::addConnection(dbConnection b){
     //QString fn = zFileNameHelper::append(QDir::homePath(),settingsdir, dbconnections_filename, QString());
     QString csvr= b.ToCSV();
 
-    zlog.error(QStringLiteral("dbconnection append %1 %2").arg(fn, csvr));
+    zError(QStringLiteral("dbconnection append %1 %2").arg(fn, csvr));
     //zTextFileHelper::append(fn, csvr);
     zTextFileHelper::save(csvr, fn, true);
 
