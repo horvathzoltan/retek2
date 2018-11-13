@@ -43,7 +43,7 @@ private:
     static QString zStackTrace();
 
 public:
-    enum ErrLevels:int {OK, ERROR, WARNING, TRACE, DEBUG, INFO};
+    enum ErrLevels:int {ERROR, WARNING, TRACE, DEBUG, INFO};
     //zLog();
     //~zLog();
 

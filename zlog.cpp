@@ -7,20 +7,12 @@
 #include <cxxabi.h>
 
 
-//zLog::zLog() = default;
-
-//zLog::~zLog() = default;
-
 QTextBrowser* zLog::widget2;
 QTabWidget* zLog::tabwidget2;
 int zLog::tabindex2;
 bool zLog::isBreakOnError;
 
 void zLog::init(QTextBrowser* b, QTabWidget* tw, int tabindex, bool isBreak){
-//    widget = b;
-//    tabwidget = tw;
-//    tabindex = tabindex;
-
     widget2=b;
     tabwidget2 = tw;
     tabindex2 = tabindex;
@@ -108,43 +100,15 @@ QString zLog::LevelToString(int i)
             break;
         case INFO:
             return QStringLiteral("Info");
-            break;
-        case OK:
-            return QStringLiteral("Info");
-            break;
+            break;       
         default:
-            return QStringLiteral("");
+            return zStringHelper::Empty;
             break;
     }
 
 }
 
 void zLog::dialog(const QString& str, int errlevel) {
-//    QString h;
-    //switch(errlevel){
-
-//    case ERROR:
-//        h = QStringLiteral("Error");
-//        break;
-//    case WARNING:
-//        h = QStringLiteral("Warning");
-//        break;
-//    case TRACE:
-//        h = QStringLiteral("Trace");
-//        break;
-//    case DEBUG:
-//        h = QStringLiteral("Debug");
-//        break;
-//    case INFO:
-//        h = QStringLiteral("Info");
-//        break;
-//    case OK:
-//        h = QStringLiteral("Info");
-//        break;
-//    default:
-//        h = QStringLiteral("");
-//        break;
-//    }
 
     auto h = LevelToString(errlevel);
     QMessageBox messageBox;
@@ -209,9 +173,9 @@ void zLog::dialogError(const QString& str) {
     dialog(str, ERROR);
 }
 
-void zLog::dialogOk(const QString& str) {
-    dialog(str, OK);
-}
+//void zLog::dialogOk(const QString& str) {
+//    dialog(str, OK);
+//}
 
 //void zLog::trace(const char *m){
 //    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
@@ -300,7 +264,7 @@ QString zLog::logToGUI(int errlevel, const QString &msg, const QString &loci, co
         msg3= level+": "+msg+"\n"+loci;
         break;
     case TRACE:
-        widget2->setTextColor(QColor(Qt::darkGray));
+        widget2->setTextColor(QColor("steelblue"));
         widget2->append(level+": "+loci);
         msg3= level+": "+loci;
         break;
@@ -313,13 +277,25 @@ QString zLog::logToGUI(int errlevel, const QString &msg, const QString &loci, co
         msg3= level+": "+msg+"\n"+loci;
         break;
     case INFO:
-        widget2->setTextColor(QColor("steelblue"));
+        if(msg.endsWith(QStringLiteral("ok")))
+        {
+            widget2->setTextColor(QColor(Qt::darkGreen));
+        }
+        else if (msg.endsWith(QStringLiteral("error")))
+        {
+            widget2->setTextColor(QColor(Qt::darkRed));
+        }
+        else
+        {
+            widget2->setTextColor(QColor(Qt::darkGray));
+        }
+
         widget2->append(msg);
         msg3= level+": "+msg;
         break;
-    case OK:
-        widget2->setTextColor(QColor(Qt::darkGreen));
-        break;
+//    case OK:
+//        widget2->setTextColor(QColor(Qt::darkGreen));
+//        break;
     default:
         widget2->setTextColor(QColor(Qt::black));
         break;
