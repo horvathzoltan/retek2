@@ -7,7 +7,12 @@
 #include <zstringhelper.h>
 #include "zlocinfo.h"
 
+#if defined(Q_OS_LINUX)
 #define getLocInfo zLocInfo(__PRETTY_FUNCTION__,__FILE__,__LINE__)
+#elif defined(Q_OS_WIN)
+#define getLocInfo zLocInfo(__FUNCSIG__ ,__FILE__,__LINE__)
+#endif
+
 
 #define zError(msg) zLog::error2((msg), getLocInfo)
 

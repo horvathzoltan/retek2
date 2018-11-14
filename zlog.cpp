@@ -3,9 +3,10 @@
 #include <QMessageBox>
 #include <QTextCodec>
 #include <csignal>
+#ifdef Q_OS_LINUX
 #include <execinfo.h>
 #include <cxxabi.h>
-
+#endif
 
 QTextBrowser* zLog::widget2;
 QTabWidget* zLog::tabwidget2;
@@ -311,6 +312,7 @@ QString zLog::logToGUI(int errlevel, const QString &msg, const QString &loci, co
 //    return e;
 //}
 
+#ifdef Q_OS_LINUX
 QString zLog::zStackTrace()
 {
     QStringList e;
@@ -396,6 +398,25 @@ QString zLog::zStackTrace()
     auto a =  e.join('\n');
     return a;
 }
+
+#endif
+
+#ifdef Q_OS_WIN
+QString zLog::zStackTrace(){
+    QStringList e;
+
+    unsigned int max_frames = 64;
+
+    e << QStringLiteral("stack trace:");
+
+    // WIN implementációt adni
+    e << QStringLiteral("?");
+
+    auto a =  e.join('\n');
+
+    return a;
+}
+#endif
 //QString zLog::zStackTrace()
 //{
 //    QStringList e;
@@ -427,7 +448,9 @@ void zLog::error2(const QString& msg, const zLocInfo& locinfo){
     // msg2 = logToString(ERROR, msg, li, st);
 #ifdef QT_DEBUG
     qCritical().noquote() << msg2;
+#ifdef Q_OS_LINUX
     if(isBreakOnError) std::raise(SIGTRAP);
+#endif
 #endif
     }
 
@@ -464,7 +487,9 @@ void zLog::debug2(const zLocInfo& locinfo){
     auto msg2 = logToGUI(DEBUG, nullptr, li, st);
 #ifdef QT_DEBUG
     qDebug().noquote() << msg2;
+#ifdef Q_OS_LINUX
     if(isBreakOnError) std::raise(SIGTRAP);
+#endif
 #endif
     }
 
