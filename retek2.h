@@ -112,6 +112,8 @@ private:
     void sourcesFeltolt(const srcConnection& c);
     QString getCaptionByRowIx(int idix);
     void setCaptionByRowIx(int idix, const QString& caption);
+
+    static void logToGUI(int errlevel, const QString &msg, const QString &loci, const QString &st, void *ptr);
 };
 
 //#endif // RETEK2_H

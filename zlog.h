@@ -25,24 +25,27 @@
 // 2. szerez loc infot
 // 3. szerez debug infot (stack)
 
+typedef void (*zLogGUIfn)(int errlevel, const QString &msg, const QString &loci, const QString &st, void *ui);
 
 //QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC
 class zLog
 {
 private:
+    static zLogGUIfn GUILogger;
 //    QTextBrowser *widget;
 //    QTabWidget *tabwidget;
 //    int tabindex;
     static void dialog(const QString&, int);
 //    void log(const QString&, int);
 
-    static QTextBrowser *widget2;
-    static QTabWidget *tabwidget2;
-    static int tabindex2;
+//    static QTextBrowser *widget2;
+//    static QTabWidget *tabwidget2;
+//    static int tabindex2;
     static bool isBreakOnError;
+    static void *ui;
 
-    static QString logToGUI(int, const QString&, const QString&, const QString&);
-    static QString LevelToString(int loglevel);
+    static QString logToString(int, const QString&, const QString&, const QString&);
+
 
     //static QString zGetLocInfo(const char *func, const char *file, int line);
     static QString zStackTrace();
@@ -51,8 +54,10 @@ public:
     enum ErrLevels:int {ERROR, WARNING, TRACE, DEBUG, INFO};
     //zLog();
     //~zLog();
+    static QString LevelToString(int loglevel);
 
-    void init(QTextBrowser*, QTabWidget*, int,bool);
+    //void init(QTextBrowser*, QTabWidget*, int,bool);
+    static void init(zLogGUIfn ez, bool isBreak, void* ui);
 
 
 //    [[deprecated]]

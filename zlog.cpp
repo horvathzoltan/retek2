@@ -8,17 +8,27 @@
 #include <cxxabi.h>
 #endif
 
-QTextBrowser* zLog::widget2;
-QTabWidget* zLog::tabwidget2;
-int zLog::tabindex2;
-bool zLog::isBreakOnError;
+//QTextBrowser* zLog::widget2;
+//QTabWidget* zLog::tabwidget2;
+//int zLog::tabindex2;
 
-void zLog::init(QTextBrowser* b, QTabWidget* tw, int tabindex, bool isBreak){
-    widget2=b;
-    tabwidget2 = tw;
-    tabindex2 = tabindex;
+bool zLog::isBreakOnError = false;
+zLogGUIfn zLog::GUILogger = nullptr;
+void* zLog::ui = nullptr;
+
+void zLog::init(zLogGUIfn ez, bool isBreak, void* uiptr)
+{
+    GUILogger = ez;
     isBreakOnError = isBreak;
+    ui=uiptr;
 }
+
+//void zLog::init(QTextBrowser* b, QTabWidget* tw, int tabindex, bool isBreak){
+//    widget2=b;
+//    tabwidget2 = tw;
+//    tabindex2 = tabindex;
+//    isBreakOnError = isBreak;
+//}
 
 //void zLog::log(const QString& m){
 //    #ifdef QT_DEBUG
@@ -108,6 +118,8 @@ QString zLog::LevelToString(int i)
     }
 
 }
+
+
 
 void zLog::dialog(const QString& str, int errlevel) {
 
@@ -242,69 +254,101 @@ void zLog::dialogError(const QString& str) {
 /*
 log to gui -> QString
 */
-QString zLog::logToGUI(int errlevel, const QString &msg, const QString &loci, const QString &st)
+//QString zLog::logToGUI(int errlevel, const QString &msg, const QString &loci, const QString &st)
+//{
+//    auto level = LevelToString(errlevel);
+//    auto c = widget2->textColor();
+//    QString msg3;
+
+//    switch(errlevel){
+//    case ERROR:
+//        widget2->setTextColor(QColor(Qt::darkRed));
+//        tabwidget2->setCurrentIndex(tabindex2);
+//        widget2->append(level+": "+msg);
+//        widget2->append(loci);
+//        widget2->append(st);
+//        msg3= level+": "+msg+"\n"+loci;
+//        break;
+//    case WARNING:
+//        widget2->setTextColor(QColor(Qt::darkYellow));
+//        tabwidget2->setCurrentIndex(tabindex2);
+//        widget2->append(level+": "+msg);
+//        widget2->append(loci);
+//        msg3= level+": "+msg+"\n"+loci;
+//        break;
+//    case TRACE:
+//        widget2->setTextColor(QColor("steelblue"));
+//        widget2->append(level+": "+loci);
+//        msg3= level+": "+loci;
+//        break;
+//    case DEBUG:
+//        widget2->setTextColor(QColor(Qt::darkRed));
+//        tabwidget2->setCurrentIndex(tabindex2);
+//        widget2->append(level);
+//        widget2->append(loci);
+//        widget2->append(st);
+//        msg3= level+": "+msg+"\n"+loci;
+//        break;
+//    case INFO:
+//        if(msg.endsWith(QStringLiteral("ok")))
+//        {
+//            widget2->setTextColor(QColor(Qt::darkGreen));
+//        }
+//        else if (msg.endsWith(QStringLiteral("error")))
+//        {
+//            widget2->setTextColor(QColor(Qt::darkRed));
+//        }
+//        else
+//        {
+//            widget2->setTextColor(QColor(Qt::darkGray));
+//        }
+
+//        widget2->append(msg);
+//        msg3= level+": "+msg;
+//        break;
+////    case OK:
+////        widget2->setTextColor(QColor(Qt::darkGreen));
+////        break;
+//    default:
+//        widget2->setTextColor(QColor(Qt::black));
+//        break;
+//    }
+
+//    widget2->setTextColor(c);
+//    return msg3;
+//}
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+QString zLog::logToString(int errlevel, const QString &msg, const QString &loci, const QString &st)
 {
     auto level = LevelToString(errlevel);
-    auto c = widget2->textColor();
     QString msg3;
 
-    switch(errlevel){
+    switch(errlevel)
+    {
     case ERROR:
-        widget2->setTextColor(QColor(Qt::darkRed));
-        tabwidget2->setCurrentIndex(tabindex2);
-        widget2->append(level+": "+msg);
-        widget2->append(loci);
-        widget2->append(st);
         msg3= level+": "+msg+"\n"+loci;
         break;
     case WARNING:
-        widget2->setTextColor(QColor(Qt::darkYellow));
-        tabwidget2->setCurrentIndex(tabindex2);
-        widget2->append(level+": "+msg);
-        widget2->append(loci);
         msg3= level+": "+msg+"\n"+loci;
         break;
     case TRACE:
-        widget2->setTextColor(QColor("steelblue"));
-        widget2->append(level+": "+loci);
         msg3= level+": "+loci;
         break;
     case DEBUG:
-        widget2->setTextColor(QColor(Qt::darkRed));
-        tabwidget2->setCurrentIndex(tabindex2);
-        widget2->append(level);
-        widget2->append(loci);
-        widget2->append(st);
         msg3= level+": "+msg+"\n"+loci;
         break;
     case INFO:
-        if(msg.endsWith(QStringLiteral("ok")))
-        {
-            widget2->setTextColor(QColor(Qt::darkGreen));
-        }
-        else if (msg.endsWith(QStringLiteral("error")))
-        {
-            widget2->setTextColor(QColor(Qt::darkRed));
-        }
-        else
-        {
-            widget2->setTextColor(QColor(Qt::darkGray));
-        }
-
-        widget2->append(msg);
         msg3= level+": "+msg;
         break;
-//    case OK:
-//        widget2->setTextColor(QColor(Qt::darkGreen));
-//        break;
     default:
-        widget2->setTextColor(QColor(Qt::black));
         break;
     }
 
-    widget2->setTextColor(c);
     return msg3;
 }
+#pragma GCC diagnostic pop
+
 
 //QString zLog::zGetLocInfo(const char *func, const char *file, int line)
 //{
@@ -442,7 +486,11 @@ void zLog::error2(const QString& msg, const zLocInfo& locinfo){
     auto li = locinfo.toString();
     auto st = zLog::zStackTrace();
     //logtogui -> to widget, logtostring
-    auto msg2 = logToGUI(ERROR, msg, li, st);
+    if(GUILogger!=nullptr)
+    {
+        GUILogger(ERROR, msg, li, st, ui);
+    }
+    auto msg2 = logToString(ERROR, msg, li, st);
     // logtosql, csv...
     // logto messagelogger <- logtostring
     // msg2 = logToString(ERROR, msg, li, st);
@@ -456,7 +504,11 @@ void zLog::error2(const QString& msg, const zLocInfo& locinfo){
 
 void zLog::warning2(const QString& msg, const zLocInfo& locinfo){
     auto li = locinfo.toString();
-    auto msg2 = logToGUI(WARNING, msg, li, nullptr);
+    if(GUILogger!=nullptr)
+    {
+        GUILogger(WARNING, msg, li, nullptr, ui);
+    }
+    auto msg2 = logToString(WARNING, msg, li, nullptr);
 #ifdef QT_DEBUG
     qWarning().noquote() << msg2;
 #endif
@@ -464,7 +516,11 @@ void zLog::warning2(const QString& msg, const zLocInfo& locinfo){
 
 void zLog::info2(const QString& msg)
 {
-    auto msg2 = logToGUI(INFO, msg, nullptr, nullptr);
+    if(GUILogger!=nullptr)
+    {
+        GUILogger(INFO, msg, nullptr, nullptr, ui);
+    }
+    auto msg2 = logToString(INFO, msg, nullptr, nullptr);
 #ifdef QT_DEBUG
     qInfo().noquote() << msg2;
 #endif
@@ -474,7 +530,11 @@ void zLog::info2(const QStringList& msgl)
 {
     zforeach(msg,msgl)
     {
-        auto msg2 = logToGUI(INFO, *msg, nullptr, nullptr);
+        if(GUILogger!=nullptr)
+        {
+            GUILogger(INFO, *msg, nullptr, nullptr, ui);
+        }
+        auto msg2 = logToString(INFO, *msg, nullptr, nullptr);
 #ifdef QT_DEBUG
         qInfo();//.noquote() << msg2;
 #endif
@@ -484,7 +544,11 @@ void zLog::info2(const QStringList& msgl)
 void zLog::debug2(const zLocInfo& locinfo){
     auto li = locinfo.toString();
     auto st = zLog::zStackTrace();
-    auto msg2 = logToGUI(DEBUG, nullptr, li, st);
+    if(GUILogger!=nullptr)
+    {
+        GUILogger(DEBUG, nullptr, li, st, ui);
+    }
+    auto msg2 = logToString(DEBUG, nullptr, li, st);
 #ifdef QT_DEBUG
     qDebug().noquote() << msg2;
 #ifdef Q_OS_LINUX
@@ -495,8 +559,15 @@ void zLog::debug2(const zLocInfo& locinfo){
 
 void zLog::trace2(const zLocInfo& locinfo){
     auto li = locinfo.toString();
-    auto msg2 = logToGUI(TRACE, nullptr, li, nullptr);
-#ifdef QT_DEBUG
-    qDebug().noquote() << msg2;
+    if(GUILogger!=nullptr)
+    {
+        GUILogger(TRACE, nullptr, li, nullptr, ui);
+    }
+    auto msg2 = logToString(TRACE, nullptr, li, nullptr);
+#ifdef QT_DEBUG  
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "cppcoreguidelines-pro-bounds-array-to-pointer-decay"
+   qDebug().noquote() << msg2;
+   #pragma GCC diagnostic pop
 #endif
     }

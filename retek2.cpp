@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "retek2.h"
+
 #include "zfilenamehelper.h"
 #include "zstringhelper.h"
 #include "zstringmaphelper.h"
@@ -57,7 +58,8 @@ void retek2::init()
 {	
     ui.setupUi(this);
     ui.listWidget_ztables->setIconSize(QSize(48,24));
-    zlog.init(ui.textBrowser, ui.tabWidget, 4, false);// 4.tab-on van a log
+    //zlog.init(ui.textBrowser, ui.tabWidget, 4, false);// 4.tab-on van a log
+    zLog::init(retek2::logToGUI, false, &ui);
 
     //zError("a");
     //zWarning("a");
@@ -1393,4 +1395,65 @@ void retek2::on_pushButton_srcimport_clicked()
         ztables.append(*t);
         add_zTablaToListWidget(*t);
      }
+}
+
+///log
+/// zlog.init(ui.textBrowser, ui.tabWidget, 4, false);// 4.tab-on van a log
+void retek2::logToGUI(int errlevel, const QString &msg, const QString &loci, const QString &st, void* uiptr)
+{
+
+    auto ui2 = reinterpret_cast<Ui_retek2Class*>(uiptr); // NOLINT
+    auto widget2 = ui2->textBrowser;
+    auto tabindex2 = 4;
+    auto tabwidget2= ui2->tabWidget;
+    auto level = zLog::LevelToString(errlevel);
+    auto c = widget2->textColor();
+
+    switch(errlevel){
+    case zLog::ERROR:
+        widget2->setTextColor(QColor(Qt::darkRed));
+        tabwidget2->setCurrentIndex(tabindex2);
+        widget2->append(level+": "+msg);
+        widget2->append(loci);
+        widget2->append(st);
+        break;
+    case zLog::WARNING:
+        widget2->setTextColor(QColor(Qt::darkYellow));
+        tabwidget2->setCurrentIndex(tabindex2);
+        widget2->append(level+": "+msg);
+        widget2->append(loci);
+        break;
+    case zLog::TRACE:
+        widget2->setTextColor(QColor("steelblue"));
+        widget2->append(level+": "+loci);
+        break;
+    case zLog::DEBUG:
+        widget2->setTextColor(QColor(Qt::darkRed));
+        tabwidget2->setCurrentIndex(tabindex2);
+        widget2->append(level);
+        widget2->append(loci);
+        widget2->append(st);
+        break;
+    case zLog::INFO:
+        if(msg.endsWith(QStringLiteral("ok")))
+        {
+            widget2->setTextColor(QColor(Qt::darkGreen));
+        }
+        else if (msg.endsWith(QStringLiteral("error")))
+        {
+            widget2->setTextColor(QColor(Qt::darkRed));
+        }
+        else
+        {
+            widget2->setTextColor(QColor(Qt::darkGray));
+        }
+
+        widget2->append(msg);
+        break;
+    default:
+        widget2->setTextColor(QColor(Qt::black));
+        break;
+    }
+
+    widget2->setTextColor(c);
 }
