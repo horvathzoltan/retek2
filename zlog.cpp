@@ -495,7 +495,8 @@ void zLog::error2(const QString& msg, const zLocInfo& locinfo){
     // logto messagelogger <- logtostring
     // msg2 = logToString(ERROR, msg, li, st);
 #ifdef QT_DEBUG
-    qCritical().noquote() << msg2;
+    //qCritical().noquote() << msg2;
+    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(__PRETTY_FUNCTION__)).critical().noquote()<<msg2;
 #ifdef Q_OS_LINUX
     if(isBreakOnError) std::raise(SIGTRAP);
 #endif
@@ -510,7 +511,8 @@ void zLog::warning2(const QString& msg, const zLocInfo& locinfo){
     }
     auto msg2 = logToString(WARNING, msg, li, nullptr);
 #ifdef QT_DEBUG
-    qWarning().noquote() << msg2;
+    //qWarning().noquote() << msg2;
+    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(__PRETTY_FUNCTION__)).warning().noquote()<<msg2;
 #endif
     }
 
@@ -522,7 +524,8 @@ void zLog::info2(const QString& msg)
     }
     auto msg2 = logToString(INFO, msg, nullptr, nullptr);
 #ifdef QT_DEBUG
-    qInfo().noquote() << msg2;
+    //qInfo().noquote() << msg2;
+    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(__PRETTY_FUNCTION__)).info().noquote()<<msg2;
 #endif
 }
 
@@ -536,7 +539,8 @@ void zLog::info2(const QStringList& msgl)
         }
         auto msg2 = logToString(INFO, *msg, nullptr, nullptr);
 #ifdef QT_DEBUG
-        qInfo();//.noquote() << msg2;
+        //qInfo();//.noquote() << msg2;
+        QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(__PRETTY_FUNCTION__)).info().noquote()<<msg2;
 #endif
     }
 }
@@ -550,7 +554,8 @@ void zLog::debug2(const zLocInfo& locinfo){
     }
     auto msg2 = logToString(DEBUG, nullptr, li, st);
 #ifdef QT_DEBUG
-    qDebug().noquote() << msg2;
+    //qDebug().noquote() << msg2;
+    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(__PRETTY_FUNCTION__)).debug().noquote()<<msg2;
 #ifdef Q_OS_LINUX
     if(isBreakOnError) std::raise(SIGTRAP);
 #endif
@@ -566,8 +571,9 @@ void zLog::trace2(const zLocInfo& locinfo){
     auto msg2 = logToString(TRACE, nullptr, li, nullptr);
 #ifdef QT_DEBUG  
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "cppcoreguidelines-pro-bounds-array-to-pointer-decay"
-   qDebug().noquote() << msg2;
+#pragma GCC diagnostic ignored "cppcoreguidelines-pro-bounds-array-to-pointer-decay"   
+   QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(__PRETTY_FUNCTION__)).debug().noquote()<<msg2;
+   //qDebug().noquote() << msg2;
    #pragma GCC diagnostic pop
 #endif
     }
