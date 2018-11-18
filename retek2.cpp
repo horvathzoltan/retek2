@@ -59,20 +59,15 @@ void retek2::init()
     ui.setupUi(this);
     ui.listWidget_ztables->setIconSize(QSize(48,24));
     //zlog.init(ui.textBrowser, ui.tabWidget, 4, false);// 4.tab-on van a log
-    zLog::init(retek2::logToGUI, false, &ui);
+    zLog::init(retek2::logToGUI, false, &ui, false);
 
-    //zError("a");
-    //zWarning("a");
-    //zInfo("a");
-    //zlog.debug();
-    //zError2("a",__func__,__FILE__,__LINE__);
-
+    /*
     zError("a");
     zWarning("b");
     zInfo("c");
     zDebug();
     zTrace();
-
+*/
     //asm("int $3");
 
     //zTrace("a");
@@ -188,7 +183,7 @@ void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlma
 }
 
 
-QStringList retek2::getIconsByFlags(QString name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap)
+QStringList retek2::getIconsByFlags(const QString& name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap)
 {
     QStringList e;
 
@@ -1438,6 +1433,10 @@ void retek2::logToGUI(int errlevel, const QString &msg, const QString &loci, con
         if(msg.endsWith(QStringLiteral("ok")))
         {
             widget2->setTextColor(QColor(Qt::darkGreen));
+        }
+        else if (msg.endsWith(QStringLiteral("warning")))
+        {
+            widget2->setTextColor(QColor(Qt::darkYellow));
         }
         else if (msg.endsWith(QStringLiteral("error")))
         {

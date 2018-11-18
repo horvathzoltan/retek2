@@ -419,7 +419,9 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
     {
         if(!noWarnings)
         {
-            zWarning(QStringLiteral("Nem található belső adatábrázolási típus: %1").arg(ezt1));
+            //TODO createTableByHtml -> a típus neve tartalmazhat adathosszt is, bár nem kellene, mert ide már szétszedve kellene kerülnie
+            zInfo(QStringLiteral("Nem található belső adatábrázolási típus: %1 warning").arg(ezt1));
+            zDebug();
         }
     }
     else
@@ -428,7 +430,12 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
         {
             if(!noWarnings)
             {
-                zWarning(QStringLiteral("Több típus is javasolt: %1 -> %2").arg(ezt1, fl.join(',')));
+                zInfo(QStringLiteral("Több típus is javasolt: %1 -> %2 warning").arg(ezt1, fl.join(',')));
+                /*if(fl.contains(ezt1))
+                {
+                     //int ix = fl.indexOf(ezt1);
+                     fl.insert(0, ezt1);
+                }*/
             }
         }
 
@@ -1791,6 +1798,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                         QString row_dtype;
                         int dlen = 0;
                         bool isNullable = false;
+                        //TODO itt hasonló módon kellene eljárni, mint a class vagy class2 esetében
                         zTable::getClassType(globalSqlMaps, row_type, &row_dtype, &dlen, &isNullable, false, true);
                         //auto gtype = zTable::getClassType(globalClassMaps, propType, &dtype, &dlen, &isNullable, isRequired);
 

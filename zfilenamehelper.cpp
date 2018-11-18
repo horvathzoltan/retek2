@@ -187,7 +187,7 @@ QStringList zFileNameHelper::FindFileNameInDir(const QString& dirName, const QSt
     {
         auto n =  it.next();
         ql << n;
-        zInfo(n);
+        //zInfo(n);
     }
     return ql;
 

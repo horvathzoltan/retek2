@@ -34,7 +34,7 @@ public:
     QMap<QString, bool> validateCurrentProject_Source();
     QMap<QString, bool> validateCurrentProject_Document();
     void setListWidgetIconsByCurrentProject(const QMap<QString, bool>&sqlmap, const QMap<QString, bool>&srcmap, const QMap<QString, bool> &docmap);
-    QStringList getIconsByFlags(QString name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap);
+    QStringList getIconsByFlags(const QString &name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap);
 private slots:
 	void GenerateAll();
 

@@ -17,7 +17,7 @@
 #define zError(msg) zLog::error2((msg), getLocInfo)
 
 #define zWarning(msg) zLog::warning2((msg), getLocInfo);
-#define zInfo(msg) zLog::info2((msg));
+#define zInfo(msg) zLog::info2((msg), getLocInfo);
 #define zDebug() zLog::debug2(getLocInfo);
 #define zTrace() zLog::trace2(getLocInfo);
 
@@ -42,6 +42,8 @@ private:
 //    static QTabWidget *tabwidget2;
 //    static int tabindex2;
     static bool isBreakOnError;
+    static bool isVerbose;
+
     static void *ui;
 
     static QString logToString(int, const QString&, const QString&, const QString&);
@@ -57,7 +59,7 @@ public:
     static QString LevelToString(int loglevel);
 
     //void init(QTextBrowser*, QTabWidget*, int,bool);
-    static void init(zLogGUIfn ez, bool isBreak, void* ui);
+    static void init(zLogGUIfn ez, bool isBreak, void* ui, bool isVerbose);
 
 
 //    [[deprecated]]
@@ -102,8 +104,8 @@ public:
 
     static void error2(const QString& msg, const zLocInfo& l);
     static void warning2(const QString& msg, const zLocInfo& l);
-    static void info2(const QString& msg);
-    static void info2(const QStringList& msg);
+    static void info2(const QString& msg, const zLocInfo& l);
+    static void info2(const QStringList& msg, const zLocInfo& l);
     static void debug2(const zLocInfo& l);
     static void trace2(const zLocInfo& l);
 };
