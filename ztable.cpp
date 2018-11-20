@@ -279,92 +279,15 @@ OperationTypeId,int
 ...
 */
 
-/*
-A sorból kiszerzi a típust - mérettel/hosszal együtt
-ezt1: típus név/leíró
-
-ha ?-re végződik, vagy szerepel benne, hogy nullable, akkor nullable lesz - függetlenül attól, hogy required-e
-ezt külön kell vizsgálni
-
-ha isRequired, akkor nem lehet nullable
-egyébként akkor nullable, ha az elő van írva
-
-createTableByText
-createTableByText_2
-createTableByText_3
-
-globalSqlMaps
-globalClassMaps
-*/
-//bool zTable::getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired)
-//{
-//    auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-//    auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-
-//    auto re_isnullable = QRegularExpression(QStringLiteral(R"(Nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-//    //
-//    auto m_isNullable = re_isnullable.match(ezt1);
-//    QString typeName;
-
-//    if(isRequired)
-//    {
-//        *nullable = false;
-//        typeName = ezt1;
-//    }
-//    else{
-//        if(m_isNullable.hasMatch())
-//        {
-//            *nullable = true;
-//            typeName = getFirstNotNull(m_isNullable, 2);
-//        }
-//        else
-//        {
-//            *nullable = false;
-//            typeName = ezt1;
-//        }
-//    }
-
-//    bool isDtype = false;
-
-//    if(zStringMapHelper::contains(&typeMap, typeName))
-//    {
-//        QString k = zStringMapHelper::getKey(&typeMap, typeName);
-//        *dtype =  typeMap.value(k);;
-//        isDtype = true;
-//    }
-//    else if(zStringMapHelper::contains(&typeMapR, typeName))
-//    {
-//        QString k = zStringMapHelper::getKey(&typeMapR, typeName);
-//        *dtype =  typeMapR.value(k);;
-//        isDtype = true;
-//    }
-//    else
-//    {
-//        auto i2 = re_dlen1.match(typeName);
-//        if(i2.hasMatch())
-//        {
-//            bool isOK;
-//            int n = i2.captured(1).toInt(&isOK);
-//            if(isOK) *dlen = n;
-//        }
-//        else
-//        {
-//             i2 = re_dlen2.match(typeName);
-//             if(i2.hasMatch())
-//             {
-//                 bool isOK;
-//                 int n = i2.captured(1).toInt(&isOK);
-//                 if(isOK) *dlen = n;
-//            }
-//        }
-//    }
-
-//    if(typeName.isEmpty()){
-//        zError(QStringLiteral("getType: Unknown type: %1").arg(ezt1));
-//    }
-
-//    return isDtype;
-//}
+// TODO kellene c syntax, sql syntax, txt syntax
+// c: int? illetve nullable<int>, int[]
+// https://stackoverflow.com/questions/11914473/c-sharp-regex-select-class-properties-names-methods-name-and-fields-from-clas
+// methods: (?:public\s|private\s|protected\s|internal\s)?[\s\w]*\s+(?<methodName>\w+)\s*\(\s*(?:(ref\s|/in\s|out\s)?\s*(?<parameterType>\w+)\s+(?<parameter>\w+)\s*,?\s*)+\)
+// fields: (?:public\s|private\s|protected\s)\s*(?:readonly\s+)?(?<type>\w+)\s+(?<name>\w+)
+// sql int(55)
+// text
+// Name,String(44),30,nullable
+// Name,String(44),30,not nullable
 
 bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings)
 {
@@ -372,7 +295,7 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
 //    zTrace(getClassType)
    // auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
    // auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
-    auto re_dlen3 = QRegularExpression(QStringLiteral(R"((\w)\(?(\d+)\)?$)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+    auto re_dlen3 = QRegularExpression(QStringLiteral(R"((\w)\s*\(?(\d+)\)?)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
     auto re_isnullable = QRegularExpression(QStringLiteral(R"(nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
@@ -421,7 +344,7 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
         {
             //TODO createTableByHtml -> a típus neve tartalmazhat adathosszt is, bár nem kellene, mert ide már szétszedve kellene kerülnie
             zInfo(QStringLiteral("Nem található belső adatábrázolási típus: %1 warning").arg(ezt1));
-            zDebug();
+            //zDebug();
         }
     }
     else
@@ -750,8 +673,6 @@ QList<zTable> zTable::createTableByText(QString txt)
         //}
     }
 
-
-
     auto i = re.globalMatch(txt);
     QList<zTable> tl;
     QList<zTablerow> rl;
@@ -781,30 +702,36 @@ QList<zTable> zTable::createTableByText(QString txt)
 
                if(fns.length()>1)
                {
-                   zforeach_from(fn2, fns, 1){
+                   zforeach_from(fn2, fns, 1)
+                   {
                        auto fn3s= fn2->split(' ', QString::SkipEmptyParts);
                        bool isDtype = false;
-                       zforeach(fn3, fn3s){
-
+                       zforeach(fn3, fn3s)
+                       {
+                           // ez megfelel az sql típusúnak
+                           //tipusnev(128)
                            auto i3 = re_dlen3.match(*fn3);
-                           if(i3.hasMatch()){
+                           if(i3.hasMatch())
+                           {
                                ezt1 = i3.captured(1);
                                bool isOK;
                                int n = i3.captured(2).toInt(&isOK);
                                if(isOK) dlen = n;
-                               }
-                           else{
+                           }
+                           else
+                           {
                                ezt1 = *fn3;
                            }                           
                            //típus vizsgálat
                            // csak egy típus felismerés - próbálkozásos alapon, így a warningokat elnyomjuk
                            isDtype = zTable::getClassType(globalClassMaps, ezt1, &dtype, &dlen, &isNullable, false, true);
-                           }
+                       }
                        // a típus tulajdonságainak meghatározása, pl.
+                       // tovább folytatjuk a szavak egyenkénti vizsgálatát, és ha nem típust írnak le, akkor a megtaláltat módosítják:
                        // ha a sorban a szavak közt van "required" akkor isrequired true
                        // ha van not required, akkor viszont false
                        // ha van olyan ami számmá alakítható, az a hossza
-                      if(!isDtype)
+                       if(!isDtype)
                        {
                             auto i2 = re_caption.match(*fn2);
                             if(i2.hasMatch())
@@ -819,31 +746,35 @@ QList<zTable> zTable::createTableByText(QString txt)
                                     bool isOK;
                                     int n = i2.captured(1).toInt(&isOK);
                                     if(isOK) dlen = n;
-                                    }
+                                }
                                 else
                                 {
                                     auto i2 = re_nullable.match(*fn2);
-                                    if(i2.hasMatch()){
+                                    if(i2.hasMatch())
+                                    {
                                         //auto n_str = i2.captured(1);
                                         isNullable = !i2.captured(1).toLower().contains(QStringLiteral("not"));
 //                                        if(n_str.toLower().contains(QStringLiteral("not")))
 //                                            isNullable = false;
 //                                        else
 //                                            isNullable = true;
-                                        }
-                                    else{
-                                        if(fn2->toLower()==QStringLiteral("key")){
+                                    }
+                                    else
+                                    {
+                                        if(fn2->toLower()==QStringLiteral("key"))
+                                        {
                                             pkn = fname;
-                                            }
-                                        else if(fn2->toLower()==QStringLiteral("required")){
+                                        }
+                                        else if(fn2->toLower()==QStringLiteral("required"))
+                                        {
                                             isNullable = false;
-                                            }
                                         }
                                     }
-                                }                            
-                            } /* típusmeghatározás vége*/
-                        }
+                                }
+                            }
+                        } /* típusmeghatározás vége*/
                     }
+               }
                if(dtype.isEmpty())
                {
                    // az egész sor releváns - nem tudjuk melyik szava milyen információt hordoz - illetve melyiknem mit kellene
