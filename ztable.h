@@ -119,6 +119,7 @@ public:
     bool hasPkname() const;
 private:
     
+    void validateEval(bool isOK, const QStringList& e, const QString&);
 };
 
 #endif // ZTABLE_H

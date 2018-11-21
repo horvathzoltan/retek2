@@ -209,8 +209,7 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
             {
                auto v2 = r->Compare(*rv, e);
                if(!v2)
-               {
-                   //zWarning(e);
+               {                   
                    v = false;
                }
             }            
@@ -1434,25 +1433,35 @@ bool zTable::hasPkname() const
 /*
 Validálja a táblát annak sql kötése alapján
 */
+void zTable::validateEval(bool isOK, const QStringList& e, const QString &ez)
+{
+    if(!isOK)
+    {
+        zInfo(ez+" "+this->name+QStringLiteral(" error"));
+        zInfo(e);
+    }
+    else
+    {
+        zInfo(ez+" "+this->name+QStringLiteral(" ok"));
+    }
+}
+
 bool zTable::validateSQL(){
     zTrace();
     zSQL zsql;
     auto dbconn = beallitasok.findDbConnection(this->sql_conn);
 
-
-    if(zsql.init(*dbconn))
+    if(!zsql.init(*dbconn))
     {
-        zTable t_sql = zsql.getTable(this->sql_schema, this->sql_table);
-        QStringList e;
-        auto isOK = Compare(t_sql, e);
-        if(!isOK)
-        {
-            zInfo(e);
-        }
-        return isOK;
+        return false;
     }
 
-    return false;
+    zTable t_sql = zsql.getTable(this->sql_schema, this->sql_table);
+
+    QStringList e;
+    auto isOK = Compare(t_sql, e);
+    validateEval(isOK, e, QStringLiteral("sql"));
+    return isOK;
 }
 
 // TODO validálás a forrás file  alapján
@@ -1475,14 +1484,10 @@ bool zTable::validateSource(){
             t->name = this->name;
             if(t->class_name == this->class_name)
             {
-
-                    QStringList e;
-                     auto isOK = Compare(*t, e);
-                     if(!isOK)
-                     {
-                         zInfo(e);
-                     }
-                     return isOK;
+                QStringList e;
+                auto isOK = Compare(*t, e);
+                validateEval(isOK, e, QStringLiteral("src"));
+                return isOK;
             }
         }
     }
@@ -1541,14 +1546,10 @@ bool zTable::validateDocument(){
             //t->name = this->name;
             if(t->name == this->name)
             {
-
-                    QStringList e;
-                     auto isOK = Compare(*t, e);
-                     if(!isOK)
-                     {
-                         zInfo(e);
-                     }
-                     return isOK;
+                QStringList e;
+                auto isOK = Compare(*t, e);
+                validateEval(isOK, e, QStringLiteral("doc"));
+                return isOK;
             }
         }
 

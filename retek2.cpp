@@ -115,7 +115,8 @@ void retek2::init()
     auto projectdirs = zFileNameHelper::GetSubdirs(pp);
     beallitasok.fillProjectList(projectdirs);
 
-    loadCurrentProject(); // ez tölti a ztablakat
+
+    loadCurrentProject(); // ez tölti a ztablakat XML-ből
 
     fillListWidgetByCurrentProject();
 
@@ -228,6 +229,7 @@ QStringList retek2::getIconsByFlags(const QString& name, const QMap<QString, boo
     return e;
 }
 
+// TODO nem hozza fel a pk-t xml-ből - szöveges leíró->rowix
 void retek2::loadCurrentProject()
 {      
     if(beallitasok.currentProjectName.isEmpty())
@@ -454,8 +456,8 @@ void retek2::mezoListaFeltolt(const zTable& t){
 }
 
 void retek2::feltoltKulcsLista(zTable t) {
-    zTrace();
-    zInfo(t.name);
+    //zTrace();
+    zInfo("Constraints "+t.name);
 
     ui.listWidget_IdegenKulcs->clear();
     //QString pkname = t.pkname();
