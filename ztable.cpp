@@ -524,7 +524,7 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
 
     zXmlHelper::putXmlAttr(a, nameof(comment), &(t.comment));
     QString pkname;
-    zXmlHelper::putXmlAttr(a, "pkname", &(pkname));
+    zXmlHelper::putXmlAttr(a, QStringLiteral("pkname"), &(pkname));
     zXmlHelper::putXmlAttr(a, nameof(name_formatstring), &(t.name_formatstring));
     zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));    
 
