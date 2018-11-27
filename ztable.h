@@ -118,7 +118,7 @@ public:
     QString pkname() const;
     bool hasPkname() const;
 private:
-    
+    static const QString PKNAME;
     void validateEval(bool isOK, const QStringList& e, const QString&);
 };
 

@@ -55,13 +55,27 @@ namespace z_macro_factory {
     QString _nameof(const char* y, std::size_t)
     {
         QString x(y);
-        //QRegularExpression re("^&?([_a-zA-Z]\\w*(->|\\.|::))*([_a-zA-Z]\\w*)$");
-        QRegularExpression re(QStringLiteral(R"(^&?([_a-zA-Z]\w*)\s*(->|\.|::)?\s*([_a-zA-Z]\w*)?$)"));
-        QRegularExpressionMatch m = re.match(x);
+        if(x.endsWith(QStringLiteral("()")))
+        {
+            QRegularExpression re(QStringLiteral(R"([\w]+(?:::|->|.)([\w]+)\(\))"));
+            QRegularExpressionMatch m = re.match(x);
 
-        if (m.hasMatch()) {
-            return m.captured(m.lastCapturedIndex());
+            if (m.hasMatch())
+            {
+                return m.captured(m.lastCapturedIndex());
+            }
         }
+        else
+        {
+            QRegularExpression re(QStringLiteral(R"(^&?([_a-zA-Z]\w*)\s*(->|\.|::)?\s*([_a-zA-Z]\w*)?$)"));
+            QRegularExpressionMatch m = re.match(x);
+
+            if (m.hasMatch()) {
+                return m.captured(m.lastCapturedIndex());
+            }
+        }
+        //QRegularExpression re("^&?([_a-zA-Z]\\w*(->|\\.|::))*([_a-zA-Z]\\w*)$");
+
         throw zLogicException("A bad expression x in nameof(x). The expression is \"" + x + "\".");
     }
 

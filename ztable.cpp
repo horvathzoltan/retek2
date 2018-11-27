@@ -19,6 +19,8 @@
 #include <QRegularExpression>
 #include <QXmlStreamWriter>
 
+const QString zTable::PKNAME = QStringLiteral("pkname");
+
 zTable::zTable()= default;
 
 zTable::~zTable()= default;
@@ -439,8 +441,8 @@ void zTable::toXML(QXmlStreamWriter *s)
     s->writeAttribute(nameof(this->document_isValid), zStringHelper::boolToString(this->document_isValid));
 
     s->writeAttribute(nameof(this->comment), this->comment);
-    //TODO ha függvény?
-    s->writeAttribute("pkname", this->pkname());
+
+    s->writeAttribute(PKNAME, this->pkname());
     s->writeAttribute(nameof(this->name_formatstring), this->name_formatstring);
     s->writeAttribute(nameof(this->updateTime), this->updateTime.toString());
 
@@ -524,7 +526,7 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
 
     zXmlHelper::putXmlAttr(a, nameof(comment), &(t.comment));
     QString pkname;
-    zXmlHelper::putXmlAttr(a, QStringLiteral("pkname"), &(pkname));
+    zXmlHelper::putXmlAttr(a, PKNAME, &(pkname));
     zXmlHelper::putXmlAttr(a, nameof(name_formatstring), &(t.name_formatstring));
     zXmlHelper::putXmlAttr(a, nameof(updateTime), &(t.updateTime));    
 
@@ -1160,7 +1162,7 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
                     }
                 //}                   
                    //auto t = zTable(class_name, QStringLiteral("id"), rl,  TXT, tableName, zStringHelper::Empty);
-                   auto t = zTable(tableName, QStringLiteral("id"), rl);//,  TXT, tableName, zStringHelper::Empty);
+                   auto t = zTable(tableName, pkName, rl);//,  TXT, tableName, zStringHelper::Empty);
                    QString pluralClassName;
                    auto className = zTable::getClassName(class_name, pluralClassName);
                    t.initClass(className, pluralClassName);
@@ -1468,10 +1470,9 @@ bool zTable::validateSQL(){
 // be kell olvasni a forrást, ztablevé kell alakítani, majd compare
 // void retek2::on_pushButton_srcimport_clicked() alapján
 bool zTable::validateSource(){
-    zTrace();
+    //zTrace();
     if(!this->class_path.isEmpty())
     {
-
         QString fn = zFileNameHelper::getCurrentProjectFileNameAbsolut(this->class_path);
 
         QString f_txt = zTextFileHelper::load(fn);
@@ -1730,7 +1731,13 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                         QString row_dtype;
                         int dlen = 0;
                         bool isNullable = false;
+                        //TODO  fue Id esetében itt nem jön át az int, de a pk igen
                         //TODO itt hasonló módon kellene eljárni, mint a class vagy class2 esetében
+                        if(tablename.toLower()=="fue" && row_name.toLower()=="id")
+                        {
+                            zDebug();
+                        }
+                        //row_type=int - nem találja a dtype-ot
                         zTable::getClassType(globalSqlMaps, row_type, &row_dtype, &dlen, &isNullable, false, true);
                         //auto gtype = zTable::getClassType(globalClassMaps, propType, &dtype, &dlen, &isNullable, isRequired);
 

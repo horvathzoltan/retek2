@@ -229,7 +229,6 @@ QStringList retek2::getIconsByFlags(const QString& name, const QMap<QString, boo
     return e;
 }
 
-// TODO nem hozza fel a pk-t xml-ből - szöveges leíró->rowix
 void retek2::loadCurrentProject()
 {      
     if(beallitasok.currentProjectName.isEmpty())
