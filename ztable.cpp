@@ -300,7 +300,7 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
 
     auto re_isnullable = QRegularExpression(QStringLiteral(R"(nullable\s*<\s*(\w+)\s*>|([\w\S]+)\?)"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
-    QString ezt1 = ezt2.toLower();
+    QString ezt1 = ezt2.trimmed().toLower();
 
     bool isDtype = false;
 
@@ -343,7 +343,7 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
     {
         if(!noWarnings)
         {
-            //TODO createTableByHtml -> a típus neve tartalmazhat adathosszt is, bár nem kellene, mert ide már szétszedve kellene kerülnie
+            // createTableByHtml -> a típus neve tartalmazhat adathosszt is, bár nem kellene, mert ide már szétszedve kellene kerülnie
             zInfo(QStringLiteral("Nem található belső adatábrázolási típus: %1 warning").arg(ezt1));
             //zDebug();
         }
@@ -1350,26 +1350,41 @@ void zTable::saveTablaToXML() {
 bool zTable::Validate(const QList<zTable>& tables){
     bool v= true;
 
+    //TODO ha van pk, akkor az a mező nem lehet null
+    // ha nincs pk, akkor meg az a baj
+    if(this->pkrowix==-1)
+    {
+        zInfo(QStringLiteral("Nincs PK error"));
+        v=false;
+    }
     if(name.isEmpty()){
-        zError(QStringLiteral("Nincs név"));
+        zInfo(QStringLiteral("Nincs név error"));
         v= false;
     }
     if(zTable::find(tables, name, zTableSearchBy::Name))
     {
-        zError(QStringLiteral("Név nem egyedi: %1").arg(name));
+        zInfo(QStringLiteral("Név nem egyedi: %1 error").arg(name));
         v= false;
     }
     if(rows.isEmpty())
     {
-        zError(QStringLiteral("Nincsenek sorok"));
+        zInfo(QStringLiteral("Nincsenek sorok error"));
         v= false;
-    }    
-    else{
+    }        
+    else
+    {
         QStringList colNames;
         colNames = zTablerow::colNames(rows);
 
-        zforeach(r,rows)
+        for(int i=0;i<rows.length();i++)
+        //zforeach(r,rows)
         {
+            auto r = &(rows[i]);
+            if(i==pkrowix && r->isNullable)
+            {
+                zInfo(QStringLiteral("PK nem lehet nullable error"));
+                v=false;
+            }
             bool is_rv = r->Validate2(colNames);
             if(!is_rv)
             {
@@ -1731,12 +1746,11 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                         QString row_dtype;
                         int dlen = 0;
                         bool isNullable = false;
-                        //TODO  fue Id esetében itt nem jön át az int, de a pk igen
-                        //TODO itt hasonló módon kellene eljárni, mint a class vagy class2 esetében
-                        if(tablename.toLower()=="fue" && row_name.toLower()=="id")
-                        {
-                            zDebug();
-                        }
+
+//                        if(tablename.toLower()=="fue" && row_name.toLower()=="text")
+//                        {
+//                            zDebug();
+//                        }
                         //row_type=int - nem találja a dtype-ot
                         zTable::getClassType(globalSqlMaps, row_type, &row_dtype, &dlen, &isNullable, false, true);
                         //auto gtype = zTable::getClassType(globalClassMaps, propType, &dtype, &dlen, &isNullable, isRequired);

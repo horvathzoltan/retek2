@@ -280,7 +280,7 @@ void retek2::loadCurrentProject()
 
                     if(!isValid)
                     {
-                        zError(QStringLiteral("A tábla nem valid: %1").arg(t0.name));
+                        zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t0.name));
                     }
                 }
             }
