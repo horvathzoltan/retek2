@@ -23,6 +23,8 @@ QList<zTable> ztables;
 
 zTable *table = nullptr;
 
+zDownloader downloader;
+
 //extern const int C_ix_Caption = 0;
 //extern const int C_ix_colName = 1;
 //extern const int C_ix_colType = 2;

@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QException>
 #include "zconversionmap.h"
+#include "zdownloader.h"
 #include "zlogicexception.h"
 
 #define zforeach(var, container) for(auto (var) = (container).begin(); (var) != (container).end(); ++(var))
@@ -20,6 +21,8 @@ extern Beallitasok beallitasok;
 extern zLog zlog;
 //extern zSQL zsql;
 extern zTokenizer ztokenizer;
+extern zDownloader downloader;
+
 extern QList<zConversionMap> globalCaptionMaps;
 extern QList<zConversionMap> projectCaptionMaps;
 

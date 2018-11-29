@@ -11,6 +11,7 @@
 #include "zfilenamehelper.h"
 #include "zoshelper.h"
 #include "ziconhelper.h"
+#include "zdownloader.h"
 
 #include <QRegularExpression>
 #include <QTableWidgetItem>
@@ -119,6 +120,11 @@ void retek2::init()
     loadCurrentProject(); // ez tölti a ztablakat XML-ből
 
     fillListWidgetByCurrentProject();
+
+
+    auto e = downloader.download();
+
+
 
     auto sqlmap = validateCurrentProject_SQL();
     auto srcmap = validateCurrentProject_Source();
