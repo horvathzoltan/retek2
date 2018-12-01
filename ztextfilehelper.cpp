@@ -43,6 +43,11 @@ A txt-t nem feltétlenül kell itt validálni
 
 void zTextFileHelper::save(const QString& txt, const QString& fn, bool isAppend) {
 
+    if(fn.length()>256)
+    {
+        zInfo("Fájlnév túl hosszú error");
+        return;
+    }
 //    QFile logfile(lfn);
 //    logfile.open(QIODevice::Append | QIODevice::Text);
 //    QTextStream out(&logfile);

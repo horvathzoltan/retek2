@@ -174,3 +174,38 @@ QRegularExpression zStringHelper::getHTMLRegExp(const QString &s)
 }
 
 
+QString zStringHelper::encodeEntities( const QString& src, const QString& force=QString() )
+{
+    QString tmp(src);
+    uint len = tmp.length();
+    uint i = 0;
+    while( i<len )
+    {
+        if( tmp[i].unicode() > 128 || force.contains(tmp[i]) ){
+            QString rp = "&#"+QString::number(tmp[i].unicode())+";";
+            tmp.replace(i,1,rp);
+            len += rp.length()-1;
+            i += rp.length();
+        }else{
+            ++i;
+        }
+    }
+    return tmp;
+}
+
+
+
+QString zStringHelper::decodeEntities( const QString& src )
+{
+    QString ret(src);
+    QRegExp re("&#([0-9]+);");
+    re.setMinimal(true);
+
+    int pos = 0;
+    while( (pos = re.indexIn(src, pos)) != -1 )
+    {
+        ret = ret.replace(re.cap(0), QChar(re.cap(1).toInt(0,10)));
+        pos += re.matchedLength();
+    }
+    return ret;
+}

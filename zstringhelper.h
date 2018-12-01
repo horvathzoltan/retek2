@@ -24,7 +24,6 @@ public:
     static const QString HTML_P;
     static const QString HTML_SPAN;
 
-    zStringHelper();
     static bool toBool(const QString&);
     static QString boolToString(bool a);
     static QString boolToString(bool a, const QString&);
@@ -47,6 +46,8 @@ public:
     static QString zNormalize(const QString &c);
 
     static QRegularExpression getHTMLRegExp(const QString &s);
+    static QString encodeEntities(const QString &src, const QString &force);
+    static QString decodeEntities(const QString &src);
 };
 
 #endif // ZSTRINGHELPER_H

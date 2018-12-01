@@ -1539,20 +1539,43 @@ bool zTable::validateDocument(){
         // egyébként globálisként kezelendő
          */
 
-        QString fn;
-
+        //https://github.com/Satius/qt5/blob/master/qtbase/src/gui/text/qtexthtmlparser.cpp
+QTextHtmlEntity
+        QString f_txt;
 
         if(zFileNameHelper::isURL(this->document_path))
         {
-            zInfo("url");
-            //TODO letölteni, lokális pathon elhelyezni
+            //zInfo("url");
+            auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/export?format=html&id=1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8&includes_info_params=true)"));
+
+            //QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+           //QString uc =QTextCodec::codecForName( "UTF-8")->toUnicode(e);
+           // QByteArray data = uc.toUtf8();
+            //auto a1 = QTextCodec::codecForHtml(e)->fromUnicode("&aacute;");
+            //auto a2 = QStringLiteral("á").toHtmlEscaped();
+            //auto a3 = QStringLiteral("&aacute;");
+            //auto a1 = QTextCodec::codecForName("UTF-8")->toUnicode("&aacute;");
+            //QString utfStr = codec2->toUnicode(e);
+            //qDebug() << utfStr;
+//            QTextDocument text;
+//            text.setHtml(e);
+//            f_txt = text.toRawText();
+            //auto b2 = text.toHtml();
+
+            //f_txt = Qt::convertFromPlainText(e);
+                    //QString::fromUtf8(e);
+            //auto a = QString::fromUtf8(f_txt.toLocal8Bit());
+//            f_txt = QString(e);
+//qDebug() << "&aacute;&eacute;";
+            Qtexth
+            zTextFileHelper::save(f_txt, "/home/zoli/aa.html");
         }
         else
         {
-            fn = zFileNameHelper::getCurrentProjectFileNameAbsolut(this->document_path);
+            QString fn = zFileNameHelper::getCurrentProjectFileNameAbsolut(this->document_path);
+            f_txt = zTextFileHelper::load(fn);
         }
 
-        QString f_txt = zTextFileHelper::load(fn);
         if(f_txt==zStringHelper::Empty) return false;
 
         auto tl = zTable::createTableByHtml(f_txt);

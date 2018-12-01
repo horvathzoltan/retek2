@@ -16,8 +16,8 @@ class zDownloader : public QObject
     public:
         explicit zDownloader(QObject *parent = nullptr);
 
-        QByteArray download();
-        void downloadAsync();
+        QByteArray download(const QString&);
+        void downloadAsync(const QString&);
 
     signals:
 

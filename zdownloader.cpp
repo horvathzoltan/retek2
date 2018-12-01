@@ -1,5 +1,5 @@
 #include "zdownloader.h"
-
+#include "zlog.h"
 #include <QEventLoop>
 
 
@@ -7,11 +7,12 @@ zDownloader::zDownloader(QObject *parent) : QObject(parent)
 {
 }
 
-QByteArray zDownloader::download()
+QByteArray zDownloader::download(const QString& urlstring)
 {
     manager = new QNetworkAccessManager(this);
 
-    auto url = QUrl(QStringLiteral("https://docs.google.com/document/export?format=html&id=1qqYuhCY5iTAfzBiwQGfzRdU7C1jm1pNnNajVrSrWAfU"));
+    //auto url = QUrl(QStringLiteral("https://docs.google.com/document/export?format=html&id=1qqYuhCY5iTAfzBiwQGfzRdU7C1jm1pNnNajVrSrWAfU"));
+    auto url = QUrl(urlstring);
     QNetworkRequest request;
     request.setUrl(url);
     request.setRawHeader("User-Agent", "zDownloader 1.0");
@@ -23,14 +24,17 @@ QByteArray zDownloader::download()
       loop.exec();
       auto e = reply->readAll();
 
+      zInfo(QStringLiteral("Beolvasva: %1").arg(urlstring));
+
       return e;
 }
 
-void zDownloader::downloadAsync()
+void zDownloader::downloadAsync(const QString& urlstring)
 {
     manager = new QNetworkAccessManager(this);
 
-    auto url = QUrl(QStringLiteral("https://docs.google.com/document/export?format=html&id=1qqYuhCY5iTAfzBiwQGfzRdU7C1jm1pNnNajVrSrWAfU"));
+    //auto url = QUrl(QStringLiteral("https://docs.google.com/document/export?format=html&id=1qqYuhCY5iTAfzBiwQGfzRdU7C1jm1pNnNajVrSrWAfU"));
+     auto url = QUrl(urlstring);
     QNetworkRequest request;
     request.setUrl(url);
     request.setRawHeader("User-Agent", "zDownloader 1.0");

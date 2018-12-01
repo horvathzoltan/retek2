@@ -122,7 +122,7 @@ void retek2::init()
     fillListWidgetByCurrentProject();
 
 
-    auto e = downloader.download();
+    //auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/d/1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8/edit?usp=sharing)"));
 
 
 
