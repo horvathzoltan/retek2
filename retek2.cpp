@@ -73,6 +73,10 @@ void retek2::init()
 
     //zTrace("a");
 
+    //QString a = QStringLiteral("&aacute;&eacute;&#225;&#xe1;");
+    //QString aa = zStringHelper::HtmlDecode(a);
+    //zInfo(a + " = " + aa);
+
     //beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
     beallitasok.init(
                 ui.lineEdit_User,

@@ -24,6 +24,16 @@ public:
     static const QString HTML_P;
     static const QString HTML_SPAN;
 
+    static const QChar _htmlEntityEndingChars[];
+
+    static const int UNICODE_PLANE00_END;// = 0x00FFFF;
+    static const int UNICODE_PLANE01_START;// = 0x10000;
+    static const int UNICODE_PLANE16_END;// = 0x10FFFF;
+
+    static const QChar HIGH_SURROGATE_START; //= '\uD800';
+    static const QChar LOW_SURROGATE_START;// = '\uDC00';
+    static const QChar LOW_SURROGATE_END;// = '\uDFFF';
+
     static bool toBool(const QString&);
     static QString boolToString(bool a);
     static QString boolToString(bool a, const QString&);
@@ -46,8 +56,24 @@ public:
     static QString zNormalize(const QString &c);
 
     static QRegularExpression getHTMLRegExp(const QString &s);
-    static QString encodeEntities(const QString &src, const QString &force);
-    static QString decodeEntities(const QString &src);
+//    static QString encodeEntities(const QString &src, const QString &force);
+//    static QString decodeEntities(const QString &src);
+    static QString HtmlDecode(const QString& value);
+private:
+    static const int UnicodeReplacementChar;// = '\uFFFD';
+    static const QSet<QChar> htmlEntityEndings;
+
+    enum UnicodeDecodingConformance { Auto, Strict, Compat, Loose};
+
+    static UnicodeDecodingConformance getHtmlDecodeConformance();
+    static bool StringRequiresHtmlDecoding(const QString& s);
+    static QString HtmlDecode2(const QString &value);
+    static void ConvertSmpToUtf16(uint smpChar, QChar leadingSurrogate, QChar trailingSurrogate);
+    static QChar HtmlEntityLookup(const QString& e);
+    static const QMap<QString,quint16> HtmlNamedEntitiesLatin1;
+    static const QMap<QString,quint16> HtmlNamedEntitiesSymbolic;
+    static const QMap<QString,quint16> HtmlNamedEntitiesSpecial;
+
 };
 
 #endif // ZSTRINGHELPER_H

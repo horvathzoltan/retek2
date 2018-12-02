@@ -1540,7 +1540,7 @@ bool zTable::validateDocument(){
          */
 
         //https://github.com/Satius/qt5/blob/master/qtbase/src/gui/text/qtexthtmlparser.cpp
-QTextHtmlEntity
+//QTextHtmlEntity
         QString f_txt;
 
         if(zFileNameHelper::isURL(this->document_path))
@@ -1567,7 +1567,7 @@ QTextHtmlEntity
             //auto a = QString::fromUtf8(f_txt.toLocal8Bit());
 //            f_txt = QString(e);
 //qDebug() << "&aacute;&eacute;";
-            Qtexth
+            //Qtexth
             zTextFileHelper::save(f_txt, "/home/zoli/aa.html");
         }
         else
