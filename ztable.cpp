@@ -207,6 +207,9 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
         zforeach(r,this->rows)
         {
             zTablerow* rv = zTablerow::getByName(tv.rows, r->colName);
+//            if(tv.name.toLower()=="fue"){
+//                int x =0;
+//            }
             if(rv != nullptr)
             {
                auto v2 = r->Compare(*rv, e);
@@ -214,7 +217,12 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
                {                   
                    v = false;
                }
-            }            
+            }
+            else
+            {
+                e.append(QStringLiteral("A forrás nem tartalmazza a mezőt: %1").arg(r->colName));
+                v=false;
+            }
         }
 //    }
     return v;
@@ -1546,29 +1554,9 @@ bool zTable::validateDocument(){
         if(zFileNameHelper::isURL(this->document_path))
         {
             //zInfo("url");
-            auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/export?format=html&id=1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8&includes_info_params=true)"));
-
-            //QTextCodec *codec = QTextCodec::codecForName("UTF-8");
-           //QString uc =QTextCodec::codecForName( "UTF-8")->toUnicode(e);
-           // QByteArray data = uc.toUtf8();
-            //auto a1 = QTextCodec::codecForHtml(e)->fromUnicode("&aacute;");
-            //auto a2 = QStringLiteral("á").toHtmlEscaped();
-            //auto a3 = QStringLiteral("&aacute;");
-            //auto a1 = QTextCodec::codecForName("UTF-8")->toUnicode("&aacute;");
-            //QString utfStr = codec2->toUnicode(e);
-            //qDebug() << utfStr;
-//            QTextDocument text;
-//            text.setHtml(e);
-//            f_txt = text.toRawText();
-            //auto b2 = text.toHtml();
-
-            //f_txt = Qt::convertFromPlainText(e);
-                    //QString::fromUtf8(e);
-            //auto a = QString::fromUtf8(f_txt.toLocal8Bit());
-//            f_txt = QString(e);
-//qDebug() << "&aacute;&eacute;";
-            //Qtexth
-            zTextFileHelper::save(f_txt, "/home/zoli/aa.html");
+            auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/export?format=html&id=1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8&includes_info_params=true)"));           
+            f_txt = zStringHelper::HtmlDecode(e);
+            //zTextFileHelper::save(f_txt, "/home/zoli/aa.html");
         }
         else
         {
@@ -1576,15 +1564,18 @@ bool zTable::validateDocument(){
             f_txt = zTextFileHelper::load(fn);
         }
 
-        if(f_txt==zStringHelper::Empty) return false;
+        if(f_txt.isEmpty()) return false;
 
         auto tl = zTable::createTableByHtml(f_txt);
 
         zforeach(t,tl)
-        {
+        {         
             //t->name = this->name;
             if(t->name == this->name)
             {
+//                if(+t->name.toLower()=="fue"){
+//                    int x = 0;
+//                }
                 QStringList e;
                 auto isOK = Compare(*t, e);
                 validateEval(isOK, e, QStringLiteral("doc"));

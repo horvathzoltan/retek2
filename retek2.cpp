@@ -72,11 +72,12 @@ void retek2::init()
     //asm("int $3");
 
     //zTrace("a");
-
+/*
     //QString a = QStringLiteral("&aacute;&eacute;&#225;&#xe1;");
-    //QString aa = zStringHelper::HtmlDecode(a);
-    //zInfo(a + " = " + aa);
-
+    QString a = QStringLiteral("Globus megl&eacute;v&#337; adataihoz");
+    QString aa = zStringHelper::HtmlDecode(a);
+    zInfo(a + " = " + aa);
+*/
     //beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
     beallitasok.init(
                 ui.lineEdit_User,
@@ -128,7 +129,17 @@ void retek2::init()
 
     //auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/d/1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8/edit?usp=sharing)"));
 
-
+    // TODO
+    // kellene egy QTimer, hogy rájöjjünk, a doksiban piszkál valaki. SHA1
+    // ha volt piszkálva, előző = 1 perc
+    // ha nem volt piszkálva, előző*=2 , ha az kisebb, mint 16 -egyébként = 16 , azaz percenként mindenképp nézünk
+    // tehát minden doksira kell egy SHA1 és ha az változik, akkor piszka volt
+    // TODO
+    // ha valamely tábla és/vagy annak mezője inkonzisztens, kellene egy lista, ami leírja
+    // hogy tábla mely adata, vagy tábla sorának egy mezője a nem jó
+    // melyik tábla nevét ki kell tenni, és ha a táblával van a baj, az kap ikont, ha  a mezővel,
+    // a mező/cella,kap ikont, és arra kattintva leszűrjük a rá vonatkozó hibákat
+    // vagy pedig tooltipet kap - konkatenáljuk a tooltip szöveget
 
     auto sqlmap = validateCurrentProject_SQL();
     auto srcmap = validateCurrentProject_Source();
@@ -136,31 +147,7 @@ void retek2::init()
 
     setListWidgetIconsByCurrentProject(sqlmap, srcmap, docmap);
 
-
-    ztokenizer.init(ui.tableWidget_MezoLista);
-
-    // TODO: konzisztencia sql és entity vonatkozásokban is
-    // a megjelenítésnél ikonokat kell használni , ha a sql közés ok, ha a forrás kötés ok, illetve ha mindkettő megvan
-    //
-    // - xml beolvasás után a forrást ellenőrízni
-    //
-    // - ha az sql tábla frissebb, akkor frissíteni - illetve detektálni és a listában piros háttérrel jelezni
-    // illetve, ha ez a változás érdemi - ekkro be lehet olvasni -  és van tábla validáció, ami összeveti
-    // - ha az entitás fájl frissebb, akkor hasonlóképpen - lehet validálni
-    //
-    // azt kellene inkább vizsgálni: hogy ha a leíró sql vagy kód kötése megvan-e
-    // forrás típus alapján az sql illetve entity - egyértelmű, hiszen származik belőle
-    // és ha az sql vagy forrás módosult, míg a leíró nem, azaz a leíró keletkezése óta újabb az sql
-    // ezt detektálni és jelezni kell, illetve kérdés, hogy felszedjük-e a változásokat
-    // továbbá
-    // hogy a leíró honnan származik, és az érvényes-e még a származás miatt egyértelmű, hogy annak kell előbb lennie
-    //
-    // egy általánosabb probléma, hogy
-    // ha van forrás (az nem txt) fedi-e a leírót
-    // ez nem függ dátumtól, bár származás esetén nem irreleváns, de
-    // egymást nem fedő esetet lejet jóra hozni javítás által, mindkét oldalon -
-    // ha a leíró módosult, míg a forrás nem, bár ez em egyértelmű mert az sql simán lehet régebbi, mint a leíró
-    // elvileg ezt is jelezni kellene,
+    ztokenizer.init(ui.tableWidget_MezoLista);  
 
     zInfo(QStringLiteral("retek2 init ok"));
 }

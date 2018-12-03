@@ -369,7 +369,7 @@ QString zStringHelper::HtmlDecode2(const QString &value)
                         if (pv <= UNICODE_PLANE00_END)
                         {
                             // single character                            
-                            output += pv;
+                            output += QChar(pv);
                         }
                         else
                         {
