@@ -220,7 +220,7 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
             }
             else
             {
-                e.append(QStringLiteral("A forrás nem tartalmazza a mezőt: %1").arg(r->colName));
+                e.append(QStringLiteral("Ismeretlen mező: %1").arg(r->colName));
                 v=false;
             }
         }
