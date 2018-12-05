@@ -448,6 +448,16 @@ void retek2::mezoListaFeltolt(const zTable& t){
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, CreateTableItem(QVariant(r.Caption)));     
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, CreateTableItem(QVariant(r.isNullable)));
     }    
+//http://doc.qt.io/qt-5/qml-color.html
+    auto yb = QBrush(Qt::yellow);
+    auto pki = QIcon(QStringLiteral(":/alert-triangle.ico"));
+    // todo: ha pk, ikon, ha fk, navprop, ikon, ha reversenavprop, akkor is ikon, vagy ha constraint van rajta
+    for(int r_ix=0;r_ix<t.rows.length();r_ix++){
+        auto i = ui.tableWidget_MezoLista->item(r_ix, C_ix_colName);
+        i->setBackground(yb);
+        i->setToolTip(QStringLiteral("1 macska 3 macska"));
+        i->setIcon(pki);
+    }
     ui.tableWidget_MezoLista->blockSignals(false);
 }
 
@@ -992,7 +1002,7 @@ void retek2::on_listWidget_ztables_itemClicked(QListWidgetItem *item)
     if(table)
     {
         zTableNamesToUi(*table);
-        mezoListaFeltolt(*table);
+        mezoListaFeltolt(*table);// ez töltö fel a táblának a mezőit
         feltoltKulcsLista(*table);
     }
     else

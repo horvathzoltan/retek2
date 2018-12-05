@@ -329,5 +329,24 @@ QStringList zTablerow::colNames(const QList<zTablerow> &rows){
     return colNames;
 }
 
+const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeNames
+{
+    {ErrCode::noteq, QStringLiteral("noteq")},
+    {ErrCode::unknown, QStringLiteral("unknown")}
+};
+
+const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeDescriptions
+{
+    {ErrCode::noteq, QStringLiteral("FieldName Not Equals")},
+    {ErrCode::unknown, QStringLiteral("Unknown Field")}
+};
+
+QString zTablerow::GetErrorMessage(const QString& tn, const QString& cn, ErrCode code)
+{
+    auto c = ErrCodeNames[code];
+    auto l = QStringLiteral("[%1.%2.%3:%4]").arg(tn, this->colName, cn, c);
+    return l;
+}
+
 
 

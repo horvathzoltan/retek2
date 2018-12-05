@@ -120,6 +120,14 @@ public:
 private:
     static const QString PKNAME;
     void validateEval(bool isOK, const QStringList& e, const QString&);
+
+    enum class ErrCode:int{noteq, unknown};
+
+    static const QMap<ErrCode, QString> ErrCodeNames;
+    static const QMap<ErrCode, QString> ErrCodeDescriptions;
+
+    QString GetErrorMessage(const QString& cn, ErrCode code);
+    QString GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList &p);
 };
 
 #endif // ZTABLE_H

@@ -179,20 +179,66 @@ QString zTable::toString() const
   összehasonlítja a két táblát, és annak sorait
   név, sorok száma, azok metaadatai -  nevei, típusai hosszai, nullable required a relevánsak
 */
+/*
+tname..name:noteq : táblanév..property:hibakód leírás // ha a sornév empty, akkor az prop
+tname..pkname:noteq
+tname..row:unknown
+
+tname.rname.cname:noteq : táblanév.sornév.oszlopnév:hibakód leírás
+tname.rname.ctype:noteq
+tname.rname.clen:noteq
+tname.rname.cisnull:noteq
+*/
+
+const QMap<zTable::ErrCode, QString> zTable::ErrCodeNames
+{
+    {ErrCode::noteq, QStringLiteral("noteq")},
+    {ErrCode::unknown, QStringLiteral("unknown")}
+};
+
+const QMap<zTable::ErrCode, QString> zTable::ErrCodeDescriptions
+{
+    {ErrCode::noteq, QStringLiteral("Tablename Not Equals")},
+    {ErrCode::unknown, QStringLiteral("Unknown Field")}
+};
+
+
+QString zTable::GetErrorMessage(const QString& cn, ErrCode code)
+{
+    auto c = zTable::ErrCodeNames[code];
+    auto l = QStringLiteral("[%1..%3:%4]").arg(this->name, cn, c);
+    return l;
+}
+
+QString zTable::GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList& p)
+{
+    auto l1 = this->GetErrorMessage(cn, code);
+    auto l2 = ErrCodeDescriptions[code];
+    auto l3 = '('+p.join(',')+')';
+    QString msg = l2+' '+l3 +' '+ l1;
+
+    return msg;
+}
+
+
 bool zTable::Compare(const zTable& tv, QStringList& e){
     zInfo(zfn());
 
     bool v = true;
 
-    if(this->name!=tv.name)
+    if(this->name!='q'+tv.name)
     {
-        e.append(QStringLiteral("Tablename Not Equals (%1, %2)").arg(this->name,tv.name));
+        //TODO bevezetni  a táblában és a sorokban is- a túloldalt pedig kiszedni a táblázatnál
+        //TODO kell egy konzisztencia lista - a legutolsó változásokkal a forrás, az sql és a dokumentáció irányába is
+        //TODO a konzisztencia listát időnként ellenőrízni - majd a tábla listát és a táblázatot frissítani - ikonok jelzések
+        QString msg = GetFullErrorMessage(nameof(this->name), ErrCode::noteq, {this->name, tv.name});
+        e.append(msg);
         v = false;
     }
 
     if(this->pkname()!=tv.pkname())
     {
-        e.append(QStringLiteral("PkName Not Equals: %1(%2, %3)").arg(this->name, this->pkname(), tv.pkname()));
+        e.append(QStringLiteral("PkName Not Equals: %1(%2, %3) [table.pkname]").arg(this->name, this->pkname(), tv.pkname()));
         v = false;
     }
 

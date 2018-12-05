@@ -4,6 +4,7 @@
 
 #include <QString>
 #include <QXmlStreamWriter>
+#include <QMap>
 
 //enum zRowSearchBy{ Name };
 
@@ -38,6 +39,13 @@ public:
     static const zTablerow* find(const QList<zTablerow>& rows, const QString& rn);
     static int findIx(const QList<zTablerow>& rows, const QString& rn);
     static QStringList colNames(const QList<zTablerow>& rows);
+
+    enum class ErrCode:int{noteq, unknown};
+
+    static const QMap<ErrCode, QString> ErrCodeNames;
+    static const QMap<ErrCode, QString> ErrCodeDescriptions;
+
+    QString GetErrorMessage(const QString& tn, const QString& cn, ErrCode code);    
 };
 
 #endif // ZTABLEROW_H
