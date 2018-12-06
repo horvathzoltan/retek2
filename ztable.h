@@ -56,6 +56,8 @@ public:
     bool document_isValid;
     QDateTime document_updateTimeStamp;
 
+    QStringList eval;
+
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMySQL(QString, QMap<QString, QString>, QString );
@@ -119,7 +121,7 @@ public:
     bool hasPkname() const;
 private:
     static const QString PKNAME;
-    void validateEval(bool isOK, const QStringList& e, const QString&);
+    //void validateEval(bool isOK, const QStringList& e, const QString&);
 
     enum class ErrCode:int{noteq, unknown};
 

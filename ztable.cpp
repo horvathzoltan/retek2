@@ -1504,18 +1504,18 @@ bool zTable::hasPkname() const
 /*
 Validálja a táblát annak sql kötése alapján
 */
-void zTable::validateEval(bool isOK, const QStringList& e, const QString &ez)
-{
-    if(!isOK)
-    {
-        zInfo(ez+" "+this->name+QStringLiteral(" error"));
-        zInfo(e);
-    }
-    else
-    {
-        zInfo(ez+" "+this->name+QStringLiteral(" ok"));
-    }
-}
+//void zTable::validateEval(bool isOK, const QStringList& e, const QString &ez)
+//{
+//    if(!isOK)
+//    {
+//        zInfo(ez+" "+this->name+QStringLiteral(" error"));
+//        zInfo(e);
+//    }
+//    else
+//    {
+//        zInfo(ez+" "+this->name+QStringLiteral(" ok"));
+//    }
+//}
 
 bool zTable::validateSQL(){
     zTrace();
@@ -1529,9 +1529,9 @@ bool zTable::validateSQL(){
 
     zTable t_sql = zsql.getTable(this->sql_schema, this->sql_table);
 
-    QStringList e;
-    auto isOK = Compare(t_sql, e);
-    validateEval(isOK, e, QStringLiteral("sql"));
+    //QStringList e;
+    auto isOK = Compare(t_sql, this->eval);
+    //validateEval(isOK, e, QStringLiteral("sql"));
     return isOK;
 }
 
@@ -1555,8 +1555,8 @@ bool zTable::validateSource(){
             if(t->class_name == this->class_name)
             {
                 QStringList e;
-                auto isOK = Compare(*t, e);
-                validateEval(isOK, e, QStringLiteral("src"));
+                auto isOK = Compare(*t, eval);
+                //validateEval(isOK, e, QStringLiteral("src"));
                 return isOK;
             }
         }
@@ -1622,9 +1622,10 @@ bool zTable::validateDocument(){
 //                if(+t->name.toLower()=="fue"){
 //                    int x = 0;
 //                }
-                QStringList e;
-                auto isOK = Compare(*t, e);
-                validateEval(isOK, e, QStringLiteral("doc"));
+                //QStringList e;
+                auto isOK = Compare(*t, eval);
+                //validateEval(isOK, eval, QStringLiteral("doc"));
+
                 return isOK;
             }
         }

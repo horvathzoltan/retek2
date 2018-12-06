@@ -129,12 +129,12 @@ void retek2::init()
 
     //auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/d/1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8/edit?usp=sharing)"));
 
-    // TODO
+    // TODO - periodikus validáció
     // kellene egy QTimer, hogy rájöjjünk, a doksiban piszkál valaki. SHA1
     // ha volt piszkálva, előző = 1 perc
     // ha nem volt piszkálva, előző*=2 , ha az kisebb, mint 16 -egyébként = 16 , azaz percenként mindenképp nézünk
     // tehát minden doksira kell egy SHA1 és ha az változik, akkor piszka volt
-    // TODO
+    // TODO  - validációs lista feldolgozása
     // ha valamely tábla és/vagy annak mezője inkonzisztens, kellene egy lista, ami leírja
     // hogy tábla mely adata, vagy tábla sorának egy mezője a nem jó
     // melyik tábla nevét ki kell tenni, és ha a táblával van a baj, az kap ikont, ha  a mezővel,
@@ -448,16 +448,57 @@ void retek2::mezoListaFeltolt(const zTable& t){
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, CreateTableItem(QVariant(r.Caption)));     
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, CreateTableItem(QVariant(r.isNullable)));
     }    
+    //TODO - eval lista kiértékelése kirajzolás során
 //http://doc.qt.io/qt-5/qml-color.html
+//    if(!t.eval.isEmpty())
+//    {
+
+//    }
+    auto r = QRegularExpression(QStringLiteral(R"(\[([\w\S]*)\])"));
     auto yb = QBrush(Qt::yellow);
     auto pki = QIcon(QStringLiteral(":/alert-triangle.ico"));
-    // todo: ha pk, ikon, ha fk, navprop, ikon, ha reversenavprop, akkor is ikon, vagy ha constraint van rajta
-    for(int r_ix=0;r_ix<t.rows.length();r_ix++){
-        auto i = ui.tableWidget_MezoLista->item(r_ix, C_ix_colName);
-        i->setBackground(yb);
-        i->setToolTip(QStringLiteral("1 macska 3 macska"));
-        i->setIcon(pki);
+
+    zforeach(e,t.eval)
+    {
+        QRegularExpressionMatch m = r.match(*e);
+
+        if(m.hasMatch())
+        {
+            auto a = m.captured(1).split('.');
+            if(a[1].isEmpty())
+            {
+
+            }
+            else
+            {
+                auto rix = zTablerow::findIx(t.rows, a[1]);
+                if(rix>-1)
+                {
+                    //TODO - a[2] string->eval majd arra egy switch -> cix
+
+
+
+//                    auto i = ui.tableWidget_MezoLista->item(rix, cix);
+//                    i->setBackground(yb);
+//                    i->setToolTip(QStringLiteral("1 macska 3 macska"));
+//                    i->setIcon(pki);
+
+                }
+
+
+            }
+
+        }
     }
+//    auto yb = QBrush(Qt::yellow);
+//    auto pki = QIcon(QStringLiteral(":/alert-triangle.ico"));
+//    // todo: ha pk, ikon, ha fk, navprop, ikon, ha reversenavprop, akkor is ikon, vagy ha constraint van rajta
+//    for(int r_ix=0;r_ix<t.rows.length();r_ix++){
+//        auto i = ui.tableWidget_MezoLista->item(r_ix, C_ix_colName);
+//        i->setBackground(yb);
+//        i->setToolTip(QStringLiteral("1 macska 3 macska"));
+//        i->setIcon(pki);
+//    }
     ui.tableWidget_MezoLista->blockSignals(false);
 }
 
