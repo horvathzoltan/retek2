@@ -467,7 +467,7 @@ void retek2::mezoListaFeltolt(const zTable& t){
             auto a = m.captured(1).split('.');
             if(a[1].isEmpty())
             {
-
+// tábla propertyre vonatkozik
             }
             else
             {
@@ -475,7 +475,11 @@ void retek2::mezoListaFeltolt(const zTable& t){
                 if(rix>-1)
                 {
                     //TODO - a[2] string->eval majd arra egy switch -> cix
+                     auto e = zTablerow::GetErrCode(a[2]);
+                     if(e)
+                     {
 
+                     }
 
 
 //                    auto i = ui.tableWidget_MezoLista->item(rix, cix);

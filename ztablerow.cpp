@@ -348,5 +348,17 @@ QString zTablerow::GetErrorMessage(const QString& tn, const QString& cn, ErrCode
     return l;
 }
 
+const zTablerow::ErrCode* zTablerow::GetErrCode(const QString& a){
+    zforeach(v, ErrCodeNames)
+    {
+        if(v.value()==a)
+        {
+            return &(v.key());
+        }
+    }
+    return nullptr;
+    //auto k = ErrCodeNames.key(a, QString());
+}
+
 
 

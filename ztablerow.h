@@ -46,6 +46,7 @@ public:
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 
     QString GetErrorMessage(const QString& tn, const QString& cn, ErrCode code);    
+    static const ErrCode* GetErrCode(const QString& a);
 };
 
 #endif // ZTABLEROW_H
