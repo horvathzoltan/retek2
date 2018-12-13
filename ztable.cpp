@@ -231,6 +231,7 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
         //TODO bevezetni  a táblában és a sorokban is- a túloldalt pedig kiszedni a táblázatnál
         //TODO kell egy konzisztencia lista - a legutolsó változásokkal a forrás, az sql és a dokumentáció irányába is
         //TODO a konzisztencia listát időnként ellenőrízni - majd a tábla listát és a táblázatot frissítani - ikonok jelzések
+        //TODO COMPARE tábla és row végigvezetni!
         QString msg = GetFullErrorMessage(nameof(this->name), ErrCode::noteq, {this->name, tv.name});
         e.append(msg);
         v = false;
@@ -266,6 +267,7 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
             }
             else
             {
+                //TODO részleges egyezés?
                 e.append(QStringLiteral("Ismeretlen mező: %1").arg(r->colName));
                 v=false;
             }

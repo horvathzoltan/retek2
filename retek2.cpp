@@ -475,17 +475,18 @@ void retek2::mezoListaFeltolt(const zTable& t){
                 if(rix>-1)
                 {
                     //TODO - a[2] string->eval majd arra egy switch -> cix
-                     auto e = zTablerow::GetErrCode(a[2]);
-                     if(e)
-                     {
+//                     auto e = zTablerow::GetErrCode(a[2]);
+//                     if(e)
+//                     {
+//                         auto cn = zTablerow::GetColNameFromErrorMessage(e);
+//                     }
+                      auto cn = zTablerow::GetColNameFromErrorMessage(a[2]);
 
-                     }
-
-
-//                    auto i = ui.tableWidget_MezoLista->item(rix, cix);
-//                    i->setBackground(yb);
-//                    i->setToolTip(QStringLiteral("1 macska 3 macska"));
-//                    i->setIcon(pki);
+                      auto cix = ColNameIxes.value(cn, -1);
+                      auto i = ui.tableWidget_MezoLista->item(rix, cix);
+                        i->setBackground(yb);
+                        i->setToolTip(*e);
+                        i->setIcon(pki);
 
                 }
 
@@ -505,6 +506,20 @@ void retek2::mezoListaFeltolt(const zTable& t){
 //    }
     ui.tableWidget_MezoLista->blockSignals(false);
 }
+
+const QMap<QString, int> retek2::ColNameIxes
+{
+    {QStringLiteral("colName"), C_ix_colName},
+    {QStringLiteral("colType"), C_ix_colType},
+    {QStringLiteral("dlen"), C_ix_dlen},
+    {QStringLiteral("isNullable"), C_ix_nullable}
+};
+//const QMap<zTablerow::ErrCode, int> retek2::ErrCodeColIxes
+//{
+//    {ErrCode::noteq, QStringLiteral("noteq")},
+//    {ErrCode::unknown, QStringLiteral("unknown")}
+//};
+
 
 void retek2::feltoltKulcsLista(zTable t) {
     //zTrace();

@@ -23,7 +23,7 @@ public:
     static const QStringList xmlFilter;
     static const QStringList captionFileFilter;    
     static const QStringList sqlmapFileFilter;
-    static const QStringList classmapFileFilter;
+    static const QStringList classmapFileFilter;    
 
     static QString getDxMap();
 

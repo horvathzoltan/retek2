@@ -348,6 +348,22 @@ QString zTablerow::GetErrorMessage(const QString& tn, const QString& cn, ErrCode
     return l;
 }
 
+const QString zTablerow::colNamePattern = QStringLiteral(R"(\[([\w]*).([\w]*).([\w]*):[\w]*\])");
+
+const QRegularExpression zTablerow::colNameRegexp = QRegularExpression(colNamePattern);
+
+QString zTablerow::GetColNameFromErrorMessage(const QString& tn)
+{
+    auto m = colNameRegexp.match(tn);
+
+    if(m.hasMatch())
+    {
+        return m.captured(2);
+    }
+
+    return zStringHelper::Empty;
+}
+
 const zTablerow::ErrCode* zTablerow::GetErrCode(const QString& a){
     zforeach(v, ErrCodeNames)
     {

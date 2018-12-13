@@ -21,6 +21,9 @@ public:
     bool isNullable;
     QString comment;
 
+    static const QString colNamePattern;
+    static const QRegularExpression colNameRegexp;
+
     QString toString() const;
 
     bool operator==(const zTablerow&) const;
@@ -47,6 +50,7 @@ public:
 
     QString GetErrorMessage(const QString& tn, const QString& cn, ErrCode code);    
     static const ErrCode* GetErrCode(const QString& a);
+    static QString GetColNameFromErrorMessage(const QString& tn);
 };
 
 #endif // ZTABLEROW_H

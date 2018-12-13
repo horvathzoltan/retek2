@@ -18,6 +18,8 @@ class retek2 : public QMainWindow
 	Q_OBJECT
 
 public:
+    //static const QMap<zTablerow::ErrCode, int> ErrCodeColIxes;
+
    // explicit retek2(QWidget *parent = nullptr);
     ~retek2() final;
     void init();
@@ -114,6 +116,8 @@ private:
     void setCaptionByRowIx(int idix, const QString& caption);
 
     static void logToGUI(int errlevel, const QString &msg, const QString &loci, const QString &st, void *ptr);
+
+    static const QMap<QString, int> ColNameIxes;
 };
 
 //#endif // RETEK2_H
