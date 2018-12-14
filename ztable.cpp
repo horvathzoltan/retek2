@@ -190,18 +190,19 @@ tname.rname.clen:noteq
 tname.rname.cisnull:noteq
 */
 
-const QMap<zTable::ErrCode, QString> zTable::ErrCodeNames
-{
-    {ErrCode::noteq, QStringLiteral("noteq")},
-    {ErrCode::unknown, QStringLiteral("unknown")}
-};
+enum class zTable::ErrCode:int{noteq, unknown};
 
 const QMap<zTable::ErrCode, QString> zTable::ErrCodeDescriptions
 {
-    {ErrCode::noteq, QStringLiteral("Tablename Not Equals")},
-    {ErrCode::unknown, QStringLiteral("Unknown Field")}
+    {ErrCode::noteq, QStringLiteral("Not Equals")},
+    {ErrCode::unknown, QStringLiteral("Unknown")},
 };
 
+const QMap<zTable::ErrCode, QString> zTable::ErrCodeNames
+{
+    {ErrCode::noteq, QStringLiteral("noteq")},
+    {ErrCode::unknown, QStringLiteral("unknown")},
+};
 
 QString zTable::GetErrorMessage(const QString& cn, ErrCode code)
 {
@@ -232,14 +233,15 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
         //TODO kell egy konzisztencia lista - a legutolsó változásokkal a forrás, az sql és a dokumentáció irányába is
         //TODO a konzisztencia listát időnként ellenőrízni - majd a tábla listát és a táblázatot frissítani - ikonok jelzések
         //TODO COMPARE tábla és row végigvezetni!
-        QString msg = GetFullErrorMessage(nameof(this->name), ErrCode::noteq, {this->name, tv.name});
+        QString msg = GetFullErrorMessage(nameof(this->name), ErrCode::noteq, {"tablename",this->name, tv.name});
         e.append(msg);
         v = false;
     }
 
     if(this->pkname()!=tv.pkname())
     {
-        e.append(QStringLiteral("PkName Not Equals: %1(%2, %3) [table.pkname]").arg(this->name, this->pkname(), tv.pkname()));
+        QString msg = GetFullErrorMessage(nameof(this->name), ErrCode::noteq, {"pkname",this->name, tv.name});
+        e.append(msg);//QStringLiteral("PkName Not Equals: %1(%2, %3) [table.pkname]").arg(this->name, this->pkname(), tv.pkname()));
         v = false;
     }
 
@@ -268,7 +270,8 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
             else
             {
                 //TODO részleges egyezés?
-                e.append(QStringLiteral("Ismeretlen mező: %1").arg(r->colName));
+                QString msg = GetFullErrorMessage(nameof(this->name), ErrCode::unknown, {"Field", r->colName});
+                e.append(msg);//QStringLiteral("Ismeretlen mező: %1").arg(r->colName));
                 v=false;
             }
         }

@@ -464,6 +464,8 @@ void retek2::mezoListaFeltolt(const zTable& t){
 
         if(m.hasMatch())
         {
+            // regexpel kell szétszedni
+            //
             auto a = m.captured(1).split('.');
             if(a[1].isEmpty())
             {
@@ -483,10 +485,16 @@ void retek2::mezoListaFeltolt(const zTable& t){
                       auto cn = zTablerow::GetColNameFromErrorMessage(a[2]);
 
                       auto cix = ColNameIxes.value(cn, -1);
-                      auto i = ui.tableWidget_MezoLista->item(rix, cix);
-                        i->setBackground(yb);
-                        i->setToolTip(*e);
-                        i->setIcon(pki);
+                      if(cix>-1)
+                      {
+                          auto i = ui.tableWidget_MezoLista->item(rix, cix);
+                          i->setBackground(yb);
+                          i->setToolTip(*e);
+                          i->setIcon(pki);
+                      }
+                      else{
+                          zTrace();
+                      }
 
                 }
 

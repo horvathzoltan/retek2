@@ -5,6 +5,9 @@
 
 #include <QXmlStreamWriter>
 
+
+
+
 zTablerow::zTablerow(){
     this->isNullable = true;
     this->dlen = 0;
@@ -45,6 +48,20 @@ zTablerow* zTablerow::getByName(const QList<zTablerow> &rows, const QString& rn)
     return nullptr;
 }
 
+enum class zTablerow::ErrCode:int{noteq, unknown};
+
+const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeNames
+{
+    {ErrCode::noteq, QStringLiteral("noteq")},
+    {ErrCode::unknown, QStringLiteral("unknown")}
+};
+
+const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeDescriptions
+{
+    {ErrCode::noteq, QStringLiteral("Not Equals")},
+    {ErrCode::unknown, QStringLiteral("Unknown")}
+};
+
 /*
 sorokat hasonlít össze - metaadataik alapján
 */
@@ -53,29 +70,28 @@ bool zTablerow::Compare(const zTablerow& rv, QStringList& e){
     bool v  = true;
     if(this->colName!=rv.colName)
     {
-        e.append(QStringLiteral("colName Not Equals: (%1,%2)").arg(colName, rv.colName));
+        QString msg = GetFullErrorMessage(QStringLiteral("xtable"), ErrCode::noteq, {"colName", this->colName, rv.colName});
+        e.append(msg);//QStringLiteral("colName Not Equals: (%1,%2)").arg(colName, rv.colName));
         v = false;
     }
     if(this->colType!=rv.colType)
     {
-        e.append(QStringLiteral("colType Not Equals: %1(%2,%3)").arg(colName,colType,rv.colType ));
+        QString msg = GetFullErrorMessage(QStringLiteral("xtable"), ErrCode::noteq, {"colType", this->colType, rv.colType});
+        e.append(msg);//QStringLiteral("colType Not Equals: %1(%2,%3)").arg(colName,colType,rv.colType ));
         v = false;
     }
 
     if(this->dlen!=rv.dlen)
     {
-        e.append(QStringLiteral("dlen not equals: %1(%2,%3)").arg(colName).arg(this->dlen).arg(rv.dlen));
+        QString msg = GetFullErrorMessage(QStringLiteral("xtable"), ErrCode::noteq, {"dlen", QString::number(this->dlen), QString::number(rv.dlen)});
+        e.append(msg);//QStringLiteral("dlen not equals: %1(%2,%3)").arg(colName).arg(this->dlen).arg(rv.dlen));
         v = false;
     }
 
     if(this->isNullable!=rv.isNullable)
     {
-        e.append(QStringLiteral("isNullable not equals: %1(%2,%3)").arg(
-                     colName,
-                     zStringHelper::boolToString(isNullable),
-                     zStringHelper::boolToString(rv.isNullable)
-                     )
-                 );
+        QString msg = GetFullErrorMessage(QStringLiteral("xtable"), ErrCode::noteq, {"isNullable",zStringHelper::boolToString(this->isNullable), zStringHelper::boolToString(rv.isNullable)});
+        e.append(msg);
         v = false;
     }
 
@@ -329,39 +345,39 @@ QStringList zTablerow::colNames(const QList<zTablerow> &rows){
     return colNames;
 }
 
-const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeNames
-{
-    {ErrCode::noteq, QStringLiteral("noteq")},
-    {ErrCode::unknown, QStringLiteral("unknown")}
-};
-
-const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeDescriptions
-{
-    {ErrCode::noteq, QStringLiteral("FieldName Not Equals")},
-    {ErrCode::unknown, QStringLiteral("Unknown Field")}
-};
 
 QString zTablerow::GetErrorMessage(const QString& tn, const QString& cn, ErrCode code)
 {
     auto c = ErrCodeNames[code];
-    auto l = QStringLiteral("[%1.%2.%3:%4]").arg(tn, this->colName, cn, c);
+    auto l = QStringLiteral("[%1.%2.:%4]").arg(tn, this->colName, cn, c);
     return l;
+}
+
+QString zTablerow::GetFullErrorMessage(const QString& tn, ErrCode code, const QStringList& p)
+{
+    auto l1 = this->GetErrorMessage(tn, this->colName, code);
+    auto l2 = ErrCodeDescriptions[code];
+    auto l3 = '('+p.join(',')+')';
+    QString msg = l2+' '+l3 +' '+ l1;
+
+    return msg;
 }
 
 const QString zTablerow::colNamePattern = QStringLiteral(R"(\[([\w]*).([\w]*).([\w]*):[\w]*\])");
 
 const QRegularExpression zTablerow::colNameRegexp = QRegularExpression(colNamePattern);
 
-QString zTablerow::GetColNameFromErrorMessage(const QString& tn)
+QStringList zTablerow::GetColNameFromErrorMessage(const QString& tn)
 {
     auto m = colNameRegexp.match(tn);
 
     if(m.hasMatch())
     {
-        return m.captured(2);
+        return m.capturedTexts();
+        //return m.captured(2);
     }
 
-    return zStringHelper::Empty;
+    return QStringList();
 }
 
 const zTablerow::ErrCode* zTablerow::GetErrCode(const QString& a){

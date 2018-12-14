@@ -43,14 +43,14 @@ public:
     static int findIx(const QList<zTablerow>& rows, const QString& rn);
     static QStringList colNames(const QList<zTablerow>& rows);
 
-    enum class ErrCode:int{noteq, unknown};
-
+    enum class ErrCode:int;
     static const QMap<ErrCode, QString> ErrCodeNames;
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 
     QString GetErrorMessage(const QString& tn, const QString& cn, ErrCode code);    
+    QString GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList& p);
     static const ErrCode* GetErrCode(const QString& a);
-    static QString GetColNameFromErrorMessage(const QString& tn);
+    static QStringList GetColNameFromErrorMessage(const QString& tn);
 };
 
 #endif // ZTABLEROW_H
