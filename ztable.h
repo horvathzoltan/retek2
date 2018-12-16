@@ -56,6 +56,8 @@ public:
     bool document_isValid;
     QDateTime document_updateTimeStamp;
 
+    //TODO eval: ez egy struct kellene legyen egy típusos és egy leíró taggal, ez írná azt is, hogy , hogy doc, src forrásból jön -e az özenet
+    // List<zTableError>
     QStringList eval;
 
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
@@ -127,8 +129,8 @@ private:
     static const QMap<ErrCode, QString> ErrCodeNames;
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 
-    QString GetErrorMessage(const QString& cn, ErrCode code);
-    QString GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList &p);
+    //QString GetErrorMessage(const QString& cn, ErrCode code);
+    QString GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList &p);        
 };
 
 #endif // ZTABLE_H

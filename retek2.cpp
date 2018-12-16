@@ -12,6 +12,7 @@
 #include "zoshelper.h"
 #include "ziconhelper.h"
 #include "zdownloader.h"
+#include "ztableerror.h"
 
 #include <QRegularExpression>
 #include <QTableWidgetItem>
@@ -464,43 +465,33 @@ void retek2::mezoListaFeltolt(const zTable& t){
 
         if(m.hasMatch())
         {
-            // regexpel kell szétszedni
-            //
-            auto a = m.captured(1).split('.');
-            if(a[1].isEmpty())
-            {
-// tábla propertyre vonatkozik
+            auto b = m.captured(1);
+            int ix = m.capturedStart();
+            zTableError a = zTableError::Parse(b);
+            if(!a.isValid()) continue;
+
+            if(a.rowName.isEmpty())
+            { // tábla propertyre vonatkozik
             }
             else
             {
-                auto rix = zTablerow::findIx(t.rows, a[1]);
+                auto rix = zTablerow::findIx(t.rows, a.rowName);
                 if(rix>-1)
                 {
-                    //TODO - a[2] string->eval majd arra egy switch -> cix
-//                     auto e = zTablerow::GetErrCode(a[2]);
-//                     if(e)
-//                     {
-//                         auto cn = zTablerow::GetColNameFromErrorMessage(e);
-//                     }
-                      auto cn = zTablerow::GetColNameFromErrorMessage(a[2]);
-
-                      auto cix = ColNameIxes.value(cn, -1);
-                      if(cix>-1)
-                      {
-                          auto i = ui.tableWidget_MezoLista->item(rix, cix);
-                          i->setBackground(yb);
-                          i->setToolTip(*e);
-                          i->setIcon(pki);
-                      }
-                      else{
-                          zTrace();
-                      }
-
+                    auto cix = ColNameIxes.value(a.colName, -1);
+                    if(cix>-1)
+                    {
+                        auto i = ui.tableWidget_MezoLista->item(rix, cix);
+                        i->setBackground(yb);
+                        i->setToolTip((*e).left(ix).trimmed());
+                        i->setIcon(pki);
+                    }
+                    else
+                    {
+                        zTrace();
+                    }
                 }
-
-
             }
-
         }
     }
 //    auto yb = QBrush(Qt::yellow);

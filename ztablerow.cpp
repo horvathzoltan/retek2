@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "zstringhelper.h"
 #include "zxmlhelper.h"
+#include "ztableerror.h"
 
 #include <QXmlStreamWriter>
 
@@ -70,27 +71,27 @@ bool zTablerow::Compare(const zTablerow& rv, QStringList& e){
     bool v  = true;
     if(this->colName!=rv.colName)
     {
-        QString msg = GetFullErrorMessage(QStringLiteral("xtable"), ErrCode::noteq, {"colName", this->colName, rv.colName});
+        QString msg = GetFullErrorMessage("colName", ErrCode::noteq, {this->colName, rv.colName});
         e.append(msg);//QStringLiteral("colName Not Equals: (%1,%2)").arg(colName, rv.colName));
         v = false;
     }
     if(this->colType!=rv.colType)
     {
-        QString msg = GetFullErrorMessage(QStringLiteral("xtable"), ErrCode::noteq, {"colType", this->colType, rv.colType});
+        QString msg = GetFullErrorMessage("colType", ErrCode::noteq, {this->colType, rv.colType});
         e.append(msg);//QStringLiteral("colType Not Equals: %1(%2,%3)").arg(colName,colType,rv.colType ));
         v = false;
     }
 
     if(this->dlen!=rv.dlen)
     {
-        QString msg = GetFullErrorMessage(QStringLiteral("xtable"), ErrCode::noteq, {"dlen", QString::number(this->dlen), QString::number(rv.dlen)});
+        QString msg = GetFullErrorMessage("dlen", ErrCode::noteq, { QString::number(this->dlen), QString::number(rv.dlen)});
         e.append(msg);//QStringLiteral("dlen not equals: %1(%2,%3)").arg(colName).arg(this->dlen).arg(rv.dlen));
         v = false;
     }
 
     if(this->isNullable!=rv.isNullable)
     {
-        QString msg = GetFullErrorMessage(QStringLiteral("xtable"), ErrCode::noteq, {"isNullable",zStringHelper::boolToString(this->isNullable), zStringHelper::boolToString(rv.isNullable)});
+        QString msg = GetFullErrorMessage("isNullable", ErrCode::noteq, {zStringHelper::boolToString(this->isNullable), zStringHelper::boolToString(rv.isNullable)});
         e.append(msg);
         v = false;
     }
@@ -346,39 +347,25 @@ QStringList zTablerow::colNames(const QList<zTablerow> &rows){
 }
 
 
-QString zTablerow::GetErrorMessage(const QString& tn, const QString& cn, ErrCode code)
-{
-    auto c = ErrCodeNames[code];
-    auto l = QStringLiteral("[%1.%2.:%4]").arg(tn, this->colName, cn, c);
-    return l;
-}
+//QString zTablerow::GetErrorMessage(const QString& tn, const QString& cn, ErrCode code)
+//{
+//    auto c = ErrCodeNames[code];
+//    auto l = QStringLiteral("[%1.%2.%3:%4]").arg(tn, this->colName, cn, c);
+//    return l;
+//}
 
-QString zTablerow::GetFullErrorMessage(const QString& tn, ErrCode code, const QStringList& p)
+QString zTablerow::GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList& p)
 {
-    auto l1 = this->GetErrorMessage(tn, this->colName, code);
+    //auto l1 = this->GetErrorMessage("", cn, code);
+    auto l4 = zTableError{"", this->colName,cn, ErrCodeNames[code]}.toString();
     auto l2 = ErrCodeDescriptions[code];
     auto l3 = '('+p.join(',')+')';
-    QString msg = l2+' '+l3 +' '+ l1;
+    QString msg = l2+' '+l3 +' '+ l4;
 
     return msg;
 }
 
-const QString zTablerow::colNamePattern = QStringLiteral(R"(\[([\w]*).([\w]*).([\w]*):[\w]*\])");
 
-const QRegularExpression zTablerow::colNameRegexp = QRegularExpression(colNamePattern);
-
-QStringList zTablerow::GetColNameFromErrorMessage(const QString& tn)
-{
-    auto m = colNameRegexp.match(tn);
-
-    if(m.hasMatch())
-    {
-        return m.capturedTexts();
-        //return m.captured(2);
-    }
-
-    return QStringList();
-}
 
 const zTablerow::ErrCode* zTablerow::GetErrCode(const QString& a){
     zforeach(v, ErrCodeNames)

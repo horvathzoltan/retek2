@@ -14,6 +14,7 @@
 #include "zfilenamehelper.h"
 #include "ztextfilehelper.h"
 #include "zshortguid.h"
+#include "ztableerror.h"
 
 #include <QDir>
 #include <QRegularExpression>
@@ -204,19 +205,21 @@ const QMap<zTable::ErrCode, QString> zTable::ErrCodeNames
     {ErrCode::unknown, QStringLiteral("unknown")},
 };
 
-QString zTable::GetErrorMessage(const QString& cn, ErrCode code)
-{
-    auto c = zTable::ErrCodeNames[code];
-    auto l = QStringLiteral("[%1..%3:%4]").arg(this->name, cn, c);
-    return l;
-}
+//QString zTable::GetErrorMessage(const QString& cn, ErrCode code)
+//{
+//    auto c = zTable::ErrCodeNames[code];
+//    auto l = QStringLiteral("[%1..%3:%4]").arg(this->name, cn, c);
+//    return l;
+//}
 
 QString zTable::GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList& p)
 {
-    auto l1 = this->GetErrorMessage(cn, code);
+    auto l4 = zTableError{this->name, "", cn, ErrCodeNames[code]}.toString();
+
+    //auto l1 = this->GetErrorMessage(cn, code);
     auto l2 = ErrCodeDescriptions[code];
     auto l3 = '('+p.join(',')+')';
-    QString msg = l2+' '+l3 +' '+ l1;
+    QString msg = l2+' '+l3 +' '+ l4;
 
     return msg;
 }
@@ -231,8 +234,7 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
     {
         //TODO bevezetni  a táblában és a sorokban is- a túloldalt pedig kiszedni a táblázatnál
         //TODO kell egy konzisztencia lista - a legutolsó változásokkal a forrás, az sql és a dokumentáció irányába is
-        //TODO a konzisztencia listát időnként ellenőrízni - majd a tábla listát és a táblázatot frissítani - ikonok jelzések
-        //TODO COMPARE tábla és row végigvezetni!
+        //TODO a konzisztencia listát időnként ellenőrízni - majd a tábla listát és a táblázatot frissítani - ikonok jelzések        
         QString msg = GetFullErrorMessage(nameof(this->name), ErrCode::noteq, {"tablename",this->name, tv.name});
         e.append(msg);
         v = false;

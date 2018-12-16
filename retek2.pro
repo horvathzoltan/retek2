@@ -33,7 +33,8 @@ HEADERS += Beallitasok.h \
     ziconhelper.h \
     zlogicexception.h \
     zlocinfo.h \
-    zdownloader.h
+    zdownloader.h \
+    ztableerror.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \
@@ -61,7 +62,8 @@ SOURCES += Beallitasok.cpp \
     ziconhelper.cpp \
     zlogicexception.cpp \
     zlocinfo.cpp \
-    zdownloader.cpp
+    zdownloader.cpp \
+    ztableerror.cpp
 FORMS += retek2.ui \
     ztablenames.ui
 RESOURCES += retek2.qrc

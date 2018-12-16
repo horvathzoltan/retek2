@@ -21,8 +21,7 @@ public:
     bool isNullable;
     QString comment;
 
-    static const QString colNamePattern;
-    static const QRegularExpression colNameRegexp;
+
 
     QString toString() const;
 
@@ -47,7 +46,7 @@ public:
     static const QMap<ErrCode, QString> ErrCodeNames;
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 
-    QString GetErrorMessage(const QString& tn, const QString& cn, ErrCode code);    
+    //QString GetErrorMessage(const QString& tn, const QString& cn, ErrCode code);
     QString GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList& p);
     static const ErrCode* GetErrCode(const QString& a);
     static QStringList GetColNameFromErrorMessage(const QString& tn);
