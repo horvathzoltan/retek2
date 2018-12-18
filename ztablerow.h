@@ -1,10 +1,10 @@
 #ifndef ZTABLEROW_H
 #define ZTABLEROW_H
 
-
 #include <QString>
 #include <QXmlStreamWriter>
 #include <QMap>
+#include "ztableerror.h"
 
 //enum zRowSearchBy{ Name };
 
@@ -29,7 +29,7 @@ public:
 
     static zTablerow* getByName(const QList<zTablerow>&, const QString&);
 
-    bool Compare(const zTablerow& rv, QStringList& e);
+    bool Compare(const zTablerow& rv, QList<zTableError>& e);
     bool Validate(QStringList& e);
     QString CompareCaption(const QString&);
     bool isKnownTypeName(const QString&);
@@ -47,7 +47,7 @@ public:
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 
     //QString GetErrorMessage(const QString& tn, const QString& cn, ErrCode code);
-    QString GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList& p);
+    zTableError GetFullError(const QString& cn, ErrCode code, const QStringList& p);
     static const ErrCode* GetErrCode(const QString& a);
     static QStringList GetColNameFromErrorMessage(const QString& tn);
 };

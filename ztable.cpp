@@ -212,21 +212,19 @@ const QMap<zTable::ErrCode, QString> zTable::ErrCodeNames
 //    return l;
 //}
 
-QString zTable::GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList& p)
+zTableError zTable::GetFullError(const QString& cn, ErrCode code, const QStringList&  p)
 {
-    auto l4 = zTableError{this->name, "", cn, ErrCodeNames[code]}.toString();
-
-    //auto l1 = this->GetErrorMessage(cn, code);
-    auto l2 = ErrCodeDescriptions[code];
-    auto l3 = '('+p.join(',')+')';
-    QString msg = l2+' '+l3 +' '+ l4;
-
-    return msg;
+    auto err = zTableError(this->name, zStringHelper::Empty, cn, ErrCodeNames[code], ErrCodeDescriptions[code],  p);
+    return err;
 }
 
 
-bool zTable::Compare(const zTable& tv, QStringList& e){
+bool zTable::Compare(const zTable& tv, QList<zTableError>& e){
     zInfo(zfn());
+
+//    if(this->name.toLower()=="fue"){
+//        int x = 0;
+//    }
 
     bool v = true;
 
@@ -234,16 +232,18 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
     {
         //TODO bevezetni  a táblában és a sorokban is- a túloldalt pedig kiszedni a táblázatnál
         //TODO kell egy konzisztencia lista - a legutolsó változásokkal a forrás, az sql és a dokumentáció irányába is
-        //TODO a konzisztencia listát időnként ellenőrízni - majd a tábla listát és a táblázatot frissítani - ikonok jelzések        
-        QString msg = GetFullErrorMessage(nameof(this->name), ErrCode::noteq, {"tablename",this->name, tv.name});
-        e.append(msg);
+        //TODO a konzisztencia listát időnként ellenőrízni - majd a tábla listát és a táblázatot frissítani - ikonok jelzések               
+
+        auto err = GetFullError(nameof(this->name), ErrCode::noteq, {"tablename",this->name, tv.name});
+        e.append(err);
         v = false;
     }
 
     if(this->pkname()!=tv.pkname())
     {
-        QString msg = GetFullErrorMessage(nameof(this->name), ErrCode::noteq, {"pkname",this->name, tv.name});
-        e.append(msg);//QStringLiteral("PkName Not Equals: %1(%2, %3) [table.pkname]").arg(this->name, this->pkname(), tv.pkname()));
+
+        auto err = GetFullError(nameof(this->name), ErrCode::noteq, {"pkname",this->name, tv.name});
+        e.append(err);//QStringLiteral("PkName Not Equals: %1(%2, %3) [table.pkname]").arg(this->name, this->pkname(), tv.pkname()));
         v = false;
     }
 
@@ -272,8 +272,8 @@ bool zTable::Compare(const zTable& tv, QStringList& e){
             else
             {
                 //TODO részleges egyezés?
-                QString msg = GetFullErrorMessage(nameof(this->name), ErrCode::unknown, {"Field", r->colName});
-                e.append(msg);//QStringLiteral("Ismeretlen mező: %1").arg(r->colName));
+                auto err = GetFullError(nameof(this->name), ErrCode::unknown, {"Field", r->colName});
+                e.append(err);//QStringLiteral("Ismeretlen mező: %1").arg(r->colName));
                 v=false;
             }
         }
@@ -1561,7 +1561,7 @@ bool zTable::validateSource(){
             t->name = this->name;
             if(t->class_name == this->class_name)
             {
-                QStringList e;
+                //QStringList e;
                 auto isOK = Compare(*t, eval);
                 //validateEval(isOK, e, QStringLiteral("src"));
                 return isOK;
@@ -1623,15 +1623,13 @@ bool zTable::validateDocument(){
 
         zforeach(t,tl)
         {         
-            //t->name = this->name;
             if(t->name == this->name)
             {
-//                if(+t->name.toLower()=="fue"){
+//                if(t->name.toLower()=="fue"){
 //                    int x = 0;
 //                }
-                //QStringList e;
+
                 auto isOK = Compare(*t, eval);
-                //validateEval(isOK, eval, QStringLiteral("doc"));
 
                 return isOK;
             }

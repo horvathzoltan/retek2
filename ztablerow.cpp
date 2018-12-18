@@ -67,32 +67,32 @@ const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeDescriptions
 sorokat hasonlít össze - metaadataik alapján
 */
 //
-bool zTablerow::Compare(const zTablerow& rv, QStringList& e){
+bool zTablerow::Compare(const zTablerow& rv, QList<zTableError>& e){
     bool v  = true;
     if(this->colName!=rv.colName)
     {
-        QString msg = GetFullErrorMessage("colName", ErrCode::noteq, {this->colName, rv.colName});
-        e.append(msg);//QStringLiteral("colName Not Equals: (%1,%2)").arg(colName, rv.colName));
+        auto err = GetFullError("colName", ErrCode::noteq, {this->colName, rv.colName});
+        e.append(err);//QStringLiteral("colName Not Equals: (%1,%2)").arg(colName, rv.colName));
         v = false;
     }
     if(this->colType!=rv.colType)
     {
-        QString msg = GetFullErrorMessage("colType", ErrCode::noteq, {this->colType, rv.colType});
-        e.append(msg);//QStringLiteral("colType Not Equals: %1(%2,%3)").arg(colName,colType,rv.colType ));
+        auto err = GetFullError("colType", ErrCode::noteq, {this->colType, rv.colType});
+        e.append(err);//QStringLiteral("colType Not Equals: %1(%2,%3)").arg(colName,colType,rv.colType ));
         v = false;
     }
 
     if(this->dlen!=rv.dlen)
     {
-        QString msg = GetFullErrorMessage("dlen", ErrCode::noteq, { QString::number(this->dlen), QString::number(rv.dlen)});
-        e.append(msg);//QStringLiteral("dlen not equals: %1(%2,%3)").arg(colName).arg(this->dlen).arg(rv.dlen));
+        auto err = GetFullError("dlen", ErrCode::noteq, { QString::number(this->dlen), QString::number(rv.dlen)});
+        e.append(err);//QStringLiteral("dlen not equals: %1(%2,%3)").arg(colName).arg(this->dlen).arg(rv.dlen));
         v = false;
     }
 
     if(this->isNullable!=rv.isNullable)
     {
-        QString msg = GetFullErrorMessage("isNullable", ErrCode::noteq, {zStringHelper::boolToString(this->isNullable), zStringHelper::boolToString(rv.isNullable)});
-        e.append(msg);
+        auto err = GetFullError("isNullable", ErrCode::noteq, {zStringHelper::boolToString(this->isNullable), zStringHelper::boolToString(rv.isNullable)});
+        e.append(err);
         v = false;
     }
 
@@ -354,15 +354,15 @@ QStringList zTablerow::colNames(const QList<zTablerow> &rows){
 //    return l;
 //}
 
-QString zTablerow::GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList& p)
+zTableError zTablerow::GetFullError(const QString& cn, ErrCode code, const QStringList& p)
 {
-    //auto l1 = this->GetErrorMessage("", cn, code);
-    auto l4 = zTableError{"", this->colName,cn, ErrCodeNames[code]}.toString();
-    auto l2 = ErrCodeDescriptions[code];
-    auto l3 = '('+p.join(',')+')';
-    QString msg = l2+' '+l3 +' '+ l4;
+    auto err = zTableError(zStringHelper::Empty, this->colName, cn, ErrCodeNames[code], ErrCodeDescriptions[code], p);
+//    auto l4 = err.toString();
+//    auto l2 = ErrCodeDescriptions[code];
+//    auto l3 = '('+p.join(',')+')';
+//    QString msg = l2+' '+l3 +' '+ l4;
 
-    return msg;
+    return err;
 }
 
 

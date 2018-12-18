@@ -455,35 +455,36 @@ void retek2::mezoListaFeltolt(const zTable& t){
 //    {
 
 //    }
-    auto r = QRegularExpression(QStringLiteral(R"(\[([\w\S]*)\])"));
+    //auto r = QRegularExpression(QStringLiteral(R"(\[([\w\S]*)\])"));
     auto yb = QBrush(Qt::yellow);
     auto pki = QIcon(QStringLiteral(":/alert-triangle.ico"));
 
-    zforeach(e,t.eval)
+    zforeach(a,t.eval)
     {
-        QRegularExpressionMatch m = r.match(*e);
+        //QRegularExpressionMatch m = r.match(*e);
 
-        if(m.hasMatch())
-        {
-            auto b = m.captured(1);
-            int ix = m.capturedStart();
-            zTableError a = zTableError::Parse(b);
-            if(!a.isValid()) continue;
+//        if(m.hasMatch())
+//        {
+//            auto b = m.captured(1);
+//            int ix = m.capturedStart();
+//            zTableError a = zTableError::Parse(b);
 
-            if(a.rowName.isEmpty())
+            if(!(a->isValid())) continue;
+
+            if(a->rowName.isEmpty())
             { // tábla propertyre vonatkozik
             }
             else
             {
-                auto rix = zTablerow::findIx(t.rows, a.rowName);
+                auto rix = zTablerow::findIx(t.rows, a->rowName);
                 if(rix>-1)
                 {
-                    auto cix = ColNameIxes.value(a.colName, -1);
+                    auto cix = ColNameIxes.value(a->colName, -1);
                     if(cix>-1)
                     {
                         auto i = ui.tableWidget_MezoLista->item(rix, cix);
                         i->setBackground(yb);
-                        i->setToolTip((*e).left(ix).trimmed());
+                        i->setToolTip(a->toString());
                         i->setIcon(pki);
                     }
                     else
@@ -492,7 +493,7 @@ void retek2::mezoListaFeltolt(const zTable& t){
                     }
                 }
             }
-        }
+//        }
     }
 //    auto yb = QBrush(Qt::yellow);
 //    auto pki = QIcon(QStringLiteral(":/alert-triangle.ico"));
@@ -771,13 +772,15 @@ void retek2::on_pushButton_2_clicked()
                     auto t_sql = zsql.getTable(schemaName, t->sql_table);
                     t_sql.initSql(dbconn.Name, schemaName, t_sql.sql_table);
 
-                    QStringList e;
+                    QList<zTableError> e;
                     auto vl = t_sql.Compare(*t, e);
                     zError("--- "+t->sql_table+" ---");
 
                     zforeach(ee, e)
                     {
-                        zInfo(*ee);
+                        //auto msg = (ee->message);
+
+                        zInfo(ee->message);
                     }
                 }
                 zInfo(QStringLiteral("--- --- ---"));

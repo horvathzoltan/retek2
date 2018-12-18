@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include "zconversionmap.h"
 #include "zstringhelper.h"
+#include "ztableerror.h"
 #include "ztablerow.h"
 
 //enum zTableSourceTypes:int { SQL=0, TXT=1, ENTITY=2 };
@@ -58,7 +59,8 @@ public:
 
     //TODO eval: ez egy struct kellene legyen egy típusos és egy leíró taggal, ez írná azt is, hogy , hogy doc, src forrásból jön -e az özenet
     // List<zTableError>
-    QStringList eval;
+
+    QList<zTableError> eval;
 
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );
     //static zTable LoadFromMSSQL(QString, QMap<QString, QString>, QString );
@@ -66,7 +68,7 @@ public:
 
     QString toString() const;
 
-    bool Compare(const zTable &, QStringList &);
+    bool Compare(const zTable &, QList<zTableError>& e);
 
     static QList<zTable> createTableByText(QString txt);    
     static QList<zTable> createTableByText_2(QString txt);
@@ -130,7 +132,7 @@ private:
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 
     //QString GetErrorMessage(const QString& cn, ErrCode code);
-    QString GetFullErrorMessage(const QString& cn, ErrCode code, const QStringList &p);        
+    zTableError GetFullError(const QString& cn, ErrCode code, const QStringList &p);
 };
 
 #endif // ZTABLE_H
