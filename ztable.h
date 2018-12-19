@@ -68,7 +68,7 @@ public:
 
     QString toString() const;
 
-    bool Compare(const zTable &, QList<zTableError>& e);
+    bool Compare(const zTable &, QList<zTableError>& e, const QString& source);
 
     static QList<zTable> createTableByText(QString txt);    
     static QList<zTable> createTableByText_2(QString txt);
@@ -132,7 +132,7 @@ private:
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 
     //QString GetErrorMessage(const QString& cn, ErrCode code);
-    zTableError GetFullError(const QString& cn, ErrCode code, const QStringList &p);
+    zTableError GetFullError(const QString& cn, ErrCode code, const QStringList &p, const QString &prefix);
 };
 
 #endif // ZTABLE_H

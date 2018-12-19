@@ -473,6 +473,7 @@ void retek2::mezoListaFeltolt(const zTable& t){
 
             if(a->rowName.isEmpty())
             { // tábla propertyre vonatkozik
+                //ezt a listában kell kitenni
             }
             else
             {
@@ -773,7 +774,7 @@ void retek2::on_pushButton_2_clicked()
                     t_sql.initSql(dbconn.Name, schemaName, t_sql.sql_table);
 
                     QList<zTableError> e;
-                    auto vl = t_sql.Compare(*t, e);
+                    auto vl = t_sql.Compare(*t, e, QStringLiteral("sql_validation"));
                     zError("--- "+t->sql_table+" ---");
 
                     zforeach(ee, e)
@@ -1169,7 +1170,8 @@ void retek2::tablesFeltolt(const dbConnection& c, const QString& schemaName) {
 
     auto tableNames = zsql.getTableNames(schemaName);
     ui.listWidget_tables->addItems(tableNames);
-
+    // TODO a t->eval táblára vonatkozóit az itemsekhez kell tenni
+    // TODO a táblázat fejléc fölé egy tábla property összefoglalót lehetne tenni a table settings tab helyett
 }
 
 //listWidget_schemas

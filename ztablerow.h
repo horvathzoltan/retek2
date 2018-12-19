@@ -29,7 +29,7 @@ public:
 
     static zTablerow* getByName(const QList<zTablerow>&, const QString&);
 
-    bool Compare(const zTablerow& rv, QList<zTableError>& e);
+    bool Compare(const zTablerow& rv, QList<zTableError>& e, const QString& source);
     bool Validate(QStringList& e);
     QString CompareCaption(const QString&);
     bool isKnownTypeName(const QString&);
@@ -47,7 +47,7 @@ public:
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 
     //QString GetErrorMessage(const QString& tn, const QString& cn, ErrCode code);
-    zTableError GetFullError(const QString& cn, ErrCode code, const QStringList& p);
+    zTableError GetFullError(const QString& cn, ErrCode code, const QStringList& p, const QString &source);
     static const ErrCode* GetErrCode(const QString& a);
     static QStringList GetColNameFromErrorMessage(const QString& tn);
 };

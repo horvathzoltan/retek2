@@ -212,14 +212,14 @@ const QMap<zTable::ErrCode, QString> zTable::ErrCodeNames
 //    return l;
 //}
 
-zTableError zTable::GetFullError(const QString& cn, ErrCode code, const QStringList&  p)
-{
-    auto err = zTableError(this->name, zStringHelper::Empty, cn, ErrCodeNames[code], ErrCodeDescriptions[code],  p);
+zTableError zTable::GetFullError(const QString& cn, ErrCode code, const QStringList&  p, const QString& source)
+{   
+    auto err = zTableError(this->name, zStringHelper::Empty, cn, ErrCodeNames[code],source, ErrCodeDescriptions[code],  p);
     return err;
 }
 
 
-bool zTable::Compare(const zTable& tv, QList<zTableError>& e){
+bool zTable::Compare(const zTable& tv, QList<zTableError>& e, const QString& source){
     zInfo(zfn());
 
 //    if(this->name.toLower()=="fue"){
@@ -228,13 +228,9 @@ bool zTable::Compare(const zTable& tv, QList<zTableError>& e){
 
     bool v = true;
 
-    if(this->name!='q'+tv.name)
+    if(this->name != tv.name)
     {
-        //TODO bevezetni  a táblában és a sorokban is- a túloldalt pedig kiszedni a táblázatnál
-        //TODO kell egy konzisztencia lista - a legutolsó változásokkal a forrás, az sql és a dokumentáció irányába is
-        //TODO a konzisztencia listát időnként ellenőrízni - majd a tábla listát és a táblázatot frissítani - ikonok jelzések               
-
-        auto err = GetFullError(nameof(this->name), ErrCode::noteq, {"tablename",this->name, tv.name});
+        auto err = GetFullError(nameof(this->name), ErrCode::noteq, {"tablename",this->name, tv.name}, source);
         e.append(err);
         v = false;
     }
@@ -242,8 +238,8 @@ bool zTable::Compare(const zTable& tv, QList<zTableError>& e){
     if(this->pkname()!=tv.pkname())
     {
 
-        auto err = GetFullError(nameof(this->name), ErrCode::noteq, {"pkname",this->name, tv.name});
-        e.append(err);//QStringLiteral("PkName Not Equals: %1(%2, %3) [table.pkname]").arg(this->name, this->pkname(), tv.pkname()));
+        auto err = GetFullError(nameof(this->name), ErrCode::noteq, {"pkname",this->name, tv.name}, source);
+        e.append(err);
         v = false;
     }
 
@@ -263,7 +259,7 @@ bool zTable::Compare(const zTable& tv, QList<zTableError>& e){
 //            }
             if(rv != nullptr)
             {
-               auto v2 = r->Compare(*rv, e);
+               auto v2 = r->Compare(*rv, e, source);
                if(!v2)
                {                   
                    v = false;
@@ -272,8 +268,8 @@ bool zTable::Compare(const zTable& tv, QList<zTableError>& e){
             else
             {
                 //TODO részleges egyezés?
-                auto err = GetFullError(nameof(this->name), ErrCode::unknown, {"Field", r->colName});
-                e.append(err);//QStringLiteral("Ismeretlen mező: %1").arg(r->colName));
+                auto err = GetFullError(nameof(this->name), ErrCode::unknown, {"Field", r->colName}, source);
+                e.append(err);
                 v=false;
             }
         }
@@ -1537,7 +1533,7 @@ bool zTable::validateSQL(){
     zTable t_sql = zsql.getTable(this->sql_schema, this->sql_table);
 
     //QStringList e;
-    auto isOK = Compare(t_sql, this->eval);
+    auto isOK = Compare(t_sql, this->eval, nameof(zTable::validateSQL()));
     //validateEval(isOK, e, QStringLiteral("sql"));
     return isOK;
 }
@@ -1562,7 +1558,7 @@ bool zTable::validateSource(){
             if(t->class_name == this->class_name)
             {
                 //QStringList e;
-                auto isOK = Compare(*t, eval);
+                auto isOK = Compare(*t, eval, nameof(zTable::validateSource()));
                 //validateEval(isOK, e, QStringLiteral("src"));
                 return isOK;
             }
@@ -1575,33 +1571,7 @@ bool zTable::validateSource(){
 bool zTable::validateDocument(){    
     zTrace();
     if(!this->document_path.isEmpty())
-    {
-        // TODO ha a forrás http vagy https akkor le kell tölteni külső toolal a fájlt
-        // és át kell adni a path-t
-        // ha nem, akkor  a path van benne
-
-        // nem biztos, hogy a project könyvtárban van - itt külömbséget kellene tenni, hogy igen, vagy nem
-        // ha igen, akkor relatív, ha nem , abszolót path kell
-        // ha ez url, akkor le kell tölteni a project könyvtárba
-
-        // a project könyvtárnak is kellene tükröznie ezt a hármas tagoltságot
-        // és azt is, hogy a generált dolgok hova kerüljenek
-
-        /*
-         * /home/zoli/retek2/munka_dir/wiki1/CGCStock.Data/Entity/Fue.cs
-        QString approot = QStringLiteral(R"(retek2)");
-
-        // webes, ha http vagy https-el kezdődik,
-        // globális, ha meghajtóbetűvel kezdődik
-        // lokális, ha az alkalmazás könyvtárában van
-        // - ez azt jelenti, hogy a path eleje konkrét stringgel egyezik
-        //   azaz a felhasználó egy adott könyvtárára mutat
-        // - ha a path + lokális létezik
-        // egyébként globálisként kezelendő
-         */
-
-        //https://github.com/Satius/qt5/blob/master/qtbase/src/gui/text/qtexthtmlparser.cpp
-//QTextHtmlEntity
+    {           
         QString f_txt;
 
         if(zFileNameHelper::isURL(this->document_path))
@@ -1629,8 +1599,7 @@ bool zTable::validateDocument(){
 //                    int x = 0;
 //                }
 
-                auto isOK = Compare(*t, eval);
-
+                auto isOK = Compare(*t, eval, nameof(zTable::validateDocument()));
                 return isOK;
             }
         }

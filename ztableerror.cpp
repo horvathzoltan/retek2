@@ -8,7 +8,7 @@ const QString zTableError::colNamePattern = QStringLiteral(R"(([\w]*).([\w]*).([
 
 const QRegularExpression zTableError::colNameRegexp = QRegularExpression(colNamePattern);
 
-const zTableError zTableError::Empty {zStringHelper::Empty,zStringHelper::Empty,zStringHelper::Empty,zStringHelper::Empty};
+const zTableError zTableError::Empty {zStringHelper::Empty,zStringHelper::Empty,zStringHelper::Empty,zStringHelper::Empty, zStringHelper::Empty};
 
 //zTableError zTableError::Parse(const QString& tn)
 //{
@@ -29,14 +29,19 @@ const zTableError zTableError::Empty {zStringHelper::Empty,zStringHelper::Empty,
 
 QString zTableError::toString() const
 {
+    QString e = this->description;
     if(!this->params.isEmpty())
     {
-        return this->description + ' ('+this->params.join(',')+')';
+        e.append(" ("+this->params.join(',')+')');
     }
-    return this->description;
+    if(!this->source.isEmpty())
+    {
+        e.prepend(this->source+": ");
+    }
+    return e;
 }
 
-zTableError::zTableError(const QString &tn, const QString &rn, const QString &cn, const QString &msg, const QString &desc, const QStringList &l)
+zTableError::zTableError(const QString &tn, const QString &rn, const QString &cn, const QString &msg,  const QString& src, const QString &desc, const QStringList &l)
 {
     this->tableName = tn;
     this->rowName = rn;
@@ -44,6 +49,7 @@ zTableError::zTableError(const QString &tn, const QString &rn, const QString &cn
     this->message = msg;
     this->description = desc;
     this->params = l;
+    this->source = src;
 //    if(!l.isEmpty())
 //    {
 //        auto d = '('+l.join(',')+')';
@@ -55,4 +61,9 @@ zTableError::zTableError(const QString &tn, const QString &rn, const QString &cn
 bool zTableError::isValid() const
 {
     return !(this->rowName.isEmpty()&&this->tableName.isEmpty()&&this->colName.isEmpty());
+}
+
+void zTableError::addDescription(const QString &a)
+{
+    this->description.prepend(a+' ');
 }

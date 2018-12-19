@@ -15,12 +15,15 @@ public:
 //    static zTableError Parse(const QString& m);
     QString toString() const;
 
-    zTableError(const QString&, const QString& ,const QString&, const QString&, const QString & = zStringHelper::Empty, const QStringList &l = QStringList());
+    zTableError(const QString&, const QString& ,const QString&, const QString&,  const QString&, const QString & = zStringHelper::Empty, const QStringList &l = QStringList());
 
     bool isValid() const;
     static const zTableError Empty;
+
+    void addDescription(const QString&);
 private:    
     QString description;
+    QString source;
     static const QString colNamePattern;
     static const QRegularExpression colNameRegexp;
 

@@ -67,31 +67,31 @@ const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeDescriptions
 sorokat hasonlít össze - metaadataik alapján
 */
 //
-bool zTablerow::Compare(const zTablerow& rv, QList<zTableError>& e){
+bool zTablerow::Compare(const zTablerow& rv, QList<zTableError>& e, const QString& source){
     bool v  = true;
     if(this->colName!=rv.colName)
     {
-        auto err = GetFullError("colName", ErrCode::noteq, {this->colName, rv.colName});
+        auto err = GetFullError("colName", ErrCode::noteq, {this->colName, rv.colName}, source);
         e.append(err);//QStringLiteral("colName Not Equals: (%1,%2)").arg(colName, rv.colName));
         v = false;
     }
     if(this->colType!=rv.colType)
     {
-        auto err = GetFullError("colType", ErrCode::noteq, {this->colType, rv.colType});
+        auto err = GetFullError("colType", ErrCode::noteq, {this->colType, rv.colType}, source);
         e.append(err);//QStringLiteral("colType Not Equals: %1(%2,%3)").arg(colName,colType,rv.colType ));
         v = false;
     }
 
     if(this->dlen!=rv.dlen)
     {
-        auto err = GetFullError("dlen", ErrCode::noteq, { QString::number(this->dlen), QString::number(rv.dlen)});
+        auto err = GetFullError("dlen", ErrCode::noteq, { QString::number(this->dlen), QString::number(rv.dlen)}, source);
         e.append(err);//QStringLiteral("dlen not equals: %1(%2,%3)").arg(colName).arg(this->dlen).arg(rv.dlen));
         v = false;
     }
 
     if(this->isNullable!=rv.isNullable)
     {
-        auto err = GetFullError("isNullable", ErrCode::noteq, {zStringHelper::boolToString(this->isNullable), zStringHelper::boolToString(rv.isNullable)});
+        auto err = GetFullError("isNullable", ErrCode::noteq, {zStringHelper::boolToString(this->isNullable), zStringHelper::boolToString(rv.isNullable)}, source);
         e.append(err);
         v = false;
     }
@@ -354,9 +354,9 @@ QStringList zTablerow::colNames(const QList<zTablerow> &rows){
 //    return l;
 //}
 
-zTableError zTablerow::GetFullError(const QString& cn, ErrCode code, const QStringList& p)
+zTableError zTablerow::GetFullError(const QString& cn, ErrCode code, const QStringList& p,const QString& source)
 {
-    auto err = zTableError(zStringHelper::Empty, this->colName, cn, ErrCodeNames[code], ErrCodeDescriptions[code], p);
+    auto err = zTableError(zStringHelper::Empty, this->colName, cn, ErrCodeNames[code], source, ErrCodeDescriptions[code], p);
 //    auto l4 = err.toString();
 //    auto l2 = ErrCodeDescriptions[code];
 //    auto l3 = '('+p.join(',')+')';
