@@ -41,7 +41,7 @@ public:
 
     QString class_path;//class_path // ez pedig az az entitás, ami a forráskódban osztályként írja le az adatot - elvileg ez egy adott osztályt tartalmazó file teljes neve
     QString class_name; // osztálynév - singular, ezt a zTables példány létrehozásakor létre lehet már hozni, és validálni egy szabály szerint
-    QString class_name_plural; // killekció - osztálynév
+    QString class_name_plural; // kollekció - osztálynév
     bool source_isValid;
     QDateTime source_updateTimeStamp;
 
@@ -123,6 +123,7 @@ public:
     
     QString pkname() const;
     bool hasPkname() const;
+    QString SqlConnToString() const;
 private:
     static const QString PKNAME;
     //void validateEval(bool isOK, const QStringList& e, const QString&);
@@ -133,6 +134,8 @@ private:
 
     //QString GetErrorMessage(const QString& cn, ErrCode code);
     zTableError GetFullError(const QString& cn, ErrCode code, const QStringList &p, const QString &prefix);
+
+
 };
 
 #endif // ZTABLE_H

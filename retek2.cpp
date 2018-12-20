@@ -23,6 +23,7 @@
 #include <QMessageBox>
 #include <QSqlError>
 
+#include <QClipboard>
 #include <QDir>
 #include <QIcon>
 
@@ -554,6 +555,7 @@ QTableWidgetItem* retek2::CreateTableItem(const QVariant& v){
 /*!
  \fn retek2::GenerateAll()
 
+
  generate files by selected templates
 */
 void retek2::GenerateAll() {        
@@ -561,12 +563,13 @@ void retek2::GenerateAll() {
         zError(QStringLiteral("nincs tábla kiválasztva"));
         return;
     }
+    QString clp;
 
     auto class_name = zStringHelper::getclass_nameCamelCase(table->name);
 
     //saveTablaToXML(table->tablename);
-
     if (ui.checkBox_XML->isChecked()) {
+
         zInfo(QStringLiteral("XML"));
 
         QString e;
@@ -578,6 +581,11 @@ void retek2::GenerateAll() {
         s.writeEndDocument();
 
         zInfo(e);
+        if(ui.checkBox_clipboard->isChecked())
+        {
+            if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
+            clp+=e;
+        }
     }
 
 	if (ui.checkBox_CClass->isChecked()) {
@@ -588,6 +596,11 @@ void retek2::GenerateAll() {
         //auto fn = zFileNameHelper::append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + ".cs");
         auto fn = zFileNameHelper::getCurrentProjectFileName(table->name + ".cs");
         zTextFileHelper::save(txt, fn);
+        if(ui.checkBox_clipboard->isChecked())
+        {
+            if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
+            clp+=txt;
+        }
 	}
 
     if (ui.checkBox_Enum->isChecked())
@@ -608,6 +621,11 @@ void retek2::GenerateAll() {
                     auto fn = zFileNameHelper::getCurrentProjectFileName(table->name + "_enum.cs");
                             //append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName,table->name + "_enum.cs");
                     zTextFileHelper::save(txt, fn);
+                    if(ui.checkBox_clipboard->isChecked())
+                    {
+                        if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
+                        clp+=txt;
+                    }
                 }
                 else{
                     zInfo(QStringLiteral("nincs sqlinit"));
@@ -632,6 +650,12 @@ void retek2::GenerateAll() {
         zInfo(txt);
         auto fn = beallitasok.getModelFilename(class_name + ".cs", QStringLiteral("Entities"));
         zTextFileHelper::save(txt, fn);
+
+        if(ui.checkBox_clipboard->isChecked())
+        {
+            if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
+            clp+=txt;
+        }
     }
 
 	//checkBox_Context
@@ -646,24 +670,44 @@ void retek2::GenerateAll() {
         auto txt = generateTmp(QStringLiteral("MVC_Model.cs"));
         //zInfo\([\w)]+\);
         zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + ".cs", QStringLiteral("Models")));
+        if(ui.checkBox_clipboard->isChecked())
+        {
+            if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
+            clp+=txt;
+        }
 	}
 
 	if (ui.checkBox_Meta->isChecked()) {
         zInfo(QStringLiteral("ModelMeta"));
         auto txt = generateTmp(QStringLiteral("MVC_ModelMeta.cs"));
         zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "Meta" + ".cs", QStringLiteral("Models")));
+        if(ui.checkBox_clipboard->isChecked())
+        {
+            if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
+            clp+=txt;
+        }
 	}
 
 	if (ui.checkBox_Controller->isChecked()) {
         zInfo(QStringLiteral("Controller"));
         auto txt = generateTmp(QStringLiteral("MVC_Controller.cs"));
         zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "Controller" + ".cs", QStringLiteral("Controllers")));
+        if(ui.checkBox_clipboard->isChecked())
+        {
+            if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
+            clp+=txt;
+        }
 	}
 
     if (ui.checkBox_DataProvider->isChecked()) {
         zInfo(QStringLiteral("DataProvider"));
         auto txt = generateTmp(QStringLiteral("MVC_DataProvider.cs"));
         zTextFileHelper::save(txt, beallitasok.getModelFilename(class_name + "DataProvider" + ".cs", QStringLiteral("DataProviders")));
+        if(ui.checkBox_clipboard->isChecked())
+        {
+            if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
+            clp+=txt;
+        }
     }
 
     if (ui.checkBox_View->isChecked()) {
@@ -673,6 +717,14 @@ void retek2::GenerateAll() {
 
         auto txtAdatlap = generateTmp(QStringLiteral("MVC_ViewAdatlapDX.cshtml"));
         zTextFileHelper::save(txtAdatlap, beallitasok.getModelFilename(class_name + "ViewAdatlapDX" + ".cshtml", QStringLiteral("Views")));
+
+        if(ui.checkBox_clipboard->isChecked())
+        {
+            if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
+            clp+=txtIndex;
+            if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
+            clp+=txtAdatlap;
+        }
     }
 
 //	if (ui.checkBox_ViewIndex->isChecked()) {
@@ -709,6 +761,12 @@ void retek2::GenerateAll() {
     //    qDebug("Nincs tabla kivalasztva!");
     //}
 
+
+    if(ui.checkBox_clipboard->isChecked() && !clp.isEmpty())
+    {
+        QClipboard *clipboard = QGuiApplication::clipboard();
+        clipboard->setText(clp);
+    }
 }
 
 
@@ -1332,6 +1390,11 @@ void retek2::zTableNamesToUi(const zTable& t){
     ui.lineEdit_tablename->setText(t.sql_table);
     ui.lineEdit_class_name->setText(t.class_name);
     ui.lineEdit_class_name_plural->setText(t.class_name_plural);
+
+    ui.lineEdit_src_src->setText(t.class_path);
+    ui.lineEdit_src_doc->setText(t.document_path);
+
+    ui.lineEdit_src_sql->setText(t.SqlConnToString());
 }
 
 void retek2::zTableNamesFromUi(zTable& t){

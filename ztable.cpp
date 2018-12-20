@@ -218,6 +218,20 @@ zTableError zTable::GetFullError(const QString& cn, ErrCode code, const QStringL
     return err;
 }
 
+QString zTable::SqlConnToString() const
+{
+    QString sqlconn;
+    if(!this->sql_conn.isEmpty())
+    {
+        sqlconn = this->sql_conn;
+        if(!this->sql_conn.isEmpty())
+        {
+            sqlconn += QStringLiteral("; Db=")+this->sql_schema;
+        }
+    }
+    return sqlconn;
+}
+
 
 bool zTable::Compare(const zTable& tv, QList<zTableError>& e, const QString& source){
     zInfo(zfn());

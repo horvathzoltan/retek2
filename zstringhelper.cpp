@@ -15,6 +15,12 @@ zStringHelper::zStringHelper()
 */
 const QChar zStringHelper::SEP = ';';
 const QString zStringHelper::Empty = QString();
+#ifdef Q_OS_LINUX
+const QString zStringHelper::NewLine = QStringLiteral("\n");
+#elif define(Q_OS_WIN)
+const QString zStringHelper::NewLine = QStringLiteral("\r\n");
+#endif
+
 
 const QString zStringHelper::Equals = QStringLiteral("Equals");
 

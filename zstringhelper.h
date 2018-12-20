@@ -11,6 +11,7 @@ class zStringHelper
 public:
     static const QChar SEP;
     static const QString Empty;
+    static const QString NewLine;
     static const QString Equals;
 
     static const QStringList TrueStr;
