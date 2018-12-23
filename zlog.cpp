@@ -239,9 +239,9 @@ void zLog::error2(const QString& msg, const zLocInfo& locinfo){
 #ifdef Q_OS_WIN
     auto a = __FUNCTION__;
 #elif defined(Q_OS_LINUX)
-    auto a = __PRETTY_FUNCTION__;
+    auto a = static_cast<const char*>(__PRETTY_FUNCTION__);
 #endif
-    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(a)).critical().noquote()<<msg2;
+    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, a).critical().noquote()<<msg2;
 #ifdef Q_OS_LINUX
     if(isBreakOnError) std::raise(SIGTRAP);
 #endif
@@ -259,9 +259,9 @@ void zLog::warning2(const QString& msg, const zLocInfo& locinfo){
 #ifdef Q_OS_WIN
     auto a = __FUNCTION__;
 #elif defined(Q_OS_LINUX)
-    auto a = __PRETTY_FUNCTION__;
+    auto a = static_cast<const char*>(__PRETTY_FUNCTION__);
 #endif
-    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(a)).warning().noquote()<<msg2;
+    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, a).warning().noquote()<<msg2;
 #endif
     }
 
@@ -282,9 +282,9 @@ void zLog::info2(const QString& msg, const zLocInfo& locinfo)
 #ifdef Q_OS_WIN
     auto a = __FUNCTION__;
 #elif defined(Q_OS_LINUX)
-    auto a = __PRETTY_FUNCTION__;
+    auto a = static_cast<const char*>(__PRETTY_FUNCTION__);
 #endif
-    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(a)).info().noquote()<<msg2;
+    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, a).info().noquote()<<msg2;
 #endif
 }
 
@@ -307,9 +307,9 @@ void zLog::info2(const QStringList& msgl, const zLocInfo& locinfo)
 #ifdef Q_OS_WIN
     auto a = __FUNCTION__;
 #elif defined(Q_OS_LINUX)
-    auto a = __PRETTY_FUNCTION__;
+        auto a = static_cast<const char*>(__PRETTY_FUNCTION__);
 #endif
-        QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(a)).info().noquote()<<msg2;
+        QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, a).info().noquote()<<msg2;
 #endif
     }
 }
@@ -326,9 +326,9 @@ void zLog::debug2(const zLocInfo& locinfo){
 #ifdef Q_OS_WIN
     auto a = __FUNCTION__;
 #elif defined(Q_OS_LINUX)
-    auto a = __PRETTY_FUNCTION__;
+    auto a = static_cast<const char*>(__PRETTY_FUNCTION__);
 #endif
-    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(a)).debug().noquote()<<msg2;
+    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, a).debug().noquote()<<msg2;
 #ifdef Q_OS_LINUX
     if(isBreakOnError) std::raise(SIGTRAP);
 #endif
@@ -346,8 +346,8 @@ void zLog::trace2(const zLocInfo& locinfo){
 #ifdef Q_OS_WIN
     auto a = __FUNCTION__;
 #elif defined(Q_OS_LINUX)
-    auto a = __PRETTY_FUNCTION__;
+    auto a = static_cast<const char*>(__PRETTY_FUNCTION__);
 #endif
-   QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, static_cast<const char*>(a)).debug().noquote()<<msg2;
+   QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, a).debug().noquote()<<msg2;
 #endif
     }
