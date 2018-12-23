@@ -25,7 +25,9 @@
 
 #include <QClipboard>
 #include <QDir>
+#include <QFileDialog>
 #include <QIcon>
+#include <QStandardPaths>
 
 //#include <QDebug>
 //#include <QString>
@@ -484,9 +486,12 @@ void retek2::mezoListaFeltolt(const zTable& t){
                     auto cix = ColNameIxes.value(a->colName, -1);
                     if(cix>-1)
                     {
-                        auto i = ui.tableWidget_MezoLista->item(rix, cix);
+                        auto i = ui.tableWidget_MezoLista->item(rix, cix);                        
                         i->setBackground(yb);
-                        i->setToolTip(a->toString());
+                        auto ttip = i->toolTip();
+                        if(!ttip.isEmpty())ttip+=zStringHelper::NewLine;
+                        ttip+=a->toString();
+                        i->setToolTip(ttip);
                         i->setIcon(pki);
                     }
                     else
@@ -1170,8 +1175,12 @@ void retek2::on_comboBox_srcconn_currentIndexChanged(const QString &arg1)
     ui.listWidget_sources->clear();
 
     auto c = beallitasok.getSrcConnectionByName(arg1);
-    if(c){
+    if(c)
+    {
+        ui.lineEdit_sourcepath->setText(c->path);
+        ui.textBrowser_sources->clear();
         sourcesFeltolt(*c);
+
     }
 }
 
@@ -1229,7 +1238,7 @@ void retek2::tablesFeltolt(const dbConnection& c, const QString& schemaName) {
     auto tableNames = zsql.getTableNames(schemaName);
     ui.listWidget_tables->addItems(tableNames);
     // TODO a t->eval táblára vonatkozóit az itemsekhez kell tenni
-    // TODO a táblázat fejléc fölé egy tábla property összefoglalót lehetne tenni a table settings tab helyett
+    // https://stackoverflow.com/questions/27958381/how-to-place-an-icon-onto-a-qlineedit
 }
 
 //listWidget_schemas
@@ -1590,4 +1599,36 @@ void retek2::logToGUI(int errlevel, const QString &msg, const QString &loci, con
     }
 
     widget2->setTextColor(c);
+}
+
+void retek2::on_pushButton_sourcepath_clicked()
+{
+    auto homepath = QDir::homePath();
+    auto d = QFileDialog::getExistingDirectory(nullptr, QStringLiteral("Select Source Folder"), homepath);
+
+    QFileInfo fileInfo(d);
+    QString filename(fileInfo.fileName());
+
+    srcConnection c(filename, d);
+
+    if(c.isValid())
+    {
+        beallitasok.addSrcConnection(c, true);
+    }
+}
+
+
+
+void retek2::on_listWidget_sources_itemClicked(QListWidgetItem *item)
+{
+    auto d = item->data(Qt::UserRole);
+    if(!d.isValid()) return;
+
+    auto a = d.value<QString>();
+
+    auto txt = zTextFileHelper::load(a);
+
+    if(txt.isEmpty()) return;
+
+    ui.textBrowser_sources->setText(txt);
 }

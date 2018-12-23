@@ -153,7 +153,7 @@ abrachadabra
     void setSelected(int i);
 
     void addDbConnection(const dbConnection& b);
-    void addSrcConnection(const srcConnection& b);
+    void addSrcConnection(const srcConnection& b, bool isSelect = false);
 
     void FromCSV(QString& i);
 

@@ -297,11 +297,17 @@ void Beallitasok::addDbConnection(const dbConnection& b)
     widget_connections->addItem(b.Name);
 }
 
-void Beallitasok::addSrcConnection(const srcConnection& b)
+void Beallitasok::addSrcConnection(const srcConnection& b, bool isSelect)
 {
     beallitasok.srcConnections.append(b);
     widget_src_connections->addItem(b.Name);
+    if(isSelect)
+    {
+        widget_src_connections->setCurrentText(b.Name);
+    }
 }
+
+
 
 
 

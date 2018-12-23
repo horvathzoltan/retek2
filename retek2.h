@@ -78,6 +78,12 @@ private slots:
 
     void on_pushButton_srcimport_clicked();
 
+    void on_pushButton_sourcepath_clicked();
+
+    //void on_comboBox_srcconn_currentIndexChanged(int index);
+
+    void on_listWidget_sources_itemClicked(QListWidgetItem *item);
+
 private:
     Ui::retek2Class ui;
     Ui::Dialog_ztable_name zTableNameDialog;
