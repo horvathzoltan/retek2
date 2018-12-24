@@ -13,6 +13,7 @@
 #include "ziconhelper.h"
 #include "zdownloader.h"
 #include "ztableerror.h"
+#include "highlighter.h"
 
 #include <QRegularExpression>
 #include <QTableWidgetItem>
@@ -1630,5 +1631,8 @@ void retek2::on_listWidget_sources_itemClicked(QListWidgetItem *item)
 
     if(txt.isEmpty()) return;
 
+
     ui.textBrowser_sources->setText(txt);
+
+    auto h = new Highlighter(ui.textBrowser_sources->document());
 }
