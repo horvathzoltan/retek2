@@ -139,12 +139,7 @@ void retek2::init()
     // ha volt piszkálva, előző = 1 perc
     // ha nem volt piszkálva, előző*=2 , ha az kisebb, mint 16 -egyébként = 16 , azaz percenként mindenképp nézünk
     // tehát minden doksira kell egy SHA1 és ha az változik, akkor piszka volt
-    // TODO  - validációs lista feldolgozása
-    // ha valamely tábla és/vagy annak mezője inkonzisztens, kellene egy lista, ami leírja
-    // hogy tábla mely adata, vagy tábla sorának egy mezője a nem jó
-    // melyik tábla nevét ki kell tenni, és ha a táblával van a baj, az kap ikont, ha  a mezővel,
-    // a mező/cella,kap ikont, és arra kattintva leszűrjük a rá vonatkozó hibákat
-    // vagy pedig tooltipet kap - konkatenáljuk a tooltip szöveget
+    // akkor lehet végrehajtani, ha nem fut a táblán művelet - illetve egyik táblán sem fut művelet
 
     auto sqlmap = validateCurrentProject_SQL();
     auto srcmap = validateCurrentProject_Source();
@@ -443,7 +438,8 @@ void retek2::mezoListaFeltolt(const zTable& t){
     zInfo(t.toString());
     ui.tableWidget_MezoLista->blockSignals(true);
     ui.tableWidget_MezoLista->setRowCount(0);
-    for(int r_ix=0;r_ix<t.rows.length();r_ix++){
+    for(int r_ix=0;r_ix<t.rows.length();r_ix++)
+    {
         auto r = t.rows[r_ix];
         ui.tableWidget_MezoLista->insertRow(r_ix);
 
@@ -452,7 +448,14 @@ void retek2::mezoListaFeltolt(const zTable& t){
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_dlen, CreateTableItem(QVariant(r.dlen)));
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, CreateTableItem(QVariant(r.Caption)));     
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, CreateTableItem(QVariant(r.isNullable)));
-    }    
+    }
+    ui.lineEdit_name->setStyleSheet("");
+    ui.lineEdit_name->setToolTip("");
+    ui.lineEdit_pkname->setStyleSheet("");
+    ui.lineEdit_pkname->setToolTip("");
+
+
+    //ui.lineEdit_pkname->removeAction(pki);
     //TODO - eval lista kiértékelése kirajzolás során
 //http://doc.qt.io/qt-5/qml-color.html
 //    if(!t.eval.isEmpty())
@@ -463,6 +466,12 @@ void retek2::mezoListaFeltolt(const zTable& t){
     auto yb = QBrush(Qt::yellow);
     auto pki = QIcon(QStringLiteral(":/alert-triangle.ico"));
 
+    static QAction pkia(pki, "");
+
+    ui.lineEdit_name->removeAction(&pkia);
+    ui.lineEdit_pkname->removeAction(&pkia);
+
+    auto bkYellow = QStringLiteral("background-color: yellow;  background-image: url(:/alert-triangle.ico);");
     zforeach(a,t.eval)
     {
         //QRegularExpressionMatch m = r.match(*e);
@@ -477,7 +486,36 @@ void retek2::mezoListaFeltolt(const zTable& t){
 
             if(a->rowName.isEmpty())
             { // tábla propertyre vonatkozik
-                //ezt a listában kell kitenni
+                QLineEdit *w=nullptr;
+
+                if(a->colName==QStringLiteral("name")){
+                    w = ui.lineEdit_name;                  
+                }
+                else if(a->colName==QStringLiteral("pkname"))
+                {
+                    w = ui.lineEdit_pkname;
+                }
+
+                if(w)
+                {
+                    auto ttip = w->toolTip();
+                    if(!ttip.isEmpty())ttip+=zStringHelper::NewLine;
+                    ttip+=a->toString();
+                    w->setToolTip(ttip);
+                    //ui.lineEdit_name->setToolTip();
+
+                    //w->setStyleSheet(bkYellow);
+                    QPalette pal;
+                    pal.setColor(QPalette::Base, Qt::yellow);
+//                    //w->setAutoFillBackground(true);
+                    w->setPalette(pal);
+//                    auto pe = w->paintEngine();
+//                    pe.
+
+                    w->addAction(&pkia, QLineEdit::LeadingPosition);
+                    //w->show();
+                }
+
             }
             else
             {
@@ -1400,7 +1438,7 @@ void retek2::zTableNamesToUi(const zTable& t){
     ui.lineEdit_tablename->setText(t.sql_table);
     ui.lineEdit_class_name->setText(t.class_name);
     ui.lineEdit_class_name_plural->setText(t.class_name_plural);
-
+    ui.lineEdit_pkname->setText(t.pkname());
     ui.lineEdit_src_src->setText(t.class_path);
     ui.lineEdit_src_doc->setText(t.document_path);
 

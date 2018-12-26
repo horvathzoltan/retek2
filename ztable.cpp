@@ -233,6 +233,7 @@ QString zTable::SqlConnToString() const
 }
 
 
+
 bool zTable::Compare(const zTable& tv, QList<zTableError>& e, const QString& source){
     zInfo(zfn());
 
@@ -249,10 +250,11 @@ bool zTable::Compare(const zTable& tv, QList<zTableError>& e, const QString& sou
         v = false;
     }
 
+    auto pkname = this->pkname();
     if(this->pkname()!=tv.pkname())
     {
 
-        auto err = GetFullError(nameof(this->name), ErrCode::noteq, {"pkname",this->name, tv.name}, source);
+        auto err = GetFullError(nameof(this->pkname()), ErrCode::noteq, {"pkname",this->pkname(), tv.pkname()}, source);
         e.append(err);
         v = false;
     }
