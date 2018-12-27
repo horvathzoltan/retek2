@@ -292,13 +292,12 @@ bool zTable::Compare(const zTable& tv, QList<zTableError>& e, const QString& sou
         }
         else // ez itt a célban, azaz a tvben ismeretlen, azaz a doksi, src, sql
         {
-            // TODO pluszos mező a táblában (forrás, cél) megkülömböztetése
             auto err = GetFullError(nameof(this->name), ErrCode::unknown, {"SourceField", r->colName}, source);
             e.append(err);
             v=false;
         }
     }
-    if(!tvrows.isEmpty()){
+    if(!tvrows.isEmpty()){ // a forrásban ismeretlenek
         zforeach(r,tvrows){
             auto err = GetFullError(nameof(this->name), ErrCode::unknown, {"DestField", *r}, source);
             e.append(err);
@@ -1438,13 +1437,12 @@ void zTable::saveTablaToXML() {
 bool zTable::Validate(const QList<zTable>& tables){
     bool v= true;
 
-    //TODO ha van pk, akkor az a mező nem lehet null
-    // ha nincs pk, akkor meg az a baj
     if(this->pkrowix==-1)
     {
         zInfo(QStringLiteral("Nincs PK error"));
         v=false;
     }
+
     if(name.isEmpty()){
         zInfo(QStringLiteral("Nincs név error"));
         v= false;
@@ -1569,9 +1567,6 @@ bool zTable::validateSQL(){
     return isOK;
 }
 
-// TODO validálás a forrás file  alapján
-// be kell olvasni a forrást, ztablevé kell alakítani, majd compare
-// void retek2::on_pushButton_srcimport_clicked() alapján
 bool zTable::validateSource(){
     //zTrace();
     if(!this->class_path.isEmpty())
@@ -1598,7 +1593,6 @@ bool zTable::validateSource(){
     return false;
 }
 
-// TODO validálás a dokumentáció  alapján
 bool zTable::validateDocument(){    
     zTrace();
     if(!this->document_path.isEmpty())
