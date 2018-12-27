@@ -124,6 +124,8 @@ private:
     static void logToGUI(int errlevel, const QString &msg, const QString &loci, const QString &st, void *ptr);
 
     static const QMap<QString, int> ColNameIxes;
+
+    static QPalette getPaletteByColor(const QPalette& r, const QColor& c);
 };
 
 //#endif // RETEK2_H

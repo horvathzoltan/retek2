@@ -267,28 +267,43 @@ bool zTable::Compare(const zTable& tv, QList<zTableError>& e, const QString& sou
 //    }
 //    else
 //    {
-        zforeach(r,this->rows)
-        {
-            zTablerow* rv = zTablerow::getByName(tv.rows, r->colName);
+    //vesszük tv összes mezőjének nevét
+    // ami a thisben talál, azt kivesszük
+    QSet<QString> tvrows;
+    zforeach(r,tv.rows)
+    {
+        tvrows.insert(r->colName);
+    }
+
+    zforeach(r,this->rows)
+    {
+        zTablerow* rv = zTablerow::getByName(tv.rows, r->colName);
 //            if(tv.name.toLower()=="fue"){
 //                int x =0;
 //            }
-            if(rv != nullptr)
-            {
-               auto v2 = r->Compare(*rv, e, source);
-               if(!v2)
-               {                   
-                   v = false;
-               }
-            }
-            else
-            {
-                //TODO részleges egyezés?
-                auto err = GetFullError(nameof(this->name), ErrCode::unknown, {"Field", r->colName}, source);
-                e.append(err);
-                v=false;
-            }
+        if(rv != nullptr)
+        {
+           tvrows.remove(r->colName);
+           auto v2 = r->Compare(*rv, e, source);
+           if(!v2)
+           {
+               v = false;
+           }
         }
+        else // ez itt a célban, azaz a tvben ismeretlen, azaz a doksi, src, sql
+        {
+            // TODO pluszos mező a táblában (forrás, cél) megkülömböztetése
+            auto err = GetFullError(nameof(this->name), ErrCode::unknown, {"SourceField", r->colName}, source);
+            e.append(err);
+            v=false;
+        }
+    }
+    if(!tvrows.isEmpty()){
+        zforeach(r,tvrows){
+            auto err = GetFullError(nameof(this->name), ErrCode::unknown, {"DestField", *r}, source);
+            e.append(err);
+        }
+    }
 //    }
     return v;
 }

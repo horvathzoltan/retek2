@@ -431,7 +431,11 @@ void retek2::add_zTablaToListWidget(const zTable& t){
 ////	}
 //}
 
-
+QPalette retek2::getPaletteByColor(const QPalette &r, const QColor& c){
+    QPalette p = r;
+    p.setColor(QPalette::Base, c);
+    return p;
+}
 
 void retek2::mezoListaFeltolt(const zTable& t){
     zTrace();
@@ -449,97 +453,69 @@ void retek2::mezoListaFeltolt(const zTable& t){
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_Caption, CreateTableItem(QVariant(r.Caption)));     
         ui.tableWidget_MezoLista->setItem(r_ix, C_ix_nullable, CreateTableItem(QVariant(r.isNullable)));
     }
-    ui.lineEdit_name->setStyleSheet("");
-    ui.lineEdit_name->setToolTip("");
-    ui.lineEdit_pkname->setStyleSheet("");
-    ui.lineEdit_pkname->setToolTip("");
+    ui.lineEdit_name->setToolTip(zStringHelper::Empty);
+    ui.lineEdit_pkname->setToolTip(zStringHelper::Empty);
 
-
-    //ui.lineEdit_pkname->removeAction(pki);
-    //TODO - eval lista kiértékelése kirajzolás során
-//http://doc.qt.io/qt-5/qml-color.html
-//    if(!t.eval.isEmpty())
-//    {
-
-//    }
-    //auto r = QRegularExpression(QStringLiteral(R"(\[([\w\S]*)\])"));
-    auto yb = QBrush(Qt::yellow);
-    auto pki = QIcon(QStringLiteral(":/alert-triangle.ico"));
-
-    static QAction pkia(pki, "");
-
+    static auto yb = QBrush(Qt::yellow);
+    static auto pki = QIcon(QStringLiteral(":/alert-triangle.ico"));
+    static QAction pkia(pki, zStringHelper::Empty);
+    static QPalette normalpal = ui.lineEdit_name->palette();
+    static QPalette yellowpal = getPaletteByColor(normalpal, Qt::yellow);
     ui.lineEdit_name->removeAction(&pkia);
     ui.lineEdit_pkname->removeAction(&pkia);
 
-    auto bkYellow = QStringLiteral("background-color: yellow;  background-image: url(:/alert-triangle.ico);");
+    ui.lineEdit_name->setPalette(normalpal);
+    ui.lineEdit_pkname->setPalette(normalpal);
+
     zforeach(a,t.eval)
     {
-        //QRegularExpressionMatch m = r.match(*e);
+        if(!(a->isValid())) continue;
 
-//        if(m.hasMatch())
-//        {
-//            auto b = m.captured(1);
-//            int ix = m.capturedStart();
-//            zTableError a = zTableError::Parse(b);
+        if(a->rowName.isEmpty())
+        { // tábla propertyre vonatkozik
+            QLineEdit *w=nullptr;
 
-            if(!(a->isValid())) continue;
+            if(a->colName==QStringLiteral("name")){
+                w = ui.lineEdit_name;
+            }
+            else if(a->colName==QStringLiteral("pkname"))
+            {
+                w = ui.lineEdit_pkname;
+            }
 
-            if(a->rowName.isEmpty())
-            { // tábla propertyre vonatkozik
-                QLineEdit *w=nullptr;
+            if(w)
+            {
+                auto ttip = w->toolTip();
+                if(!ttip.isEmpty())ttip+=zStringHelper::NewLine;
+                ttip+=a->toString();
+                w->setToolTip(ttip);
+                w->setPalette(yellowpal);
+                w->addAction(&pkia, QLineEdit::LeadingPosition);
+            }
 
-                if(a->colName==QStringLiteral("name")){
-                    w = ui.lineEdit_name;                  
-                }
-                else if(a->colName==QStringLiteral("pkname"))
+        }
+        else
+        {
+            auto rix = zTablerow::findIx(t.rows, a->rowName);
+            if(rix>-1)
+            {
+                auto cix = ColNameIxes.value(a->colName, -1);
+                if(cix>-1)
                 {
-                    w = ui.lineEdit_pkname;
-                }
-
-                if(w)
-                {
-                    auto ttip = w->toolTip();
+                    auto i = ui.tableWidget_MezoLista->item(rix, cix);
+                    i->setBackground(yb);
+                    auto ttip = i->toolTip();
                     if(!ttip.isEmpty())ttip+=zStringHelper::NewLine;
                     ttip+=a->toString();
-                    w->setToolTip(ttip);
-                    //ui.lineEdit_name->setToolTip();
-
-                    //w->setStyleSheet(bkYellow);
-                    QPalette pal;
-                    pal.setColor(QPalette::Base, Qt::yellow);
-//                    //w->setAutoFillBackground(true);
-                    w->setPalette(pal);
-//                    auto pe = w->paintEngine();
-//                    pe.
-
-                    w->addAction(&pkia, QLineEdit::LeadingPosition);
-                    //w->show();
+                    i->setToolTip(ttip);
+                    i->setIcon(pki);
                 }
-
-            }
-            else
-            {
-                auto rix = zTablerow::findIx(t.rows, a->rowName);
-                if(rix>-1)
+                else
                 {
-                    auto cix = ColNameIxes.value(a->colName, -1);
-                    if(cix>-1)
-                    {
-                        auto i = ui.tableWidget_MezoLista->item(rix, cix);                        
-                        i->setBackground(yb);
-                        auto ttip = i->toolTip();
-                        if(!ttip.isEmpty())ttip+=zStringHelper::NewLine;
-                        ttip+=a->toString();
-                        i->setToolTip(ttip);
-                        i->setIcon(pki);
-                    }
-                    else
-                    {
-                        zTrace();
-                    }
+                    zTrace();
                 }
             }
-//        }
+        }
     }
 //    auto yb = QBrush(Qt::yellow);
 //    auto pki = QIcon(QStringLiteral(":/alert-triangle.ico"));
