@@ -1223,7 +1223,7 @@ void retek2::on_pushButton_clicked()
     if(dbconn.isValid()){
         if(zsql.init(dbconn)){
             if(!beallitasok.dbConnections.contains(dbconn)){
-                beallitasok.addConnection(dbconn);
+                beallitasok.addDbConnection(dbconn);
             }
         }
         //tablaListaFeltolt();

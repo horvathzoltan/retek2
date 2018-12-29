@@ -22,6 +22,8 @@ public:
 
     bool operator==(dbConnection const& b);
 
+    QString toCSV() const;
+    static QList<dbConnection> fromCSVFile(const QString& fn);
     //QString Getname();
 };
 

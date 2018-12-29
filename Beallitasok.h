@@ -44,7 +44,7 @@ public:
     void init(QLineEdit*, QLineEdit*, QLineEdit*,  QComboBox *qc, QComboBox *dc, QListWidget *lw, QComboBox *qsrcc);
 
     void load();
-    void addConnection(dbConnection);
+    //void addConnection(dbConnection);
 
 
 
@@ -152,7 +152,10 @@ abrachadabra
 
     void setSelected(int i);
 
-    void addDbConnection(const dbConnection& b);
+    void setDbConnections(const QList<dbConnection>&s);
+    void addDbConnection(const dbConnection& b, bool isSelect = false);
+
+    void setSrcConnections(const QList<srcConnection>&s);
     void addSrcConnection(const srcConnection& b, bool isSelect = false);
 
     void FromCSV(QString& i);
@@ -164,7 +167,13 @@ abrachadabra
     dbConnection* getDbConnectionByName(const QString& name);
     srcConnection* getSrcConnectionByName(const QString& name);
     dbConnection* getDbConnectionBySchemaName(const QString& name);
-    //void setCurrentProjectName(const QString& v);
+
+private:
+    void addSrcConnectionToUI(const srcConnection& b, bool isSelect = false);
+    void addSrcConnectionToCSV(const srcConnection& b);
+
+    void addDbConnectionToUI(const dbConnection& b, bool isSelect = false);
+    void addDbConnectionToCSV(const dbConnection& b);
 };
 
 #endif

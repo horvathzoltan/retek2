@@ -10,6 +10,8 @@ public:
 
     srcConnection(QString _name, QString _path);
     static srcConnection FromCSV(const QString&);
+    QString toCSV() const ;
+    static QList<srcConnection> fromCSVFile(const QString& f);
     bool isValid();
 };
 

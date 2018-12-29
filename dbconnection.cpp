@@ -1,6 +1,8 @@
+#include "globals.h"
 #include "zstringhelper.h"
 #include "dbconnection.h"
 #include <QStringList>
+#include "ztextfilehelper.h"
 
 /*
 driver;
@@ -35,6 +37,34 @@ dbConnection dbConnection::FromCSV(QString i){
         return dbConnection("","","","","");
 }
 
+QString dbConnection::toCSV() const
+{
+    return this->driver +zStringHelper::SEP+
+    this->Name +zStringHelper::SEP+
+    this->server +zStringHelper::SEP+
+    this->user +zStringHelper::SEP+
+    this->password;
+}
+
+QList<dbConnection> dbConnection::fromCSVFile(const QString& fn)
+{
+    auto txt = zTextFileHelper::load(fn);
+
+    QList<dbConnection> a;
+    if(txt.isEmpty()) return a;
+
+    QStringList csvl = zStringHelper::toStringList(txt);
+
+    zforeach(csvr, csvl)
+    {
+        auto c = FromCSV(*csvr);
+        if(c.isValid())
+        {
+            a << c;
+        }
+    }
+
+}
 
 bool dbConnection::isValid(){
     return !(
