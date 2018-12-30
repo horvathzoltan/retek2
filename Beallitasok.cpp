@@ -34,13 +34,14 @@ dbConnection* Beallitasok::findDbConnection(const QString &connName)
     return nullptr;
 }
 
-void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver,  QComboBox *qc, QComboBox *dc, QListWidget* lv,QComboBox *qsrcc )
+void Beallitasok::init(QLineEdit* wu, QLineEdit* wp, QLineEdit* wserver,  QComboBox *qc, QComboBox *dc, QListWidget* lv,QComboBox *qsrcc , QComboBox *qdocc )
 {
     this->widget_user = wu;
     this->widget_password = wp;
     this->widget_server = wserver;
     this->widget_connections = qc;
     this->widget_src_connections = qsrcc;
+    this->widget_doc_connections = qdocc;
 
     this->widget_driver = dc;
     this->listWidget_projects = lv;
@@ -154,23 +155,9 @@ QString Beallitasok::getTemplateFilename(const QString& tfname)
 }
 
 
-dbConnection* Beallitasok::getDbConnectionByName(const QString& name)
-{
-    zforeach(o, dbConnections)
-    {
-        if(o->Name == name) return &(*o);
-    }
-    return nullptr;
-}
 
-srcConnection* Beallitasok::getSrcConnectionByName(const QString& name)
-{
-    zforeach(o, srcConnections)
-    {
-        if(o->Name == name) return &(*o);
-    }
-    return nullptr;
-}
+
+
 
 //dbConnection* Beallitasok::getDbConnectionBySchemaName(const QString& name){
 //    zforeach(o, dbConnections){
@@ -218,6 +205,7 @@ void Beallitasok::load()
 
     setDbConnections(dbConnection::fromCSVFile(zFileNameHelper::getDbConnFileName()));
     setSrcConnections(srcConnection::fromCSVFile(zFileNameHelper::getSourceConnFileName()));
+    setDocConnections(docConnection::fromCSVFile(zFileNameHelper::getDocumentConnFileName()));
 
     auto fn = zFileNameHelper::getSettingsFileName();//append(settingsPath, settings_filename);
     auto txt = zTextFileHelper::load(fn);
@@ -305,6 +293,15 @@ void Beallitasok::setDbConnections(const QList<dbConnection>&s)
     }
 }
 
+dbConnection* Beallitasok::getDbConnectionByName(const QString& name)
+{
+    zforeach(o, dbConnections)
+    {
+        if(o->Name == name) return &(*o);
+    }
+    return nullptr;
+}
+
 /*SrcConnection*/
 
 void Beallitasok::addSrcConnectionToCSV(const srcConnection& b)
@@ -334,5 +331,54 @@ void Beallitasok::setSrcConnections(const QList<srcConnection>&s)
         beallitasok.srcConnections.append(*b);
         addSrcConnectionToUI(*b);
     }
+}
+
+srcConnection* Beallitasok::getSrcConnectionByName(const QString& name)
+{
+    zforeach(o, srcConnections)
+    {
+        if(o->Name == name) return &(*o);
+    }
+    return nullptr;
+}
+
+/*docConnection*/
+
+void Beallitasok::addDocConnectionToCSV(const docConnection& b)
+{
+    zTextFileHelper::save(b.toCSV(), zFileNameHelper::getSourceConnFileName(), true);
+}
+
+void Beallitasok::addDocConnectionToUI(const docConnection& b, bool isSelect)
+{
+    widget_doc_connections->addItem(b.Name);
+    if(isSelect) widget_doc_connections->setCurrentText(b.Name);
+}
+
+void Beallitasok::addDocConnection(const docConnection& b, bool isSelect)
+{
+    beallitasok.docConnections.append(b);
+    addDocConnectionToUI(b, isSelect);
+    addDocConnectionToCSV(b);
+}
+
+void Beallitasok::setDocConnections(const QList<docConnection>&s)
+{
+    widget_doc_connections->clear();
+    beallitasok.docConnections.clear();
+    zforeach(b, s)
+    {
+        beallitasok.docConnections.append(*b);
+        addDocConnectionToUI(*b);
+    }
+}
+
+docConnection* Beallitasok::getDocConnectionByName(const QString& name)
+{
+    zforeach(o, docConnections)
+    {
+        if(o->Name == name) return &(*o);
+    }
+    return nullptr;
 }
 

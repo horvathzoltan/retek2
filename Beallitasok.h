@@ -6,6 +6,7 @@
 
 #include "dbconnection.h"
 #include "srcconnection.h"
+#include "docconnection.h"
 
 #include <QLineEdit>
 #include <QList>
@@ -26,6 +27,7 @@ private:
     //QLineEdit *widget_adatbazisNev;
     QComboBox *widget_connections;
     QComboBox *widget_src_connections;
+    QComboBox *widget_doc_connections;
     QComboBox *widget_driver;
     QListWidget *listWidget_projects;
 
@@ -35,13 +37,14 @@ public:
     QString currentProjectName;
     QList<dbConnection> dbConnections;
     QList<srcConnection> srcConnections;
+    QList<docConnection> docConnections;
 
     dbConnection* findDbConnection(const QString& connName);
 
     Beallitasok();
     ~Beallitasok();
 
-    void init(QLineEdit*, QLineEdit*, QLineEdit*,  QComboBox *qc, QComboBox *dc, QListWidget *lw, QComboBox *qsrcc);
+    void init(QLineEdit*, QLineEdit*, QLineEdit*,  QComboBox *qc, QComboBox *dc, QListWidget *lw, QComboBox *qsrcc, QComboBox *qdocc);
 
     void load();
     //void addConnection(dbConnection);
@@ -137,6 +140,7 @@ abrachadabra
 
     QString dbconnections_filename = QStringLiteral(R"(dbconnections.csv)");
     QString source_connections_filename = QStringLiteral(R"(srcconnections.csv)");
+    QString document_connections_filename = QStringLiteral(R"(docconnections.csv)");
 
     QString settings_filename = QStringLiteral(R"(settings.csv)");
     /*
@@ -158,6 +162,9 @@ abrachadabra
     void setSrcConnections(const QList<srcConnection>&s);
     void addSrcConnection(const srcConnection& b, bool isSelect = false);
 
+    void setDocConnections(const QList<docConnection>&s);
+    void addDocConnection(const docConnection& b, bool isSelect = false);
+
     void FromCSV(QString& i);
 
     void fillProjectList(const QStringList&);
@@ -167,6 +174,7 @@ abrachadabra
     dbConnection* getDbConnectionByName(const QString& name);
     srcConnection* getSrcConnectionByName(const QString& name);
     dbConnection* getDbConnectionBySchemaName(const QString& name);
+    docConnection* getDocConnectionByName(const QString& name);
 
 private:
     void addSrcConnectionToUI(const srcConnection& b, bool isSelect = false);
@@ -174,6 +182,9 @@ private:
 
     void addDbConnectionToUI(const dbConnection& b, bool isSelect = false);
     void addDbConnectionToCSV(const dbConnection& b);
+
+    void addDocConnectionToUI(const docConnection& b, bool isSelect = false);
+    void addDocConnectionToCSV(const docConnection& b);
 };
 
 #endif

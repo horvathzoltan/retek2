@@ -91,7 +91,8 @@ void retek2::init()
                 ui.comboBox_connections,
                 ui.comboBox,
                 ui.listWidget_projects,
-                ui.comboBox_srcconn
+                ui.comboBox_srcconn,
+                ui.comboBox_docconn
                 );
 //    beallitasok.initPaths();
 
@@ -1182,7 +1183,10 @@ void retek2::on_comboBox_connections_currentIndexChanged(const QString &arg1)
 }
 
 /*
- források feltöltése
+    források feltöltése
+    comboBox_srcconn
+
+    Egy könyvtárat adunk meg - ott a források - osztályok 1 db / fájl
 */
 
 void retek2::on_comboBox_srcconn_currentIndexChanged(const QString &arg1)
@@ -1193,10 +1197,67 @@ void retek2::on_comboBox_srcconn_currentIndexChanged(const QString &arg1)
     if(c)
     {
         ui.lineEdit_sourcepath->setText(c->path);
+        ui.lineEdit_sourcepath->setToolTip(c->path);
         ui.textBrowser_sources->clear();
         sourcesFeltolt(*c);
-
     }
+}
+
+//listWidget_sources
+void retek2::sourcesFeltolt(const srcConnection& c) {
+    //    zSQL zsql;
+    //    zsql.init(c);
+
+    auto sourceNames = zFileNameHelper::getSourceFilenames(c.path);
+    zforeach(sn, sourceNames)
+    {
+        auto fn = zFileNameHelper::getfileName(*sn);
+        auto i = new QListWidgetItem(fn);
+        //isetText(fn);
+        i->setData(Qt::UserRole, *sn);
+        ui.listWidget_sources->addItem(i);
+    }
+}
+
+/*
+    dokumentum - dokumentumosztályok feltöltése
+    comboBox_docconn
+    Egy dokumentumot adunk meg, ahol több dokumentum leíróját tároljuk
+*/
+
+void retek2::on_comboBox_docconn_currentIndexChanged(const QString &arg1)
+{
+    ui.listWidget_docs->clear();
+
+    auto c = beallitasok.getDocConnectionByName(arg1);
+    if(c)
+    {
+        ui.lineEdit_docpath->setText(c->path);
+        ui.lineEdit_docpath->setToolTip(c->path);
+        ui.textBrowser_docs->clear();
+        docsFeltolt(*c);
+    }
+}
+
+//TODO egy dokumentum fájlt adunk meg, a listboxban a tárolt osztályok listáját kell feltölteni
+//listWidget_docs
+void retek2::docsFeltolt(const docConnection& c) {
+    //    zSQL zsql;
+    //    zsql.init(c);
+
+    // fns fájl lista helyett osztálylista
+    // a foreach az osztálylistán megy véfif, feltöltve a listát
+    // a listán katt -> feltölt a textbrowserbe, de úgy, hogy az adott osztály hilitelve
+
+    //auto fns = zFileNameHelper::getDocumentFilenames(c.path);
+    //zforeach(sn, fns)
+    //{
+    //auto fn = c;//zFileNameHelper::getfileName(*sn);
+    auto i = new QListWidgetItem(c.path);
+        //isetText(fn);
+    i->setData(Qt::UserRole, c.Name);
+        ui.listWidget_docs->addItem(i);
+    //}
 }
 
 /*
@@ -1265,21 +1326,7 @@ void retek2::schemasFeltolt(const dbConnection& c) {
     ui.listWidget_schemas->addItems(schemaNames);
 }
 
-//listWidget_sources
-void retek2::sourcesFeltolt(const srcConnection& c) {
-//    zSQL zsql;
-//    zsql.init(c);
 
-    auto sourceNames = zFileNameHelper::getSourceFilenames(c.path);
-    zforeach(sn, sourceNames)
-    {
-        auto fn = zFileNameHelper::getfileName(*sn);
-        auto i = new QListWidgetItem(fn);
-        //isetText(fn);
-        i->setData(Qt::UserRole, *sn);
-        ui.listWidget_sources->addItem(i);
-    }
-}
 
 void retek2::add_zTablaToListWidget(QList<zTable> ts){
     zforeach(t, ts){
@@ -1558,7 +1605,7 @@ void retek2::logToGUI(int errlevel, const QString &msg, const QString &loci, con
 
     auto ui2 = reinterpret_cast<Ui_retek2Class*>(uiptr); // NOLINT
     auto widget2 = ui2->textBrowser;
-    auto tabindex2 = 4;
+    auto tabindex2 = 3;
     auto tabwidget2= ui2->tabWidget;
     auto level = zLog::LevelToString(errlevel);
     auto c = widget2->textColor();
@@ -1650,3 +1697,5 @@ void retek2::on_listWidget_sources_itemClicked(QListWidgetItem *item)
 
     auto h = new Highlighter(ui.textBrowser_sources->document());
 }
+
+

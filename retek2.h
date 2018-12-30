@@ -10,6 +10,7 @@
 #include "zenumizer.h"
 #include "dbconnection.h"
 #include "srcconnection.h"
+#include "docconnection.h"
 #include "zsql.h"
 
 #endif // RETEK2_H
@@ -84,6 +85,8 @@ private slots:
 
     void on_listWidget_sources_itemClicked(QListWidgetItem *item);
 
+    void on_comboBox_docconn_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::retek2Class ui;
     Ui::Dialog_ztable_name zTableNameDialog;
@@ -118,6 +121,8 @@ private:
 
     void schemasFeltolt(const dbConnection& c);
     void sourcesFeltolt(const srcConnection& c);
+    void docsFeltolt(const docConnection& c);
+
     QString getCaptionByRowIx(int idix);
     void setCaptionByRowIx(int idix, const QString& caption);
 

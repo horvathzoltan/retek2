@@ -35,7 +35,8 @@ HEADERS += Beallitasok.h \
     zlocinfo.h \
     zdownloader.h \
     ztableerror.h \
-    highlighter.h
+    highlighter.h \
+    docconnection.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \
@@ -65,7 +66,8 @@ SOURCES += Beallitasok.cpp \
     zlocinfo.cpp \
     zdownloader.cpp \
     ztableerror.cpp \
-    highlighter.cpp
+    highlighter.cpp \
+    docconnection.cpp
 FORMS += retek2.ui \
     ztablenames.ui
 RESOURCES += retek2.qrc

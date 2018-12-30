@@ -160,6 +160,11 @@ QString zFileNameHelper::getSourceConnFileName()
     return getSettingsFileName(beallitasok.source_connections_filename);
 }
 
+QString zFileNameHelper::getDocumentConnFileName()
+{
+    return getSettingsFileName(beallitasok.document_connections_filename);
+}
+
 //zTable::r_class 
 //  class\s+(\w+)\s+(\{(?>[^{}]+|(?2))*\})
 
@@ -210,6 +215,14 @@ QString zFileNameHelper::getfileName(const QString& fullPath)
 QStringList zFileNameHelper::getSourceFilenames(const QString& path)
 {
     QStringList nameFilters(QStringLiteral("*.c?"));
+    auto e = FindFileNameInDir(path, zStringHelper::Empty, nameFilters);
+
+    return e;
+}
+
+QStringList zFileNameHelper::getDocumentFilenames(const QString& path)
+{
+    QStringList nameFilters(QStringLiteral("*.htm?"));
     auto e = FindFileNameInDir(path, zStringHelper::Empty, nameFilters);
 
     return e;

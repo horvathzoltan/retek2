@@ -44,11 +44,13 @@ public:
     static QString getSettingsFileName();
     static QString getDbConnFileName();
     static QString getSourceConnFileName();
+    static QString getDocumentConnFileName();
 
     static QString getSettingsSubDir(const QString& sd);
     static QString getSettingsFileName(const QString& fn);
 
     static QStringList getSourceFilenames(const QString& path);
+    static QStringList getDocumentFilenames(const QString& path);
 
     static bool isURL(const QString& path);
     static bool isAppLocal(const QString& path);
