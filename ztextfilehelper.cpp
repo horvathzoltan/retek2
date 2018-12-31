@@ -2,10 +2,11 @@
 #include "zlog.h"
 #include "ztextfilehelper.h"
 #include "zstringhelper.h"
+#include "zfilenamehelper.h"
 
 #include <QFileInfo>
 
-QString zTextFileHelper::load(const QString& filename) {
+QString zTextFileHelper::load2(const QString& filename) {
     QFileInfo fi(filename);
     if(!fi.isAbsolute())
     {
@@ -71,6 +72,20 @@ void zTextFileHelper::save(const QString& txt, const QString& fn, bool isAppend)
     out.setGenerateByteOrderMark(true);
     out << txt.toUtf8();
     f.close();
+}
+
+QString zTextFileHelper::load(const QString& url)
+{
+    if(zFileNameHelper::isURL(url))
+    {
+    //zInfo("url");
+    auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/export?format=html&id=1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8&includes_info_params=true)"));
+    return zStringHelper::HtmlDecode(e);
+    //zTextFileHelper::save(f_txt, "/home/zoli/aa.html");
+    }
+
+    QString fn = zFileNameHelper::getCurrentProjectFileNameAbsolut(url);
+    return zTextFileHelper::load2(fn);
 }
 
 //void zTextFileHelper::append(QString fn, QString txt){

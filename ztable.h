@@ -124,6 +124,7 @@ public:
     QString pkname() const;
     bool hasPkname() const;
     QString SqlConnToString() const;
+    static QString createTxtByHtml(const QString &txt);
 private:
     static const QString PKNAME;
     //void validateEval(bool isOK, const QStringList& e, const QString&);

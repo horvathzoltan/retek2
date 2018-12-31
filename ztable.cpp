@@ -1596,22 +1596,21 @@ bool zTable::validateSource(){
 bool zTable::validateDocument(){    
     zTrace();
     if(!this->document_path.isEmpty())
-    {           
-        QString f_txt;
+    {
+//        if(zFileNameHelper::isURL(this->document_path))
+//        {
+//            //zInfo("url");
+//            auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/export?format=html&id=1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8&includes_info_params=true)"));
+//            f_txt = zStringHelper::HtmlDecode(e);
+//            //zTextFileHelper::save(f_txt, "/home/zoli/aa.html");
+//        }
+//        else
+//        {
+//            QString fn = zFileNameHelper::getCurrentProjectFileNameAbsolut(this->document_path);
+//            f_txt = zTextFileHelper::load(fn);
+//        }
 
-        if(zFileNameHelper::isURL(this->document_path))
-        {
-            //zInfo("url");
-            auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/export?format=html&id=1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8&includes_info_params=true)"));           
-            f_txt = zStringHelper::HtmlDecode(e);
-            //zTextFileHelper::save(f_txt, "/home/zoli/aa.html");
-        }
-        else
-        {
-            QString fn = zFileNameHelper::getCurrentProjectFileNameAbsolut(this->document_path);
-            f_txt = zTextFileHelper::load(fn);
-        }
-
+        QString f_txt = zTextFileHelper::load(this->document_path);
         if(f_txt.isEmpty()) return false;
 
         auto tl = zTable::createTableByHtml(f_txt);
@@ -1634,6 +1633,82 @@ bool zTable::validateDocument(){
 }
 
 //auto rt = zTable::QStringLiteral(R"(<table.*?>([\s\S]*)<\/table>)");
+QString zTable::createTxtByHtml(const QString& txt){
+    QRegularExpression rtable = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TABLE);
+    QRegularExpression rtbody = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TBODY);
+    QRegularExpression rtr = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TR);
+    QRegularExpression rtd = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TD);
+    QRegularExpression rp = zStringHelper::getHTMLRegExp(zStringHelper::HTML_P);
+    QRegularExpression rspan = zStringHelper::getHTMLRegExp(zStringHelper::HTML_SPAN);
+
+    QStringList name_list{"nev","name","mezo","field","column","oszlop"};
+    QStringList type_list{"tipus","type"};
+    QStringList comment_list{"comment","megjegyzes","komment","leiras"};
+
+    QString e;
+    auto rti = rtable.globalMatch(txt);
+    int table_ix=0;
+    while(rti.hasNext())
+    {
+        auto rtm = rti.next();
+        QString table_txt=rtm.captured(1);
+        if(!table_txt.isEmpty())
+        {
+            bool nameOk = false;
+            bool typeOk = false;
+            //tbody
+            auto rtbodym = rtbody.match(table_txt);
+            if(rtbodym.hasMatch())
+            {
+                table_txt = rtbodym.captured(1);
+            }
+            //tr
+
+            auto rtri = rtr.globalMatch(table_txt);
+            int row_ix=0;
+            while(rtri.hasNext())
+            {
+                auto rtrm = rtri.next();
+                if(row_ix==1)
+                {
+                    QString tr_txt=rtrm.captured(1);
+                    //td
+                    auto tdi = rtd.globalMatch(tr_txt);
+                    int col_ix = 0;
+                    while(tdi.hasNext())
+                    {
+                        auto tdm = tdi.next();
+                        QString td_txt = tdm.captured(1);
+
+                        if(!td_txt.isEmpty())
+                        {
+                            auto rspani = rspan.globalMatch(td_txt);
+
+                            while(rspani.hasNext())
+                            {
+                                auto rspanm = rspani.next();
+
+                                auto txt = rspanm.captured(1);
+                                QString a = zStringHelper::zNormalize(txt);
+                                if(name_list.contains(a)) nameOk = true;
+                                if(type_list.contains(a)) typeOk = true;
+
+                            }
+                        }
+                    }
+                }
+                row_ix++;
+            }
+            if(nameOk && typeOk)
+            {
+                if(!e.isEmpty()) e+=(QStringLiteral("<br/><br/><br/>"));
+                e+=table_txt;
+            }
+        }
+        table_ix++;
+    }
+    return e;
+}
 
 QList<zTable> zTable::createTableByHtml(const QString& txt){
     QList<zTable> e;
@@ -1656,6 +1731,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
     int table_ix=0;
     while(rti.hasNext())
     {
+
         QList<zTablerow> rowlist;
         int row_ix=0;
         QString tablename;
@@ -1670,8 +1746,9 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
 
         if(!table_txt.isEmpty())
         {
+//            if(table_txt.contains(QStringLiteral("Törzsadatok")))
+//                zTrace();
             //tbody
-
             auto rtbodym = rtbody.match(table_txt);
             if(rtbodym.hasMatch())
             {
@@ -1700,19 +1777,25 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
 
                         QString td_txt = tdm.captured(1);
 
-                        if(!td_txt.isEmpty())
-                        {
-                            auto rpm = rp.match(td_txt);
-                            if(rpm.hasMatch())
-                            {
-                                td_txt = rpm.captured(1);
-                            }
-                        }
+//                        if(table_txt.contains(QStringLiteral("Törzsadatok")))
+//                            zTrace();
+
+//                        if(!td_txt.isEmpty())
+//                        {
+//                            auto rpm = rp.match(td_txt);
+//                            if(rpm.hasMatch())
+//                            {
+//                                td_txt = rpm.captured(1);
+//                            }
+//                        }
 
                         if(!td_txt.isEmpty())
                         {
                             auto rspani = rspan.globalMatch(td_txt);
                             QString innerspan;
+//                            if(table_txt.contains(QStringLiteral("PARTNER_ARTICLES")))
+//                                zTrace();
+
                             while(rspani.hasNext())
                             {
                                 auto rspanm = rspani.next();
@@ -1743,6 +1826,9 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                             }
                             case 1:
                             {
+//                                if(table_txt.contains(QStringLiteral("Törzsadatok")))
+//                                    zTrace();
+
                                 QString a = zStringHelper::zNormalize(td_txt);
 
                                 if(name_list.contains(a))
@@ -1759,10 +1845,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                                 {
                                     ix_comment=col_ix;
                                     //zTrace(QStringLiteral("comment_list: %1 (%2)").arg(col_ix).arg(td_txt));
-                                }
-
-
-
+                                }                               
                                 break;
                             }
                             default:
@@ -1801,6 +1884,9 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                 }
                 if(row_ix>=2)
                 {
+                    if(table_txt.contains(QStringLiteral("Törzsadatok")))
+                        zTrace();
+
                     if(ix_name!=-1 && ix_type!=-1 && !row_type.isEmpty())
                     {
                         QString row_dtype;
@@ -1821,11 +1907,12 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
 
                         //zTrace(QStringLiteral("row %1: %2,%3,%4").arg(row_ix).arg(row_name, row_type, row_comment));
                     }
-                    else
-                    {
+                    else break;
+                    //{
                         //zTrace(QStringLiteral("hibás sor %1: %2").arg(row_ix).arg(tr_txt));
-                        zInfo(QStringLiteral("hibás sor %1: %2,%3,%4").arg(row_ix).arg(row_name, row_type, row_comment));
-                    }
+                        //zInfo(QStringLiteral("hibás sor %1: %2,%3,%4").arg(row_ix).arg(row_name, row_type, row_comment));
+
+                    //}
 
                 }
 
@@ -1835,6 +1922,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
             //p?
             //span?
         }
+        if(rowlist.isEmpty()) continue;
         auto t = zTable(tablename, pkname, rowlist);
 
         zInfo(QStringLiteral("zTable: %1").arg(t.toString()));

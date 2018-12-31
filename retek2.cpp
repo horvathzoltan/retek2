@@ -1242,22 +1242,18 @@ void retek2::on_comboBox_docconn_currentIndexChanged(const QString &arg1)
 //TODO egy dokumentum fájlt adunk meg, a listboxban a tárolt osztályok listáját kell feltölteni
 //listWidget_docs
 void retek2::docsFeltolt(const docConnection& c) {
-    //    zSQL zsql;
-    //    zsql.init(c);
-
-    // fns fájl lista helyett osztálylista
-    // a foreach az osztálylistán megy véfif, feltöltve a listát
-    // a listán katt -> feltölt a textbrowserbe, de úgy, hogy az adott osztály hilitelve
-
-    //auto fns = zFileNameHelper::getDocumentFilenames(c.path);
-    //zforeach(sn, fns)
-    //{
-    //auto fn = c;//zFileNameHelper::getfileName(*sn);
-    auto i = new QListWidgetItem(c.path);
-        //isetText(fn);
-    i->setData(Qt::UserRole, c.Name);
+    auto f_txt = zTextFileHelper::load(c.path);
+    auto tbtxt = zTable::createTxtByHtml(f_txt);
+    ui.textBrowser_docs->setHtml(tbtxt);
+    //ui.textBrowser_docs->setSource(QUrl(c.path));
+    if(f_txt.isEmpty()) return;
+    auto tables = zTable::createTableByHtml(f_txt);
+    zforeach(t, tables)
+    {
+        auto i = new QListWidgetItem(t->name);
+        i->setData(Qt::UserRole, t->name);
         ui.listWidget_docs->addItem(i);
-    //}
+    }
 }
 
 /*
@@ -1695,7 +1691,17 @@ void retek2::on_listWidget_sources_itemClicked(QListWidgetItem *item)
 
     ui.textBrowser_sources->setText(txt);
 
-    auto h = new Highlighter(ui.textBrowser_sources->document());
+    static auto h = new Highlighter(ui.textBrowser_sources->document());
 }
 
 
+
+void retek2::on_listWidget_docs_itemClicked(QListWidgetItem *item)
+{
+    auto d = item->data(Qt::UserRole);
+    if(!d.isValid()) return;
+
+    auto a = d.value<QString>();
+
+    static auto h = new Highlighter(ui.textBrowser_docs->document());
+}

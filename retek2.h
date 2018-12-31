@@ -87,6 +87,8 @@ private slots:
 
     void on_comboBox_docconn_currentIndexChanged(const QString &arg1);
 
+    void on_listWidget_docs_itemClicked(QListWidgetItem *item);
+
 private:
     Ui::retek2Class ui;
     Ui::Dialog_ztable_name zTableNameDialog;
