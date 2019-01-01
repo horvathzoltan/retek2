@@ -27,8 +27,9 @@ Highlighter::Highlighter(QTextDocument *parent): QSyntaxHighlighter(parent)
 //    }
 
     classFormat.setFontWeight(QFont::Bold);
+    //classFormat.setFontItalic(true);
     classFormat.setForeground(Qt::darkCyan);
-    rule.pattern = QRegularExpression(QStringLiteral("class\\s+(\\b[A-Za-z]+\\b)"));
+    rule.pattern = QRegularExpression(QStringLiteral(R"(class\s*([\w\S]*))"));//(R"(class\s+\w+\s+(\{(?>[^{}]+|(?1))*\}))"));
     rule.format = classFormat;
     highlightingRules.append(rule);
 
@@ -39,10 +40,10 @@ Highlighter::Highlighter(QTextDocument *parent): QSyntaxHighlighter(parent)
 
     multiLineCommentFormat.setForeground(Qt::darkGreen);
 
-    quotationFormat.setForeground(Qt::darkRed);
-    rule.pattern = QRegularExpression(QStringLiteral("\".*\""));
-    rule.format = quotationFormat;
-    highlightingRules.append(rule);
+//    quotationFormat.setForeground(Qt::darkRed);
+//    rule.pattern = QRegularExpression(QStringLiteral("\".*\""));
+//    rule.format = quotationFormat;
+//    highlightingRules.append(rule);
 
 //    functionFormat.setFontItalic(true);
 //    functionFormat.setForeground(Qt::blue);
