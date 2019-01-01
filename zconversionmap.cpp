@@ -99,14 +99,6 @@ QStringList zConversionMap::internals(const QList<zConversionMap>& maps, const Q
     QStringList e;
     zforeach(m, maps)
     {
-//        if(value.isEmpty())
-//        {
-//             e << m->key();
-//        }
-//        else
-//        {
-//            e << m->key(value);
-//        }
         e << m->internals(value);
     }
     e.removeDuplicates();
@@ -128,6 +120,37 @@ QStringList zConversionMap::internals(const QString& c) const {
     }
     return e;
 }
+
+/**/
+
+QStringList zConversionMap::externals(const QList<zConversionMap>& maps, const QString& value){
+    QStringList e;
+    zforeach(m, maps)
+    {
+        e << m->externals(value);
+    }
+    e.removeDuplicates();
+    return e;
+}
+
+QStringList zConversionMap::externals(const QString& c) const {
+    QStringList e;
+    //auto e = this->keys(value);
+    //return e;
+    QString nv = zStringHelper::zNormalize(c);
+    zforeach(m, list)
+    {
+        if(m->direction.isEmpty()||m->direction.contains('<'))
+        {
+            auto nv0 = zStringHelper::zNormalize(m->internal);
+            if(c.isEmpty() || nv0==nv) e << m->external;
+        }
+    }
+    return e;
+}
+
+
+
 
 void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
     //zTrace();zInfo(fn);

@@ -3,6 +3,7 @@
 
 
 #include <QtWidgets/QMainWindow>
+#include "highlighter.h"
 #include "ui_retek2.h"
 #include "ui_ztablenames.h"
 #include <QSqlQuery>
@@ -19,6 +20,9 @@ class retek2 : public QMainWindow
 	Q_OBJECT
 
 public:
+    static Highlighter* h1;
+    static Highlighter* h2;
+
     //static const QMap<zTablerow::ErrCode, int> ErrCodeColIxes;
 
    // explicit retek2(QWidget *parent = nullptr);

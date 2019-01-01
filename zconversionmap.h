@@ -22,11 +22,15 @@ private:
     //static const QString Empty;
     QString external(const QString&) const;
     QStringList internals(const QString& external =zStringHelper::Empty ) const;
+
+    QStringList externals(const QString& external =zStringHelper::Empty ) const;
+
 public:    
     zConversionMap();
     static QList<zConversionMap> loadAll(const QString& filePath, const QStringList &);
     static zConversionMap load(const QString& fileName);
     static QString external(const QList<zConversionMap>&, const QString&);
+    static QStringList externals(const QList<zConversionMap>& maps,const QString& external = zStringHelper::Empty);
 
     static QStringList internals(const QList<zConversionMap>& maps,const QString& external = zStringHelper::Empty);
 

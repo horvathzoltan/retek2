@@ -13,7 +13,7 @@
 #include "ziconhelper.h"
 #include "zdownloader.h"
 #include "ztableerror.h"
-#include "highlighter.h"
+//#include "highlighter.h"
 
 #include <QRegularExpression>
 #include <QTableWidgetItem>
@@ -44,12 +44,18 @@
 #include "zconversionmap.h"
 
 
+Highlighter* retek2::h1 = nullptr;
+Highlighter* retek2::h2 = nullptr;
+
 //retek2::retek2(QWidget *parent):QMainWindow(parent)
 //{
 //	ui.setupUi(this);
 //}
 
-retek2::~retek2()= default;
+retek2::~retek2()
+{
+    delete h1, h2;
+}
 
 /**
     // Ha van elmentett projectnév
@@ -59,13 +65,13 @@ retek2::~retek2()= default;
     // az ott tárolt xml leírójuk alapján
 */
 
-
 void retek2::init()
 {	
     ui.setupUi(this);
     ui.listWidget_ztables->setIconSize(QSize(48,24));
     //zlog.init(ui.textBrowser, ui.tabWidget, 4, false);// 4.tab-on van a log
     zLog::init(retek2::logToGUI, false, &ui, false);
+
 
     /*
     zError("a");
@@ -148,7 +154,13 @@ void retek2::init()
 
     setListWidgetIconsByCurrentProject(sqlmap, srcmap, docmap);
 
-    ztokenizer.init(ui.tableWidget_MezoLista);  
+    ztokenizer.init(ui.tableWidget_MezoLista);
+
+    h1 = new Highlighter(ui.textBrowser_sources->document());
+    h2 = new Highlighter(ui.textBrowser_docs->document());
+
+    h1->setKeywords(zConversionMap::externals(globalClassMaps));
+    h2->setKeywords(zConversionMap::externals(globalSqlMaps));
 
     zInfo(QStringLiteral("retek2 init ok"));
 }
@@ -1691,7 +1703,7 @@ void retek2::on_listWidget_sources_itemClicked(QListWidgetItem *item)
 
     ui.textBrowser_sources->setText(txt);
 
-    static auto h = new Highlighter(ui.textBrowser_sources->document());
+    //static auto h = new Highlighter(ui.textBrowser_sources->document());
 }
 
 
@@ -1703,5 +1715,5 @@ void retek2::on_listWidget_docs_itemClicked(QListWidgetItem *item)
 
     auto a = d.value<QString>();
 
-    static auto h = new Highlighter(ui.textBrowser_docs->document());
+    //static auto h = new Highlighter(ui.textBrowser_docs->document());
 }
