@@ -1690,20 +1690,15 @@ void retek2::on_pushButton_sourcepath_clicked()
 
 
 void retek2::on_listWidget_sources_itemClicked(QListWidgetItem *item)
-{
+{    
     auto d = item->data(Qt::UserRole);
     if(!d.isValid()) return;
-
     auto a = d.value<QString>();
-
     auto txt = zTextFileHelper::load(a);
-
     if(txt.isEmpty()) return;
-
-
     ui.textBrowser_sources->setText(txt);
-
-    //static auto h = new Highlighter(ui.textBrowser_sources->document());
+    auto str = QStringLiteral("class\\s+%1").arg(item->text());
+    TextBrowserSearch(ui.textBrowser_sources, str);
 }
 
 
@@ -1712,8 +1707,13 @@ void retek2::on_listWidget_docs_itemClicked(QListWidgetItem *item)
 {
     auto d = item->data(Qt::UserRole);
     if(!d.isValid()) return;
-
     auto a = d.value<QString>();
+    TextBrowserSearch(ui.textBrowser_docs, a);
+}
 
-    //static auto h = new Highlighter(ui.textBrowser_docs->document());
+void retek2::TextBrowserSearch(QTextBrowser *tb, const QString& a)
+{
+    auto r = QRegExp(QStringLiteral("\\b%1\\b").arg(a));
+    tb->moveCursor(QTextCursor::End);
+    tb->find(r, QTextDocument::FindBackward| QTextDocument::FindCaseSensitively);
 }

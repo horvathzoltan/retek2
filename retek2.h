@@ -137,6 +137,8 @@ private:
     static const QMap<QString, int> ColNameIxes;
 
     static QPalette getPaletteByColor(const QPalette& r, const QColor& c);
+    static void TextBrowserSearch(QTextBrowser *tb, const QString& a);
 };
+
 
 //#endif // RETEK2_H
