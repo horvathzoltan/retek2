@@ -1578,34 +1578,6 @@ void retek2::on_listWidget_tables_itemClicked(QListWidgetItem *item)
     }
 }
 
-/*
-pushButton_srcimport - on_pushButton_table_import_clicked
-*/
-
-void retek2::on_pushButton_srcimport_clicked()
-{
-     zTrace();
-
-     auto currentSrc = ui.listWidget_sources->currentItem();
-     if(!currentSrc) return;
-     QString srcName = currentSrc->data(Qt::UserRole).toString();
-
-     auto name = currentSrc->text();
-     //zLog::dialogTrace(srcName);
-
-     QString f_txt = zTextFileHelper::load(srcName);
-     auto tl = zTable::createTableByClassTxt(f_txt);
-
-
-     zforeach(t,tl)
-     {
-         t->name = zStringHelper::zNormalize(name);
-         t->class_path = srcName;
-        ztables.append(*t);
-        add_zTablaToListWidget(*t);
-     }
-}
-
 ///log
 /// zlog.init(ui.textBrowser, ui.tabWidget, 4, false);// 4.tab-on van a log
 void retek2::logToGUI(int errlevel, const QString &msg, const QString &loci, const QString &st, void* uiptr)
@@ -1716,4 +1688,77 @@ void retek2::TextBrowserSearch(QTextBrowser *tb, const QString& a)
     auto r = QRegExp(QStringLiteral("\\b%1\\b").arg(a));
     tb->moveCursor(QTextCursor::End);
     tb->find(r, QTextDocument::FindBackward| QTextDocument::FindCaseSensitively);
+}
+
+/*pushButtons*/
+
+/*
+pushButton_srcimport - on_pushButton_table_import_clicked
+*/
+
+void retek2::on_pushButton_srcimport_clicked()
+{
+    zTrace();
+
+    auto currentSrc = ui.listWidget_sources->currentItem();
+    if(!currentSrc) return;
+    QString srcName = currentSrc->data(Qt::UserRole).toString();
+
+    auto name = currentSrc->text();
+    //zLog::dialogTrace(srcName);
+
+    QString f_txt = zTextFileHelper::load(srcName);
+    auto tl = zTable::createTableByClassTxt(f_txt);
+
+
+    zforeach(t,tl)
+    {
+        t->name = zStringHelper::zNormalize(name);
+        t->class_path = srcName;
+        ztables.append(*t);
+        add_zTablaToListWidget(*t);
+    }
+}
+
+
+/*
+ * TODO dokumentum - import
+közben a dokumentum - aháttérben módosulhatott
+- ha elérhető még:
+- frissíteni (az osztálylistát és a szerkesztőt is - funkcióban) a combo eventet is így kell átírni
+- ha tartalmazza az osztályt,
+- akkor frissíteni
+*/
+void retek2::on_pushButton_docimport_clicked()
+{
+    zTrace();
+
+    auto currentDoc = ui.listWidget_docs->currentItem();
+    if(!currentDoc) return;
+
+    auto d = currentDoc->data(Qt::UserRole);
+    if(!d.isValid()) return;
+    auto name = d.value<QString>();
+
+    //auto currentui.comboBox_docconn->currentText();
+
+    //ui.lineEdit_docpath->(c->path);
+
+    //TextBrowserSearch(ui.textBrowser_docs, a);
+
+    zTrace();
+    //auto name = currentSrc->text();
+    //zLog::dialogTrace(srcName);
+
+//    QString f_txt = zTextFileHelper::load(srcName);
+//    auto tl = zTable::createTableByClassTxt(f_txt);
+
+
+//    zforeach(t,tl)
+//    {
+//        t->name = zStringHelper::zNormalize(name);
+//        t->class_path = srcName;
+//        ztables.append(*t);
+//        add_zTablaToListWidget(*t);
+//    }
 }

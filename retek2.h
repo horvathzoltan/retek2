@@ -93,6 +93,10 @@ private slots:
 
     void on_listWidget_docs_itemClicked(QListWidgetItem *item);
 
+    void on_pushButton_srcconnect_clicked();
+
+    void on_pushButton_docimport_clicked();
+
 private:
     Ui::retek2Class ui;
     Ui::Dialog_ztable_name zTableNameDialog;
