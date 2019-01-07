@@ -93,8 +93,6 @@ private slots:
 
     void on_listWidget_docs_itemClicked(QListWidgetItem *item);
 
-    void on_pushButton_srcconnect_clicked();
-
     void on_pushButton_docimport_clicked();
 
 private:
@@ -142,6 +140,7 @@ private:
 
     static QPalette getPaletteByColor(const QPalette& r, const QColor& c);
     static void TextBrowserSearch(QTextBrowser *tb, const QString& a);
+    void docRefresh(const QString &arg1);
 };
 
 

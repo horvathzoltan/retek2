@@ -1239,6 +1239,11 @@ void retek2::sourcesFeltolt(const srcConnection& c) {
 
 void retek2::on_comboBox_docconn_currentIndexChanged(const QString &arg1)
 {
+    docRefresh(arg1);
+}
+
+void retek2::docRefresh(const QString &arg1)
+{
     ui.listWidget_docs->clear();
 
     auto c = beallitasok.getDocConnectionByName(arg1);
@@ -1720,7 +1725,6 @@ void retek2::on_pushButton_srcimport_clicked()
     }
 }
 
-
 /*
  * TODO dokumentum - import
 közben a dokumentum - aháttérben módosulhatott
@@ -1733,12 +1737,31 @@ void retek2::on_pushButton_docimport_clicked()
 {
     zTrace();
 
+    auto docName = ui.comboBox_docconn->currentText();
+
     auto currentDoc = ui.listWidget_docs->currentItem();
     if(!currentDoc) return;
 
-    auto d = currentDoc->data(Qt::UserRole);
-    if(!d.isValid()) return;
-    auto name = d.value<QString>();
+    auto d = currentDoc->data(Qt::UserRole).toString();
+    if(d.isEmpty()) return;
+    //auto name = d.toString();
+
+    zInfo(docName + ":" + d);//CGCStock
+
+    docRefresh(docName);
+
+    auto items = ui.listWidget_docs->findItems(d, Qt::MatchExactly);
+
+    if(items.isEmpty()) return;
+    if(items.count()>1){
+        zInfo(QStringLiteral("Több található: %1").arg(d));
+    }
+    ui.listWidget_docs->setCurrentItem(items[0]);
+    on_listWidget_docs_itemClicked(items[0]);
+
+    //ui.textBrowser_sources->fin(r, QTextDocument::FindCaseSensitively);
+
+   //zInfo("items[0]");//CGCStock
 
     //auto currentui.comboBox_docconn->currentText();
 
@@ -1746,7 +1769,6 @@ void retek2::on_pushButton_docimport_clicked()
 
     //TextBrowserSearch(ui.textBrowser_docs, a);
 
-    zTrace();
     //auto name = currentSrc->text();
     //zLog::dialogTrace(srcName);
 
