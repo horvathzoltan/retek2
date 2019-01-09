@@ -156,11 +156,23 @@ void retek2::init()
 
     ztokenizer.init(ui.tableWidget_MezoLista);
 
+
     h1 = new Highlighter(ui.textBrowser_sources->document());
     h2 = new Highlighter(ui.textBrowser_docs->document());
 
-    h1->setKeywords(zConversionMap::externals(globalClassMaps));
-    h2->setKeywords(zConversionMap::externals(globalSqlMaps));
+    auto a2 = zConversionMap::externals(globalClassMaps);
+    h1->setKeywords(a2);
+//    auto a = zConversionMap::externals(globalSqlMaps);
+//    QStringList a3;
+//    for(int i=0;i<5;i++)
+//    {
+//        if(i==2)
+//            a3<<"aaa";
+//        else
+//            a3<<a[i];
+//    }
+
+//    h2->setKeywords(a3);
 
     zInfo(QStringLiteral("retek2 init ok"));
 }
@@ -1239,31 +1251,34 @@ void retek2::sourcesFeltolt(const srcConnection& c) {
 
 void retek2::on_comboBox_docconn_currentIndexChanged(const QString &arg1)
 {
-    docRefresh(arg1);
+    QString e = docRefresh(arg1);
+    return;
 }
 
-void retek2::docRefresh(const QString &arg1)
+QString retek2::docRefresh(const QString &arg1)
 {
     ui.listWidget_docs->clear();
-
     auto c = beallitasok.getDocConnectionByName(arg1);
     if(c)
     {
         ui.lineEdit_docpath->setText(c->path);
         ui.lineEdit_docpath->setToolTip(c->path);
         ui.textBrowser_docs->clear();
-        docsFeltolt(*c);
+
+        QString e = docsFeltolt(*c);
+        return e;
     }
+    return zStringHelper::Empty;
 }
 
 //TODO egy dokumentum fájlt adunk meg, a listboxban a tárolt osztályok listáját kell feltölteni
 //listWidget_docs
-void retek2::docsFeltolt(const docConnection& c) {
+QString retek2::docsFeltolt(const docConnection& c) {
     auto f_txt = zTextFileHelper::load(c.path);
     auto tbtxt = zTable::createTxtByHtml(f_txt);
     ui.textBrowser_docs->setHtml(tbtxt);
     //ui.textBrowser_docs->setSource(QUrl(c.path));
-    if(f_txt.isEmpty()) return;
+    if(f_txt.isEmpty()) return f_txt;
     auto tables = zTable::createTableByHtml(f_txt);
     zforeach(t, tables)
     {
@@ -1271,6 +1286,7 @@ void retek2::docsFeltolt(const docConnection& c) {
         i->setData(Qt::UserRole, t->name);
         ui.listWidget_docs->addItem(i);
     }
+    return tbtxt;
 }
 
 /*
@@ -1688,11 +1704,11 @@ void retek2::on_listWidget_docs_itemClicked(QListWidgetItem *item)
     TextBrowserSearch(ui.textBrowser_docs, a);
 }
 
-void retek2::TextBrowserSearch(QTextBrowser *tb, const QString& a)
+bool retek2::TextBrowserSearch(QTextBrowser *tb, const QString& a)
 {
     auto r = QRegExp(QStringLiteral("\\b%1\\b").arg(a));
     tb->moveCursor(QTextCursor::End);
-    tb->find(r, QTextDocument::FindBackward| QTextDocument::FindCaseSensitively);
+    return tb->find(r, QTextDocument::FindBackward| QTextDocument::FindCaseSensitively);
 }
 
 /*pushButtons*/
@@ -1748,7 +1764,7 @@ void retek2::on_pushButton_docimport_clicked()
 
     zInfo(docName + ":" + d);//CGCStock
 
-    docRefresh(docName);
+    auto f_txt = docRefresh(docName);
 
     auto items = ui.listWidget_docs->findItems(d, Qt::MatchExactly);
 
@@ -1759,28 +1775,19 @@ void retek2::on_pushButton_docimport_clicked()
     ui.listWidget_docs->setCurrentItem(items[0]);
     on_listWidget_docs_itemClicked(items[0]);
 
-    //ui.textBrowser_sources->fin(r, QTextDocument::FindCaseSensitively);
-
-   //zInfo("items[0]");//CGCStock
-
-    //auto currentui.comboBox_docconn->currentText();
-
-    //ui.lineEdit_docpath->(c->path);
-
-    //TextBrowserSearch(ui.textBrowser_docs, a);
-
-    //auto name = currentSrc->text();
-    //zLog::dialogTrace(srcName);
+    //auto f_txt = ui.textBrowser_docs->toHtml();
 
 //    QString f_txt = zTextFileHelper::load(srcName);
-//    auto tl = zTable::createTableByClassTxt(f_txt);
+    auto tl = zTable::createTableByHtml(f_txt);
 
-
-//    zforeach(t,tl)
-//    {
+    zforeach(t,tl)
+    {
+        auto qn = zStringHelper::zNormalize(d);
+        zInfo(qn);
+        //if(zStringHelper::zNormalize(t.name)==)
 //        t->name = zStringHelper::zNormalize(name);
 //        t->class_path = srcName;
 //        ztables.append(*t);
 //        add_zTablaToListWidget(*t);
-//    }
+    }
 }

@@ -129,7 +129,7 @@ private:
 
     void schemasFeltolt(const dbConnection& c);
     void sourcesFeltolt(const srcConnection& c);
-    void docsFeltolt(const docConnection& c);
+    QString docsFeltolt(const docConnection& c);
 
     QString getCaptionByRowIx(int idix);
     void setCaptionByRowIx(int idix, const QString& caption);
@@ -139,8 +139,8 @@ private:
     static const QMap<QString, int> ColNameIxes;
 
     static QPalette getPaletteByColor(const QPalette& r, const QColor& c);
-    static void TextBrowserSearch(QTextBrowser *tb, const QString& a);
-    void docRefresh(const QString &arg1);
+    static bool TextBrowserSearch(QTextBrowser *tb, const QString& a);
+    QString docRefresh(const QString &arg1);
 };
 
 

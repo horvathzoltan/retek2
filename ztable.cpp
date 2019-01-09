@@ -1652,6 +1652,7 @@ QString zTable::createTxtByHtml(const QString& txt){
     {
         auto rtm = rti.next();
         QString table_txt=rtm.captured(1);
+        QString table_txt2=rtm.captured(0);
         if(!table_txt.isEmpty())
         {
             bool nameOk = false;
@@ -1660,7 +1661,7 @@ QString zTable::createTxtByHtml(const QString& txt){
             auto rtbodym = rtbody.match(table_txt);
             if(rtbodym.hasMatch())
             {
-                table_txt = rtbodym.captured(1);
+                table_txt = rtbodym.captured(1);//1
             }
             //tr
 
@@ -1702,12 +1703,23 @@ QString zTable::createTxtByHtml(const QString& txt){
             if(nameOk && typeOk)
             {
                 if(!e.isEmpty()) e+=(QStringLiteral("<br/><br/><br/>"));
-                e+=table_txt;
+                e+=table_txt2;
             }
         }
         table_ix++;
     }
-    return e;
+    auto str = QStringLiteral(
+"<!DOCTYPE html>"
+"<html>"
+"<head>"
+"<title>Page Title</title>"
+"</head>"
+"<body>"
+"%1"
+"</body>"
+"</html>"
+        );
+    return str.arg(e);
 }
 
 QList<zTable> zTable::createTableByHtml(const QString& txt){

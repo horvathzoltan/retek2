@@ -26,6 +26,9 @@ Highlighter::Highlighter(QTextDocument *parent): QSyntaxHighlighter(parent)
 //        highlightingRules.append(rule);
 //    }
 
+    //setKeywords(keywordPatterns);
+
+
     classFormat.setFontWeight(QFont::Bold);
     //classFormat.setFontItalic(true);
     classFormat.setForeground(Qt::darkCyan);
@@ -53,6 +56,7 @@ Highlighter::Highlighter(QTextDocument *parent): QSyntaxHighlighter(parent)
 
     commentStartExpression = QRegularExpression(QStringLiteral("/\\*"));
     commentEndExpression = QRegularExpression(QStringLiteral("\\*/"));
+
 }
 
 void Highlighter::setKeywords(const QStringList &keywordPatterns)
@@ -61,7 +65,16 @@ void Highlighter::setKeywords(const QStringList &keywordPatterns)
 
     foreach (const QString &pattern, keywordPatterns)
     {
-        rule.pattern = QRegularExpression("\\b"+pattern+"\\b");
+        QString p;
+        if(pattern.endsWith('<')||pattern.endsWith('>'))
+        {
+            p=pattern.left(pattern.length()-1);
+        }
+        else
+        {
+            p=pattern;
+        }
+        rule.pattern = QRegularExpression("\\b"+p+"\\b");
         rule.format = keywordFormat;
         highlightingRules.append(rule);
     }
