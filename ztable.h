@@ -73,7 +73,7 @@ public:
     static QList<zTable> createTableByText(QString txt);    
     static QList<zTable> createTableByText_2(QString txt);
     static QList<zTable> createTableByXML(const QString& txt);
-    static QList<zTable> createTableByHtml(const QString& txt);
+    static QList<zTable> createTableByHtml(const QString& txt, const QString &d=zStringHelper::Empty);
 
     static QList<zTable> createTableByText_3(const QString& txt, QMap<QString, QString>*, QMap<QString, QString>* = nullptr);
 

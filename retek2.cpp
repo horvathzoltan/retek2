@@ -161,8 +161,9 @@ void retek2::init()
     h2 = new Highlighter(ui.textBrowser_docs->document());
 
     auto a2 = zConversionMap::externals(globalClassMaps);
-    h1->setKeywords(a2);
-//    auto a = zConversionMap::externals(globalSqlMaps);
+    //h1->setKeywords(a2);
+   //auto a = zConversionMap::externals(globalSqlMaps);
+
 //    QStringList a3;
 //    for(int i=0;i<5;i++)
 //    {
@@ -172,6 +173,7 @@ void retek2::init()
 //            a3<<a[i];
 //    }
 
+//    a3<<"bit";
 //    h2->setKeywords(a3);
 
     zInfo(QStringLiteral("retek2 init ok"));
@@ -1778,16 +1780,17 @@ void retek2::on_pushButton_docimport_clicked()
     //auto f_txt = ui.textBrowser_docs->toHtml();
 
 //    QString f_txt = zTextFileHelper::load(srcName);
-    auto tl = zTable::createTableByHtml(f_txt);
+    auto tl = zTable::createTableByHtml(f_txt, d);
+
+    if(tl.isEmpty()) return;
+    if(tl.count()>1) zInfo(QStringLiteral("egynél több %1 van a dokumentációban").arg(d));
 
     zforeach(t,tl)
     {
-        auto qn = zStringHelper::zNormalize(d);
-        zInfo(qn);
-        //if(zStringHelper::zNormalize(t.name)==)
-//        t->name = zStringHelper::zNormalize(name);
-//        t->class_path = srcName;
-//        ztables.append(*t);
-//        add_zTablaToListWidget(*t);
+
+        //classname,plural, docpath
+        //t->
+        ztables.append(*t);
+        add_zTablaToListWidget(*t);
     }
 }

@@ -1722,9 +1722,10 @@ QString zTable::createTxtByHtml(const QString& txt){
     return str.arg(e);
 }
 
-QList<zTable> zTable::createTableByHtml(const QString& txt){
+QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
     QList<zTable> e;
 
+    QString sName = (!d.isEmpty())?zStringHelper::zNormalize(d):zStringHelper::Empty;
     QRegularExpression rtable = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TABLE);
     QRegularExpression rtbody = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TBODY);
     QRegularExpression rtr = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TR);
@@ -1896,8 +1897,12 @@ QList<zTable> zTable::createTableByHtml(const QString& txt){
                 }
                 if(row_ix>=2)
                 {
-                    if(table_txt.contains(QStringLiteral("Törzsadatok")))
-                        zTrace();
+                    if(!sName.isEmpty() && zStringHelper::zNormalize(tablename)!=sName)
+                    {
+                        continue;
+                    }
+                    //if(table_txt.contains(QStringLiteral("Törzsadatok")))
+                    //    zTrace();
 
                     if(ix_name!=-1 && ix_type!=-1 && !row_type.isEmpty())
                     {
