@@ -1253,23 +1253,24 @@ void retek2::sourcesFeltolt(const srcConnection& c) {
 
 void retek2::on_comboBox_docconn_currentIndexChanged(const QString &arg1)
 {
-    QString e = docRefresh(arg1);
-    return;
+    auto c = beallitasok.getDocConnectionByName(arg1);
+
+    auto e = docRefresh(c);
+
 }
 
-QString retek2::docRefresh(const QString &arg1)
+QString retek2::docRefresh(docConnection* c)
 {
     ui.listWidget_docs->clear();
-    auto c = beallitasok.getDocConnectionByName(arg1);
-    if(c)
-    {
-        ui.lineEdit_docpath->setText(c->path);
-        ui.lineEdit_docpath->setToolTip(c->path);
-        ui.textBrowser_docs->clear();
+    if(!c->isValid()) return zStringHelper::Empty;
 
-        QString e = docsFeltolt(*c);
-        return e;
-    }
+    ui.lineEdit_docpath->setText(c->path);
+    ui.lineEdit_docpath->setToolTip(c->path);
+    ui.textBrowser_docs->clear();
+
+    QString e = docsFeltolt(*c);
+    return e;
+
     return zStringHelper::Empty;
 }
 
@@ -1765,8 +1766,11 @@ void retek2::on_pushButton_docimport_clicked()
     //auto name = d.toString();
 
     zInfo(docName + ":" + d);//CGCStock
+    auto c = beallitasok.getDocConnectionByName(docName);
 
-    auto f_txt = docRefresh(docName);
+    if(!c->isValid()) return;
+
+    auto f_txt = docRefresh(c);
 
     auto items = ui.listWidget_docs->findItems(d, Qt::MatchExactly);
 
@@ -1787,10 +1791,14 @@ void retek2::on_pushButton_docimport_clicked()
 
     zforeach(t,tl)
     {
-
-        //classname,plural, docpath
-        //t->
+        auto tn = zStringHelper::zNormalize(d);
+        t->name = tn;
+        t->document_path = c->path;
+        QString pluralClassName;
+        auto className = zTable::getClassName(tn, pluralClassName);
+        t->initClass(className, pluralClassName);
         ztables.append(*t);
         add_zTablaToListWidget(*t);
+        zInfo(QStringLiteral("doc:%1").arg(tn));
     }
 }

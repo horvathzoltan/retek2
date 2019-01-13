@@ -140,7 +140,7 @@ private:
 
     static QPalette getPaletteByColor(const QPalette& r, const QColor& c);
     static bool TextBrowserSearch(QTextBrowser *tb, const QString& a);
-    QString docRefresh(const QString &arg1);
+    QString docRefresh(docConnection *c);
 };
 
 

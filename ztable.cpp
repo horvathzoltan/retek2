@@ -281,6 +281,7 @@ bool zTable::Compare(const zTable& tv, QList<zTableError>& e, const QString& sou
 //            if(tv.name.toLower()=="fue"){
 //                int x =0;
 //            }
+
         if(rv != nullptr)
         {
            tvrows.remove(r->colName);
@@ -1616,13 +1617,14 @@ bool zTable::validateDocument(){
         auto tl = zTable::createTableByHtml(f_txt);
 
         zforeach(t,tl)
-        {         
-            if(t->name == this->name)
-            {
-//                if(t->name.toLower()=="fue"){
-//                    int x = 0;
-//                }
+        {
 
+
+            if(t->name.toLower() == this->name.toLower())
+            {
+//                if(t->name.toLower()=="units"){
+//                    zTrace();
+//                }
                 auto isOK = Compare(*t, eval, nameof(zTable::validateDocument()));
                 return isOK;
             }

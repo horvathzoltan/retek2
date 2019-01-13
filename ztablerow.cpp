@@ -66,8 +66,13 @@ const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeDescriptions
 /*
 sorokat hasonlít össze - metaadataik alapján
 */
-//
+//TODO nem csak azt kell nézni, hogy egyforma-e, ahnem az is, hogy ki van -e töltve, pl. a típus
 bool zTablerow::Compare(const zTablerow& rv, QList<zTableError>& e, const QString& source){
+
+    if(rv.colName=="UnitTypeId"){//UnitTypeId
+        zTrace();
+    }
+
     bool v  = true;
     if(this->colName!=rv.colName)
     {
