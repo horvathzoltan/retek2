@@ -148,10 +148,13 @@ void retek2::init()
     // tehát minden doksira kell egy SHA1 és ha az változik, akkor piszka volt
     // akkor lehet végrehajtani, ha nem fut a táblán művelet - illetve egyik táblán sem fut művelet
 
+    //auto valmap = validateCurrentProject();
+
     auto sqlmap = validateCurrentProject_SQL();
     auto srcmap = validateCurrentProject_Source();
     auto docmap = validateCurrentProject_Document();
 
+    //TODO a loadkori validációt is le kéne figyelni
     setListWidgetIconsByCurrentProject(sqlmap, srcmap, docmap);
 
     ztokenizer.init(ui.tableWidget_MezoLista);
@@ -291,7 +294,7 @@ void retek2::loadCurrentProject()
                         zWarning(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
                         t0.name = fn;
                     }
-                    bool isValid = t0.Validate(ztables);
+                    bool isValid = t0.Validate(ztables, t0.eval, zfn());
 
 //                    if(zTable::find(ztables, t0.name, zTableSearchBy::Name))
 //                    {
@@ -1495,6 +1498,7 @@ void retek2::zTableNamesToUi(const zTable& t){
     ui.lineEdit_class_name_plural->setText(t.class_name_plural);
     ui.lineEdit_pkname->setText(t.pkname());
     ui.lineEdit_src_src->setText(t.class_path);
+    ui.lineEdit_docName->setText(t.docName);
     ui.lineEdit_src_doc->setText(t.document_path);
 
     ui.lineEdit_src_sql->setText(t.SqlConnToString());
@@ -1793,6 +1797,7 @@ void retek2::on_pushButton_docimport_clicked()
     {
         auto tn = zStringHelper::zNormalize(d);
         t->name = tn;
+        t->docName = d;
         t->document_path = c->path;
         QString pluralClassName;
         auto className = zTable::getClassName(tn, pluralClassName);

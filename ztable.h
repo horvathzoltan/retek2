@@ -28,6 +28,7 @@ public:
     ~zTable();
 
     QString name;
+    QString docName;
 
     // kettő féle conn van - egy az sql felé, egy a forrás felé - ha ezek teljesülnek, a tábla teljesen be van kötve
     // sql conn: conn_név + driver + server + user + pass (pl: deathstar)
@@ -110,7 +111,7 @@ public:
     //    static QString p_attr;
     void saveTablaToXML();
 
-    bool Validate(const QList<zTable>& tables);
+    bool Validate(const QList<zTable>& tables, QList<zTableError> &e, const QString &source);
     static QString getCaption(const QString& fname);
 
     bool validateSQL();

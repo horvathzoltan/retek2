@@ -49,18 +49,20 @@ zTablerow* zTablerow::getByName(const QList<zTablerow> &rows, const QString& rn)
     return nullptr;
 }
 
-enum class zTablerow::ErrCode:int{noteq, unknown};
+enum class zTablerow::ErrCode:int{noteq, unknown, notex};
 
 const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeNames
 {
     {ErrCode::noteq, QStringLiteral("noteq")},
-    {ErrCode::unknown, QStringLiteral("unknown")}
+        {ErrCode::unknown, QStringLiteral("unknown")},
+    {ErrCode::notex, QStringLiteral("notex")}
 };
 
 const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeDescriptions
 {
     {ErrCode::noteq, QStringLiteral("Not Equals")},
-    {ErrCode::unknown, QStringLiteral("Unknown")}
+        {ErrCode::unknown, QStringLiteral("Unknown")},
+    {ErrCode::notex, QStringLiteral("Not Exist")}
 };
 
 /*
@@ -72,14 +74,30 @@ bool zTablerow::Compare(const zTablerow& rv, QList<zTableError>& e, const QStrin
     if(rv.colName=="UnitTypeId"){//UnitTypeId
         zTrace();
     }
-
     bool v  = true;
+
     if(this->colName!=rv.colName)
     {
         auto err = GetFullError("colName", ErrCode::noteq, {this->colName, rv.colName}, source);
         e.append(err);//QStringLiteral("colName Not Equals: (%1,%2)").arg(colName, rv.colName));
         v = false;
     }
+
+//    bool ev=true; // lehet validálni, mert van
+//    if(this->colType.isEmpty()){
+//        auto err = GetFullError("colType", ErrCode::notex, {}, "tableValidate");
+//        e.append(err);
+//        v = false;
+//        ev=false;
+//    }
+
+//    if(rv.colType.isEmpty()){
+//        auto err = GetFullError("colType", ErrCode::notex, {}, source);
+//        e.append(err);
+//        v = false;
+//        ev=false;
+//    }
+//!(this->colType.isEmpty() || rv.colType.isEmpty()) &&
     if(this->colType!=rv.colType)
     {
         auto err = GetFullError("colType", ErrCode::noteq, {this->colType, rv.colType}, source);
@@ -119,7 +137,7 @@ bool zTablerow::Validate(QStringList& e){
 A colName kötelező, és egyedi kell legyen / table
 A coltype kötelező, és szerepelnie kell az ismert típusok között
 */
-bool zTablerow::Validate2(const QStringList& colNames){
+bool zTablerow::Validate2(const QStringList& colNames, QList<zTableError>& e, const QString& source){
     bool v = true;
     if(colName.isEmpty())
     {
@@ -133,6 +151,8 @@ bool zTablerow::Validate2(const QStringList& colNames){
 //    }
     if(colType.isEmpty()){
         zInfo(QStringLiteral("Nincs típusnév error"));
+        auto err = GetFullError("colType", ErrCode::notex, {}, source);
+        e.append(err);
         v= false;
     }
     else

@@ -243,9 +243,9 @@ bool zTable::Compare(const zTable& tv, QList<zTableError>& e, const QString& sou
 
     bool v = true;
 
-    if(this->name != tv.name)
+    if(!tv.name.isEmpty() && this->name != tv.name)
     {
-        auto err = GetFullError(nameof(this->name), ErrCode::noteq, {"tablename",this->name, tv.name}, source);
+        auto err = GetFullError(nameof(this->name), ErrCode::noteq, {"name",this->name, tv.name}, source);
         e.append(err);
         v = false;
     }
@@ -524,6 +524,7 @@ void zTable::toXML(QXmlStreamWriter *s)
     s->writeAttribute(nameof(this->source_updateTimeStamp), this->source_updateTimeStamp.toString());
     s->writeAttribute(nameof(this->source_isValid), zStringHelper::boolToString(this->source_isValid));
 
+    s->writeAttribute(nameof(this->docName), this->docName);
     s->writeAttribute(nameof(this->document_path), this->document_path);
     s->writeAttribute(nameof(this->document_updateTimeStamp), this->document_updateTimeStamp.toString());
     s->writeAttribute(nameof(this->document_isValid), zStringHelper::boolToString(this->document_isValid));
@@ -608,6 +609,7 @@ zTable zTable::fromXML(QXmlStreamReader* xml){
     zXmlHelper::putXmlAttr(a, nameof(source_isValid), &(t.source_isValid));
     zXmlHelper::putXmlAttr(a, nameof(source_updateTimeStamp), &(t.source_updateTimeStamp));
 
+    zXmlHelper::putXmlAttr(a, nameof(docName), &(t.docName));
     zXmlHelper::putXmlAttr(a, nameof(document_path), &(t.document_path));
     zXmlHelper::putXmlAttr(a, nameof(document_isValid), &(t.document_isValid));
     zXmlHelper::putXmlAttr(a, nameof(document_updateTimeStamp), &(t.document_updateTimeStamp));
@@ -886,7 +888,7 @@ QList<zTable> zTable::createTableByText(QString txt)
             t.initClass(className, pluralClassName);
 
 //
-            bool isValid = t.Validate(tl);
+            bool isValid = t.Validate(tl, t.eval, zfn());
             if(isValid)
             {
                 tl.append(t);
@@ -1435,7 +1437,7 @@ void zTable::saveTablaToXML() {
    azok a belső osztályok vannak, amik ezekben kulcsként szerepelnek: globalSqlMaps, globalClassMaps
 */
 
-bool zTable::Validate(const QList<zTable>& tables){
+bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const QString& source){
     bool v= true;
 
     if(this->pkrowix==-1)
@@ -1472,7 +1474,7 @@ bool zTable::Validate(const QList<zTable>& tables){
                 zInfo(QStringLiteral("PK nem lehet nullable error"));
                 v=false;
             }
-            bool is_rv = r->Validate2(colNames);
+            bool is_rv = r->Validate2(colNames, e, source);
             if(!is_rv)
             {
                 v= false;
@@ -1618,13 +1620,13 @@ bool zTable::validateDocument(){
 
         zforeach(t,tl)
         {
+//            if(t->name.toLower()=="units"){
+//                zTrace();
+//            }
+            t->name=zStringHelper::Empty;
 
-
-            if(t->name.toLower() == this->name.toLower())
+            if(!t->docName.isEmpty() && t->docName == this->docName)
             {
-//                if(t->name.toLower()=="units"){
-//                    zTrace();
-//                }
                 auto isOK = Compare(*t, eval, nameof(zTable::validateDocument()));
                 return isOK;
             }
@@ -1944,6 +1946,8 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
         if(rowlist.isEmpty()) continue;
         auto t = zTable(tablename, pkname, rowlist);
 
+        t.docName = tablename;
+        //t.name = "";
         zInfo(QStringLiteral("zTable: %1").arg(t.toString()));
         e.append(t);
         table_ix++;
