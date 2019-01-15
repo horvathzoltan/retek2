@@ -252,11 +252,11 @@ QString zTokenizer::getToken(const QString& token1, const QString& t2, QMap<QStr
         else
         {
             auto colname = map->value(QStringLiteral("colname")).toString();
-            zError(QStringLiteral("A tokenhez nincs érték párosítva: %1 => %2").arg(t1, colname));
+            zInfo(QStringLiteral("A tokenhez nincs érték párosítva: %1 => %2 error").arg(t1, colname));
             eredmeny= "?1" + t1 + "?";
         }
     } else{
-        zError(QStringLiteral("Token nem oldható fel: %1").arg(t1));
+        zInfo(QStringLiteral("Token nem oldható fel: %1 error").arg(t1));
         eredmeny= "?2" + t1 + "?";
     }
 
@@ -612,7 +612,7 @@ QString zTokenizer::getPropClassType(const QString& tipusnev, bool isnullable) {
     QString cn = zConversionMap::external(globalClassMaps, tipusnev);
     if(cn.isEmpty())
     {
-        zError(QStringLiteral("Nem található classmap value a keyhez: %1").arg(tipusnev));
+        zInfo(QStringLiteral("Nem található classmap value a keyhez: %1 error").arg(tipusnev));
         return zStringHelper::Empty;
     }
     if (isnullable && !tipusnev.startsWith(QStringLiteral("string"))) cn += '?';

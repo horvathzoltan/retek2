@@ -58,9 +58,6 @@ public:
     bool document_isValid;
     QDateTime document_updateTimeStamp;
 
-    //TODO eval: ez egy struct kellene legyen egy típusos és egy leíró taggal, ez írná azt is, hogy , hogy doc, src forrásból jön -e az özenet
-    // List<zTableError>
-
     QList<zTableError> eval;
 
     //static zTable LoadFromSQL(QString, QString, QMap<QString, QString>, QString );

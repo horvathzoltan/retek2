@@ -148,14 +148,12 @@ void retek2::init()
     // tehát minden doksira kell egy SHA1 és ha az változik, akkor piszka volt
     // akkor lehet végrehajtani, ha nem fut a táblán művelet - illetve egyik táblán sem fut művelet
 
-    //auto valmap = validateCurrentProject();
-
+    auto valmap = validateCurrentProject();
     auto sqlmap = validateCurrentProject_SQL();
     auto srcmap = validateCurrentProject_Source();
     auto docmap = validateCurrentProject_Document();
 
-    //TODO a loadkori validációt is le kéne figyelni
-    setListWidgetIconsByCurrentProject(sqlmap, srcmap, docmap);
+    setListWidgetIconsByCurrentProject(sqlmap, srcmap, docmap, valmap);
 
     ztokenizer.init(ui.tableWidget_MezoLista);
 
@@ -191,7 +189,7 @@ void retek2::fillListWidgetByCurrentProject()
     }
 }
 
-void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap)
+void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap, const QMap<QString, bool>& valmap)
 {
     zforeach(t, ztables)
     {
@@ -199,7 +197,7 @@ void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlma
         if(items.isEmpty()) continue;
         if(items.count()==1)
         {
-            QStringList icons = getIconsByFlags(t->name, sqlmap, srcmap, docmap);
+            QStringList icons = getIconsByFlags(t->name, sqlmap, srcmap, docmap, valmap);
             auto icon = zIconHelper::concatenate(icons);
             items[0]->setIcon(icon);
         }
@@ -211,10 +209,25 @@ void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlma
 }
 
 
-QStringList retek2::getIconsByFlags(const QString& name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap)
+QStringList retek2::getIconsByFlags(const QString& name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> &valmap)
 {
     QStringList e;
 
+//    if(name=="fue")
+//    {
+//        zTrace();
+//    }
+//    if(valmap.contains(name))
+//    {
+//        if(valmap.value(name, false))
+//        {
+//            e << QStringLiteral(":/alert-triangle.ico");
+//        }
+//        else
+//        {
+//            e << QStringLiteral(":/alert-triangle.ico|x");
+//        }
+//    }
 
     if(sqlmap.contains(name))
     {
@@ -294,7 +307,7 @@ void retek2::loadCurrentProject()
                         zWarning(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
                         t0.name = fn;
                     }
-                    bool isValid = t0.Validate(ztables, t0.eval, zfn());
+                    //bool isValid = t0.Validate(ztables, t0.eval, zfn());
 
 //                    if(zTable::find(ztables, t0.name, zTableSearchBy::Name))
 //                    {
@@ -305,14 +318,29 @@ void retek2::loadCurrentProject()
                     ztables << t0;
 //                    add_zTablaToListWidget(t0);
 
-                    if(!isValid)
-                    {
-                        zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t0.name));
-                    }
+//                    if(!isValid)
+//                    {
+//                        zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t0.name));
+//                    }
                 }
             }
         }
     }
+}
+
+QMap<QString,bool> retek2::validateCurrentProject(){
+    zTrace();
+    QMap<QString,bool> e;
+
+    zforeach(t, ztables)
+    {
+        bool isValid = t->Validate(ztables, t->eval, zfn());
+        if(!isValid)
+        {
+            zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t->name));
+        }
+    }
+    return e;
 }
 
 // TODO if(true ||  - nem kell az élesben
@@ -1277,7 +1305,7 @@ QString retek2::docRefresh(docConnection* c)
     return zStringHelper::Empty;
 }
 
-//TODO egy dokumentum fájlt adunk meg, a listboxban a tárolt osztályok listáját kell feltölteni
+// dokumentum fájlt adunk meg, a listboxban a tárolt osztályok listáját kell feltölteni
 //listWidget_docs
 QString retek2::docsFeltolt(const docConnection& c) {
     auto f_txt = zTextFileHelper::load(c.path);
@@ -1348,7 +1376,6 @@ void retek2::tablesFeltolt(const dbConnection& c, const QString& schemaName) {
 
     auto tableNames = zsql.getTableNames(schemaName);
     ui.listWidget_tables->addItems(tableNames);
-    // TODO a t->eval táblára vonatkozóit az itemsekhez kell tenni
     // https://stackoverflow.com/questions/27958381/how-to-place-an-icon-onto-a-qlineedit
 }
 
@@ -1749,7 +1776,7 @@ void retek2::on_pushButton_srcimport_clicked()
 }
 
 /*
- * TODO dokumentum - import
+ *  dokumentum - import
 közben a dokumentum - aháttérben módosulhatott
 - ha elérhető még:
 - frissíteni (az osztálylistát és a szerkesztőt is - funkcióban) a combo eventet is így kell átírni

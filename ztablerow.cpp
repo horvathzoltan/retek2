@@ -68,7 +68,7 @@ const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeDescriptions
 /*
 sorokat hasonlít össze - metaadataik alapján
 */
-//TODO nem csak azt kell nézni, hogy egyforma-e, ahnem az is, hogy ki van -e töltve, pl. a típus
+
 bool zTablerow::Compare(const zTablerow& rv, QList<zTableError>& e, const QString& source){
 
     if(rv.colName=="UnitTypeId"){//UnitTypeId
@@ -156,46 +156,49 @@ bool zTablerow::Validate2(const QStringList& colNames, QList<zTableError>& e, co
         v= false;
     }
     else
-        {
+    {
         if(colNames.count(colName)>1)
         {
             zInfo(QStringLiteral("colName nem egyedi: %1 error").arg(colName));
             v = false;
         }
-    }
+    //}
 
-    auto isKnownType = isKnownTypeName(colType);
-    if(!isKnownType)
-    {
-        auto errortxt = QStringLiteral("Ismeretlen típus: %1").arg(colType);
-        bool isError = true;
-        v= false;
-        QStringList tl;
-        tl<< zConversionMap::internals(globalClassMaps, colType) << zConversionMap::internals(globalSqlMaps, colType);
-        tl.removeDuplicates();
-        if(!tl.isEmpty())
+        auto isKnownType = isKnownTypeName(colType);
+        if(!isKnownType)
         {
-            if(tl.count()>1)
+            auto err = GetFullError("colType", ErrCode::unknown, {colType}, source);
+            e.append(err);
+            auto errortxt = QStringLiteral("Ismeretlen típus: %1").arg(colType);
+            bool isError = true;
+            v= false;
+            QStringList tl;
+            tl<< zConversionMap::internals(globalClassMaps, colType) << zConversionMap::internals(globalSqlMaps, colType);
+            tl.removeDuplicates();
+            if(!tl.isEmpty())
             {
-                errortxt += QStringLiteral(" javasolt: %1").arg(tl.join(','));
+                if(tl.count()>1)
+                {
+                    errortxt += QStringLiteral(" javasolt: %1").arg(tl.join(','));
+                }
+                else
+                {
+                    errortxt += QStringLiteral(" cserélve: %1").arg(tl.first());
+                    colType = tl.first();
+                    isError = false;
+                }
+
+            }
+            if(isError)
+            {
+                zInfo(errortxt + " error");
             }
             else
             {
-                errortxt += QStringLiteral(" cserélve: %1").arg(tl.first());
-                colType = tl.first();
-                isError = false;
+                zInfo(errortxt);
             }
 
         }
-        if(isError)
-        {
-            zInfo(errortxt + " error");
-        }
-        else
-        {
-            zInfo(errortxt);
-        }
-
     }
 
     return v;

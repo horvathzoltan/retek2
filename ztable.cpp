@@ -1596,10 +1596,11 @@ bool zTable::validateSource(){
     return false;
 }
 
-bool zTable::validateDocument(){    
-    zTrace();
-    if(!this->document_path.isEmpty())
-    {
+bool zTable::validateDocument(){
+    //zTrace();
+    if(this->docName.isEmpty()) return false;
+    if(this->document_path.isEmpty()) return false;
+
 //        if(zFileNameHelper::isURL(this->document_path))
 //        {
 //            //zInfo("url");
@@ -1620,19 +1621,19 @@ bool zTable::validateDocument(){
 
         zforeach(t,tl)
         {
-//            if(t->name.toLower()=="units"){
+//            if(t->name.toLower()=="fue"){
 //                zTrace();
 //            }
             t->name=zStringHelper::Empty;
 
-            if(!t->docName.isEmpty() && t->docName == this->docName)
+            if(t->docName == this->docName)
             {
                 auto isOK = Compare(*t, eval, nameof(zTable::validateDocument()));
                 return isOK;
             }
         }
 
-    }    
+
     return false;
 }
 

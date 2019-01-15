@@ -37,11 +37,12 @@ public:
     QStringList listWidgetItemsText(QList<QListWidgetItem *> items);
 
     void fillListWidgetByCurrentProject();
+    QMap<QString,bool> validateCurrentProject();
     QMap<QString, bool> validateCurrentProject_SQL();
     QMap<QString, bool> validateCurrentProject_Source();
     QMap<QString, bool> validateCurrentProject_Document();
-    void setListWidgetIconsByCurrentProject(const QMap<QString, bool>&sqlmap, const QMap<QString, bool>&srcmap, const QMap<QString, bool> &docmap);
-    QStringList getIconsByFlags(const QString &name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap);
+    void setListWidgetIconsByCurrentProject(const QMap<QString, bool>&sqlmap, const QMap<QString, bool>&srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> &valmap);
+    QStringList getIconsByFlags(const QString &name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> &valmap);
 private slots:
 	void GenerateAll();
 
