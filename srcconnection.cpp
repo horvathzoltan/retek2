@@ -43,6 +43,7 @@ QList<srcConnection> srcConnection::fromCSVFile(const QString& fn)
         }
     }
 
+    return a;
 }
 
 bool srcConnection::isValid(){

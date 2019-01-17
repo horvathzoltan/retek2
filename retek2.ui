@@ -330,7 +330,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -352,7 +352,7 @@
            </size>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_8">
            <attribute name="title">
@@ -680,6 +680,13 @@
                  </property>
                  <property name="text">
                   <string>Import </string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_table_connect">
+                 <property name="text">
+                  <string>Connect</string>
                  </property>
                 </widget>
                </item>
@@ -1489,7 +1496,7 @@
      <x>0</x>
      <y>0</y>
      <width>1496</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu1">

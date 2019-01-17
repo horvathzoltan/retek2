@@ -203,8 +203,13 @@ void Beallitasok::load()
 //       // selected_ix = 0;
 //    }
 
-    setDbConnections(dbConnection::fromCSVFile(zFileNameHelper::getDbConnFileName()));
-    setSrcConnections(srcConnection::fromCSVFile(zFileNameHelper::getSourceConnFileName()));
+    auto a = zFileNameHelper::getDbConnFileName();
+    auto e = dbConnection::fromCSVFile(a);
+    setDbConnections(e);
+
+    auto a2 = zFileNameHelper::getSourceConnFileName();
+    auto a1 = srcConnection::fromCSVFile(a2);
+    setSrcConnections(a1);
     setDocConnections(docConnection::fromCSVFile(zFileNameHelper::getDocumentConnFileName()));
 
     auto fn = zFileNameHelper::getSettingsFileName();//append(settingsPath, settings_filename);
