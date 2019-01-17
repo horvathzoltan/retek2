@@ -42,6 +42,7 @@ QList<docConnection> docConnection::fromCSVFile(const QString& fn)
             a << c;
         }
     }
+    return a;
 
 }
 

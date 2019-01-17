@@ -1920,10 +1920,12 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
 //                            zDebug();
 //                        }
                         //row_type=int - nem találja a dtype-ot
+                        // TODO Nem található belső adatábrázolási típus: int fk not null warning
+                        // Nem található belső adatábrázolási típus: datetime not null warning
                         zTable::getClassType(globalSqlMaps, row_type, &row_dtype, &dlen, &isNullable, false, true);
                         //auto gtype = zTable::getClassType(globalClassMaps, propType, &dtype, &dlen, &isNullable, isRequired);
 
-                        auto row = zTablerow(row_name, row_dtype, dlen, isNullable, "");
+                        auto row = zTablerow(row_name, row_dtype, dlen, isNullable, zStringHelper::Empty);
                         row.comment = row_comment;
                         rowlist.append(row);
 

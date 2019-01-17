@@ -33,8 +33,7 @@ dbConnection dbConnection::FromCSV(QString i){
     if(a.count()==5){
         return dbConnection(a[0],a[1],a[2],a[3],a[4]);
     }
-    else
-        return dbConnection("","","","","");
+    return dbConnection(zStringHelper::Empty,zStringHelper::Empty,zStringHelper::Empty,zStringHelper::Empty,zStringHelper::Empty);
 }
 
 QString dbConnection::toCSV() const
@@ -64,6 +63,7 @@ QList<dbConnection> dbConnection::fromCSVFile(const QString& fn)
         }
     }
 
+    return a;
 }
 
 bool dbConnection::isValid(){

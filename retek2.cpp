@@ -68,6 +68,7 @@ retek2::~retek2()
 void retek2::init()
 {	
     ui.setupUi(this);
+    setEnabled(false);
     ui.listWidget_ztables->setIconSize(QSize(48,24));
     //zlog.init(ui.textBrowser, ui.tabWidget, 4, false);// 4.tab-on van a log
     zLog::init(retek2::logToGUI, false, &ui, false);
@@ -114,6 +115,7 @@ void retek2::init()
 // az sql típusától is függ, hogy milyen beolvasás táblát használunk
 //
 // ennek szerepe van a perzisztens tárolás kialakításakor, illetve     az ui-n nyilván az altípsutól függő controlt kell feltenni, validációt alkalmazni
+
 
     beallitasok.load();
 
@@ -176,7 +178,7 @@ void retek2::init()
 
 //    a3<<"bit";
 //    h2->setKeywords(a3);
-
+    setEnabled(true);
     zInfo(QStringLiteral("retek2 init ok"));
 }
 
@@ -1282,6 +1284,7 @@ void retek2::sourcesFeltolt(const srcConnection& c) {
     Egy dokumentumot adunk meg, ahol több dokumentum leíróját tároljuk
 */
 
+//TODO nem futhat míg nincs típustábla
 void retek2::on_comboBox_docconn_currentIndexChanged(const QString &arg1)
 {
     auto c = beallitasok.getDocConnectionByName(arg1);
@@ -1303,6 +1306,24 @@ QString retek2::docRefresh(docConnection* c)
     return e;
 
     return zStringHelper::Empty;
+}
+
+void retek2::setEnabled(bool e)
+{
+    ui.comboBox_docconn->setEnabled(e);
+    ui.comboBox_docconn->blockSignals(!e);
+
+    ui.listWidget_docs->setEnabled(e);
+    ui.listWidget_sources->setEnabled(e);
+    ui.listWidget_schemas->setEnabled(e);
+    ui.listWidget_projects->setEnabled(e);
+    ui.listWidget_ztables->setEnabled(e);
+
+    ui.listWidget_docs->blockSignals(!e);
+    ui.listWidget_sources->blockSignals(!e);
+    ui.listWidget_schemas->blockSignals(!e);
+    ui.listWidget_projects->blockSignals(!e);
+    ui.listWidget_ztables->blockSignals(!e);
 }
 
 // dokumentum fájlt adunk meg, a listboxban a tárolt osztályok listáját kell feltölteni

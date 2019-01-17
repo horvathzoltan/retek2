@@ -203,17 +203,20 @@ void Beallitasok::load()
 //       // selected_ix = 0;
 //    }
 
-    auto a = zFileNameHelper::getDbConnFileName();
-    auto e = dbConnection::fromCSVFile(a);
-    setDbConnections(e);
+    QString fileName = zFileNameHelper::getDbConnFileName();
+    auto dbc = dbConnection::fromCSVFile(fileName);
+    setDbConnections(dbc);
 
-    auto a2 = zFileNameHelper::getSourceConnFileName();
-    auto a1 = srcConnection::fromCSVFile(a2);
-    setSrcConnections(a1);
-    setDocConnections(docConnection::fromCSVFile(zFileNameHelper::getDocumentConnFileName()));
+    fileName = zFileNameHelper::getSourceConnFileName();
+    auto src = srcConnection::fromCSVFile(fileName);
+    setSrcConnections(src);
 
-    auto fn = zFileNameHelper::getSettingsFileName();//append(settingsPath, settings_filename);
-    auto txt = zTextFileHelper::load(fn);
+    fileName = zFileNameHelper::getDocumentConnFileName();
+    auto docConn = docConnection::fromCSVFile(fileName);
+    setDocConnections(docConn);
+
+    fileName = zFileNameHelper::getSettingsFileName();//append(settingsPath, settings_filename);
+    auto txt = zTextFileHelper::load(fileName);
     if(!txt.isEmpty())
     {
         QStringList csvl = zStringHelper::toStringList(txt);
