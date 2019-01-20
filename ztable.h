@@ -125,6 +125,7 @@ public:
     static QString createTxtByHtml(const QString &txt);
 private:
     static const QString PKNAME;
+    static const QRegularExpression re_dlen3;
     //void validateEval(bool isOK, const QStringList& e, const QString&);
 
     enum class ErrCode:int;

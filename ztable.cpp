@@ -1221,24 +1221,8 @@ QList<zTable> zTable::createTableByText_3(const QString& txt, QMap<QString, QStr
                                 propAttrs.clear();//.resize(0);
                                 }
 
+                                zTable::getClassType(globalClassMaps, propType, &dtype, &dlen, &isNullable, isRequired);
 
-                            //QString row = m_attrOrProp.captured(0);
-                            //bool isDtype =
-
-                                 zTable::getClassType(globalClassMaps, propType, &dtype, &dlen, &isNullable, isRequired);
-
-//                            if(isRequired){
-//                                isNullable = false;
-//                            }
-//                            if (isDtype){
-//                                zTrace("sortípus:"+dtype);
-//                            }
-
-
-//                            zlog.log("prop: "+propType + " " +propName);
-//                            zlog.log("   isPK: "+((isPk)?QString("true"):QString("false")));
-//                            zlog.log("   isRequired: "+((isRequired)?QString("true"):QString("false")));
-//                            zlog.log("   MaxLength: "+MaxLength);
                             if(Caption.isEmpty()){
                                 Caption = zTable::getCaption(propName);//zConversionMap::external(globalCaptionMaps, propName);
                             }
@@ -1727,6 +1711,8 @@ QString zTable::createTxtByHtml(const QString& txt){
     return str.arg(e);
 }
 
+const QRegularExpression zTable::re_dlen3 = QRegularExpression(QStringLiteral(R"((?:(\w+)\s*\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+
 QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
     QList<zTable> e;
 
@@ -1922,7 +1908,43 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
                         //row_type=int - nem találja a dtype-ot
                         // TODO Nem található belső adatábrázolási típus: int fk not null warning
                         // Nem található belső adatábrázolási típus: datetime not null warning
-                        zTable::getClassType(globalSqlMaps, row_type, &row_dtype, &dlen, &isNullable, false, true);
+                        auto row_typel = row_type.toLower();
+
+                        QString ezt1; // ezt próbáljuk típusnévbe
+                        auto tn1 = row_typel.section(' ', 0, 0);
+
+                        auto i3 = re_dlen3.match(tn1);
+                        if(i3.hasMatch())
+                        {
+                            ezt1 = i3.captured(1);
+                            bool isOK;
+                            int n = i3.captured(2).toInt(&isOK);
+                            if(isOK) dlen = n;
+                        }
+                        else
+                        {
+                            ezt1 = tn1;
+                        }
+
+
+                        //isNullable = true;
+                        if(row_typel.contains("null") && !row_typel.contains("not null"))
+                        {
+                            isNullable = true;
+                        }
+
+
+//                        if(row_type.contains("pk"))
+//                        {
+//                            isNullable = false;
+//                        }
+                        if(ezt1.startsWith("nvarchar"))
+                        {
+                            zTrace();
+                        }
+
+
+                        zTable::getClassType(globalSqlMaps, ezt1, &row_dtype, &dlen, &isNullable, false, true);
                         //auto gtype = zTable::getClassType(globalClassMaps, propType, &dtype, &dlen, &isNullable, isRequired);
 
                         auto row = zTablerow(row_name, row_dtype, dlen, isNullable, zStringHelper::Empty);
