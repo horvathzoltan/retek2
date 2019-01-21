@@ -1711,7 +1711,7 @@ QString zTable::createTxtByHtml(const QString& txt){
     return str.arg(e);
 }
 
-const QRegularExpression zTable::re_dlen3 = QRegularExpression(QStringLiteral(R"((?:(\w+)\s*\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
+const QRegularExpression zTable::re_dlen3 = QRegularExpression(QStringLiteral(R"((?:(\w+)\s*\(([\d]+|max)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
 
 QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
     QList<zTable> e;
@@ -1918,8 +1918,12 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
                         {
                             ezt1 = i3.captured(1);
                             bool isOK;
-                            int n = i3.captured(2).toInt(&isOK);
-                            if(isOK) dlen = n;
+                            auto ns = i3.captured(2);
+                            if(ns!="max")
+                            {
+                                int n = ns.toInt(&isOK);
+                                if(isOK) dlen = n;
+                            }
                         }
                         else
                         {
@@ -1938,10 +1942,10 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
 //                        {
 //                            isNullable = false;
 //                        }
-                        if(ezt1.startsWith("nvarchar"))
-                        {
-                            zTrace();
-                        }
+//                        if(ezt1.startsWith("nvarchar"))
+//                        {
+//                            zTrace();
+//                        }
 
 
                         zTable::getClassType(globalSqlMaps, ezt1, &row_dtype, &dlen, &isNullable, false, true);
