@@ -1977,7 +1977,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
 
         t.docName = tablename;
         //t.name = "";
-        zInfo(QStringLiteral("zTable: %1").arg(t.toString()));
+        //zInfo(QStringLiteral("zTable: %1").arg(t.toString()));
         e.append(t);
         table_ix++;
     }
