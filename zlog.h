@@ -53,7 +53,7 @@ private:
     static QString zStackTrace();
 
 public:
-    enum ErrLevels:int {ERROR, WARNING, TRACE, DEBUG, INFO};
+    enum ErrLevels:int {ERROR, WARNING, TRACE, DEBUG, INFO, INFOAPPEND, INFOCLOSE};
     //zLog();
     //~zLog();
     static QString LevelToString(int loglevel);
@@ -108,6 +108,10 @@ public:
     static void info2(const QStringList& msg, const zLocInfo& l);
     static void debug2(const zLocInfo& l);
     static void trace2(const zLocInfo& l);
+
+    static QString openInfo(const QString& txt);
+    static void appendInfo(const QString& key, const QString& txt);
+    static void closeInfo(const QString& key);
 };
 
 #endif // ZERROR_H

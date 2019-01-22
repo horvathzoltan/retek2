@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "zlog.h"
+#include "zshortguid.h"
 #include <QMessageBox>
 #include <QTextCodec>
 #include <csignal>
@@ -350,4 +351,32 @@ void zLog::trace2(const zLocInfo& locinfo){
 #endif
    QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, a).debug().noquote()<<msg2;
 #endif
+    }
+
+QString zLog::openInfo(const QString& msg)
+    {
+
+        if(GUILogger!=nullptr)
+        {
+            GUILogger(INFO, msg, nullptr, nullptr, ui);
+        }
+        return zShortGuid::createNew().value;
+    }
+
+void zLog::appendInfo(const QString& key, const QString& msg)
+    {
+
+    if(GUILogger!=nullptr)
+    {
+        GUILogger(INFOAPPEND, msg, key, nullptr, ui);
+    }
+    }
+
+void zLog::closeInfo(const QString& key)
+    {
+
+        if(GUILogger!=nullptr)
+        {
+            GUILogger(INFOCLOSE, nullptr, key, nullptr, ui);
+        }
     }

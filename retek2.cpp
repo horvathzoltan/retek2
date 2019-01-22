@@ -1692,32 +1692,62 @@ void retek2::logToGUI(int errlevel, const QString &msg, const QString &loci, con
         widget2->append(loci);
         widget2->append(st);
         break;
+    case zLog::INFOAPPEND:
+    {
+        auto cursor = widget2->textCursor();
+        auto r = QRegExp(QStringLiteral("\\b%1\\b").arg(loci));
+        widget2->moveCursor(QTextCursor::End);
+        auto m = widget2->find(r, QTextDocument::FindBackward | QTextDocument::FindCaseSensitively);//
+        if(!msg.isEmpty())
+        {
+            auto a = widget2->find(QRegExp("$"), QTextDocument::FindCaseSensitively);
+            widget2->setTextColor(getLogColor(msg));
+            widget2->insertPlainText(' ' + msg);
+        }
+        widget2->setTextCursor(cursor);
+        break;
+    }
+    case zLog::INFOCLOSE:
+    {
+        auto cursor = widget2->textCursor();
+        auto r = QRegExp(QStringLiteral("\\b%1\\b").arg(loci));
+        widget2->moveCursor(QTextCursor::End);
+        auto m = widget2->find(r, QTextDocument::FindBackward | QTextDocument::FindCaseSensitively);//
+        QTextCursor cursor2 = widget2->textCursor();
+        cursor2.removeSelectedText();
+        cursor2.deleteChar();
+        widget2->setTextCursor(cursor);
+        break;
+    }
     case zLog::INFO:
-        if(msg.endsWith(QStringLiteral("ok")))
-        {
-            widget2->setTextColor(QColor(Qt::darkGreen));
-        }
-        else if (msg.endsWith(QStringLiteral("warning")))
-        {
-            widget2->setTextColor(QColor(Qt::darkYellow));
-        }
-        else if (msg.endsWith(QStringLiteral("error")))
-        {
-            widget2->setTextColor(QColor(Qt::darkRed));
-        }
-        else
-        {
-            widget2->setTextColor(QColor(Qt::darkGray));
-        }
-
+    {
+        widget2->setTextColor(getLogColor(msg));
         widget2->append(msg);
         break;
+    }
     default:
         widget2->setTextColor(QColor(Qt::black));
         break;
     }
 
     widget2->setTextColor(c);
+}
+
+QColor retek2::getLogColor(const QString &msg){
+
+    if(msg.endsWith(QStringLiteral("ok")))
+    {
+        return QColor(Qt::darkGreen);
+    }
+    else if (msg.endsWith(QStringLiteral("warning")))
+    {
+        return QColor(Qt::darkYellow);
+    }
+    else if (msg.endsWith(QStringLiteral("error")))
+    {
+        return QColor(Qt::darkRed);
+    }
+    return QColor(Qt::darkGray);
 }
 
 void retek2::on_pushButton_sourcepath_clicked()

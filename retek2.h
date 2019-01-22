@@ -43,6 +43,7 @@ public:
     QMap<QString, bool> validateCurrentProject_Document();
     void setListWidgetIconsByCurrentProject(const QMap<QString, bool>&sqlmap, const QMap<QString, bool>&srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> &valmap);
     QStringList getIconsByFlags(const QString &name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> &valmap);
+    static QColor getLogColor(const QString &msg);
 private slots:
 	void GenerateAll();
 
