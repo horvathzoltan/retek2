@@ -338,8 +338,8 @@ QMap<QString,bool> retek2::validateCurrentProject(){
     {
         bool isValid = t->Validate(ztables, t->eval, zfn());
         if(!isValid)
-        {
-            zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t->name));
+        {            
+            zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t->name+t->class_name));
         }
     }
     return e;
@@ -439,7 +439,8 @@ void retek2::add_zTablaToListWidget(const zTable& t){
    // QString tn = t.name; // displayed name
     if(t.name.isEmpty())
     {
-        zError(QStringLiteral("Nincs megnevezés. table: %1 class: %2").arg(t.sql_table, t.class_name));
+        QString tn = t.getName();
+        zError(QStringLiteral("Nincs megnevezés: %1").arg(tn));
         return;
     }
 
