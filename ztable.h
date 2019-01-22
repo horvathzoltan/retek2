@@ -123,6 +123,7 @@ public:
     bool hasPkname() const;
     QString SqlConnToString() const;
     static QString createTxtByHtml(const QString &txt);
+    QString getName() const;
 private:
     static const QString PKNAME;
     static const QRegularExpression re_dlen3;

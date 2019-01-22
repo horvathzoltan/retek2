@@ -150,10 +150,9 @@ QStringList zConversionMap::externals(const QString& c) const {
 }
 
 
-
-
 void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
     //zTrace();zInfo(fn);
+    zInfo(QStringLiteral("a5566 Beolvasás: %1").arg(fn));
     QFile file(fn);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
@@ -189,7 +188,9 @@ void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
     }
     file.close();
 
-    zInfo(QStringLiteral("Beolvasva: %1").arg(fn));
+    //ui.textBrowser
+    //a5566
+    zInfo(QStringLiteral("Beolvasás ok"));
 }
 
 

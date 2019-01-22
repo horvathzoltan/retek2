@@ -1984,3 +1984,13 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
 
     return e;
 }
+
+QString zTable::getName() const
+{
+    if(!this->name.isEmpty()) return this->name;
+    if(!this->class_name.isEmpty()) return nameof(this->class_name)+':'+this->class_name;
+    if(!this->sql_table.isEmpty()) return nameof(this->sql_table)+':'+this->sql_table;
+    if(!this->docName.isEmpty()) return nameof(this->docName)+':'+this->docName;
+
+    return QStringLiteral("?");
+}
