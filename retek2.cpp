@@ -339,8 +339,8 @@ QMap<QString,bool> retek2::validateCurrentProject(){
     {
         bool isValid = t->Validate(ztables, t->eval, zfn());
         if(!isValid)
-        {            
-            zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t->name+t->class_name));
+        {                        
+            zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t->getName()));
         }
     }
     return e;
@@ -500,8 +500,8 @@ QPalette retek2::getPaletteByColor(const QPalette &r, const QColor& c){
 }
 
 void retek2::mezoListaFeltolt(const zTable& t){
-    zTrace();
-    zInfo(t.toString());
+    //zTrace();
+    //zInfo(t.toString());
     ui.tableWidget_MezoLista->blockSignals(true);
     ui.tableWidget_MezoLista->setRowCount(0);
     for(int r_ix=0;r_ix<t.rows.length();r_ix++)
@@ -607,7 +607,7 @@ const QMap<QString, int> retek2::ColNameIxes
 
 void retek2::feltoltKulcsLista(zTable t) {
     //zTrace();
-    zInfo("Constraints "+t.name);
+    //zInfo("Constraints "+t.name);
 
     ui.listWidget_IdegenKulcs->clear();
     //QString pkname = t.pkname();
