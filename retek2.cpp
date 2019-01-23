@@ -305,7 +305,8 @@ void retek2::loadCurrentProject()
                     // ha nincs név, lesz
                     if(t0.name.isEmpty())
                     {
-                        QString fn = zFileNameHelper::getfileName(*f);
+                     //   QString fn = zFileNameHelper::getfileName(*f);
+                        QString fn = t0.getName();
                         zWarning(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
                         t0.name = fn;
                     }
@@ -1694,16 +1695,27 @@ void retek2::logToGUI(int errlevel, const QString &msg, const QString &loci, con
         break;
     case zLog::INFOAPPEND:
     {
+        if(msg.isEmpty()) break;
         auto cursor = widget2->textCursor();
         auto r = QRegExp(QStringLiteral("\\b%1\\b").arg(loci));
-        widget2->moveCursor(QTextCursor::End);
-        auto m = widget2->find(r, QTextDocument::FindBackward | QTextDocument::FindCaseSensitively);//
-        if(!msg.isEmpty())
+        widget2->moveCursor(QTextCursor::End);//
+        auto m = widget2->find(r,QTextDocument::FindBackward | QTextDocument::FindCaseSensitively);//
+        if(m)
         {
             auto a = widget2->find(QRegExp("$"), QTextDocument::FindCaseSensitively);
             widget2->setTextColor(getLogColor(msg));
-            widget2->insertPlainText(' ' + msg);
+            QTextCursor cursor2 = widget2->textCursor();
+            //cursor2.removeSelectedText();
+            cursor2.insertText(' '+msg);
+            //widget2->insertPlainText(' ' + msg);
         }
+            //auto a = widget2->find(QRegExp(R"(\b\.\.\.\b)"), QTextDocument::FindBackward |QTextDocument::FindCaseSensitively);
+            //auto a = widget2->find(QRegExp("\u2029|\r\n|\r|\n"), QTextDocument::FindBackward |QTextDocument::FindCaseSensitively);
+            //auto cursor2 = widget2->textCursor();
+            //widget2->moveCursor(QTextCursor::EndOfLine);
+            //QTextCursor::move(QTextCursor::EndOfLine);
+
+
         widget2->setTextCursor(cursor);
         break;
     }

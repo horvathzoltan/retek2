@@ -13,9 +13,14 @@ zStringMapHelper::zStringMapHelper()
 }
 
 void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map) {
-    zInfo(QStringLiteral("Beolvasás: %1").arg(fn));
+    auto ikey = zLog::openInfo(QStringLiteral("Beolvasás: %1").arg(fn));
     QFile file(fn);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        zLog::appendInfo(ikey, "error");
+        zLog::closeInfo(ikey);
+        return;
+    }
 
     map->clear();
     QTextStream in(&file);
@@ -45,7 +50,8 @@ void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map)
     }
     file.close();
 
-    zInfo(QStringLiteral("Beolvasva: %1").arg(fn));
+    zLog::appendInfo(ikey, "ok");
+    zLog::closeInfo(ikey);
 }
 
 void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {

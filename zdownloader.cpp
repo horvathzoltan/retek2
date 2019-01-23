@@ -10,6 +10,7 @@ zDownloader::zDownloader(QObject *parent) : QObject(parent)
 QByteArray zDownloader::download(const QString& urlstring)
 {
     manager = new QNetworkAccessManager(this);
+    auto ikey = zLog::openInfo(QStringLiteral("Beolvasás: %1").arg(urlstring));
 
     //auto url = QUrl(QStringLiteral("https://docs.google.com/document/export?format=html&id=1qqYuhCY5iTAfzBiwQGfzRdU7C1jm1pNnNajVrSrWAfU"));
     auto url = QUrl(urlstring);
@@ -24,8 +25,8 @@ QByteArray zDownloader::download(const QString& urlstring)
       loop.exec();
       auto e = reply->readAll();
 
-      zInfo(QStringLiteral("Beolvasva: %1").arg(urlstring));
-
+      zLog::appendInfo(ikey, "ok");
+      zLog::closeInfo(ikey);
       return e;
 }
 

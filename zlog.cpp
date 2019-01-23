@@ -356,11 +356,13 @@ void zLog::trace2(const zLocInfo& locinfo){
 QString zLog::openInfo(const QString& msg)
     {
 
+        QString e= zShortGuid::createNew().value;
+
         if(GUILogger!=nullptr)
         {
-            GUILogger(INFO, msg, nullptr, nullptr, ui);
+            GUILogger(INFO, e+' '+msg, nullptr, nullptr, ui);
         }
-        return zShortGuid::createNew().value;
+      return e;
     }
 
 void zLog::appendInfo(const QString& key, const QString& msg)

@@ -7,16 +7,21 @@
 #include <QFileInfo>
 
 QString zTextFileHelper::load2(const QString& filename) {
-    QFileInfo fi(filename);
+    auto ikey = zLog::openInfo(QStringLiteral("Beolvasás: %1").arg(filename));
+    QFileInfo fi(filename);    
     if(!fi.isAbsolute())
     {
         zInfo(QStringLiteral("nem abszolut path: %1").arg(filename));
+        zLog::appendInfo(ikey, "error");
+        zLog::closeInfo(ikey);
         return zStringHelper::Empty;
     }
 
     if(!fi.exists())
     {
         zInfo(QStringLiteral("a fájl nem létezik: %1").arg(filename));
+        zLog::appendInfo(ikey, "error");
+        zLog::closeInfo(ikey);
         return zStringHelper::Empty;
     }    
 
@@ -27,10 +32,14 @@ QString zTextFileHelper::load2(const QString& filename) {
     // egyébként megnyitható azaz
 
     if (f.open(QFile::ReadOnly | QFile::Text))  {
-        zInfo(QStringLiteral("Beolvasva: %1").arg(filename));
+        zLog::appendInfo(ikey, "ok");
+        zLog::closeInfo(ikey);
+        //zInfo(QStringLiteral("Beolvasás: %1").arg(filename));
         e =  QTextStream(&f).readAll();
     }
     else{
+        zLog::appendInfo(ikey, "error");
+        zLog::closeInfo(ikey);
         zInfo(QStringLiteral("A fájl nem nyitható meg: %1 ERROR").arg(filename));
         e= zStringHelper::Empty;
     }

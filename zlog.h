@@ -28,9 +28,10 @@
 typedef void (*zLogGUIfn)(int errlevel, const QString &msg, const QString &loci, const QString &st, void *ui);
 
 //QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC
+
 class zLog
 {
-private:
+private:    
     static zLogGUIfn GUILogger;
 //    QTextBrowser *widget;
 //    QTabWidget *tabwidget;
@@ -52,7 +53,7 @@ private:
     //static QString zGetLocInfo(const char *func, const char *file, int line);
     static QString zStackTrace();
 
-public:
+public:        
     enum ErrLevels:int {ERROR, WARNING, TRACE, DEBUG, INFO, INFOAPPEND, INFOCLOSE};
     //zLog();
     //~zLog();
