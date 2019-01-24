@@ -196,13 +196,13 @@ enum class zTable::ErrCode:int{noteq, unknown};
 const QMap<zTable::ErrCode, QString> zTable::ErrCodeDescriptions
 {
     {ErrCode::noteq, QStringLiteral("Not Equals")},
-    {ErrCode::unknown, QStringLiteral("Unknown")},
+    {ErrCode::unknown, QStringLiteral("Unknown")},    
 };
 
 const QMap<zTable::ErrCode, QString> zTable::ErrCodeNames
 {
     {ErrCode::noteq, QStringLiteral("noteq")},
-    {ErrCode::unknown, QStringLiteral("unknown")},
+    {ErrCode::unknown, QStringLiteral("unknown")}
 };
 
 //QString zTable::GetErrorMessage(const QString& cn, ErrCode code)
@@ -1455,6 +1455,10 @@ bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const 
             auto r = &(rows[i]);
             if(i==pkrowix && r->isNullable)
             {
+                auto err = r->GetFullError(nameof(r->isNullable), zTablerow::ErrCode::nullable, {"PK"}, source);
+                //auto err = GetFullError(r->colName, ErrCode::unknown, {}, source);
+                e.append(err);
+
                 zInfo(QStringLiteral("PK nem lehet nullable error"));
                 v=false;
             }

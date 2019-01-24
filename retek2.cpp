@@ -275,10 +275,11 @@ void retek2::loadCurrentProject()
 {      
     if(beallitasok.currentProjectName.isEmpty())
     {
-            zError(QStringLiteral("Nincs aktuális project. ERROR").arg(beallitasok.currentProjectName));
+        zInfo(QStringLiteral("Nincs aktuális project. ERROR"));
     }
     else
     {
+        ui.projectLabel->setText(beallitasok.currentProjectName);
         ztables.clear();
         ui.listWidget_ztables->clear();
 
@@ -1206,7 +1207,7 @@ void retek2::on_listWidget_ztables_itemClicked(QListWidgetItem *item)
     {
         zTableNamesToUi(*table);
         mezoListaFeltolt(*table);// ez töltö fel a táblának a mezőit
-        feltoltKulcsLista(*table);
+        feltoltKulcsLista(*table);        
     }
     else
     {
@@ -1905,7 +1906,6 @@ C:\Users\horva\retek2\munka_dir\wiki1\CGCStock.Data\Entity
 
 TODO
 
-kiírni a táblák felé, melyik project az aktív
 pk nem lehet nullable
 
 Not Connected: Driver not loaded Driver not loaded

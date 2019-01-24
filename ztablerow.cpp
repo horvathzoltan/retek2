@@ -49,20 +49,22 @@ zTablerow* zTablerow::getByName(const QList<zTablerow> &rows, const QString& rn)
     return nullptr;
 }
 
-enum class zTablerow::ErrCode:int{noteq, unknown, notex};
+//enum class zTablerow::ErrCode:int{noteq, unknown, notex, nullable};
 
 const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeNames
 {
     {ErrCode::noteq, QStringLiteral("noteq")},
         {ErrCode::unknown, QStringLiteral("unknown")},
-    {ErrCode::notex, QStringLiteral("notex")}
+        {ErrCode::notex, QStringLiteral("notex")},
+        {ErrCode::nullable, QStringLiteral("nullable")}
 };
 
 const QMap<zTablerow::ErrCode, QString> zTablerow::ErrCodeDescriptions
 {
     {ErrCode::noteq, QStringLiteral("Not Equals")},
         {ErrCode::unknown, QStringLiteral("Unknown")},
-    {ErrCode::notex, QStringLiteral("Not Exist")}
+        {ErrCode::notex, QStringLiteral("Not Exist")},
+        {ErrCode::nullable, QStringLiteral("is Nullable")}
 };
 
 /*

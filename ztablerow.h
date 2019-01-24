@@ -42,7 +42,7 @@ public:
     static int findIx(const QList<zTablerow>& rows, const QString& rn);
     static QStringList colNames(const QList<zTablerow>& rows);
 
-    enum class ErrCode:int;
+    enum class ErrCode:int{noteq, unknown, notex, nullable};
     static const QMap<ErrCode, QString> ErrCodeNames;
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 

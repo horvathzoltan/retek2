@@ -46,11 +46,11 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0" rowspan="2">
+       <item row="1" column="0" rowspan="2">
         <widget class="QListWidget" name="listWidget_ztables">
          <property name="minimumSize">
           <size>
-           <width>120</width>
+           <width>150</width>
            <height>0</height>
           </size>
          </property>
@@ -62,11 +62,11 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item row="1" column="1">
         <widget class="QListWidget" name="listWidget_IdegenKulcs">
          <property name="minimumSize">
           <size>
-           <width>120</width>
+           <width>151</width>
            <height>0</height>
           </size>
          </property>
@@ -78,8 +78,17 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QTableWidget" name="tableWidget"/>
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="projectLabel">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -1496,7 +1505,7 @@
      <x>0</x>
      <y>0</y>
      <width>1496</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu1">
