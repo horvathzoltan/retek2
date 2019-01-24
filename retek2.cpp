@@ -1898,3 +1898,31 @@ void retek2::on_pushButton_docimport_clicked()
         zInfo(QStringLiteral("doc:%1").arg(tn));
     }
 }
+
+
+/*
+C:\Users\horva\retek2\munka_dir\wiki1\CGCStock.Data\Entity
+
+TODO
+
+kiírni a táblák felé, melyik project az aktív
+pk nem lehet nullable
+
+Not Connected: Driver not loaded Driver not loaded
+Error: init failed: wiki1(127.0.0.1)
+..\retek2\zsql.cpp:44 bool __cdecl zSQL::init(const class QString &,const class QString &,const class QString &,const class QString &,const class QString &)
+stack trace:
+?
+Error: getDb: db closedQMYSQL
+..\retek2\zsql.cpp:429 class QStringList __cdecl zSQL::getSchemaNames(void)
+stack trace:
+?
+
+zInfo -> shortguid kulcsos loggolás
+
+-eJ95G9tTN6e0LkqapZCaA Beolvasás: C:/Users/horva/retek2/munka_dir/wiki1/.xml
+Warning: Nincs név: class_name:Fue (.xml)
+..\retek2\retek2.cpp:310 void __cdecl retek2::loadCurrentProject(void)
+
+nem menthető: fue.xml
+*/
