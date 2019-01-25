@@ -108,7 +108,7 @@ public:
     //    static QString p_attr;
     void saveTablaToXML();
 
-    bool Validate(const QList<zTable>& tables, QList<zTableError> &e, const QString &source);
+    bool Validate(const QList<zTable>& tables, QList<zTableError> &e, const QString &source, QStringList &err);
     static QString getCaption(const QString& fname);
 
     bool validateSQL();

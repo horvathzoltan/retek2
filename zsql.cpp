@@ -41,7 +41,7 @@ bool zSQL::init(const QString &_driverName, const QString& _hostName, const QStr
     }
     else
     {
-        zError(QStringLiteral("init failed: %1").arg(this->toString()));
+        zInfo(QStringLiteral("init failed: %1").arg(this->toString()));
     }
     return isok;
     }
@@ -88,30 +88,38 @@ bool zSQL::createConnection_MYSQL()
 bool zSQL::createConnection(QString connectionName){
     connectionName = connectionName;
 
+    auto ikey = zLog::openInfo(QStringLiteral("SQLConn: %1").arg(connectionName));
     bool isok;
     if(driverName == QODBC)
     {
+        zLog::appendInfo(ikey, "QODBC");
         isok = createConnection_MSSQL();
     }
     else if(driverName == QMYSQL)
     {
+        zLog::appendInfo(ikey, "QMYSQL");
         isok = createConnection_MYSQL();
     }
     else
     {
-        zError("createConnection: unknown driver:" + driverName);
+        zInfo(QStringLiteral("unknown driver: %1 error").arg(driverName));
+        zLog::appendInfo(ikey, "error");
+        zLog::closeInfo(ikey);
         return false;
     }
 
     if(isok)        
     {
-        zInfo("Connected ok");
+        zLog::appendInfo(ikey, "ok");
     }
     else
     {
-        zInfo("Not Connected: " + this->getLastErrorText());
+        zLog::appendInfo(ikey, "error");
+        auto x = this->getLastErrorText();
+        zInfo(QStringLiteral("Not Connected: %1").arg(x));
     }
 
+    zLog::closeInfo(ikey);
     return isok;
     }
 
@@ -413,21 +421,29 @@ Adatbázi funkciók - Séma kezelésével kapcsolatban
 */
 
 
-QStringList zSQL::getSchemaNames(){
-    if(db.isValid() && db.isOpen()){
-        if(driverName == QODBC)
-        {
-            return getSchemaNames_SQL(getSchemaNames_MSSQL_CMD());//.arg(beallitasok.adatbazisNev);
-        }
-        if(driverName == QMYSQL)
-        {
-            return getSchemaNames_SQL(getSchemaNames_MYSQL_CMD());
-        }
-        zError("getDbNames: unknown driver:" + driverName);
+QStringList zSQL::getSchemaNames()
+{
+    if(!db.isValid())
+    {
+        zInfo(QStringLiteral("getDb: db invalid: %1 error").arg(driverName));
+        return QStringList();
     }
-    else{
-        zError("getDb: db closed" + driverName);
+    if(!db.isOpen())
+    {
+        zInfo(QStringLiteral("getDb: db closed: %1 error").arg(driverName));
+        return QStringList();
     }
+
+    if(driverName == QODBC)
+    {
+        return getSchemaNames_SQL(getSchemaNames_MSSQL_CMD());//.arg(beallitasok.adatbazisNev);
+    }
+    if(driverName == QMYSQL)
+    {
+        return getSchemaNames_SQL(getSchemaNames_MYSQL_CMD());
+    }
+
+    zInfo(QStringLiteral("getDbNames: unknown driver: %1 error").arg(driverName));
     return QStringList();
 }
 

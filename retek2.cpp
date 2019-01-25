@@ -338,10 +338,12 @@ QMap<QString,bool> retek2::validateCurrentProject(){
 
     zforeach(t, ztables)
     {
-        bool isValid = t->Validate(ztables, t->eval, zfn());
+        QStringList errlist;
+        bool isValid = t->Validate(ztables, t->eval, zfn(), errlist);
         if(!isValid)
         {                        
             zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t->getName()));
+            zInfo(errlist);
         }
     }
     return e;
@@ -1905,8 +1907,6 @@ void retek2::on_pushButton_docimport_clicked()
 C:\Users\horva\retek2\munka_dir\wiki1\CGCStock.Data\Entity
 
 TODO
-
-pk nem lehet nullable
 
 Not Connected: Driver not loaded Driver not loaded
 Error: init failed: wiki1(127.0.0.1)

@@ -888,7 +888,8 @@ QList<zTable> zTable::createTableByText(QString txt)
             t.initClass(className, pluralClassName);
 
 //
-            bool isValid = t.Validate(tl, t.eval, zfn());
+            QStringList errlist;
+            bool isValid = t.Validate(tl, t.eval, zfn(), errlist);
             if(isValid)
             {
                 tl.append(t);
@@ -897,6 +898,7 @@ QList<zTable> zTable::createTableByText(QString txt)
             else
             {
                 zInfo(QStringLiteral("A tábla nem valid: %1").arg(t.name));
+                zInfo(errlist);
             }
 
         }
@@ -1421,27 +1423,27 @@ void zTable::saveTablaToXML() {
    azok a belső osztályok vannak, amik ezekben kulcsként szerepelnek: globalSqlMaps, globalClassMaps
 */
 
-bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const QString& source){
+bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const QString& source, QStringList& errlist){
     bool v= true;
 
     if(this->pkrowix==-1)
     {
-        zInfo(QStringLiteral("Nincs PK error"));
+        errlist<<QStringLiteral("Nincs PK error");
         v=false;
     }
 
     if(name.isEmpty()){
-        zInfo(QStringLiteral("Nincs név error"));
+        errlist<<QStringLiteral("Nincs név error");
         v= false;
     }
     if(zTable::find(tables, name, zTableSearchBy::Name))
     {
-        zInfo(QStringLiteral("Név nem egyedi: %1 error").arg(name));
+        errlist<<QStringLiteral("Név nem egyedi: %1 error").arg(name);
         v= false;
     }
     if(rows.isEmpty())
     {
-        zInfo(QStringLiteral("Nincsenek sorok error"));
+        errlist<<QStringLiteral("Nincsenek sorok error");
         v= false;
     }        
     else

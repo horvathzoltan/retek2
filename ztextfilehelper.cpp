@@ -43,6 +43,7 @@ QString zTextFileHelper::load2(const QString& filename) {
         zInfo(QStringLiteral("A fájl nem nyitható meg: %1 ERROR").arg(filename));
         e= zStringHelper::Empty;
     }
+    zLog::closeInfo(ikey);
     return e;
 }
 
