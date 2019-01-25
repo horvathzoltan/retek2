@@ -897,7 +897,7 @@ QList<zTable> zTable::createTableByText(QString txt)
             }
             else
             {
-                zInfo(QStringLiteral("A tábla nem valid: %1").arg(t.name));
+                zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t.name));
                 zInfo(errlist);
             }
 
@@ -1428,22 +1428,27 @@ bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const 
 
     if(this->pkrowix==-1)
     {
-        errlist<<QStringLiteral("Nincs PK error");
+        errlist<<QStringLiteral("Nincs PK");
         v=false;
     }
 
     if(name.isEmpty()){
-        errlist<<QStringLiteral("Nincs név error");
+        errlist<<QStringLiteral("Nincs név");
         v= false;
     }
-    if(zTable::find(tables, name, zTableSearchBy::Name))
+    //auto t2 = zTable::find(tables, name, zTableSearchBy::Name);
+    int ts=0;
+    zforeach(t2,tables){
+        if(t2->name == name) ts++;
+    }
+    if(ts>1)
     {
-        errlist<<QStringLiteral("Név nem egyedi: %1 error").arg(name);
+        errlist<<QStringLiteral("Név nem egyedi: %1").arg(name);
         v= false;
     }
     if(rows.isEmpty())
     {
-        errlist<<QStringLiteral("Nincsenek sorok error");
+        errlist<<QStringLiteral("Nincsenek sorok");
         v= false;
     }        
     else
@@ -1461,10 +1466,10 @@ bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const 
                 //auto err = GetFullError(r->colName, ErrCode::unknown, {}, source);
                 e.append(err);
 
-                zInfo(QStringLiteral("PK nem lehet nullable error"));
+                zInfo(QStringLiteral("PK nem lehet nullable"));
                 v=false;
             }
-            bool is_rv = r->Validate2(colNames, e, source);
+            bool is_rv = r->Validate2(colNames, e, source, errlist);
             if(!is_rv)
             {
                 v= false;

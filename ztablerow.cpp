@@ -139,11 +139,11 @@ bool zTablerow::Validate(QStringList& e){
 A colName kötelező, és egyedi kell legyen / table
 A coltype kötelező, és szerepelnie kell az ismert típusok között
 */
-bool zTablerow::Validate2(const QStringList& colNames, QList<zTableError>& e, const QString& source){
+bool zTablerow::Validate2(const QStringList& colNames, QList<zTableError>& e, const QString& source, QStringList& errlist){
     bool v = true;
     if(colName.isEmpty())
     {
-        zInfo(QStringLiteral("Nincs colName error"));
+        errlist<<QStringLiteral("Nincs colName error");
         v = false;
     }       
 //    if(find(rows, colName))
@@ -152,7 +152,7 @@ bool zTablerow::Validate2(const QStringList& colNames, QList<zTableError>& e, co
 //        return false;
 //    }
     if(colType.isEmpty()){
-        zInfo(QStringLiteral("Nincs típusnév error"));
+        errlist<<QStringLiteral("Nincs típusnév error");
         auto err = GetFullError("colType", ErrCode::notex, {}, source);
         e.append(err);
         v= false;
@@ -161,7 +161,7 @@ bool zTablerow::Validate2(const QStringList& colNames, QList<zTableError>& e, co
     {
         if(colNames.count(colName)>1)
         {
-            zInfo(QStringLiteral("colName nem egyedi: %1 error").arg(colName));
+            errlist<<QStringLiteral("colName nem egyedi: %1 error").arg(colName);
             v = false;
         }
     //}
@@ -169,7 +169,7 @@ bool zTablerow::Validate2(const QStringList& colNames, QList<zTableError>& e, co
         auto isKnownType = isKnownTypeName(colType);
         if(!isKnownType)
         {
-            auto err = GetFullError("colType", ErrCode::unknown, {colType}, source);
+            auto err = GetFullError(QStringLiteral("colType"), ErrCode::unknown, {colType}, source);
             e.append(err);
             auto errortxt = QStringLiteral("Ismeretlen típus: %1").arg(colType);
             bool isError = true;
@@ -191,14 +191,15 @@ bool zTablerow::Validate2(const QStringList& colNames, QList<zTableError>& e, co
                 }
 
             }
-            if(isError)
-            {
-                zInfo(errortxt + " error");
-            }
-            else
-            {
-                zInfo(errortxt);
-            }
+            errlist<<errortxt;
+//            if(isError)
+//            {
+//                errlist<<(errortxt + " error");
+//            }
+//            else
+//            {
+//                errlist<<errortxt;
+//            }
 
         }
     }
