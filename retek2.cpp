@@ -202,6 +202,20 @@ void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlma
             QStringList icons = getIconsByFlags(t->name, sqlmap, srcmap, docmap, valmap);
             auto icon = zIconHelper::concatenate(icons);
             items[0]->setIcon(icon);
+
+            if(valmap.contains(t->name))
+            {
+                if(!valmap.value(t->name, false))
+//                {
+//                    e << QStringLiteral(":/alert-triangle.ico");
+//                }
+//                else
+                {
+                    //e << QStringLiteral(":/alert-triangle.ico|x");
+                    items[0]->setBackgroundColor(Qt::yellow);
+                }
+            }
+
         }
         else
         {
@@ -221,7 +235,7 @@ QStringList retek2::getIconsByFlags(const QString& name, const QMap<QString, boo
 //    }
 //    if(valmap.contains(name))
 //    {
-//        if(valmap.value(name, false))
+//        if(!valmap.value(name, false))
 //        {
 //            e << QStringLiteral(":/alert-triangle.ico");
 //        }
@@ -340,6 +354,7 @@ QMap<QString,bool> retek2::validateCurrentProject(){
     {
         QStringList errlist;
         bool isValid = t->Validate(ztables, t->eval, zfn(), errlist);
+        e.insert(t->name, isValid);
         if(!isValid)
         {                        
             zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t->getName()));

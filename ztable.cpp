@@ -1466,7 +1466,7 @@ bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const 
                 //auto err = GetFullError(r->colName, ErrCode::unknown, {}, source);
                 e.append(err);
 
-                zInfo(QStringLiteral("PK nem lehet nullable"));
+                errlist<<QStringLiteral("PK nem lehet nullable: %1").arg(r->colName);
                 v=false;
             }
             bool is_rv = r->Validate2(colNames, e, source, errlist);
