@@ -339,7 +339,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -1125,6 +1125,13 @@
             <widget class="QPushButton" name="pushButton_getCaption">
              <property name="text">
               <string>getCaption</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_validate">
+             <property name="text">
+              <string>Validate</string>
              </property>
             </widget>
            </item>

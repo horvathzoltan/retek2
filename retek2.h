@@ -97,6 +97,8 @@ private slots:
 
     void on_pushButton_docimport_clicked();
 
+    void on_pushButton_validate_clicked();
+
 private:
     Ui::retek2Class ui;
     Ui::Dialog_ztable_name zTableNameDialog;

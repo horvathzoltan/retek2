@@ -1941,3 +1941,8 @@ Warning: Nincs név: class_name:Fue (.xml)
 
 nem menthető: fue.xml
 */
+
+void retek2::on_pushButton_validate_clicked()
+{
+    zTrace();
+}
