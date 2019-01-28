@@ -50,7 +50,7 @@ void zStringMapHelper::StringMapFeltolt(QString fn, QMap<QString, QString> *map)
     }
     file.close();
 
-    zLog::appendInfo(ikey, "ok");
+    zLog::appendInfo(ikey, zLog::OK);
     zLog::closeInfo(ikey);
 }
 
@@ -60,7 +60,7 @@ void zStringMapHelper::StringMapSave(QString fn, QMap<QString, QString> *map) {
 
     QFile file(fn);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
-        zLog::dialogError("nem menthet: " + fn);
+        zLog::dialogError(QStringLiteral("nem menthető: %1 error").arg(fn));
         return;
     }
 

@@ -15,7 +15,7 @@ enum zTableSearchBy{ Name, TableName, class_name, class_namePlural };
 
 class zTable
 {
-public:
+public:        
     //zTable(QString class_name, const QString& , const QList<zTablerow>&, int type, QString name, QString _sourcepath);
     zTable(const QString& name, const QString& pkName , const QList<zTablerow>&);
 
@@ -129,7 +129,8 @@ private:
     static const QRegularExpression re_dlen3;
     //void validateEval(bool isOK, const QStringList& e, const QString&);
 
-    enum class ErrCode:int;
+//    enum class ErrCode:int;
+    enum class ErrCode:int{noteq, unknown, notexists, notunique};
     static const QMap<ErrCode, QString> ErrCodeNames;
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 

@@ -14,6 +14,10 @@ zLogGUIfn zLog::GUILogger = nullptr;
 void* zLog::ui = nullptr;
 bool zLog::isVerbose = false;
 
+const QString zLog::OK = QStringLiteral("ok");
+const QString zLog::ERROR = QStringLiteral("error");
+const QString zLog::WARNING = QStringLiteral("warning");
+
 void zLog::init(zLogGUIfn ez, bool _isBreakOnError, void* uiptr, bool _isVerbose)
 {
     GUILogger = ez;
@@ -22,41 +26,62 @@ void zLog::init(zLogGUIfn ez, bool _isBreakOnError, void* uiptr, bool _isVerbose
     isVerbose = _isVerbose;
 }
 
-
+const QMap<ErrLevels, QString> zLog::ErrLevelNames{
+       {ErrLevels::ERROR, nameof(ErrLevels::ERROR)},
+       {ErrLevels::WARNING, nameof(ErrLevels::WARNING)},
+       {ErrLevels::TRACE, nameof(ErrLevels::TRACE)},
+       {ErrLevels::DEBUG, nameof(ErrLevels::DEBUG)},
+       {ErrLevels::INFO, nameof(ErrLevels::INFO)},
+       {ErrLevels::INFOAPPEND, nameof(ErrLevels::INFOAPPEND)},
+       {ErrLevels::INFOCLOSE, nameof(ErrLevels::INFOCLOSE)}
+   };
 
 /*log*/
 
-QString zLog::LevelToString(int i)
-{
-    switch(i)
-    {
-        case ERROR:
-            return QStringLiteral("Error");
-            break;
-        case WARNING:
-            return QStringLiteral("Warning");
-            break;
-        case TRACE:
-            return QStringLiteral("Trace");
-            break;
-        case DEBUG:
-            return QStringLiteral("Debug");
-            break;
-        case INFO:
-            return QStringLiteral("Info");
-            break;       
-        default:
-            return zStringHelper::Empty;
-            break;
-    }
 
-}
+//const QMap<ErrLevels, QString> zLog::ErrLevelNames
+//{
+//    {ErrLevels::ERROR, nameof(ErrLevels::ERROR)},
+//    {ErrLevels::WARNING, nameof(ErrLevels::WARNING)},
+//    {ErrLevels::TRACE, nameof(ErrLevels::TRACE)},
+//    {ErrLevels::DEBUG, nameof(ErrLevels::DEBUG)},
+//    {ErrLevels::INFO, nameof(ErrLevels::INFO)},
+//    {ErrLevels::INFOAPPEND, nameof(ErrLevels::INFOAPPEND)},
+//    {ErrLevels::INFOCLOSE, nameof(ErrLevels::INFOCLOSE)}
+//};
 
 
+//QString zLog::LevelToString(ErrLevels i)
+//{
+//    switch(i)
+//    {
+//        case ErrLevels::ERROR:
+//            return QStringLiteral("Error");
+//            break;
+//        case ErrLevels::WARNING:
+//            return QStringLiteral("Warning");
+//            break;
+//        case ErrLevels::TRACE:
+//            return QStringLiteral("Trace");
+//            break;
+//        case ErrLevels::DEBUG:
+//            return QStringLiteral("Debug");
+//            break;
+//        case ErrLevels::INFO:
+//            return QStringLiteral("Info");
+//            break;
+//        default:
+//            return zStringHelper::Empty;
+//            break;
+//    }
 
-void zLog::dialog(const QString& str, int errlevel) {
+//}
 
-    auto h = LevelToString(errlevel);
+
+
+void zLog::dialog(const QString& str, ErrLevels errlevel) {
+
+    auto h = ErrLevelNames[errlevel];
     QMessageBox messageBox;
     QMessageBox::critical(nullptr, h, str);
     messageBox.setFixedSize(500, 200);
@@ -65,44 +90,44 @@ void zLog::dialog(const QString& str, int errlevel) {
 
 
 void zLog::dialogMessage(const QString& str) {
-    dialog(str, INFO);
+    dialog(str, ErrLevels::INFO);
 }
 
 void zLog::dialogTrace(const QString& str) {
-    dialog(str, TRACE);
+    dialog(str, ErrLevels::TRACE);
 }
 
 void zLog::dialogWarning(const QString& str) {
-    dialog(str, WARNING);
+    dialog(str, ErrLevels::WARNING);
 }
 
 void zLog::dialogError(const QString& str) {
-    dialog(str, ERROR);
+    dialog(str, ErrLevels::ERROR);
 }
 
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-QString zLog::logToString(int errlevel, const QString &msg, const QString &loci, const QString &st)
+//#pragma GCC diagnostic push
+//#pragma GCC diagnostic ignored "-Wunused-parameter"
+QString zLog::logToString(ErrLevels errlevel, const QString &msg, const QString &loci, const QString &st)
 {
-    auto level = LevelToString(errlevel);
+    auto level = ErrLevelNames[errlevel];
     QString msg3;
 
     switch(errlevel)
     {
-    case ERROR:
+    case ErrLevels::ERROR:
         msg3= level+": "+msg+"\n"+loci+"\n"+st;
         break;
-    case WARNING:
+    case ErrLevels::WARNING:
         msg3= level+": "+msg+"\n"+loci;
         break;
-    case TRACE:
+    case ErrLevels::TRACE:
         msg3= level+": "+loci;
         break;
-    case DEBUG:
+    case ErrLevels::DEBUG:
         msg3= level+": "+msg+"\n"+loci+"\n"+st;
         break;
-    case INFO:
+    case ErrLevels::INFO:
         msg3= level+": "+msg;
         if(isVerbose)
         {
@@ -115,7 +140,7 @@ QString zLog::logToString(int errlevel, const QString &msg, const QString &loci,
 
     return msg3;
 }
-#pragma GCC diagnostic pop
+//#pragma GCC diagnostic pop
 
 
 
@@ -212,7 +237,7 @@ QString zLog::zStackTrace()
 QString zLog::zStackTrace(){
     QStringList e;
 
-    unsigned int max_frames = 64;
+   // unsigned int max_frames = 64;
 
     e << QStringLiteral("stack trace:");
 
@@ -232,9 +257,9 @@ void zLog::error2(const QString& msg, const zLocInfo& locinfo){
 
     if(GUILogger!=nullptr)
     {
-        GUILogger(ERROR, msg, li, st, ui);
+        GUILogger(ErrLevels::ERROR, msg, li, st, ui);
     }
-    auto msg2 = logToString(ERROR, msg, li, st);
+    auto msg2 = logToString(ErrLevels::ERROR, msg, li, st);
 
 #ifdef QT_DEBUG
 #ifdef Q_OS_WIN
@@ -253,9 +278,9 @@ void zLog::warning2(const QString& msg, const zLocInfo& locinfo){
     auto li = locinfo.toString();
     if(GUILogger!=nullptr)
     {
-        GUILogger(WARNING, msg, li, nullptr, ui);
+        GUILogger(ErrLevels::WARNING, msg, li, nullptr, ui);
     }
-    auto msg2 = logToString(WARNING, msg, li, nullptr);
+    auto msg2 = logToString(ErrLevels::WARNING, msg, li, nullptr);
 #ifdef QT_DEBUG
 #ifdef Q_OS_WIN
     auto a = __FUNCTION__;
@@ -275,10 +300,10 @@ void zLog::info2(const QString& msg, const zLocInfo& locinfo)
     }
     if(GUILogger!=nullptr)
     {
-        GUILogger(INFO, msg, nullptr, nullptr, ui);
+        GUILogger(ErrLevels::INFO, msg, nullptr, nullptr, ui);
     }    
 
-    auto msg2 = logToString(INFO, msg, li, nullptr);
+    auto msg2 = logToString(ErrLevels::INFO, msg, li, nullptr);
 #ifdef QT_DEBUG
 #ifdef Q_OS_WIN
     auto a = __FUNCTION__;
@@ -301,9 +326,9 @@ void zLog::info2(const QStringList& msgl, const zLocInfo& locinfo)
     {
         if(GUILogger!=nullptr)
         {
-            GUILogger(INFO, *msg, nullptr, nullptr, ui);
+            GUILogger(ErrLevels::INFO, *msg, nullptr, nullptr, ui);
         }
-        auto msg2 = logToString(INFO, *msg, nullptr, nullptr);
+        auto msg2 = logToString(ErrLevels::INFO, *msg, nullptr, nullptr);
 #ifdef QT_DEBUG
 #ifdef Q_OS_WIN
     auto a = __FUNCTION__;
@@ -320,9 +345,9 @@ void zLog::debug2(const zLocInfo& locinfo){
     auto st = zLog::zStackTrace();
     if(GUILogger!=nullptr)
     {
-        GUILogger(DEBUG, nullptr, li, st, ui);
+        GUILogger(ErrLevels::DEBUG, nullptr, li, st, ui);
     }
-    auto msg2 = logToString(DEBUG, nullptr, li, st);
+    auto msg2 = logToString(ErrLevels::DEBUG, nullptr, li, st);
 #ifdef QT_DEBUG
 #ifdef Q_OS_WIN
     auto a = __FUNCTION__;
@@ -340,9 +365,9 @@ void zLog::trace2(const zLocInfo& locinfo){
     auto li = locinfo.toString();
     if(GUILogger!=nullptr)
     {
-        GUILogger(TRACE, nullptr, li, nullptr, ui);
+        GUILogger(ErrLevels::TRACE, nullptr, li, nullptr, ui);
     }
-    auto msg2 = logToString(TRACE, nullptr, li, nullptr);
+    auto msg2 = logToString(ErrLevels::TRACE, nullptr, li, nullptr);
 #ifdef QT_DEBUG  
 #ifdef Q_OS_WIN
     auto a = __FUNCTION__;
@@ -360,7 +385,7 @@ QString zLog::openInfo(const QString& msg)
 
         if(GUILogger!=nullptr)
         {
-            GUILogger(INFO, e+' '+msg, nullptr, nullptr, ui);
+            GUILogger(ErrLevels::INFO, e+' '+msg, nullptr, nullptr, ui);
         }
       return e;
     }
@@ -370,7 +395,7 @@ void zLog::appendInfo(const QString& key, const QString& msg)
 
     if(GUILogger!=nullptr)
     {
-        GUILogger(INFOAPPEND, msg, key, nullptr, ui);
+        GUILogger(ErrLevels::INFOAPPEND, msg, key, nullptr, ui);
     }
     }
 
@@ -379,6 +404,6 @@ void zLog::closeInfo(const QString& key)
 
         if(GUILogger!=nullptr)
         {
-            GUILogger(INFOCLOSE, nullptr, key, nullptr, ui);
+            GUILogger(ErrLevels::INFOCLOSE, nullptr, key, nullptr, ui);
         }
     }

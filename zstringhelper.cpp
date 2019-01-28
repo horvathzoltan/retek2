@@ -288,7 +288,7 @@ QString zStringHelper::HtmlDecode2(const QString &value)
 
     UnicodeDecodingConformance decodeConformance = getHtmlDecodeConformance();
     int l = value.length();
-    int _htmlEntityEndingCharsLen = sizeof(_htmlEntityEndingChars)/sizeof(_htmlEntityEndingChars[0]);
+    //int _htmlEntityEndingCharsLen = sizeof(_htmlEntityEndingChars)/sizeof(_htmlEntityEndingChars[0]);
     QChar ch;
     for (int i = 0; i < l; i++) {
         ch = value[i];

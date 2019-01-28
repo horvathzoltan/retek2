@@ -1291,13 +1291,6 @@
                  <item row="3" column="1">
                   <widget class="QLineEdit" name="lineEdit_class_name_plural"/>
                  </item>
-                 <item row="6" column="1">
-                  <widget class="QDialogButtonBox" name="buttonBox_tableNames">
-                   <property name="standardButtons">
-                    <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel</set>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="4" column="0">
                   <widget class="QLabel" name="label">
                    <property name="text">
@@ -1308,15 +1301,15 @@
                  <item row="4" column="1">
                   <widget class="QLineEdit" name="lineEdit_pkname"/>
                  </item>
-                 <item row="5" column="1">
-                  <widget class="QLineEdit" name="lineEdit_docName"/>
-                 </item>
                  <item row="5" column="0">
                   <widget class="QLabel" name="label_4">
                    <property name="text">
                     <string>docName</string>
                    </property>
                   </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QLineEdit" name="lineEdit_docName"/>
                  </item>
                 </layout>
                </widget>
@@ -1512,7 +1505,7 @@
      <x>0</x>
      <y>0</y>
      <width>1496</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu1">

@@ -192,7 +192,7 @@ void zConversionMap::load(const QString& fn, QList<zConversionStruct> *list) {
 
     //ui.textBrowser
     //a5566
-    zLog::appendInfo(key, "ok");
+    zLog::appendInfo(key, zLog::OK);
     zLog::closeInfo(key);
 }
 

@@ -36,7 +36,8 @@ HEADERS += Beallitasok.h \
     zdownloader.h \
     ztableerror.h \
     highlighter.h \
-    docconnection.h
+    docconnection.h \
+    zmacro.h
 SOURCES += Beallitasok.cpp \
     main.cpp \
     retek2.cpp \

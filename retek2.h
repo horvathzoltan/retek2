@@ -13,6 +13,7 @@
 #include "srcconnection.h"
 #include "docconnection.h"
 #include "zsql.h"
+#include "zlog.h"
 
 #endif // RETEK2_H
 class retek2 : public QMainWindow
@@ -44,6 +45,8 @@ public:
     void setListWidgetIconsByCurrentProject(const QMap<QString, bool>&sqlmap, const QMap<QString, bool>&srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> &valmap);
     QStringList getIconsByFlags(const QString &name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> &valmap);
     static QColor getLogColor(const QString &msg);
+    void validateTable(zTable& t, QMap<QString,bool>&);
+    
 private slots:
 	void GenerateAll();
 
@@ -99,6 +102,10 @@ private slots:
 
     void on_pushButton_validate_clicked();
 
+    //void on_listWidget_ztables_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+
+    void on_lineEdit_pkname_editingFinished();
+
 private:
     Ui::retek2Class ui;
     Ui::Dialog_ztable_name zTableNameDialog;
@@ -138,7 +145,7 @@ private:
     QString getCaptionByRowIx(int idix);
     void setCaptionByRowIx(int idix, const QString& caption);
 
-    static void logToGUI(int errlevel, const QString &msg, const QString &loci, const QString &st, void *ptr);
+    static void logToGUI(ErrLevels errlevel, const QString &msg, const QString &loci, const QString &st, void *ptr);
 
     static const QMap<QString, int> ColNameIxes;
 

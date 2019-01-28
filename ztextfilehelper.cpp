@@ -32,15 +32,15 @@ QString zTextFileHelper::load2(const QString& filename) {
     // egyébként megnyitható azaz
 
     if (f.open(QFile::ReadOnly | QFile::Text))  {
-        zLog::appendInfo(ikey, "ok");
+        zLog::appendInfo(ikey, zLog::OK);
         zLog::closeInfo(ikey);
         //zInfo(QStringLiteral("Beolvasás: %1").arg(filename));
         e =  QTextStream(&f).readAll();
     }
     else{
-        zLog::appendInfo(ikey, "error");
+        zLog::appendInfo(ikey, zLog::ERROR);
         zLog::closeInfo(ikey);
-        zInfo(QStringLiteral("A fájl nem nyitható meg: %1 ERROR").arg(filename));
+        zInfo(QStringLiteral("A fájl nem nyitható meg: %1 %2").arg(filename, zLog::ERROR));
         e= zStringHelper::Empty;
     }
     zLog::closeInfo(ikey);
@@ -70,7 +70,7 @@ void zTextFileHelper::save(const QString& txt, const QString& fn, bool isAppend)
     if(isAppend) om |= QIODevice::Append;
 
     if (!f.open(om)){
-        zLog::dialogError("nem menthető: "+fn);
+        zLog::dialogError(QStringLiteral("nem menthető: %1").arg(fn));
         return;
         }
 

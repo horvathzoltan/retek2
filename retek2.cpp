@@ -206,13 +206,16 @@ void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlma
             if(valmap.contains(t->name))
             {
                 if(!valmap.value(t->name, false))
-//                {
-//                    e << QStringLiteral(":/alert-triangle.ico");
-//                }
-//                else
                 {
-                    //e << QStringLiteral(":/alert-triangle.ico|x");
                     items[0]->setBackgroundColor(Qt::yellow);
+                    auto ttip = zStringHelper::Empty;
+                    zforeach(a,t->eval)
+                    {
+                        if(!ttip.isEmpty()) ttip+=zStringHelper::NewLine;
+                        ttip+= a->toString();
+                    }
+                    if(ttip.isEmpty()) ttip = QStringLiteral("hibalista a TextOutputon");
+                    items[0]->setToolTip(ttip);
                 }
             }
 
@@ -225,7 +228,7 @@ void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlma
 }
 
 
-QStringList retek2::getIconsByFlags(const QString& name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> &valmap)
+QStringList retek2::getIconsByFlags(const QString& name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> & /*valmap*/)
 {
     QStringList e;
 
@@ -346,23 +349,30 @@ void retek2::loadCurrentProject()
     }
 }
 
+void retek2::validateTable(zTable& t, QMap<QString,bool>& e)
+{
+    QStringList errlist;
+    bool isValid = t.Validate(ztables, t.eval, zfn(), errlist);
+    e.insert(t.name, isValid);
+    if(!isValid)
+    {
+        zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t.getName()));
+        zInfo(errlist);
+    }
+}
+
 QMap<QString,bool> retek2::validateCurrentProject(){
-    zTrace();
+    //zTrace();
     QMap<QString,bool> e;
 
     zforeach(t, ztables)
     {
-        QStringList errlist;
-        bool isValid = t->Validate(ztables, t->eval, zfn(), errlist);
-        e.insert(t->name, isValid);
-        if(!isValid)
-        {                        
-            zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t->getName()));
-            zInfo(errlist);
-        }
+        validateTable(*t, e);
     }
     return e;
 }
+
+
 
 // TODO if(true ||  - nem kell az élesben
 QMap<QString,bool> retek2::validateCurrentProject_SQL(){
@@ -932,7 +942,8 @@ void retek2::on_pushButton_2_clicked()
                     t_sql.initSql(dbconn.Name, schemaName, t_sql.sql_table);
 
                     QList<zTableError> e;
-                    auto vl = t_sql.Compare(*t, e, QStringLiteral("sql_validation"));
+                    //auto vl =
+                    t_sql.Compare(*t, e, QStringLiteral("sql_validation"));
                     zError("--- "+t->sql_table+" ---");
 
                     zforeach(ee, e)
@@ -1676,42 +1687,42 @@ void retek2::on_listWidget_tables_itemClicked(QListWidgetItem *item)
 
 ///log
 /// zlog.init(ui.textBrowser, ui.tabWidget, 4, false);// 4.tab-on van a log
-void retek2::logToGUI(int errlevel, const QString &msg, const QString &loci, const QString &st, void* uiptr)
+void retek2::logToGUI(ErrLevels errlevel, const QString &msg, const QString &loci, const QString &st, void* uiptr)
 {
 
     auto ui2 = reinterpret_cast<Ui_retek2Class*>(uiptr); // NOLINT
     auto widget2 = ui2->textBrowser;
     auto tabindex2 = 3;
     auto tabwidget2= ui2->tabWidget;
-    auto level = zLog::LevelToString(errlevel);
+    auto level = zLog::ErrLevelNames[errlevel];//zLog::LevelToString(errlevel);
     auto c = widget2->textColor();
 
     switch(errlevel){
-    case zLog::ERROR:
+    case ErrLevels::ERROR:
         widget2->setTextColor(QColor(Qt::darkRed));
         tabwidget2->setCurrentIndex(tabindex2);
         widget2->append(level+": "+msg);
         widget2->append(loci);
         widget2->append(st);
         break;
-    case zLog::WARNING:
+    case ErrLevels::WARNING:
         widget2->setTextColor(QColor(Qt::darkYellow));
         tabwidget2->setCurrentIndex(tabindex2);
         widget2->append(level+": "+msg);
         widget2->append(loci);
         break;
-    case zLog::TRACE:
+    case ErrLevels::TRACE:
         widget2->setTextColor(QColor("steelblue"));
         widget2->append(level+": "+loci);
         break;
-    case zLog::DEBUG:
+    case ErrLevels::DEBUG:
         widget2->setTextColor(QColor(Qt::darkRed));
         tabwidget2->setCurrentIndex(tabindex2);
         widget2->append(level);
         widget2->append(loci);
         widget2->append(st);
         break;
-    case zLog::INFOAPPEND:
+    case ErrLevels::INFOAPPEND:
     {
         if(msg.isEmpty()) break;
         auto cursor = widget2->textCursor();
@@ -1720,7 +1731,8 @@ void retek2::logToGUI(int errlevel, const QString &msg, const QString &loci, con
         auto m = widget2->find(r,QTextDocument::FindBackward | QTextDocument::FindCaseSensitively);//
         if(m)
         {
-            auto a = widget2->find(QRegExp("$"), QTextDocument::FindCaseSensitively);
+            //auto a =
+            widget2->find(QRegExp("$"), QTextDocument::FindCaseSensitively);
             widget2->setTextColor(getLogColor(msg));
             QTextCursor cursor2 = widget2->textCursor();
             //cursor2.removeSelectedText();
@@ -1737,19 +1749,20 @@ void retek2::logToGUI(int errlevel, const QString &msg, const QString &loci, con
         widget2->setTextCursor(cursor);
         break;
     }
-    case zLog::INFOCLOSE:
+    case ErrLevels::INFOCLOSE:
     {
         auto cursor = widget2->textCursor();
         auto r = QRegExp(QStringLiteral("\\b%1\\b").arg(loci));
         widget2->moveCursor(QTextCursor::End);
-        auto m = widget2->find(r, QTextDocument::FindBackward | QTextDocument::FindCaseSensitively);//
+        //auto m =
+        widget2->find(r, QTextDocument::FindBackward | QTextDocument::FindCaseSensitively);//
         QTextCursor cursor2 = widget2->textCursor();
         cursor2.removeSelectedText();
         cursor2.deleteChar();
         widget2->setTextCursor(cursor);
         break;
     }
-    case zLog::INFO:
+    case ErrLevels::INFO:
     {
         widget2->setTextColor(getLogColor(msg));
         widget2->append(msg);
@@ -1765,19 +1778,21 @@ void retek2::logToGUI(int errlevel, const QString &msg, const QString &loci, con
 
 QColor retek2::getLogColor(const QString &msg){
 
-    if(msg.endsWith(QStringLiteral("ok")))
+    if(msg.endsWith(zLog::OK))
     {
-        return QColor(Qt::darkGreen);
+        return Qt::darkGreen;
     }
-    else if (msg.endsWith(QStringLiteral("warning")))
+
+    if (msg.endsWith(zLog::WARNING))
     {
         return QColor(Qt::darkYellow);
     }
-    else if (msg.endsWith(QStringLiteral("error")))
+
+    if (msg.endsWith(zLog::ERROR))
     {
         return QColor(Qt::darkRed);
     }
-    return QColor(Qt::darkGray);
+    return Qt::darkGray;
 }
 
 void retek2::on_pushButton_sourcepath_clicked()
@@ -1802,7 +1817,7 @@ void retek2::on_listWidget_sources_itemClicked(QListWidgetItem *item)
 {    
     auto d = item->data(Qt::UserRole);
     if(!d.isValid()) return;
-    auto a = d.value<QString>();
+    auto a = d.toString();
     auto txt = zTextFileHelper::load(a);
     if(txt.isEmpty()) return;
     ui.textBrowser_sources->setText(txt);
@@ -1816,7 +1831,7 @@ void retek2::on_listWidget_docs_itemClicked(QListWidgetItem *item)
 {
     auto d = item->data(Qt::UserRole);
     if(!d.isValid()) return;
-    auto a = d.value<QString>();
+    auto a = d.toString();
     TextBrowserSearch(ui.textBrowser_docs, a);
 }
 
@@ -1944,5 +1959,24 @@ nem menthető: fue.xml
 
 void retek2::on_pushButton_validate_clicked()
 {
-    zTrace();
+    //zTrace();
+
+    QMap<QString,bool> e;
+    table->eval.clear();
+
+    validateTable(*table, e);
+    //auto valmap = validateCurrentProject();
+    //auto sqlmap = validateCurrentProject_SQL();
+    //auto srcmap = validateCurrentProject_Source();
+    //auto docmap = validateCurrentProject_Document();
+
+    //setListWidgetIconsByCurrentProject(sqlmap, srcmap, docmap, valmap);
+
+}
+
+void retek2::on_lineEdit_pkname_editingFinished()
+{
+    auto a = ui.lineEdit_pkname->text();
+    int ix = zTablerow::findIx(table->rows, a);
+    if(ix>-1) table->pkrowix=ix;
 }

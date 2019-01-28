@@ -5,6 +5,7 @@
 
 zDownloader::zDownloader(QObject *parent) : QObject(parent)
 {
+    manager = nullptr;
 }
 
 QByteArray zDownloader::download(const QString& urlstring)
@@ -25,7 +26,7 @@ QByteArray zDownloader::download(const QString& urlstring)
       loop.exec();
       auto e = reply->readAll();
 
-      zLog::appendInfo(ikey, "ok");
+      zLog::appendInfo(ikey, zLog::OK);
       zLog::closeInfo(ikey);
       return e;
 }
@@ -42,9 +43,8 @@ void zDownloader::downloadAsync(const QString& urlstring)
 
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
 
-    QNetworkReply* reply = manager->get(request);
-
-    return;
+    //QNetworkReply* reply =
+    manager->get(request);
 }
 
 
@@ -57,7 +57,8 @@ void zDownloader::replyFinished (QNetworkReply *reply)
     }
     else
     {
-        auto e = reply->readAll();
+        //auto e =
+        reply->readAll();
 
          //qDebug()<<e;
 //        qDebug() << reply->header(QNetworkRequest::ContentTypeHeader).toString();

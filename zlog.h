@@ -6,6 +6,7 @@
 #include <QTabWidget>
 #include <zstringhelper.h>
 #include "zlocinfo.h"
+#include "zmacro.h"
 
 #if defined(Q_OS_LINUX)
 #define getLocInfo zLocInfo(static_cast<const char*>(__PRETTY_FUNCTION__),__FILE__,__LINE__)
@@ -24,19 +25,22 @@
 // 1. log egy messaget
 // 2. szerez loc infot
 // 3. szerez debug infot (stack)
+enum class ErrLevels:int {ERROR, WARNING, TRACE, DEBUG, INFO, INFOAPPEND, INFOCLOSE};
 
-typedef void (*zLogGUIfn)(int errlevel, const QString &msg, const QString &loci, const QString &st, void *ui);
+typedef void (*zLogGUIfn)(ErrLevels errlevel, const QString &msg, const QString &loci, const QString &st, void *ui);
 
 //QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC
 
 class zLog
 {
-private:    
+//public:
+    //enum class ErrLevels:int {ERROR, WARNING, TRACE, DEBUG, INFO, INFOAPPEND, INFOCLOSE};
+private:          
     static zLogGUIfn GUILogger;
 //    QTextBrowser *widget;
 //    QTabWidget *tabwidget;
 //    int tabindex;
-    static void dialog(const QString&, int);
+    static void dialog(const QString&, ErrLevels);
 //    void log(const QString&, int);
 
 //    static QTextBrowser *widget2;
@@ -47,17 +51,23 @@ private:
 
     static void *ui;
 
-    static QString logToString(int, const QString&, const QString&, const QString&);
+    static QString logToString(ErrLevels, const QString&, const QString&, const QString&);
 
 
     //static QString zGetLocInfo(const char *func, const char *file, int line);
     static QString zStackTrace();
 
 public:        
-    enum ErrLevels:int {ERROR, WARNING, TRACE, DEBUG, INFO, INFOAPPEND, INFOCLOSE};
+    static const QString OK;
+    static const QString ERROR;
+    static const QString WARNING;    
+
+    static const QMap<ErrLevels, QString> ErrLevelNames;
+
+    //enum class ErrLevels:int {ERROR, WARNING, TRACE, DEBUG, INFO, INFOAPPEND, INFOCLOSE};
     //zLog();
     //~zLog();
-    static QString LevelToString(int loglevel);
+    //static QString LevelToString(ErrLevels loglevel);
 
     //void init(QTextBrowser*, QTabWidget*, int,bool);
     static void init(zLogGUIfn ez, bool isBreak, void* ui, bool isVerbose);
@@ -114,5 +124,6 @@ public:
     static void appendInfo(const QString& key, const QString& txt);
     static void closeInfo(const QString& key);
 };
+
 
 #endif // ZERROR_H

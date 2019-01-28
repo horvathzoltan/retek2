@@ -103,18 +103,18 @@ bool zSQL::createConnection(QString connectionName){
     else
     {
         zInfo(QStringLiteral("unknown driver: %1 error").arg(driverName));
-        zLog::appendInfo(ikey, "error");
+        zLog::appendInfo(ikey, zLog::ERROR);
         zLog::closeInfo(ikey);
         return false;
     }
 
     if(isok)        
     {
-        zLog::appendInfo(ikey, "ok");
+        zLog::appendInfo(ikey, zLog::OK);
     }
     else
     {
-        zLog::appendInfo(ikey, "error");
+        zLog::appendInfo(ikey, zLog::ERROR);
         auto x = this->getLastErrorText();
         zInfo(QStringLiteral("Not Connected: %1").arg(x));
     }

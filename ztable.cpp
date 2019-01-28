@@ -191,18 +191,22 @@ tname.rname.clen:noteq
 tname.rname.cisnull:noteq
 */
 
-enum class zTable::ErrCode:int{noteq, unknown};
+//enum class zTable::ErrCode:int{noteq, unknown, notexists};
 
 const QMap<zTable::ErrCode, QString> zTable::ErrCodeDescriptions
 {
     {ErrCode::noteq, QStringLiteral("Not Equals")},
     {ErrCode::unknown, QStringLiteral("Unknown")},    
+    {ErrCode::notexists, QStringLiteral("Not exists")},
+    {ErrCode::notunique, QStringLiteral("Not unique")},
 };
 
 const QMap<zTable::ErrCode, QString> zTable::ErrCodeNames
 {
-    {ErrCode::noteq, QStringLiteral("noteq")},
-    {ErrCode::unknown, QStringLiteral("unknown")}
+    {ErrCode::noteq, nameof(ErrCode::noteq)},
+    {ErrCode::unknown, nameof(ErrCode::unknown)},
+    {ErrCode::notexists, nameof(ErrCode::notexists)},
+    {ErrCode::notunique, nameof(ErrCode::notunique)}
 };
 
 //QString zTable::GetErrorMessage(const QString& cn, ErrCode code)
@@ -1428,11 +1432,14 @@ bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const 
 
     if(this->pkrowix==-1)
     {
+        //auto err = r->GetFullError(nameof(r->isNullable), zTablerow::ErrCode::nullable, {"PK"}, source);
+        e<< GetFullError(PKNAME, ErrCode::notexists, {"PK"}, source);
         errlist<<QStringLiteral("Nincs PK");
         v=false;
     }
 
     if(name.isEmpty()){
+        e<< GetFullError(nameof(name), ErrCode::notexists, {"name"}, source);
         errlist<<QStringLiteral("Nincs név");
         v= false;
     }
@@ -1443,11 +1450,13 @@ bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const 
     }
     if(ts>1)
     {
+        e<< GetFullError(nameof(name), ErrCode::notunique, {"name"}, source);
         errlist<<QStringLiteral("Név nem egyedi: %1").arg(name);
         v= false;
     }
     if(rows.isEmpty())
     {
+        e<< GetFullError("", ErrCode::notexists, {"rows"}, source);
         errlist<<QStringLiteral("Nincsenek sorok");
         v= false;
     }        
@@ -1462,9 +1471,7 @@ bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const 
             auto r = &(rows[i]);
             if(i==pkrowix && r->isNullable)
             {
-                auto err = r->GetFullError(nameof(r->isNullable), zTablerow::ErrCode::nullable, {"PK"}, source);
-                //auto err = GetFullError(r->colName, ErrCode::unknown, {}, source);
-                e.append(err);
+                e<< r->GetFullError(nameof(r->isNullable), zTablerow::ErrCode::nullable, {"PK"}, source);
 
                 errlist<<QStringLiteral("PK nem lehet nullable: %1").arg(r->colName);
                 v=false;
@@ -1675,7 +1682,7 @@ QString zTable::createTxtByHtml(const QString& txt){
                     QString tr_txt=rtrm.captured(1);
                     //td
                     auto tdi = rtd.globalMatch(tr_txt);
-                    int col_ix = 0;
+                    //int col_ix = 0;
                     while(tdi.hasNext())
                     {
                         auto tdm = tdi.next();
