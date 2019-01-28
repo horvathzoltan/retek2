@@ -47,6 +47,8 @@ public:
     static QColor getLogColor(const QString &msg);
     void validateTable(zTable& t, QMap<QString,bool>&);
     
+    void setZTablesItem(const zTable &t, const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap, const QMap<QString, bool>& valmap);
+
 private slots:
 	void GenerateAll();
 
@@ -105,6 +107,8 @@ private slots:
     //void on_listWidget_ztables_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
     void on_lineEdit_pkname_editingFinished();
+
+    void on_pushButton_setPK_clicked();
 
 private:
     Ui::retek2Class ui;

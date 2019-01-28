@@ -191,39 +191,48 @@ void retek2::fillListWidgetByCurrentProject()
     }
 }
 
+void retek2::setZTablesItem(const zTable &t, const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap, const QMap<QString, bool>& valmap)
+{
+    auto items = ui.listWidget_ztables->findItems(t.name, Qt::MatchExactly);
+    if(items.isEmpty()) return;
+    if(items.count()>1) {zInfo(QStringLiteral("Több tábla található azonos néven: %1 %2").arg(t.name, zLog::ERROR));return;}
+
+        QStringList icons = getIconsByFlags(t.name, sqlmap, srcmap, docmap, valmap);
+        auto icon = zIconHelper::concatenate(icons);
+        items[0]->setIcon(icon);
+
+        if(valmap.contains(t.name))
+        {
+            if(valmap.value(t.name, false))
+            {
+                items[0]->setBackgroundColor(Qt::white);
+                items[0]->setToolTip(zStringHelper::Empty);
+            }
+            else
+            {
+                items[0]->setBackgroundColor(Qt::yellow);
+                auto ttip = zStringHelper::Empty;
+                zforeach(a,t.eval)
+                {
+                    if(!ttip.isEmpty()) ttip+=zStringHelper::NewLine;
+                    ttip+= a->toString();
+                }
+                if(ttip.isEmpty()) ttip = QStringLiteral("hibalista a TextOutputon");
+                items[0]->setToolTip(ttip);
+            }
+        }
+        else{
+            items[0]->setBackgroundColor(Qt::white);
+            items[0]->setToolTip(zStringHelper::Empty);
+        }
+
+}
+
 void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap, const QMap<QString, bool>& valmap)
 {
     zforeach(t, ztables)
     {
-        auto items = ui.listWidget_ztables->findItems(t->name, Qt::MatchExactly);
-        if(items.isEmpty()) continue;
-        if(items.count()==1)
-        {
-            QStringList icons = getIconsByFlags(t->name, sqlmap, srcmap, docmap, valmap);
-            auto icon = zIconHelper::concatenate(icons);
-            items[0]->setIcon(icon);
-
-            if(valmap.contains(t->name))
-            {
-                if(!valmap.value(t->name, false))
-                {
-                    items[0]->setBackgroundColor(Qt::yellow);
-                    auto ttip = zStringHelper::Empty;
-                    zforeach(a,t->eval)
-                    {
-                        if(!ttip.isEmpty()) ttip+=zStringHelper::NewLine;
-                        ttip+= a->toString();
-                    }
-                    if(ttip.isEmpty()) ttip = QStringLiteral("hibalista a TextOutputon");
-                    items[0]->setToolTip(ttip);
-                }
-            }
-
-        }
-        else
-        {
-            zError(QStringLiteral("Több tábla található azonos néven: %1").arg(t->name));
-        }
+        setZTablesItem(*t, sqlmap, srcmap, docmap, valmap);
     }
 }
 
@@ -1960,11 +1969,18 @@ nem menthető: fue.xml
 void retek2::on_pushButton_validate_clicked()
 {
     //zTrace();
-
     QMap<QString,bool> e;
+    QMap<QString,bool> valmap;
     table->eval.clear();
 
-    validateTable(*table, e);
+    validateTable(*table, valmap);
+
+    mezoListaFeltolt(*table);// ez töltö fel a táblának a mezőit
+
+    setZTablesItem(*table, e, e, e, valmap);
+    //on_listWidget_ztables_itemClicked
+    //setListWidgetIconsByCurrentProject(sqlmap, srcmap, docmap, valmap);
+
     //auto valmap = validateCurrentProject();
     //auto sqlmap = validateCurrentProject_SQL();
     //auto srcmap = validateCurrentProject_Source();
@@ -1979,4 +1995,16 @@ void retek2::on_lineEdit_pkname_editingFinished()
     auto a = ui.lineEdit_pkname->text();
     int ix = zTablerow::findIx(table->rows, a);
     if(ix>-1) table->pkrowix=ix;
+}
+
+void retek2::on_pushButton_setPK_clicked()
+{
+    auto selectedItems = ui.tableWidget_MezoLista->selectedItems();
+    if(selectedItems.isEmpty()) return;
+    if(selectedItems.count()>1) return;
+
+    auto rowix = selectedItems[0]->row();
+    table->pkrowix = rowix;
+    auto pkname = ui.tableWidget_MezoLista->item(rowix, C_ix_colName)->text();
+    ui.lineEdit_pkname->setText(pkname);
 }

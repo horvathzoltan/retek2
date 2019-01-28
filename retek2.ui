@@ -1129,6 +1129,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="pushButton_setPK">
+             <property name="text">
+              <string>set as PK</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="pushButton_validate">
              <property name="text">
               <string>Validate</string>
@@ -1505,7 +1512,7 @@
      <x>0</x>
      <y>0</y>
      <width>1496</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu1">
