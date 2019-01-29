@@ -4,6 +4,7 @@
 #include <QString>
 #include <QRegularExpression>
 
+#define EMPTYSTR zStringHelper::Empty
 
 
 class zStringHelper

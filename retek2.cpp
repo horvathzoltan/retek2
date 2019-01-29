@@ -47,10 +47,12 @@
 Highlighter* retek2::h1 = nullptr;
 Highlighter* retek2::h2 = nullptr;
 
-//retek2::retek2(QWidget *parent):QMainWindow(parent)
-//{
-//	ui.setupUi(this);
-//}
+retek2::retek2(QWidget *parent):QMainWindow(parent)
+{
+    //ui=NULL;
+    //zTableNameDialog = nullptr;
+    //ui.setupUi(this);
+}
 
 retek2::~retek2()
 {
@@ -191,40 +193,54 @@ void retek2::fillListWidgetByCurrentProject()
     }
 }
 
+QListWidgetItem* retek2::getTablesItem(const QString &tn){
+    auto items = ui.listWidget_ztables->findItems(tn, Qt::MatchExactly);
+    if(items.isEmpty()) return nullptr;
+    if(items.count()>1)
+    {
+        zInfo(QStringLiteral("Több tábla található azonos néven: %1 %2").arg(tn, zLog::ERROR));
+        return nullptr;
+    }
+    return items[0];
+}
+
 void retek2::setZTablesItem(const zTable &t, const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap, const QMap<QString, bool>& valmap)
 {
-    auto items = ui.listWidget_ztables->findItems(t.name, Qt::MatchExactly);
-    if(items.isEmpty()) return;
-    if(items.count()>1) {zInfo(QStringLiteral("Több tábla található azonos néven: %1 %2").arg(t.name, zLog::ERROR));return;}
+ //   auto items = ui.listWidget_ztables->findItems(t.name, Qt::MatchExactly);
+ //   if(items.isEmpty()) return;
+ //   if(items.count()>1) {zInfo(QStringLiteral("Több tábla található azonos néven: %1 %2").arg(t.name, zLog::ERROR));return;}
 
-        QStringList icons = getIconsByFlags(t.name, sqlmap, srcmap, docmap, valmap);
-        auto icon = zIconHelper::concatenate(icons);
-        items[0]->setIcon(icon);
+    auto item = getTablesItem(t.name);
+    if(!item) return;
 
-        if(valmap.contains(t.name))
+    QStringList icons = getIconsByFlags(t.name, sqlmap, srcmap, docmap, valmap);
+    auto icon = zIconHelper::concatenate(icons);
+    item->setIcon(icon);
+
+    if(valmap.contains(t.name))
+    {
+        if(valmap.value(t.name, false))
         {
-            if(valmap.value(t.name, false))
-            {
-                items[0]->setBackgroundColor(Qt::white);
-                items[0]->setToolTip(zStringHelper::Empty);
-            }
-            else
-            {
-                items[0]->setBackgroundColor(Qt::yellow);
-                auto ttip = zStringHelper::Empty;
-                zforeach(a,t.eval)
-                {
-                    if(!ttip.isEmpty()) ttip+=zStringHelper::NewLine;
-                    ttip+= a->toString();
-                }
-                if(ttip.isEmpty()) ttip = QStringLiteral("hibalista a TextOutputon");
-                items[0]->setToolTip(ttip);
-            }
+            item->setBackgroundColor(Qt::white);
+            item->setToolTip(zStringHelper::Empty);
         }
-        else{
-            items[0]->setBackgroundColor(Qt::white);
-            items[0]->setToolTip(zStringHelper::Empty);
+        else
+        {
+            item->setBackgroundColor(Qt::yellow);
+            auto ttip = zStringHelper::Empty;
+            zforeach(a,t.eval)
+            {
+                if(!ttip.isEmpty()) ttip+=zStringHelper::NewLine;
+                ttip+= a->toString();
+            }
+            if(ttip.isEmpty()) ttip = QStringLiteral("hibalista a TextOutputon");
+            item->setToolTip(ttip);
         }
+    }
+    else{
+        item->setBackgroundColor(Qt::white);
+        item->setToolTip(zStringHelper::Empty);
+    }
 
 }
 
@@ -311,51 +327,53 @@ void retek2::loadCurrentProject()
 
         QString currentProjectPath = zFileNameHelper::getCurrentProjectDir();
         QStringList files = zFileNameHelper::FindFileNameInDir(currentProjectPath, QString(), zFileNameHelper::xmlFilter);
-        zforeach(f, files){
+        zforeach(f, files)
+        {
             auto txt = zTextFileHelper::load(*f);
 
             auto t = zTable::createTableByXML(txt);
-            if(t.isEmpty() )
+
+            if(t.isEmpty())
             {
                 zError(QStringLiteral("Nincs tábla: %1").arg(*f));
+                continue;
             }
-            else
+
+            if(t.count()>1)
             {
-                if(t.count()>1)
-                {
-                    zError(QStringLiteral("Több tábla: %1").arg(*f));
-                }
-                else
-                {
-                    auto t0 = t[0];
-
-                    // ha nincs név, lesz
-                    if(t0.name.isEmpty())
-                    {
-                     //   QString fn = zFileNameHelper::getfileName(*f);
-                        QString fn = t0.getName();
-                        zWarning(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
-                        t0.name = fn;
-                    }
-                    //bool isValid = t0.Validate(ztables, t0.eval, zfn());
-
-//                    if(zTable::find(ztables, t0.name, zTableSearchBy::Name))
-//                    {
-//                        QString fn = zFileNameHelper::getfileName(*f);
-//                        zError(QStringLiteral("Már van tábla ilyen néven: %1, %2 (.xml)").arg(t0.name, fn));
-//                    }
-//                    else
-                    ztables << t0;
-//                    add_zTablaToListWidget(t0);
-
-//                    if(!isValid)
-//                    {
-//                        zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t0.name));
-//                    }
-                }
+                zError(QStringLiteral("Több tábla: %1").arg(*f));
+                continue;
             }
-        }
-    }
+
+            auto t0 = t[0];
+
+            t0.XMLPath = *f;
+            // ha nincs név, lesz
+            if(t0.name.isEmpty())
+            {
+             //   QString fn = zFileNameHelper::getfileName(*f);
+                QString fn = t0.getName();
+                zWarning(QStringLiteral("Nincs név: %1 (.xml)").arg(fn));
+                t0.name = fn;
+            }
+            //bool isValid = t0.Validate(ztables, t0.eval, zfn());
+
+//            if(zTable::find(ztables, t0.name, zTableSearchBy::Name))
+//            {
+//                QString fn = zFileNameHelper::getfileName(*f);
+//                zError(QStringLiteral("Már van tábla ilyen néven: %1, %2 (.xml)").arg(t0.name, fn));
+//            }
+//            else
+            ztables << t0;
+//            add_zTablaToListWidget(t0);
+
+//            if(!isValid)
+//            {
+//                zInfo(QStringLiteral("A tábla nem valid: %1 error").arg(t0.name));
+//            }
+          }
+       }
+
 }
 
 void retek2::validateTable(zTable& t, QMap<QString,bool>& e)
@@ -1202,7 +1220,7 @@ void retek2::on_tableWidget_MezoLista_cellChanged(int row, int column)
     //case C_ix_comment:
         default:
             auto mn = ui.tableWidget_MezoLista->horizontalHeaderItem(column)->text();
-            zError(QStringLiteral("Nem módosítható oszlop: %1").arg(mn));
+            zInfo(QStringLiteral("Nem módosítható oszlop: %1 %2").arg(mn, zLog::ERROR));
             break;
 
     }
@@ -1329,7 +1347,8 @@ void retek2::on_comboBox_docconn_currentIndexChanged(const QString &arg1)
 {
     auto c = beallitasok.getDocConnectionByName(arg1);
 
-    auto e = docRefresh(c);
+    //auto e =
+    docRefresh(c);
 
 }
 
@@ -1590,6 +1609,7 @@ void retek2::zTableNamesToUi(const zTable& t){
     ui.lineEdit_src_doc->setText(t.document_path);
 
     ui.lineEdit_src_sql->setText(t.SqlConnToString());
+    ui.lineEdit_XMLPath->setText(t.XMLPath);
 }
 
 void retek2::zTableNamesFromUi(zTable& t){
@@ -1993,12 +2013,17 @@ void retek2::on_pushButton_validate_clicked()
 void retek2::on_lineEdit_pkname_editingFinished()
 {
     auto a = ui.lineEdit_pkname->text();
+    if(a.isEmpty())
+    {
+        table->pkrowix = -1;
+        return;
+    }
     int ix = zTablerow::findIx(table->rows, a);
-    if(ix>-1) table->pkrowix=ix;
+    if(ix>-1) table->pkrowix=ix; else ui.lineEdit_pkname->setText(table->pkname());
 }
 
 void retek2::on_pushButton_setPK_clicked()
-{
+{    
     auto selectedItems = ui.tableWidget_MezoLista->selectedItems();
     if(selectedItems.isEmpty()) return;
     if(selectedItems.count()>1) return;
@@ -2007,4 +2032,37 @@ void retek2::on_pushButton_setPK_clicked()
     table->pkrowix = rowix;
     auto pkname = ui.tableWidget_MezoLista->item(rowix, C_ix_colName)->text();
     ui.lineEdit_pkname->setText(pkname);
+}
+
+
+
+void retek2::on_lineEdit_name_editingFinished()
+{
+    auto tn = ui.lineEdit_name->text();
+    if(!setTableName(tn))
+    {
+        ui.lineEdit_name->setText(table->name);
+    }
+}
+
+bool retek2::setTableName(const QString &tn)
+{
+    if(tn.isEmpty()) return false;
+    // megállapítjuk, jó lesz-e , egyedi -e
+    auto item = getTablesItem(tn);
+    if(item) return false;
+
+    //QString a = table->name;
+    item = getTablesItem(table->name);
+    if(!item) return false;
+
+    //a fájlt is át kell nevezni
+    QString oldname = table->XMLPath;//zFileNameHelper::getCurrentProjectFileName(table->name + ".xml");
+    QString newname = zFileNameHelper::getCurrentProjectFileName(tn + ".xml");
+    if(! QFile::rename(oldname, newname)) return false;
+
+    table->XMLPath = newname;
+    table->name = tn;
+    item->setText(tn);
+    return true;
 }

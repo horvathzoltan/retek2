@@ -26,8 +26,10 @@ public:
 
     //static const QMap<zTablerow::ErrCode, int> ErrCodeColIxes;
 
-   // explicit retek2(QWidget *parent = nullptr);
+   // explicit
+    retek2(QWidget *parent = nullptr);
     ~retek2() final;
+
     void init();
 
     void tablaAdatokBejegyez(const QString& tn);
@@ -110,7 +112,10 @@ private slots:
 
     void on_pushButton_setPK_clicked();
 
+    void on_lineEdit_name_editingFinished();
+
 private:
+    Q_DISABLE_COPY(retek2);
     Ui::retek2Class ui;
     Ui::Dialog_ztable_name zTableNameDialog;
 
@@ -158,6 +163,8 @@ private:
     QString docRefresh(docConnection *c);
 
     void setEnabled(bool e);
+    QListWidgetItem* getTablesItem(const QString &tn);
+    bool setTableName(const QString &n);
 };
 
 

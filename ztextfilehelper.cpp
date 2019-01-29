@@ -56,7 +56,7 @@ void zTextFileHelper::save(const QString& txt, const QString& fn, bool isAppend)
 
     if(fn.length()>256)
     {
-        zInfo("Fájlnév túl hosszú error");
+        zInfo(QStringLiteral("Fájlnév túl hosszú: %1 %2").arg(fn, zLog::ERROR));
         return;
     }
 //    QFile logfile(lfn);

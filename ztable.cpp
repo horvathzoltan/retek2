@@ -22,11 +22,16 @@
 
 const QString zTable::PKNAME = QStringLiteral("pkname");
 
-zTable::zTable()= default;
+zTable::zTable()
+{
+    sql_isValid = false;
+    source_isValid = false;
+    document_isValid = false;
+}
 
 zTable::~zTable()= default;
 
-zTable::zTable(const QString& _name, const QString& pkn, const QList<zTablerow>& tr){
+zTable::zTable(const QString& _name, const QString& pkn, const QList<zTablerow>& tr):zTable() {
     this->name = _name;
     //this->pkname = pkn;
     this->rows = tr;
@@ -1405,7 +1410,8 @@ void zTable::saveTablaToXML() {
         zError(QStringLiteral("Nem tartalmaz sorokat: ").arg(this->name));
         return;
     }
-    QString fn = zFileNameHelper::getCurrentProjectFileName(this->name + ".xml");
+    QString fn = this->XMLPath;
+    if(fn.isEmpty()) fn = zFileNameHelper::getCurrentProjectFileName(this->name + ".xml");
             //append(QDir::homePath(),beallitasok.projectdir,beallitasok.currentProjectName, this->name + ".xml");
 
     QString e;
@@ -1456,7 +1462,7 @@ bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const 
     }
     if(rows.isEmpty())
     {
-        e<< GetFullError("", ErrCode::notexists, {"rows"}, source);
+        e<< GetFullError(zStringHelper::Empty, ErrCode::notexists, {"rows"}, source);
         errlist<<QStringLiteral("Nincsenek sorok");
         v= false;
     }        
@@ -1823,7 +1829,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
                                 auto rspanm = rspani.next();
                                 if(!innerspan.isEmpty())
                                 {
-                                    innerspan+=" ";
+                                    innerspan+=' ';
                                 }
                                 innerspan += rspanm.captured(1);
                             }
@@ -1839,7 +1845,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
                                 {
                                     if(!tablename.isEmpty())
                                     {
-                                        tablename+="_";
+                                        tablename+='_';
                                     }
                                     tablename+=td_txt;
                                 }
@@ -1937,7 +1943,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
                             ezt1 = i3.captured(1);
                             bool isOK;
                             auto ns = i3.captured(2);
-                            if(ns!="max")
+                            if(ns!=QStringLiteral("max"))
                             {
                                 int n = ns.toInt(&isOK);
                                 if(isOK) dlen = n;
@@ -1950,7 +1956,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
 
 
                         //isNullable = true;
-                        if(row_typel.contains("null") && !row_typel.contains("not null"))
+                        if(row_typel.contains(QStringLiteral("null")) && !row_typel.contains(QStringLiteral("not null")))
                         {
                             isNullable = true;
                         }

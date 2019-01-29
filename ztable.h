@@ -46,6 +46,7 @@ public:
     bool source_isValid;
     QDateTime source_updateTimeStamp;
 
+    QString XMLPath;
     QString comment;
     //QString pkname; // rowix
     int pkrowix = -1;
