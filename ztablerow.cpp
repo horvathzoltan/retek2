@@ -385,7 +385,7 @@ QStringList zTablerow::colNames(const QList<zTablerow> &rows){
 //    return l;
 //}
 
-zTableError zTablerow::GetFullError(const QString& cn, ErrCode code, const QStringList& p,const QString& source)
+zTableError zTablerow::GetFullError(const QString& cn, ErrCode code, const QStringList& p,const QString& source) const
 {
     auto err = zTableError(zStringHelper::Empty, this->colName, cn, ErrCodeNames[code], source, ErrCodeDescriptions[code], p);
 //    auto l4 = err.toString();

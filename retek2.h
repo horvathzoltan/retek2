@@ -45,11 +45,12 @@ public:
     QMap<QString, bool> validateCurrentProject_Source();
     QMap<QString, bool> validateCurrentProject_Document();
     void setListWidgetIconsByCurrentProject(const QMap<QString, bool>&sqlmap, const QMap<QString, bool>&srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> &valmap);
-    QStringList getIconsByFlags(const QString &name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> &valmap);
+    QStringList getIconsByFlags(const QString &name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap);
     static QColor getLogColor(const QString &msg);
-    void validateTable(zTable& t, QMap<QString,bool>&);
+    void validateTable(zTable &t, QMap<QString,bool>&);
+    void validateTableSQL(zTable &t, QMap<QString,bool>&);
     
-    void setZTablesItem(const zTable &t, const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap, const QMap<QString, bool>& valmap);
+    void setZTablesItem(const zTable &t, const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap, const QMap<QString, bool>& valmap, bool isIcons = true);
 
 private slots:
 	void GenerateAll();
@@ -116,6 +117,8 @@ private slots:
 
 private:
     Q_DISABLE_COPY(retek2);
+    static const QString VALIDATETABLEKEY;
+
     Ui::retek2Class ui;
     Ui::Dialog_ztable_name zTableNameDialog;
 

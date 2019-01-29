@@ -116,7 +116,7 @@ public:
     bool validateSource();
     bool validateDocument();
 
-    QDateTime getSqlUpdateTimestamp();
+    QDateTime getSqlUpdateTimestamp() const;
     QDateTime getSourceUpdateTimestamp();
     QDateTime getDocUpdateTimestamp();
     
@@ -136,7 +136,7 @@ private:
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 
     //QString GetErrorMessage(const QString& cn, ErrCode code);
-    zTableError GetFullError(const QString& cn, ErrCode code, const QStringList &p, const QString &prefix);
+    zTableError GetFullError(const QString& cn, ErrCode code, const QStringList &p, const QString &prefix) const;
 
 
 };

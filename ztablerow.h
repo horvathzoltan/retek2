@@ -47,7 +47,7 @@ public:
     static const QMap<ErrCode, QString> ErrCodeDescriptions;
 
     //QString GetErrorMessage(const QString& tn, const QString& cn, ErrCode code);
-    zTableError GetFullError(const QString& cn, ErrCode code, const QStringList& p, const QString &source);
+    zTableError GetFullError(const QString& cn, ErrCode code, const QStringList& p, const QString &source) const;
     static const ErrCode* GetErrCode(const QString& a);
     static QStringList GetColNameFromErrorMessage(const QString& tn);
 };

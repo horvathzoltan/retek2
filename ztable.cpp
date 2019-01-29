@@ -221,7 +221,7 @@ const QMap<zTable::ErrCode, QString> zTable::ErrCodeNames
 //    return l;
 //}
 
-zTableError zTable::GetFullError(const QString& cn, ErrCode code, const QStringList&  p, const QString& source)
+zTableError zTable::GetFullError(const QString& cn, ErrCode code, const QStringList&  p, const QString& source) const
 {   
     auto err = zTableError(this->name, zStringHelper::Empty, cn, ErrCodeNames[code],source, ErrCodeDescriptions[code],  p);
     return err;
@@ -1433,7 +1433,8 @@ void zTable::saveTablaToXML() {
    azok a belső osztályok vannak, amik ezekben kulcsként szerepelnek: globalSqlMaps, globalClassMaps
 */
 
-bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const QString& source, QStringList& errlist){
+bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const QString& source, QStringList& errlist)
+{
     bool v= true;
 
     if(this->pkrowix==-1)
@@ -1492,7 +1493,7 @@ bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const 
     return v;
 }
 
-QDateTime zTable::getSqlUpdateTimestamp()
+QDateTime zTable::getSqlUpdateTimestamp() const
 {
     zSQL zsql;
     auto dbconn = beallitasok.findDbConnection(this->sql_conn);
@@ -1560,7 +1561,8 @@ Validálja a táblát annak sql kötése alapján
 //    }
 //}
 
-bool zTable::validateSQL(){
+bool zTable::validateSQL()
+{
     zTrace();
     zSQL zsql;
     auto dbconn = beallitasok.findDbConnection(this->sql_conn);

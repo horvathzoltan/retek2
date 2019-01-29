@@ -204,7 +204,7 @@ QListWidgetItem* retek2::getTablesItem(const QString &tn){
     return items[0];
 }
 
-void retek2::setZTablesItem(const zTable &t, const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap, const QMap<QString, bool>& valmap)
+void retek2::setZTablesItem(const zTable &t, const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap, const QMap<QString, bool>& valmap, bool isIcons)
 {
  //   auto items = ui.listWidget_ztables->findItems(t.name, Qt::MatchExactly);
  //   if(items.isEmpty()) return;
@@ -213,9 +213,12 @@ void retek2::setZTablesItem(const zTable &t, const QMap<QString, bool>& sqlmap, 
     auto item = getTablesItem(t.name);
     if(!item) return;
 
-    QStringList icons = getIconsByFlags(t.name, sqlmap, srcmap, docmap, valmap);
-    auto icon = zIconHelper::concatenate(icons);
-    item->setIcon(icon);
+    if(isIcons)
+    {
+        QStringList icons = getIconsByFlags(t.name, sqlmap, srcmap, docmap);
+        auto icon = zIconHelper::concatenate(icons);
+        item->setIcon(icon);
+    }
 
     if(valmap.contains(t.name))
     {
@@ -253,7 +256,7 @@ void retek2::setListWidgetIconsByCurrentProject(const QMap<QString, bool>& sqlma
 }
 
 
-QStringList retek2::getIconsByFlags(const QString& name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap, const QMap<QString, bool> & /*valmap*/)
+QStringList retek2::getIconsByFlags(const QString& name, const QMap<QString, bool> &sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool> &docmap)
 {
     QStringList e;
 
@@ -376,10 +379,13 @@ void retek2::loadCurrentProject()
 
 }
 
+
+const QString retek2::VALIDATETABLEKEY = QStringLiteral("validateTable");
+
 void retek2::validateTable(zTable& t, QMap<QString,bool>& e)
 {
     QStringList errlist;
-    bool isValid = t.Validate(ztables, t.eval, zfn(), errlist);
+    bool isValid = t.Validate(ztables, t.eval, VALIDATETABLEKEY, errlist);
     e.insert(t.name, isValid);
     if(!isValid)
     {
@@ -410,29 +416,57 @@ QMap<QString,bool> retek2::validateCurrentProject_SQL(){
     zforeach(t, ztables)
     {
         //zTrace(QStringLiteral("sql validating table: %1").arg(t->name));
-        if(t->sql_conn.isEmpty()) continue;
+        validateTableSQL(*t, e);
+//        if(t->sql_conn.isEmpty()) continue;
 
-        if(t->sql_updateTimeStamp.isNull())
-        {
-            zInfo(QStringLiteral("no sql_updateTimeStamp"));
-        }
+//        if(t->sql_updateTimeStamp.isNull())
+//        {
+//            zInfo(QStringLiteral("no sql_updateTimeStamp"));
+//        }
 
-        QDateTime lastUpdateTimeStamp = t->getSqlUpdateTimestamp();
-        if(true || lastUpdateTimeStamp > t->sql_updateTimeStamp) // ha az sql újabb
-        {            
-            zInfo(QStringLiteral("newer available: %1 at: %2").arg(t->name, t->sql_updateTimeStamp.toString()));
-            auto isValid = t->validateSQL();
-            e.insert(t->name, isValid);
-            zInfo(QStringLiteral("isValid: %1").arg(zStringHelper::boolToString(isValid)));
-        } // egyébként nincs változás
-        else
-        {
-            zInfo(QStringLiteral("not changed."));
-        }
+//        QDateTime lastUpdateTimeStamp = t->getSqlUpdateTimestamp();
+//        // ha újabb -  ha nem újabb, meg kell tudni, hogy valid-e
+//        // amíg nem tároljuk az utolsó állapotot
+//        if(true || lastUpdateTimeStamp > t->sql_updateTimeStamp) // ha az sql újabb
+//        {
+//            zInfo(QStringLiteral("newer available: %1 at: %2").arg(t->name, t->sql_updateTimeStamp.toString()));
+//            auto isValid = t->validateSQL();
+//            e.insert(t->name, isValid);
+//            zInfo(QStringLiteral("isValid: %1").arg(zStringHelper::boolToString(isValid)));
+//        } // egyébként nincs változás
+//        else
+//        {
+//            zInfo(QStringLiteral("not changed."));
+//        }
 
     }
 
     return e;
+}
+
+void retek2::validateTableSQL(zTable& t, QMap<QString,bool>& e){
+    //zTrace(QStringLiteral("sql validating table: %1").arg(t->name));
+    if(t.sql_conn.isEmpty()) return;
+
+    if(t.sql_updateTimeStamp.isNull())
+    {
+        zInfo(QStringLiteral("no sql_updateTimeStamp"));
+    }
+
+    QDateTime lastUpdateTimeStamp = t.getSqlUpdateTimestamp();
+    // ha újabb -  ha nem újabb, meg kell tudni, hogy valid-e
+    // amíg nem tároljuk az utolsó állapotot
+    if(true || lastUpdateTimeStamp > t.sql_updateTimeStamp) // ha az sql újabb
+    {
+        zInfo(QStringLiteral("newer available: %1 at: %2").arg(t.name, t.sql_updateTimeStamp.toString()));
+        auto isValid = t.validateSQL();
+        e.insert(t.name, isValid);
+        zInfo(QStringLiteral("isValid: %1").arg(zStringHelper::boolToString(isValid)));
+    } // egyébként nincs változás
+    else
+    {
+        zInfo(QStringLiteral("not changed."));
+    }
 }
 
 // TODO if(true ||  - nem kell az élesben
@@ -1990,14 +2024,23 @@ void retek2::on_pushButton_validate_clicked()
 {
     //zTrace();
     QMap<QString,bool> e;
+    //QMap<QString,bool> sqlmap;
     QMap<QString,bool> valmap;
     table->eval.clear();
 
+//    zforeach(ee, table->eval)
+//    {
+//        if(ee->source==VALIDATETABLEKEY)
+//        {
+//            table->eval.erase(ee);
+//        }
+//    }
     validateTable(*table, valmap);
+    //validateTableSQL(*table, sqlmap);
 
-    mezoListaFeltolt(*table);// ez töltö fel a táblának a mezőit
+    mezoListaFeltolt(*table);// ez tölti fel a táblának a mezőit
 
-    setZTablesItem(*table, e, e, e, valmap);
+    setZTablesItem(*table, e, e, e, valmap, false);
     //on_listWidget_ztables_itemClicked
     //setListWidgetIconsByCurrentProject(sqlmap, srcmap, docmap, valmap);
 

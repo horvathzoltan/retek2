@@ -12,6 +12,7 @@ public:
     QString colName;    
     QString message;
     QStringList params;
+    QString source;
 //    static zTableError Parse(const QString& m);
     QString toString() const;
 
@@ -23,7 +24,7 @@ public:
     void addDescription(const QString&);
 private:    
     QString description;
-    QString source;
+
     static const QString colNamePattern;
     static const QRegularExpression colNameRegexp;
 
