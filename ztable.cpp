@@ -22,6 +22,12 @@
 
 const QString zTable::PKNAME = QStringLiteral("pkname");
 
+const QString zTable::VALIDATETABLEKEY = QStringLiteral("validateTable");
+const QString zTable::VALIDATESQLKEY = QStringLiteral("validateSQL");//nameof(zTable::validateSQL());//
+const QString zTable::VALIDATEDOCKEY = QStringLiteral("validateDoc");
+const QString zTable::VALIDATESRCKEY = QStringLiteral("validateSrc");
+
+
 zTable::zTable()
 {
     sql_isValid = false;
@@ -1437,13 +1443,13 @@ bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const 
 {
     bool v= true;
 
-    if(this->pkrowix==-1)
-    {
-        //auto err = r->GetFullError(nameof(r->isNullable), zTablerow::ErrCode::nullable, {"PK"}, source);
-        e<< GetFullError(PKNAME, ErrCode::notexists, {"PK"}, source);
-        errlist<<QStringLiteral("Nincs PK");
-        v=false;
-    }
+//    if(this->pkrowix==-1)
+//    {
+//        //auto err = r->GetFullError(nameof(r->isNullable), zTablerow::ErrCode::nullable, {"PK"}, source);
+//        e<< GetFullError(PKNAME, ErrCode::notexists, {"PK"}, source);
+//        errlist<<QStringLiteral("Nincs PK");
+//        v=false;
+//    }
 
     if(name.isEmpty()){
         e<< GetFullError(nameof(name), ErrCode::notexists, {"name"}, source);
@@ -1476,7 +1482,7 @@ bool zTable::Validate(const QList<zTable>& tables, QList<zTableError>& e, const 
         //zforeach(r,rows)
         {
             auto r = &(rows[i]);
-            if(i==pkrowix && r->isNullable)
+            if(pkrowix!=-1 && i==pkrowix && r->isNullable)
             {
                 e<< r->GetFullError(nameof(r->isNullable), zTablerow::ErrCode::nullable, {"PK"}, source);
 
@@ -1575,7 +1581,7 @@ bool zTable::validateSQL()
     zTable t_sql = zsql.getTable(this->sql_schema, this->sql_table);
 
     //QStringList e;
-    auto isOK = Compare(t_sql, this->eval, nameof(zTable::validateSQL()));
+    auto isOK = Compare(t_sql, this->eval, VALIDATESQLKEY);
     //validateEval(isOK, e, QStringLiteral("sql"));
     return isOK;
 }
@@ -1597,7 +1603,7 @@ bool zTable::validateSource(){
             if(t->class_name == this->class_name)
             {
                 //QStringList e;
-                auto isOK = Compare(*t, eval, nameof(zTable::validateSource()));
+                auto isOK = Compare(*t, eval, VALIDATESRCKEY);
                 //validateEval(isOK, e, QStringLiteral("src"));
                 return isOK;
             }

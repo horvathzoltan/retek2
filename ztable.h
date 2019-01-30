@@ -16,6 +16,11 @@ enum zTableSearchBy{ Name, TableName, class_name, class_namePlural };
 class zTable
 {
 public:        
+    static const QString VALIDATETABLEKEY;
+    static const QString VALIDATESQLKEY;
+    static const QString VALIDATEDOCKEY;
+    static const QString VALIDATESRCKEY;
+
     //zTable(QString class_name, const QString& , const QList<zTablerow>&, int type, QString name, QString _sourcepath);
     zTable(const QString& name, const QString& pkName , const QList<zTablerow>&);
 

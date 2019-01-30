@@ -49,8 +49,11 @@ public:
     static QColor getLogColor(const QString &msg);
     void validateTable(zTable &t, QMap<QString,bool>&);
     void validateTableSQL(zTable &t, QMap<QString,bool>&);
-    
+    void validateTableDocument(zTable& t, QMap<QString,bool>& e);
+    void validateTableSource(zTable& t, QMap<QString,bool>& e);
     void setZTablesItem(const zTable &t, const QMap<QString, bool>& sqlmap, const QMap<QString, bool> &srcmap, const QMap<QString, bool>& docmap, const QMap<QString, bool>& valmap, bool isIcons = true);
+
+
 
 private slots:
 	void GenerateAll();
@@ -117,7 +120,7 @@ private slots:
 
 private:
     Q_DISABLE_COPY(retek2);
-    static const QString VALIDATETABLEKEY;
+
 
     Ui::retek2Class ui;
     Ui::Dialog_ztable_name zTableNameDialog;
