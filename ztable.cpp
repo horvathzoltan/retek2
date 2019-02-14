@@ -1747,7 +1747,7 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
     QRegularExpression rtbody = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TBODY);
     QRegularExpression rtr = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TR);
     QRegularExpression rtd = zStringHelper::getHTMLRegExp(zStringHelper::HTML_TD);
-    QRegularExpression rp = zStringHelper::getHTMLRegExp(zStringHelper::HTML_P);
+    //QRegularExpression rp = zStringHelper::getHTMLRegExp(zStringHelper::HTML_P);
     QRegularExpression rspan = zStringHelper::getHTMLRegExp(zStringHelper::HTML_SPAN);
 
     auto rti = rtable.globalMatch(txt);
@@ -1826,9 +1826,10 @@ QList<zTable> zTable::createTableByHtml(const QString& txt, const QString &d){
 //                            if(table_txt.contains(QStringLiteral("PARTNER_ARTICLES")))
 //                                zTrace();
 
+                            QRegularExpressionMatch rspanm;
                             while(rspani.hasNext())
                             {
-                                auto rspanm = rspani.next();
+                                rspanm = rspani.next();
                                 if(!innerspan.isEmpty())
                                 {
                                     innerspan+=' ';

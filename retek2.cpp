@@ -43,6 +43,7 @@
 #include <QWidget>
 #include "zconversionmap.h"
 
+//sss
 
 Highlighter* retek2::h1 = nullptr;
 Highlighter* retek2::h2 = nullptr;
@@ -72,27 +73,8 @@ void retek2::init()
     ui.setupUi(this);
     setEnabled(false);
     ui.listWidget_ztables->setIconSize(QSize(48,24));
-    //zlog.init(ui.textBrowser, ui.tabWidget, 4, false);// 4.tab-on van a log
     zLog::init(retek2::logToGUI, false, &ui, false);
 
-
-    /*
-    zError("a");
-    zWarning("b");
-    zInfo("c");
-    zDebug();
-    zTrace();
-*/
-    //asm("int $3");
-
-    //zTrace("a");
-/*
-    //QString a = QStringLiteral("&aacute;&eacute;&#225;&#xe1;");
-    QString a = QStringLiteral("Globus megl&eacute;v&#337; adataihoz");
-    QString aa = zStringHelper::HtmlDecode(a);
-    zInfo(a + " = " + aa);
-*/
-    //beallitasok.init(ui.lineEdit_User, ui.lineEdit_Password, ui.lineEdit_Server, ui.lineEdit_Catalog, ui.comboBox_connections, ui.comboBox, ui.listWidget_projects);
     beallitasok.init(
                 ui.lineEdit_User,
                 ui.lineEdit_Password,
@@ -103,29 +85,13 @@ void retek2::init()
                 ui.comboBox_srcconn,
                 ui.comboBox_docconn
                 );
-//    beallitasok.initPaths();
 
     zosHelper::setLocale();
-
-// sql-> osztály irány: Money -> decimal_money -> decimal
-// osztály-> sql irány: decimal -> decimal??? -> Money
-// itt a probléma az, hogy látjuk, hogy definíció szerint decimal, és tudhatjuk, hogy sql irányban money - de    - honnan tudjuk, hogy ez az adattípus pont money, ha nem ismerjük az sql-t?
-// illetve kell egy belső típus, ami többet tud az adatról, mint amennyi triviális
-// itt a neve utal rá, vagy ismerem az sql-t és együtt tudom vizsgálni
-// illetve - ez beolvasáskor kiderül, hogy decimal
-//
-// az sql típusától is függ, hogy milyen beolvasás táblát használunk
-//
-// ennek szerepe van a perzisztens tárolás kialakításakor, illetve     az ui-n nyilván az altípsutól függő controlt kell feltenni, validációt alkalmazni
-
 
     beallitasok.load();
 
     auto sp = zFileNameHelper::getSettingsDir();
     auto pp = zFileNameHelper::getProjectDir();
-
-    // magát a mapot úgy kell beolvasni ahogy van -
-    // amire keresünk az legyen case insensitiv, vagy normalizált
 
     // Mezőmegnevezés
     globalCaptionMaps = zConversionMap::loadAll(sp, zFileNameHelper::captionFileFilter);
@@ -137,7 +103,6 @@ void retek2::init()
     auto projectdirs = zFileNameHelper::GetSubdirs(pp);
     beallitasok.fillProjectList(projectdirs);
 
-
     loadCurrentProject(); // ez tölti a ztablakat XML-ből
 
     fillListWidgetByCurrentProject();
@@ -146,7 +111,8 @@ void retek2::init()
     //auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/d/1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8/edit?usp=sharing)"));
 
     // TODO - periodikus validáció
-    // kellene egy QTimer, hogy rájöjjünk, a doksiban piszkál valaki. SHA1
+    // QTimer: a forrás doc, src és sql->create table hash alapján - és az
+    // utolsó megnyitás után
     // ha volt piszkálva, előző = 1 perc
     // ha nem volt piszkálva, előző*=2 , ha az kisebb, mint 16 -egyébként = 16 , azaz percenként mindenképp nézünk
     // tehát minden doksira kell egy SHA1 és ha az változik, akkor piszka volt
@@ -161,32 +127,17 @@ void retek2::init()
 
     ztokenizer.init(ui.tableWidget_MezoLista);
 
-
     h1 = new Highlighter(ui.textBrowser_sources->document());
     h2 = new Highlighter(ui.textBrowser_docs->document());
 
     auto a2 = zConversionMap::externals(globalClassMaps);
-    //h1->setKeywords(a2);
-   //auto a = zConversionMap::externals(globalSqlMaps);
 
-//    QStringList a3;
-//    for(int i=0;i<5;i++)
-//    {
-//        if(i==2)
-//            a3<<"aaa";
-//        else
-//            a3<<a[i];
-//    }
-
-//    a3<<"bit";
-//    h2->setKeywords(a3);
     setEnabled(true);
     zInfo(QStringLiteral("retek2 init ok"));
 }
 
 void retek2::fillListWidgetByCurrentProject()
 {
-    //zTrace();
     zforeach(t, ztables)
     {
         add_zTablaToListWidget(*t);
@@ -410,7 +361,7 @@ QMap<QString,bool> retek2::validateCurrentProject(){
 // TODO if(true ||  - nem kell az élesben
 QMap<QString,bool> retek2::validateCurrentProject_SQL(){
     //const char* a = (const char*)Q_FUNC_INFO;//zfn();
-    zTrace();
+    //zTrace();
     QMap<QString,bool> e;
 
     zforeach(t, ztables)
@@ -979,12 +930,7 @@ QString retek2::generateTmp(const QString& tmp_file) {
  */
 
 void retek2::on_pushButton_2_clicked()
-{    
-    // a ztablesbe bele kell tenni az sql connectiont, séma és tábla szinten -
-    // amikor egy ztable kötődik egy sql-hez, tudjuk megtenni,
-    // - vagy mert onnan olvastuk be
-    // - vagy mert oda írjuk ki (generálunk create scriptet?)
-
+{        
     QString schemaName = zStringHelper::Empty;//ui.comboBox_connections->currentText();
     zSQL zsql;
     auto dbconn = beallitasok.getUI();
@@ -1676,16 +1622,16 @@ void retek2::zTableNamesFromUi(zTable& t){
     }
 }
 
-void retek2::on_buttonBox_tableNames_clicked(QAbstractButton *button)
-{        
-    auto a = qobject_cast<QDialogButtonBox*>(button->parent());
+//void retek2::on_buttonBox_tableNames_clicked(QAbstractButton *button)
+//{
+//    auto a = qobject_cast<QDialogButtonBox*>(button->parent());
 
-    if(button == a->button(QDialogButtonBox::Apply)){
-        zTableNamesFromUi(*table);
-    }else if(button == a->button(QDialogButtonBox::Cancel)){
-        zTableNamesToUi(*table);
-    }
-}
+//    if(button == a->button(QDialogButtonBox::Apply)){
+//        zTableNamesFromUi(*table);
+//    }else if(button == a->button(QDialogButtonBox::Cancel)){
+//        zTableNamesToUi(*table);
+//    }
+//}
 
 /*
 A kiválasztott sor captionját szerzi meg

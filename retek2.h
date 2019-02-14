@@ -81,8 +81,6 @@ private slots:
 
     void on_pushButton_GenerateAll_clicked();
 
-    void on_buttonBox_tableNames_clicked(QAbstractButton *button);
-
     void on_pushButton_getCaption_clicked();
 
     void on_listWidget_tables_itemClicked(QListWidgetItem *item);
