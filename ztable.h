@@ -32,8 +32,7 @@ public:
     zTable();
     ~zTable();
 
-    QString name;
-    QString docName;
+    QString name;     // megnevezés - a tábla egyedi azonosítója
 
     // kettő féle conn van - egy az sql felé, egy a forrás felé - ha ezek teljesülnek, a tábla teljesen be van kötve
     // sql conn: conn_név + driver + server + user + pass (pl: deathstar)
@@ -51,6 +50,11 @@ public:
     bool source_isValid;
     QDateTime source_updateTimeStamp;
 
+    QString docName;
+    QString document_path;
+    bool document_isValid;
+    QDateTime document_updateTimeStamp;
+
     QString XMLPath;
     QString comment;
     //QString pkname; // rowix
@@ -60,9 +64,6 @@ public:
     // a megnevezés képzésének szabálya, leírója
     QString name_formatstring;
     QDateTime updateTime;
-    QString document_path;
-    bool document_isValid;
-    QDateTime document_updateTimeStamp;
 
     QList<zTableError> eval;
 
