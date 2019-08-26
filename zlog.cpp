@@ -1,4 +1,4 @@
-#include "globals.h"
+//#include "globals.h"
 #include "zlog.h"
 #include "zshortguid.h"
 #include <QMessageBox>
@@ -78,6 +78,7 @@ const QMap<ErrLevels, QString> zLog::ErrLevelNames{
 //}
 
 
+//TODO ha van gui, akkor az külső dependencyként meg kellene jelenjen itt
 
 void zLog::dialog(const QString& str, ErrLevels errlevel) {
 

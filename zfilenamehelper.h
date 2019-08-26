@@ -55,6 +55,8 @@ public:
     static bool isURL(const QString& path);
     static bool isAppLocal(const QString& path);
     static bool isRelative(const QString& path);
+
+    static QString fileNameDialog(const QString &caption, const QString &filter);
 };
 
 #endif // ZFILENAMEHELPER_H

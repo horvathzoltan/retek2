@@ -49,6 +49,7 @@ public:
     //static void AttrListAdd(QStringList& e, const QString& string, int whsp);
     static QString AttrListJoin(const QStringList& e, int w);
     QString getProp(const QString &propType, const QString& propName, const QString& tmp, int whsp, const QString& dbname);
+    static QString ReplacePlaceholders(const QString &csv, const QString &txt);
 };
 
 #endif // ZTOKENIZER_H

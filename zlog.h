@@ -2,11 +2,11 @@
 #define ZERROR_H
 
 #include <QString>
-#include <QTextBrowser>
-#include <QTabWidget>
-#include <zstringhelper.h>
+//#include <QTextBrowser>
+//#include <QTabWidget>
+//#include <zstringhelper.h>
 #include "zlocinfo.h"
-#include "zmacro.h"
+#include "macro.h"
 
 #if defined(Q_OS_LINUX)
 #define getLocInfo zLocInfo(static_cast<const char*>(__PRETTY_FUNCTION__),__FILE__,__LINE__)

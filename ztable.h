@@ -5,7 +5,7 @@
 #include <QString>
 #include <QDateTime>
 #include "zconversionmap.h"
-#include "zstringhelper.h"
+//#include "zstringhelper.h"
 #include "ztableerror.h"
 #include "ztablerow.h"
 
@@ -34,7 +34,6 @@ public:
 
     QString name;     // megnevezés - a tábla egyedi azonosítója
 
-    // kettő féle conn van - egy az sql felé, egy a forrás felé - ha ezek teljesülnek, a tábla teljesen be van kötve
     // sql conn: conn_név + driver + server + user + pass (pl: deathstar)
     // sql adatbázis_név (pl: gloster)
     // sql tábla név (pl: atricles)

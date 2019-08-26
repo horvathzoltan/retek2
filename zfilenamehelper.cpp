@@ -4,6 +4,7 @@
 
 #include <QDir>
 #include <QDirIterator>
+#include <QFileDialog>
 
 
 
@@ -264,6 +265,11 @@ bool zFileNameHelper::isRelative(const QString &path)
     return fi.isRelative();
 }
 
-
-
-
+QString zFileNameHelper::fileNameDialog(const QString &caption, const QString &filter){
+    QString fileName = QFileDialog::getOpenFileName(nullptr, caption,"/home",filter);
+    return fileName;
+    /*auto path = QFileDialog::getExistingDirectory(mainWidget, QStringLiteral("Select Output Folder"), QDir::currentPath(),
+                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+            return path();
+*/
+}
