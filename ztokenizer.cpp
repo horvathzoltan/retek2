@@ -647,3 +647,9 @@ QString zTokenizer::getePropType(const QString& tipusnev, int length) {
 //        return o.left(o.length() - 2);
 //    return o;
 //}
+
+QString zTokenizer::ReplacePlaceholders(const QString &csv, const QString &txt){
+    QString e = txt;
+
+    return e;
+}
