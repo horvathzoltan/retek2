@@ -23,6 +23,7 @@ class retek2 : public QMainWindow
 public:
     static Highlighter* h1;
     static Highlighter* h2;
+    static const QString NOTAB;
 
     //static const QMap<zTablerow::ErrCode, int> ErrCodeColIxes;
 
@@ -169,6 +170,7 @@ private:
     void setEnabled(bool e);
     QListWidgetItem* getTablesItem(const QString &tn);
     bool setTableName(const QString &n);
+    void GenerateNotab();
 };
 
 

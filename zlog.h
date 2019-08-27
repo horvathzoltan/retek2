@@ -6,7 +6,7 @@
 //#include <QTabWidget>
 //#include <zstringhelper.h>
 #include "zlocinfo.h"
-#include "macro.h"
+#include "zmacro.h"
 
 #if defined(Q_OS_LINUX)
 #define getLocInfo zLocInfo(static_cast<const char*>(__PRETTY_FUNCTION__),__FILE__,__LINE__)

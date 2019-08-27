@@ -669,14 +669,65 @@ QTableWidgetItem* retek2::CreateTableItem(const QVariant& v){
 
  generate files by selected templates
 */
-void retek2::GenerateAll() {        
+
+const QString retek2::NOTAB = QStringLiteral("nincs tábla kiválasztva");
+
+void retek2::GenerateNotab(){
+    //TODO class initializer
+    // csv col -> placeholder
+
+     QString clp;
+
+    if(ui.checkBox_CSVtoPlaceholder->isChecked()){
+        zInfo(QStringLiteral("C# CSV->Placeholder"));
+
+        // kell a csv file
+        //
+        auto csvFileName = zFileNameHelper::fileNameDialog(QStringLiteral("CSV files"), QStringLiteral("CSV (*.csv *.txt)"));
+        auto tmpFileName = zFileNameHelper::fileNameDialog(QStringLiteral("TXT files"), QStringLiteral("TXT (*.txt)"));
+
+        QString in_csv = zTextFileHelper::load(csvFileName);
+        QString in_txt = zTextFileHelper::load(tmpFileName);
+        // a csv egy sorát alakítja mapra
+        // b: nincs fejléc, a placeholderek #COL1, #COL2
+        //QMap<QString, QString> map = zCSVHelper::RowToMap(in_csv, x);
+        QString txt = zTokenizer::ReplacePlaceholders(in_csv, in_txt);
+
+        zInfo(txt);
+        auto fn = tmpFileName+"_2";//beallitasok.getModelFilename(".cs", csvFileName);
+        zTextFileHelper::save(txt, fn);
+
+        if(ui.checkBox_clipboard->isChecked())
+        {
+            if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
+            clp+=txt;
+        }
+    }
+    if(ui.checkBox_clipboard->isChecked() && !clp.isEmpty())
+    {
+        QClipboard *clipboard = QGuiApplication::clipboard();
+        clipboard->setText(clp);
+    }
+}
+
+void retek2::GenerateAll() {
     if (table == nullptr){
-        zError(QStringLiteral("nincs tábla kiválasztva"));
+        // nem tábla műveletek
+        if(ui.checkBox_CSVtoPlaceholder->isChecked())
+        {
+            GenerateNotab();
+        }
+        else
+        {
+            zError(NOTAB);
+        }
         return;
     }
-    QString clp;
 
     auto class_name = zStringHelper::getclass_nameCamelCase(table->name);
+    QString clp;
+
+
 
     //saveTablaToXML(table->tablename);
     if (ui.checkBox_XML->isChecked()) {
@@ -754,34 +805,7 @@ void retek2::GenerateAll() {
         }
     }
 
-    //TODO class initializer
-    // csv col -> placeholder
 
-    if(ui.checkBox_CSVtoPlaceholder->isChecked()){
-        zInfo(QStringLiteral("C# CSV->Placeholder"));
-
-        // kell a csv file
-        //
-        auto csvFileName = zFileNameHelper::fileNameDialog(QStringLiteral("CSV files"), QStringLiteral("CSV (*.csv)"));
-        auto tmpFileName = zFileNameHelper::fileNameDialog(QStringLiteral("TXT files"), QStringLiteral("TXT (*.txt)"));
-
-        QString in_csv = zTextFileHelper::load2(csvFileName);
-        QString in_txt = zTextFileHelper::load2(tmpFileName);
-        // a csv egy sorát alakítja mapra
-        // b: nincs fejléc, a placeholderek #COL1, #COL2
-        //QMap<QString, QString> map = zCSVHelper::RowToMap(in_csv, x);
-        QString txt = zTokenizer::ReplacePlaceholders(in_csv, in_txt);
-
-        zInfo(txt);
-        auto fn = beallitasok.getModelFilename(".cs", csvFileName);
-        zTextFileHelper::save(txt, fn);
-
-        if(ui.checkBox_clipboard->isChecked())
-        {
-            if(!clp.isEmpty()) clp+=zStringHelper::NewLine;
-            clp+=txt;
-        }
-    }
 
     if (ui.checkBox_Entity->isChecked()) {
         zInfo(QStringLiteral("C# Entity"));

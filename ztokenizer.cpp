@@ -649,7 +649,21 @@ QString zTokenizer::getePropType(const QString& tipusnev, int length) {
 //}
 
 QString zTokenizer::ReplacePlaceholders(const QString &csv, const QString &txt){
-    QString e = txt;
+    QString txt2, e;
 
+    auto csvl = zStringHelper::toStringList(csv);
+
+    zforeach(csvr,csvl){
+        if(csvr->isEmpty()) continue;
+        if(csvr->startsWith(QStringLiteral("#"))) continue;
+
+        txt2 = txt;
+        auto cl = csvr->split(';');
+        for(int i=0;i<cl.count();i++){
+            txt2 = txt2.replace(QStringLiteral("<%= %1 %>").arg(i+1), cl[i]);
+        }
+        if(!e.isEmpty()) e+=zStringHelper::NewLine;
+        e+=txt2;
+    }
     return e;
 }
