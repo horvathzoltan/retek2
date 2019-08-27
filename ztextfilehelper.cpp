@@ -34,8 +34,11 @@ QString zTextFileHelper::load2(const QString& filename) {
     if (f.open(QFile::ReadOnly | QFile::Text))  {
         zLog::appendInfo(ikey, zLog::OK);
         zLog::closeInfo(ikey);
+        QTextStream in(&f);
+        in.setAutoDetectUnicode(true);
         //zInfo(QStringLiteral("Beolvasás: %1").arg(filename));
-        e =  QTextStream(&f).readAll();
+        //e =  QTextStream(&f).readAll();
+        e =  in.readAll();
     }
     else{
         zLog::appendInfo(ikey, zLog::ERROR);
