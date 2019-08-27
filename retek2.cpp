@@ -683,8 +683,8 @@ void retek2::GenerateNotab(){
 
         // kell a csv file
         //
-        auto csvFileName = zFileNameHelper::fileNameDialog(QStringLiteral("CSV files"), QStringLiteral("CSV (*.csv *.txt)"));
-        auto tmpFileName = zFileNameHelper::fileNameDialog(QStringLiteral("TXT files"), QStringLiteral("TXT (*.txt)"));
+        auto csvFileName = zFileNameHelper::fileNameDialog(this, QStringLiteral("CSV"), QStringLiteral("CSV (*.csv *.txt)"));
+        auto tmpFileName = zFileNameHelper::fileNameDialog(this, QStringLiteral("Template"), QStringLiteral("TXT (*.txt)"));
 
         QString in_csv = zTextFileHelper::load(csvFileName);
         QString in_txt = zTextFileHelper::load(tmpFileName);

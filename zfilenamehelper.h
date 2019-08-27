@@ -2,6 +2,7 @@
 #define ZFILENAMEHELPER_H
 
 #include <QString>
+#include <QWidget>
 
 class zFileNameHelper
 {
@@ -56,7 +57,8 @@ public:
     static bool isAppLocal(const QString& path);
     static bool isRelative(const QString& path);
 
-    static QString fileNameDialog(const QString &caption, const QString &filter);
+    static QString fileNameDialog(QWidget *w, const QString &caption, const QString &filter, const QString &dir = QString());
+    static QString getDirName(const QString &fn);
 };
 
 #endif // ZFILENAMEHELPER_H

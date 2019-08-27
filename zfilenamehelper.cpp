@@ -265,11 +265,23 @@ bool zFileNameHelper::isRelative(const QString &path)
     return fi.isRelative();
 }
 
-QString zFileNameHelper::fileNameDialog(const QString &caption, const QString &filter){
-    QString fileName = QFileDialog::getOpenFileName(nullptr, caption,"/home",filter);
-    return fileName;
-    /*auto path = QFileDialog::getExistingDirectory(mainWidget, QStringLiteral("Select Output Folder"), QDir::currentPath(),
+QString zFileNameHelper::fileNameDialog(QWidget *w, const QString &caption, const QString &filter, const QString &dir){
+    //beallitasok.lastDir;
+    static QString lastDir;
+    auto actdir = dir.isEmpty()?(lastDir.isEmpty()?QDir::homePath():lastDir):dir;
+    QString fileName = QFileDialog::getOpenFileName(w, caption,actdir,filter);
+    lastDir = getDirName(fileName);
+
+    return fileName;   
+}
+
+QString zFileNameHelper::getDirName(const QString &fn){
+    QFileInfo fi(fn);
+    auto d =  fi.absoluteFilePath();
+    return d;
+}
+
+/*auto path = QFileDialog::getExistingDirectory(mainWidget, QStringLiteral("Select Output Folder"), QDir::currentPath(),
                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
             return path();
 */
-}
