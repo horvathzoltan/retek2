@@ -650,6 +650,7 @@ QString zTokenizer::getePropType(const QString& tipusnev, int length) {
 
 QString zTokenizer::ReplacePlaceholders(const QString &csv, const QString &txt){
     QString txt2, e;
+    QString consts;
 
     auto csvl = zStringHelper::toStringList(csv);
 
@@ -659,11 +660,122 @@ QString zTokenizer::ReplacePlaceholders(const QString &csv, const QString &txt){
 
         txt2 = txt;
         auto cl = csvr->split(';');
-        for(int i=0;i<cl.count();i++){
+        auto cl_count = cl.count();
+        for(int i=0;i<cl_count;i++){
             txt2 = txt2.replace(QStringLiteral("<%= %1 %>").arg(i+1), cl[i]);
         }
-        if(!e.isEmpty()) e+=zStringHelper::NewLine;
+        txt2=txt2.remove(QRegularExpression(QStringLiteral(R"(<%=\s*\d*\s*%>)")));
+
+        auto r2 = QRegularExpression(QStringLiteral(R"(<%=\s*(RNUM)\s*([\>|\<|\=])\s*(\d*)\s*%>)"));
+        if(r2.match(txt2).hasMatch())
+        {
+            QString txt3;
+            int prevEnd=0;
+            auto i_r2 = r2.globalMatch(txt2);
+            while(i_r2.hasNext()){
+                 QRegularExpressionMatch m_r2 = i_r2.next();
+
+                 QString t1 = m_r2.captured(1);
+
+                 if(t1==QStringLiteral("RNUM")){
+                     if(m_r2.capturedLength()>=4){
+                         auto t2 = m_r2.captured(2);
+                         auto t3 = m_r2.captured(3);
+                         auto t3n = t3.toInt();
+                         QString tx;
+                         if(t2==QStringLiteral(">"))
+                         {
+                             tx = (cl_count>t3n)?QStringLiteral("true"):QStringLiteral("false");
+                         }
+                         else if (t2==QStringLiteral("<"))
+                         {
+                             tx = (cl_count<t3n)?QStringLiteral("true"):QStringLiteral("false");
+                         }
+                         else if(t2==QStringLiteral("="))
+                         {
+                            tx = (cl_count==t3n)?QStringLiteral("true"):QStringLiteral("false");
+                         }
+                         txt3 += txt2.mid(prevEnd, m_r2.capturedStart(0)-prevEnd)+tx;
+                         prevEnd = m_r2.capturedEnd(0);
+                     }
+                 }
+                 //auto filePathInfo = QFileInfo(filePath);
+             }
+             txt3+=txt2.mid(prevEnd);
+             txt2 = txt3;
+        }
+
+        r2 = QRegularExpression(QStringLiteral(R"(<%=\s*(IFNOTEXIST)\s*(\d*)\s*(\w*)\s*%>)"));
+
+        if(r2.match(txt2).hasMatch())
+        {
+            //auto txt3 = txt2;
+            QString txt3;
+            int prevEnd=0;
+            auto i_r2 = r2.globalMatch(txt2);
+            while(i_r2.hasNext()){
+                 QRegularExpressionMatch m_r2 = i_r2.next();
+
+                 QString t1 = m_r2.captured(1);
+
+                 if(t1==QStringLiteral("IFNOTEXIST")){
+                     if(m_r2.capturedLength()>=4)
+                     {
+                         auto t2n = m_r2.captured(2).toInt();
+                         auto t3 = m_r2.captured(3);
+                         QString tx = (cl_count>=t2n)?cl[t2n-1]:t3;
+
+                         txt3 += txt2.mid(prevEnd, m_r2.capturedStart(0)-prevEnd)+tx;
+                         prevEnd = m_r2.capturedEnd(0);
+                         int ii = 11;
+                     }
+                 }
+                 //auto filePathInfo = QFileInfo(filePath);
+             }
+             txt3+=txt2.mid(prevEnd);
+             txt2 = txt3;
+        }
+
+
+        r2 = QRegularExpression(QStringLiteral(R"(<%=\s*(CONST)\s*(?:\"(.*)\")\s*%>)"));
+
+        if(r2.match(txt2).hasMatch())
+        {
+            QString txt3;
+            int prevEnd=0;
+            auto i_r2 = r2.globalMatch(txt2);
+            while(i_r2.hasNext()){
+                 QRegularExpressionMatch m_r2 = i_r2.next();
+
+                 QString t1 = m_r2.captured(1);
+
+                 if(t1==QStringLiteral("CONST")){
+                     if(m_r2.capturedLength()>=2)
+                     {
+                         auto t2 = m_r2.captured(2);
+                         if(!consts.isEmpty()) consts+=zStringHelper::NewLine;
+                         consts.append(t2);
+                         txt3 += txt2.mid(prevEnd, m_r2.capturedStart(0)-prevEnd);
+                         prevEnd = m_r2.capturedEnd(0);
+                     }
+                 }
+                 //auto filePathInfo = QFileInfo(filePath);
+             }
+             txt3+=txt2.mid(prevEnd);
+             txt2 = txt3;
+        }
+
+        if(!e.isEmpty()) e+=zStringHelper::NewLine;        
         e+=txt2;
     }
+
+    if(!consts.isEmpty())
+    e = consts+zStringHelper::NewLine+e;
+
     return e;
 }
+
+
+//const QString zFileNameHelper::urlpattern = QStringLiteral(R"(^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+){2,}[\w\-\._~:\/?#[\]@!\$&'\(\)\*\+,;=.]+$)");
+
+//const QRegularExpression zFileNameHelper::urlregexp = QRegularExpression(urlpattern);

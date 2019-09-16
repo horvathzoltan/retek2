@@ -711,16 +711,22 @@ void retek2::GenerateNotab(){
 }
 
 void retek2::GenerateAll() {
+    if(ui.checkBox_CSVtoPlaceholder->isChecked())
+    {
+        GenerateNotab();
+        return;
+    }
+
     if (table == nullptr){
         // nem tábla műveletek
-        if(ui.checkBox_CSVtoPlaceholder->isChecked())
-        {
-            GenerateNotab();
-        }
-        else
-        {
-            zError(NOTAB);
-        }
+//        if(ui.checkBox_CSVtoPlaceholder->isChecked())
+//        {
+//            GenerateNotab();
+//        }
+//        else
+//        {
+//            zError(NOTAB);
+//        }
         return;
     }
 
