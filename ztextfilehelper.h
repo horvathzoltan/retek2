@@ -11,6 +11,7 @@
 class zTextFileHelper
 {
 public:
+    static bool isExistDirW(const QString& fn );
     static void save(const QString& txt, const QString& fileName, bool isAppend = false);
     static QString load(const QString& filename);
     //static void append(QString line, QString fileName);

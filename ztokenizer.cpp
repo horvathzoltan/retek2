@@ -14,6 +14,7 @@ zTokenizer::zTokenizer() = default;
 void zTokenizer::init(QTableWidget *w){
     this->MezoLista = w;
 
+    //TODO mi is ez a DxMap?
     QString currentProjectPath = zFileNameHelper::getDxMap();
     zStringMapHelper::StringMapFeltolt(currentProjectPath, &dxMap);
     zInfo(QStringLiteral("zTokenizer init ok"));

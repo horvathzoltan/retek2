@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1496</width>
-    <height>696</height>
+    <width>1280</width>
+    <height>720</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>retek2</string>
@@ -18,6 +24,12 @@
     <normaloff>:/retek.ico</normaloff>:/retek.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="maximumSize">
     <size>
      <width>16777215</width>
@@ -35,7 +47,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>400</width>
+        <width>16777215</width>
         <height>16777215</height>
        </size>
       </property>
@@ -48,9 +60,15 @@
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="0" rowspan="2">
         <widget class="QListWidget" name="listWidget_ztables">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
-           <width>150</width>
+           <width>120</width>
            <height>0</height>
           </size>
          </property>
@@ -64,9 +82,15 @@
        </item>
        <item row="1" column="1">
         <widget class="QListWidget" name="listWidget_IdegenKulcs">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
-           <width>151</width>
+           <width>120</width>
            <height>0</height>
           </size>
          </property>
@@ -80,6 +104,12 @@
        </item>
        <item row="0" column="0" colspan="2">
         <widget class="QLabel" name="projectLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="font">
           <font>
            <pointsize>14</pointsize>
@@ -95,9 +125,15 @@
     </item>
     <item>
      <widget class="QFrame" name="frame_5">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="minimumSize">
        <size>
-        <width>130</width>
+        <width>0</width>
         <height>0</height>
        </size>
       </property>
@@ -162,7 +198,7 @@
           <item>
            <widget class="QCheckBox" name="checkBox_DataProvider">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -188,7 +224,7 @@
           <item>
            <widget class="QCheckBox" name="checkBox_Controller">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -301,7 +337,7 @@
        <item>
         <widget class="QPushButton" name="pushButton_GenerateAll">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -346,7 +382,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -363,7 +399,7 @@
           </property>
           <property name="minimumSize">
            <size>
-            <width>400</width>
+            <width>180</width>
             <height>0</height>
            </size>
           </property>
@@ -446,6 +482,18 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>180</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>180</width>
+                <height>16777215</height>
+               </size>
               </property>
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
@@ -641,8 +689,8 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>0</width>
-                <height>80</height>
+                <width>180</width>
+                <height>0</height>
                </size>
               </property>
               <property name="frameShape">
@@ -655,14 +703,14 @@
                <item>
                 <widget class="QListWidget" name="listWidget_schemas">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>150</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -716,7 +764,7 @@
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>150</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -730,6 +778,12 @@
             </item>
             <item>
              <widget class="QFrame" name="frame_10">
+              <property name="minimumSize">
+               <size>
+                <width>180</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
               </property>
@@ -739,9 +793,15 @@
               <layout class="QVBoxLayout" name="verticalLayout_3">
                <item>
                 <widget class="QListWidget" name="listWidget_fields">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="maximumSize">
                   <size>
-                   <width>150</width>
+                   <width>16777215</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -781,6 +841,18 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>150</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
               </property>
@@ -798,7 +870,7 @@
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>195</width>
+                   <width>0</width>
                    <height>0</height>
                   </size>
                  </property>
@@ -861,7 +933,7 @@
             <item>
              <widget class="QFrame" name="frame_8">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -907,9 +979,15 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>120</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="maximumSize">
                   <size>
-                   <width>150</width>
+                   <width>120</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -920,9 +998,15 @@
             </item>
             <item>
              <widget class="QTextBrowser" name="textBrowser_sources">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
-                <width>400</width>
+                <width>0</width>
                 <height>0</height>
                </size>
               </property>
@@ -943,6 +1027,18 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>150</width>
+                <height>16777215</height>
+               </size>
+              </property>
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
               </property>
@@ -960,7 +1056,7 @@
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>195</width>
+                   <width>0</width>
                    <height>0</height>
                   </size>
                  </property>
@@ -1022,6 +1118,12 @@
             </item>
             <item>
              <widget class="QFrame" name="frame_7">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
               </property>
@@ -1065,13 +1167,13 @@
                  </property>
                  <property name="minimumSize">
                   <size>
-                   <width>0</width>
+                   <width>120</width>
                    <height>0</height>
                   </size>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>150</width>
+                   <width>120</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -1082,9 +1184,15 @@
             </item>
             <item>
              <widget class="QTextBrowser" name="textBrowser_docs">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
-                <width>400</width>
+                <width>0</width>
                 <height>0</height>
                </size>
               </property>
@@ -1104,7 +1212,7 @@
         <item>
          <widget class="QFrame" name="frame_9">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1118,7 +1226,7 @@
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>50</height>
+            <height>16777215</height>
            </size>
           </property>
           <property name="frameShape">
@@ -1168,10 +1276,16 @@
         <item>
          <widget class="QFrame" name="frame_12">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
           </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -1183,15 +1297,15 @@
            <item>
             <widget class="QTableWidget" name="tableWidget_MezoLista">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="minimumSize">
               <size>
-               <width>530</width>
-               <height>80</height>
+               <width>0</width>
+               <height>0</height>
               </size>
              </property>
              <column>
@@ -1224,7 +1338,7 @@
            <item>
             <widget class="QFrame" name="frame_13">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+              <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -1238,6 +1352,12 @@
              <layout class="QVBoxLayout" name="verticalLayout_12">
               <item>
                <widget class="QGroupBox" name="groupBox_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="title">
                  <string>Table data</string>
                 </property>
@@ -1252,7 +1372,7 @@
                  <item row="0" column="1">
                   <widget class="QLineEdit" name="lineEdit_name">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -1279,7 +1399,14 @@
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QLineEdit" name="lineEdit_tablename"/>
+                  <widget class="QLineEdit" name="lineEdit_tablename">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
                  </item>
                  <item row="2" column="0">
                   <widget class="QLabel" name="label_8">
@@ -1290,6 +1417,12 @@
                  </item>
                  <item row="2" column="1">
                   <widget class="QLineEdit" name="lineEdit_class_name">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -1303,7 +1436,14 @@
                   </widget>
                  </item>
                  <item row="3" column="1">
-                  <widget class="QLineEdit" name="lineEdit_class_name_plural"/>
+                  <widget class="QLineEdit" name="lineEdit_class_name_plural">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
                  </item>
                  <item row="4" column="0">
                   <widget class="QLabel" name="label">
@@ -1313,7 +1453,14 @@
                   </widget>
                  </item>
                  <item row="4" column="1">
-                  <widget class="QLineEdit" name="lineEdit_pkname"/>
+                  <widget class="QLineEdit" name="lineEdit_pkname">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
                  </item>
                  <item row="5" column="0">
                   <widget class="QLabel" name="label_5">
@@ -1324,6 +1471,12 @@
                  </item>
                  <item row="5" column="1">
                   <widget class="QLineEdit" name="lineEdit_XMLPath">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="readOnly">
                     <bool>true</bool>
                    </property>
@@ -1334,6 +1487,12 @@
               </item>
               <item>
                <widget class="QGroupBox" name="groupBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="title">
                  <string>Sources</string>
                 </property>
@@ -1364,6 +1523,12 @@
                    <property name="enabled">
                     <bool>true</bool>
                    </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="readOnly">
                     <bool>true</bool>
                    </property>
@@ -1374,6 +1539,12 @@
                    <property name="enabled">
                     <bool>true</bool>
                    </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="readOnly">
                     <bool>true</bool>
                    </property>
@@ -1383,6 +1554,12 @@
                   <widget class="QLineEdit" name="lineEdit_src_doc">
                    <property name="enabled">
                     <bool>true</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
                    </property>
                    <property name="readOnly">
                     <bool>true</bool>
@@ -1397,7 +1574,14 @@
                   </widget>
                  </item>
                  <item row="3" column="1">
-                  <widget class="QLineEdit" name="lineEdit_docName"/>
+                  <widget class="QLineEdit" name="lineEdit_docName">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -1431,7 +1615,7 @@
         <item row="0" column="0">
          <widget class="QTextEdit" name="textEdit">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -1459,7 +1643,10 @@
           <item>
            <widget class="QPushButton" name="pushButton_3">
             <property name="toolTip">
-             <string>adatbeolvasás</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00677c;&quot;&gt;createTableByText &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#008000;&quot;&gt;osztálynév&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-family:'monospace'; color:#008000;&quot;&gt;mezőnév,leírók,caption&lt;/span&gt;&lt;/p&gt;
+&lt;br/&gt;
+&lt;p&gt;leírók: típusnév,hossz,nullable,required,key&lt;p/&gt;
+&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="whatsThis">
              <string>ezitta ezitt</string>
@@ -1519,7 +1706,14 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_7">
         <item row="0" column="0">
-         <widget class="QTextBrowser" name="textBrowser"/>
+         <widget class="QTextBrowser" name="textBrowser">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -1532,8 +1726,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1496</width>
-     <height>22</height>
+     <width>1280</width>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu1">

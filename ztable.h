@@ -88,7 +88,7 @@ public:
     //static bool getClassType_old(const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired);
 
     // TODO milyen irányból - sql, class - állapítjuk meg a típust?
-    static bool getClassType(const QList<zConversionMap>& maps, const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings = false);
+    static bool getClassType(const QList<zConversionMap>& maps, const QString& ezt1,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool isWarning = true);
 
     QStringList getFK();
     QStringList getRFK();

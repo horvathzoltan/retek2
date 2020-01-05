@@ -393,9 +393,9 @@ OperationTypeId,int
 // Name,String(44),30,nullable
 // Name,String(44),30,not nullable
 
-bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool noWarnings)
+bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2,  QString *dtype, int *dlen, bool *nullable, bool isRequired, bool isWarning)
 {
-    noWarnings = false;
+    //noWarnings = false;
 //    zTrace(getClassType)
    // auto re_dlen1 = QRegularExpression(QStringLiteral(R"((?:\(([\d]+)\)))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
    // auto re_dlen2 = QRegularExpression(QStringLiteral(R"(([\d]+))"), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -418,7 +418,8 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
         inullable = false;
         typeName = ezt1;
     }
-    else{ // ha nem kötelező
+    else
+    { // ha nem kötelező
         if(m_isNullable.hasMatch()) // és ki van írva,
         {
             inullable = true;
@@ -444,9 +445,10 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
 
     if(fl.isEmpty())
     {
-        if(!noWarnings)
+        if(isWarning)
         {
             // createTableByHtml -> a típus neve tartalmazhat adathosszt is, bár nem kellene, mert ide már szétszedve kellene kerülnie
+            //
             zInfo(QStringLiteral("Nem található belső adatábrázolási típus: %1 warning").arg(ezt1));
             //zDebug();
         }
@@ -455,7 +457,7 @@ bool zTable::getClassType(const QList<zConversionMap>& maps, const QString& ezt2
     {
         if(fl.count()>1)
         {
-            if(!noWarnings)
+            if(isWarning)
             {
                 zInfo(QStringLiteral("Több típus is javasolt: %1 -> %2 warning").arg(ezt1, fl.join(',')));
                 /*if(fl.contains(ezt1))
@@ -723,7 +725,7 @@ DateCre,DateTime
 DateMod,datetime
 
 
-Inventory
+Inventory222
 Id,int,key,Identity
 Name,String,30
 OperationTypeId,int
@@ -755,8 +757,8 @@ QList<zTable> zTable::createTableByText(QString txt)
 //    auto re_macro_use = QRegularExpression(R"((?:^([\w]+)\s*$))", QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
     auto re_macro_use_tmp = QStringLiteral(R"((?:^(%1)\s*$))");
 
+    //makrók keresése
     auto j = re_macro_def.globalMatch(txt);
-
     while(j.hasNext()){
         QRegularExpressionMatch m = j.next();
         QString m_name=m.captured(1);
@@ -769,6 +771,7 @@ QList<zTable> zTable::createTableByText(QString txt)
         }
     }
 
+    //makrók feloldása
     //QString txt2;
     auto keys = macroMap.keys();
     zforeach(m, keys){
@@ -830,7 +833,7 @@ QList<zTable> zTable::createTableByText(QString txt)
                            }                           
                            //típus vizsgálat
                            // csak egy típus felismerés - próbálkozásos alapon, így a warningokat elnyomjuk
-                           isDtype = zTable::getClassType(globalClassMaps, ezt1, &dtype, &dlen, &isNullable, false, true);
+                           isDtype = zTable::getClassType(globalClassMaps, ezt1, &dtype, &dlen, &isNullable, false, false);
                        }
                        // a típus tulajdonságainak meghatározása, pl.
                        // tovább folytatjuk a szavak egyenkénti vizsgálatát, és ha nem típust írnak le, akkor a megtaláltat módosítják:

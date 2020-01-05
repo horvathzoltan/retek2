@@ -329,7 +329,7 @@ QString zStringHelper::HtmlDecode2(const QString &value)
                     // See http://www.w3.org/TR/REC-html40/charset.html#entities
 
                     bool pOk;
-                    quint16 pv;
+                    int pv;
                     if(entity[1] == 'x' || entity[1] == 'X')
                     {
                         //hexadecimális

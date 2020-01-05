@@ -17,6 +17,7 @@ bool zLog::isVerbose = false;
 const QString zLog::OK = QStringLiteral("ok");
 const QString zLog::ERROR = QStringLiteral("error");
 const QString zLog::WARNING = QStringLiteral("warning");
+const QString zLog::FAILED = QStringLiteral("failed");
 
 void zLog::init(zLogGUIfn ez, bool _isBreakOnError, void* uiptr, bool _isVerbose)
 {

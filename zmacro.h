@@ -4,8 +4,8 @@
 #include <QRegularExpression>
 #include "zlogicexception.h"
 
-#define zforeach(var, container) for(auto (var) = (container).begin(); (var) != (container).end(); ++(var))
-#define zforeach_from(var, container, ix) for(auto (var) = (container).begin()+(ix); (var) != (container).end(); ++(var))
+#define zforeach(var, container) for(auto var = (container).begin(); var != (container).end(); ++var)
+#define zforeach_from(var, container, ix) for(auto var = (container).begin()+(ix); var != (container).end(); ++var)
 
 #define nameof(x) z_macro_factory::_nameof<0>(#x, sizeof(x))
 #define zfn() z_macro_factory::_zfn<0>((const char*)Q_FUNC_INFO)//Q_FUNC_INFO

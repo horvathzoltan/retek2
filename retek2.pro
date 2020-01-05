@@ -76,7 +76,7 @@ RESOURCES += retek2.qrc
 CONFIG += debug
 DEFINES += QT_DLL QT_SQL_LIB QT_WIDGETS_LIB
 
-CONFIG += c++14
+CONFIG += c++17
 CONFIG += warn_on
 
 QMAKE_LFLAGS += -rdynamic

@@ -3,8 +3,12 @@
 #include "ztextfilehelper.h"
 #include "zstringhelper.h"
 #include "zfilenamehelper.h"
-
 #include <QFileInfo>
+
+bool zTextFileHelper::isExistDirW(const QString& fn ){
+    QFileInfo fi(fn);
+    return fi.exists() && fi.isDir() && fi.isWritable();
+}
 
 QString zTextFileHelper::load2(const QString& filename) {
     auto ikey = zLog::openInfo(QStringLiteral("Beolvasás: %1").arg(filename));

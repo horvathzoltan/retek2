@@ -61,6 +61,7 @@ public:
     static const QString OK;
     static const QString ERROR;
     static const QString WARNING;    
+    static const QString FAILED;
 
     static const QMap<ErrLevels, QString> ErrLevelNames;
 

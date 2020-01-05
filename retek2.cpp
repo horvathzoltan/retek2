@@ -58,7 +58,8 @@ retek2::retek2(QWidget *parent):QMainWindow(parent)
 
 retek2::~retek2()
 {
-    delete h1, h2;
+    delete h1;
+    delete h2;
 }
 
 /**
@@ -76,6 +77,7 @@ void retek2::init()
     ui.listWidget_ztables->setIconSize(QSize(48,24));
     zLog::init(retek2::logToGUI, false, &ui, false);
 
+    //zInfo(QStringLiteral("...init 1"));
     beallitasok.init(
                 ui.lineEdit_User,
                 ui.lineEdit_Password,
@@ -86,55 +88,71 @@ void retek2::init()
                 ui.comboBox_srcconn,
                 ui.comboBox_docconn
                 );
+    //zInfo(QStringLiteral("...init 2"));
 
     zosHelper::setLocale();
 
-    beallitasok.load();
+    //zInfo(QStringLiteral("...init 3"));
 
     auto sp = zFileNameHelper::getSettingsDir();
     auto pp = zFileNameHelper::getProjectDir();
 
-    // Mezőmegnevezés
-    globalCaptionMaps = zConversionMap::loadAll(sp, zFileNameHelper::captionFileFilter);
-    projectCaptionMaps = zConversionMap::loadAll(pp, zFileNameHelper::captionFileFilter);
-    // típuskonverzió
-    globalSqlMaps= zConversionMap::loadAll(sp, zFileNameHelper::sqlmapFileFilter);
-    globalClassMaps= zConversionMap::loadAll(sp, zFileNameHelper::classmapFileFilter);
+    bool ok = true;
+    if(zTextFileHelper::isExistDirW(sp)){
+        beallitasok.load();
+        // Mezőmegnevezés
+        globalCaptionMaps = zConversionMap::loadAll(sp, zFileNameHelper::captionFileFilter);
+        // típuskonverzió
+        globalSqlMaps= zConversionMap::loadAll(sp, zFileNameHelper::sqlmapFileFilter);
+        globalClassMaps= zConversionMap::loadAll(sp, zFileNameHelper::classmapFileFilter);
+    }
+    else
+    {
+        ok = false;
+        zInfo(QStringLiteral("No settings dir: %1").arg(sp));
+    }
+    if(zTextFileHelper::isExistDirW(pp)){
+        // Mezőmegnevezés 2
+        projectCaptionMaps = zConversionMap::loadAll(pp, zFileNameHelper::captionFileFilter);
+        auto projectdirs = zFileNameHelper::GetSubdirs(pp);
+        beallitasok.fillProjectList(projectdirs);
 
-    auto projectdirs = zFileNameHelper::GetSubdirs(pp);
-    beallitasok.fillProjectList(projectdirs);
+        loadCurrentProject(); // ez tölti a ztablakat XML-ből
 
-    loadCurrentProject(); // ez tölti a ztablakat XML-ből
+        fillListWidgetByCurrentProject();
 
-    fillListWidgetByCurrentProject();
+        //auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/d/1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8/edit?usp=sharing)"));
 
+        // TODO - periodikus validáció
+        // QTimer: a forrás doc, src és sql->create table hash alapján - és az
+        // utolsó megnyitás után
+        // ha volt piszkálva, előző = 1 perc
+        // ha nem volt piszkálva, előző*=2 , ha az kisebb, mint 16 -egyébként = 16 , azaz percenként mindenképp nézünk
+        // tehát minden doksira kell egy SHA1 és ha az változik, akkor piszka volt
+        // akkor lehet végrehajtani, ha nem fut a táblán művelet - illetve egyik táblán sem fut művelet
 
-    //auto e = downloader.download(QStringLiteral(R"(https://docs.google.com/document/d/1tPwsVMObxU9QmA3XR4RpbHPpjcG7hVbd7KQqLD_ABK8/edit?usp=sharing)"));
+        auto valmap = validateCurrentProject();
+        auto sqlmap = validateCurrentProject_SQL();
+        auto srcmap = validateCurrentProject_Source();
+        auto docmap = validateCurrentProject_Document();
 
-    // TODO - periodikus validáció
-    // QTimer: a forrás doc, src és sql->create table hash alapján - és az
-    // utolsó megnyitás után
-    // ha volt piszkálva, előző = 1 perc
-    // ha nem volt piszkálva, előző*=2 , ha az kisebb, mint 16 -egyébként = 16 , azaz percenként mindenképp nézünk
-    // tehát minden doksira kell egy SHA1 és ha az változik, akkor piszka volt
-    // akkor lehet végrehajtani, ha nem fut a táblán művelet - illetve egyik táblán sem fut művelet
+        setListWidgetIconsByCurrentProject(sqlmap, srcmap, docmap, valmap);
 
-    auto valmap = validateCurrentProject();
-    auto sqlmap = validateCurrentProject_SQL();
-    auto srcmap = validateCurrentProject_Source();
-    auto docmap = validateCurrentProject_Document();
-
-    setListWidgetIconsByCurrentProject(sqlmap, srcmap, docmap, valmap);
-
-    ztokenizer.init(ui.tableWidget_MezoLista);
+        ztokenizer.init(ui.tableWidget_MezoLista);
+    }
+    else
+    {
+        zInfo(QStringLiteral("No project dir: %1").arg(pp));
+        ok = false;
+    }
 
     h1 = new Highlighter(ui.textBrowser_sources->document());
     h2 = new Highlighter(ui.textBrowser_docs->document());
 
     auto a2 = zConversionMap::externals(globalClassMaps);
-
+    //zInfo(QStringLiteral("...init 6"));
     setEnabled(true);
-    zInfo(QStringLiteral("retek2 init ok"));
+    zInfo(QStringLiteral("retek2 init %1").arg(ok?"ok":"failed"));
 }
 
 void retek2::fillListWidgetByCurrentProject()
@@ -1031,7 +1049,7 @@ DateMod,datetime
 
 
 Inventory
-Id,int,key,Identity
+Id,int,key,Identity,required
 Name,String,30
 OperationTypeId,int
 InventoryStatusId,int
@@ -1057,13 +1075,14 @@ void retek2::on_pushButton_3_clicked()
 
     if(tl.isEmpty())
     {
-        zError(QStringLiteral("Nem jött létre tábla"));
+        zInfo(QStringLiteral("Nem jött létre tábla"));
+        return;
     }
 
     zforeach(t,tl){
         if(zTable::find(ztables, t->name, zTableSearchBy::Name))
         {
-            zError(QStringLiteral("Van már ilyen nevű tábla"));
+            zInfo(QStringLiteral("Van már ilyen nevű tábla"));
             continue;
         }
         ztables.append(*t);
@@ -1846,6 +1865,11 @@ QColor retek2::getLogColor(const QString &msg){
     }
 
     if (msg.endsWith(zLog::ERROR))
+    {
+        return Qt::darkRed;
+    }
+
+    if (msg.endsWith(zLog::FAILED))
     {
         return Qt::darkRed;
     }
