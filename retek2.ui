@@ -1643,13 +1643,40 @@
           <item>
            <widget class="QPushButton" name="pushButton_3">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00677c;&quot;&gt;createTableByText &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#008000;&quot;&gt;osztálynév&lt;/span&gt;&lt;br/&gt;&lt;span style=&quot; font-family:'monospace'; color:#008000;&quot;&gt;mezőnév,leírók,caption&lt;/span&gt;&lt;/p&gt;
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;p&gt;
+&lt;span style=&quot; color:#00677c;&quot;&gt;createTableByText &lt;/span&gt;&lt;br/&gt;
 &lt;br/&gt;
-&lt;p&gt;leírók: típusnév,hossz,nullable,required,key&lt;p/&gt;
+&lt;span style=&quot; color:#008000;&quot;&gt;osztálynév&lt;/span&gt;&lt;br/&gt;
+&lt;span style=&quot; font-family:'monospace'; color:#008000;&quot;&gt;mezőnév,leírók,caption&lt;/span&gt;&lt;br/&gt;
+&lt;br/&gt;
+leírók: típusnév,hossz,nullable,required,key
+&lt;br/&gt;
+&lt;span style=&quot; color:#00677c;&quot;&gt;részletek: Alt+F1 &lt;/span&gt;
 &lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="whatsThis">
-             <string>ezitta ezitt</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;span style=&quot; font-family:'monospace'; color:#008000;&quot;&gt;createTableByText &lt;/span&gt;&lt;br/&gt;
+&lt;br/&gt;
+#Adm&lt;br/&gt; 
+DateCre,DateTime&lt;br/&gt; 
+DateMod,datetime&lt;br/&gt; 
+&lt;br/&gt;
+&lt;br/&gt;
+Inventory222&lt;br/&gt;
+Id,int,key,Identity&lt;br/&gt;
+Name,String,30&lt;br/&gt;
+OperationTypeId,int&lt;br/&gt;
+InventoryStatusId,int&lt;br/&gt;
+StorageId,int&lt;br/&gt;
+DateStart,DateTime,nullable&lt;br/&gt;
+DateEnd,datetime,nullable&lt;br/&gt;
+Adm&lt;br/&gt;
+RecountRequired,bool&lt;br/&gt;
+UserId,guid&lt;br/&gt;
+Comments,string,200&lt;br/&gt;
+&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Load</string>
@@ -1661,8 +1688,30 @@
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_4">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;p&gt;
+&lt;span style=&quot; color:#00677c;&quot;&gt;createTableByText_2 &lt;/span&gt;&lt;br/&gt;
+&lt;br/&gt;
+&lt;span style=&quot; color:#008000;&quot;&gt;osztálynév&lt;/span&gt;&lt;br/&gt;
+&lt;span style=&quot; font-family:'monospace'; color:#008000;&quot;&gt;mezőnév1,mezőnév2,...,típus&lt;/span&gt;&lt;br/&gt;
+&lt;br/&gt;
+&lt;span style=&quot; color:#00677c;&quot;&gt;részletek: Alt+F1 &lt;/span&gt;
+&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="whatsThis">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;típusonkénti sororientált leíró makródefiníciós lehetőséggel&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;#Adm &lt;/p&gt;&lt;p&gt;DateCre DateMod datetime&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;class1&lt;/p&gt;&lt;p&gt;mezo1 mezo2 mezo3 string&lt;/p&gt;&lt;p&gt;mezo4 mezo5 int&lt;/p&gt;&lt;p&gt;int mezo6 mezo7&lt;/p&gt;&lt;p&gt;Adm&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;
+&lt;span style=&quot; font-family:'monospace'; color:#008000;&quot;&gt;createTableByText_2 &lt;/span&gt;&lt;br/&gt;
+&lt;br/&gt;
+#Adm&lt;br/&gt; 
+DateCre DateMod datetime&lt;br/&gt;
+&lt;br/&gt;
+class1&lt;br/&gt;
+mezo1 mezo2 mezo3 string&lt;br/&gt;
+mezo4 mezo5 int&lt;br/&gt;
+int mezo6 mezo7&lt;br/&gt;
+Adm&lt;br/&gt;
+&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Load 2</string>

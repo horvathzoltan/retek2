@@ -967,6 +967,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
 
     auto j = re_macro_def.globalMatch(txt);
 
+    //makrók megkeresése
     while(j.hasNext())
     {
         QRegularExpressionMatch m = j.next();
@@ -980,6 +981,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
         }
     }
 
+    // makrók helyettesítése
     auto keys = macroMap.keys();
     zforeach(m, keys){
         auto mcr = QRegularExpression(re_macro_use_tmp.arg(*m), QRegularExpression::MultilineOption|QRegularExpression::UseUnicodePropertiesOption);
@@ -988,6 +990,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
             txt.replace(mcr,macroMap.value(*m));
         //}
     }
+
 
 
     auto i = re.globalMatch(txt);
@@ -1025,7 +1028,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
                     {
                         // a vizsgált szó vagy típus, vagy mező
                         // Elnyomjuk a warningokat - a szavankénti próbálkozás miatt - soronként csak egy lesz jó
-                        isDtype = zTable::getClassType(globalClassMaps, *word, &dtype, &dlen, &isNullable, false, true);
+                        isDtype = zTable::getClassType(globalClassMaps, *word, &dtype, &dlen, &isNullable, false, false);
                         if (isDtype)
                         {
                             zInfo(QStringLiteral("sortípus: %1").arg(*word));
@@ -1062,7 +1065,7 @@ QList<zTable> zTable::createTableByText_2(QString txt){
             t.initClass(className, pluralClassName);
 
             tl.append(t);
-            zError("GenerateByText2: "+t.toString());
+            zInfo(QStringLiteral("GenerateByText2: %1 ok").arg(t.toString()));
         }
     }
 

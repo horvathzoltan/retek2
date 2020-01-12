@@ -203,22 +203,25 @@ void Beallitasok::load()
 //       // selected_ix = 0;
 //    }
 
+    //zInfo(QStringLiteral("...init 3.2.1"));
     QString fileName = zFileNameHelper::getDbConnFileName();
     auto dbc = dbConnection::fromCSVFile(fileName);
     setDbConnections(dbc);
-
+//zInfo(QStringLiteral("...init 3.2.2"));
     fileName = zFileNameHelper::getSourceConnFileName();
     auto src = srcConnection::fromCSVFile(fileName);
+    //zInfo(QStringLiteral("...init 3.2.2.1"));
     setSrcConnections(src);
-
+//zInfo(QStringLiteral("...init 3.2.3"));
     fileName = zFileNameHelper::getDocumentConnFileName();
     auto docConn = docConnection::fromCSVFile(fileName);
     setDocConnections(docConn);
-
+//zInfo(QStringLiteral("...init 3.2.4"));
     fileName = zFileNameHelper::getSettingsFileName();//append(settingsPath, settings_filename);
     auto txt = zTextFileHelper::load(fileName);
     if(!txt.isEmpty())
     {
+        //zInfo(QStringLiteral("...init 3.2.5"));
         QStringList csvl = zStringHelper::toStringList(txt);
         Beallitasok::FromCSV(csvl.first());
     }   

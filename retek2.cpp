@@ -95,22 +95,31 @@ void retek2::init()
     //zInfo(QStringLiteral("...init 3"));
 
     auto sp = zFileNameHelper::getSettingsDir();
+    //zInfo(QStringLiteral("...init 3.1"));
     auto pp = zFileNameHelper::getProjectDir();
-
+    //zInfo(QStringLiteral("...init 3.2"));
     bool ok = true;
     if(zTextFileHelper::isExistDirW(sp)){
+        //zInfo(QStringLiteral("...init 3.3"));
         beallitasok.load();
+        //zInfo(QStringLiteral("...init 3.4"));
         // Mezőmegnevezés
         globalCaptionMaps = zConversionMap::loadAll(sp, zFileNameHelper::captionFileFilter);
+        //zInfo(QStringLiteral("...init 3.5"));
         // típuskonverzió
         globalSqlMaps= zConversionMap::loadAll(sp, zFileNameHelper::sqlmapFileFilter);
+        //zInfo(QStringLiteral("...init 3.6"));
         globalClassMaps= zConversionMap::loadAll(sp, zFileNameHelper::classmapFileFilter);
+        //zInfo(QStringLiteral("...init 3.7"));
     }
     else
     {
         ok = false;
         zInfo(QStringLiteral("No settings dir: %1").arg(sp));
     }
+
+    //zInfo(QStringLiteral("...init 4"));
+
     if(zTextFileHelper::isExistDirW(pp)){
         // Mezőmegnevezés 2
         projectCaptionMaps = zConversionMap::loadAll(pp, zFileNameHelper::captionFileFilter);
@@ -1075,14 +1084,14 @@ void retek2::on_pushButton_3_clicked()
 
     if(tl.isEmpty())
     {
-        zInfo(QStringLiteral("Nem jött létre tábla"));
+        zInfo(QStringLiteral("Nem jött létre tábla error"));
         return;
     }
 
     zforeach(t,tl){
         if(zTable::find(ztables, t->name, zTableSearchBy::Name))
         {
-            zInfo(QStringLiteral("Van már ilyen nevű tábla"));
+            zInfo(QStringLiteral("Van már ilyen nevű tábla error"));
             continue;
         }
         ztables.append(*t);
@@ -1110,7 +1119,7 @@ void retek2::on_pushButton_4_clicked()
 
     if(tl.length()==0)
     {
-        zError(QStringLiteral("nem jött létre adat"));
+        zInfo(QStringLiteral("nem jött létre adat error"));
         return;
     }
 
@@ -1118,7 +1127,7 @@ void retek2::on_pushButton_4_clicked()
     {
         if(zTable::find(ztables, t->name, zTableSearchBy::Name))
         {
-            zError(QStringLiteral("Van már ilyen nevű tábla"));
+            zInfo(QStringLiteral("Van már ilyen nevű tábla error"));
             continue;
         }
         ztables.append(*t);
@@ -1135,7 +1144,7 @@ void retek2::on_pushButton_5_clicked()
     auto txt = ui.textEdit->toPlainText();
     auto tl = zTable::createTableByXML(txt);
 
-   if(tl.length()==0) { zError(QStringLiteral("nem jött létre adat")); return;}
+   if(tl.length()==0) { zInfo(QStringLiteral("nem jött létre adat error")); return;}
 
     zforeach(t,tl){
         ztables.append(*t);
@@ -1174,7 +1183,7 @@ zEnumizer::EnumSource retek2::GetEnumData(zSQL *zsql){
         ft = ui.tableWidget_MezoLista->item(idix, C_ix_colType)->text();
 
         if(r.length()<1){
-            zInfo(QStringLiteral("Nincs megnevezés sor kijelölve"));
+            zInfo(QStringLiteral("Nincs megnevezés sor kijelölve error"));
             eredmeny= { "", "", QMap<int, QString>() };
         }
         else if (r.length()>1)
@@ -1360,10 +1369,17 @@ void retek2::on_comboBox_srcconn_currentIndexChanged(const QString &arg1)
     auto c = beallitasok.getSrcConnectionByName(arg1);
     if(c)
     {
-        ui.lineEdit_sourcepath->setText(c->path);
-        ui.lineEdit_sourcepath->setToolTip(c->path);
-        ui.textBrowser_sources->clear();
-        sourcesFeltolt(*c);
+        if(zTextFileHelper::isExistDirW(c->path))
+        {
+            ui.lineEdit_sourcepath->setText(c->path);
+            ui.lineEdit_sourcepath->setToolTip(c->path);
+            ui.textBrowser_sources->clear();
+            sourcesFeltolt(*c);
+        }
+        else{
+            zInfo(QStringLiteral("srcconnections.csv: No src dir: %1: %2 error").arg(c->Name).arg(c->path));
+        }
+
     }
 }
 
@@ -1823,6 +1839,7 @@ void retek2::logToGUI(ErrLevels errlevel, const QString &msg, const QString &loc
 
 
         widget2->setTextCursor(cursor);
+        if(isLogFocus(msg)) tabwidget2->setCurrentIndex(tabindex2);
         break;
     }
     case ErrLevels::INFOCLOSE:
@@ -1841,6 +1858,7 @@ void retek2::logToGUI(ErrLevels errlevel, const QString &msg, const QString &loc
     case ErrLevels::INFO:
     {
         widget2->setTextColor(getLogColor(msg));
+        if(isLogFocus(msg)) tabwidget2->setCurrentIndex(tabindex2);
         widget2->append(msg);
         break;
     }
@@ -1852,27 +1870,16 @@ void retek2::logToGUI(ErrLevels errlevel, const QString &msg, const QString &loc
     widget2->setTextColor(c);
 }
 
-QColor retek2::getLogColor(const QString &msg){
+bool retek2::isLogFocus(const QString &msg){
+    return msg.endsWith(zLog::ERROR)||msg.endsWith(zLog::FAILED);
+}
 
-    if(msg.endsWith(zLog::OK))
-    {
-        return Qt::darkGreen;
-    }
-
-    if (msg.endsWith(zLog::WARNING))
-    {
-        return Qt::darkYellow;
-    }
-
-    if (msg.endsWith(zLog::ERROR))
-    {
-        return Qt::darkRed;
-    }
-
-    if (msg.endsWith(zLog::FAILED))
-    {
-        return Qt::darkRed;
-    }
+QColor retek2::getLogColor(const QString &msg)
+{
+    if (msg.endsWith(zLog::OK)) return Qt::darkGreen;
+    if (msg.endsWith(zLog::WARNING)) return Qt::darkYellow;
+    if (msg.endsWith(zLog::ERROR)) return Qt::darkRed;
+    if (msg.endsWith(zLog::FAILED)) return Qt::darkRed;
     return Qt::darkGray;
 }
 
