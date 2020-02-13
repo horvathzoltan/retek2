@@ -6,7 +6,7 @@
 
 #include "ztextfilehelper.h"
 
-
+//a1
 
 #include <QDir>
 #include <QFileInfo>
